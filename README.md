@@ -1,11 +1,11 @@
-# M03模块固件程序
+# V2V模块（M03）模块固件程序
 ### 硬件平台:
   高通AR9341/QCA9531
 
-### 系统平台:
-  openwrt
+### 操作系统:
+  OpenWrt(Barrier Breaker 14.07)
 
-### 工程代号：
+### 软件代号：
   Globicephala
 
 ### 编译说明:
