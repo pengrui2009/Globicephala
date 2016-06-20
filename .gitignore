@@ -6,5 +6,7 @@ Desktop.ini
 
 #linux
 *.o
-
+dependence
+.project
+.cproject
 #bin
