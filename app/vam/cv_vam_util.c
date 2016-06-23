@@ -50,9 +50,6 @@ __COMPILE_INLINE__ float decode_longtitude(uint32_t x);
 #define encode_latitude(x) encode_longtitude(x) 
 #define decode_latitude(x) decode_longtitude(x) 
 
-#define encode_accuracy(x) encode_longtitude(x) 
-#define decode_accuracy(x) decode_longtitude(x) 
-
 __COMPILE_INLINE__ uint16_t encode_elevation(float x);
 
 __COMPILE_INLINE__ float decode_elevation(uint16_t x);

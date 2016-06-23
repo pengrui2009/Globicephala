@@ -20,7 +20,7 @@
 #include "cv_cms_def.h"
 #include "cv_wnet.h"
 
-
+#include "app_msg_format.h"
 /*****************************************************************************
  * declaration of variables and functions                                    *
 *****************************************************************************/
@@ -36,8 +36,6 @@ float rcp_dbg_distance = 0;
 /*****************************************************************************
  * implementation of functions                                               *
 *****************************************************************************/
-
-
 __COMPILE_INLINE__ int32_t encode_longtitude(float x)
 {
     int32_t r;
@@ -55,9 +53,6 @@ __COMPILE_INLINE__ float decode_longtitude(uint32_t x)
 
 #define encode_latitude(x) encode_longtitude(x) 
 #define decode_latitude(x) decode_longtitude(x) 
-
-#define encode_accuracy(x) encode_longtitude(x) 
-#define decode_accuracy(x) decode_longtitude(x) 
 
 __COMPILE_INLINE__ uint16_t encode_elevation(float x)
 {
@@ -229,9 +224,8 @@ __COMPILE_INLINE__ uint16_t decode_itiscode(itis_codes_t typeEvent, itis_codes_t
         itiscode_2_rsa_mask(r, &rsa_mask);    
     }
     return rsa_mask;
+
 }
-
-
 
 int rcp_mda_process(uint8_t msg_hops, 
                       uint8_t msg_count,
@@ -295,7 +289,8 @@ int rcp_parse_bsm(vam_envar_t *p_vam,
         p_sta->s.pos.lon = decode_longtitude(p_bsm->position.lon);
         p_sta->s.pos.lat = decode_latitude(p_bsm->position.lat);
         p_sta->s.pos.elev = decode_elevation(p_bsm->position.elev);
-        p_sta->s.pos.accu = decode_accuracy(p_bsm->position.accu);
+        //p_sta->s.pos.accu = decode_accuracy(p_bsm->position.accu);
+        //decode_accuracy(&(p_sta->s.pos.accu), &(p_bsm->position.accu));
 
         p_sta->s.dir = decode_heading(p_bsm->motion.heading);
         p_sta->s.speed = decode_speed(p_bsm->motion.speed);
@@ -502,7 +497,8 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     p_bsm->position.lon = encode_longtitude(p_local->pos.lon);
     p_bsm->position.lat = encode_latitude(p_local->pos.lat);
     p_bsm->position.elev = encode_elevation(p_local->pos.elev);
-    p_bsm->position.accu = encode_accuracy(p_local->pos.accu);
+    //p_bsm->position.accu = encode_accuracy(p_local->pos.accu);
+    //encode_accuracy(&(p_bsm->position.accu), &(p_local->pos.accu));
 
     p_bsm->motion.heading = encode_heading(p_local->dir);
     p_bsm->motion.speed = encode_speed(p_local->speed);
@@ -641,7 +637,6 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     if (ret) {
         osal_printf("wnet_send failed line%d", __LINE__);
     }
-
     return ret;
 }
 
@@ -760,7 +755,8 @@ void timer_test_bsm_rx_callback(void* parameter)
     p_bsm->position.lon = encode_longtitude(p_local->pos.lon);
     p_bsm->position.lat = encode_latitude(p_local->pos.lat);
     p_bsm->position.elev = encode_elevation(p_local->pos.elev);
-    p_bsm->position.accu = encode_accuracy(p_local->pos.accu);
+    //p_bsm->position.accu = encode_accuracy(p_local->pos.accu);
+    //encode_accuracy(&(p_bsm->position.accu), &(p_local->pos.accu));
 
     p_bsm->motion.heading = encode_heading(p_local->dir);
     p_bsm->motion.speed = encode_speed(p_local->speed);

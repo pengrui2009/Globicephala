@@ -205,6 +205,27 @@ void  vsa_set_period(vsa_info_t* vsa_node,vam_stastatus_t* remote)
 }
 
 
+uint32_t peer_count = 0;
+int8_t vsa_position_get(uint8_t *pid,vsa_info_t *p_vsa_position)
+{
+    int8_t i = 0;
+    int8_t ret = -1;
+    vsa_position_node_t *p_pnt = NULL;
+    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
+
+    for (i = 0;i < peer_count;i++) {
+        p_pnt = &p_vsa->position_node[i];
+        if (memcmp(p_pnt->vsa_position.pid, pid, RCP_TEMP_ID_LEN)==0) {
+            memcpy(p_vsa_position,&p_pnt->vsa_position,sizeof(vsa_info_t));
+            ret = 0;
+            break;
+        }
+    }
+
+    return ret;
+}
+
+
 /*****************************************************************************
  @funcname: vsa_preprocess_pos
  @brief   : process  information of points in the neighbour list in a period
@@ -262,7 +283,7 @@ int32_t  vsa_preprocess_pos(void)
                 p_pnt->vsa_position.safe_distance = vsa_safe_distance(p_pnt->vsa_position.linear_distance,local_status,remote_status);
                     
                 p_pnt->vsa_position.dir = remote_status.dir;
-
+                p_pnt->vsa_position.relative_dir = vsm_get_relative_dir(&local_status,&remote_status);
                 p_pnt->vsa_position.flag_dir = vam_get_peer_relative_dir(&local_status,&remote_status);
 
                 vsa_set_period(&(p_pnt->vsa_position),&remote_status);

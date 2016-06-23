@@ -36,27 +36,21 @@
 #define EHM_SRC_V2X		0
 #define EHM_SRC_HOST	1
 
-#define EHM_BUF_NUM      5
 
-#define EHM_BUF_HEAD_RESERVA_LEN       (MSG_VEHICLE_ALERT_ST_LEN)   //according to uart  
+/* Reserved data head and tail in uart format. */
+#define EHM_BUF_HEAD_RESERVED_LEN       (UART_MSG_HEADER_ST_LEN) 
+#define EHM_BUF_TAIL_RESERED_LEN        2
 
-#define EHM_BUF_TRAIL_RESERVA_LEN       5   //according to uart 
-
-#define EHM_BUF_NODE_INFO_LEN   (EHM_TX_LEN-EHM_BUF_HEAD_RESERVA_LEN-EHM_BUF_TRAIL_RESERVA_LEN)
-
-#define EHM_BUF_SUMMARY_NODE_NUM   (EHM_BUF_NODE_INFO_LEN/NODE_SUMMARY_INFOR_ST_LEN)
-
-#define EHM_BUF_DETAIL_NODE_NUM   (EHM_BUF_NODE_INFO_LEN/NODE_DETAIL_INFOR_ST_LEN)
-#define EHM_BUF_DETAIL_NODE_SUMMARY_NUM   (((EHM_BUF_NODE_INFO_LEN-NODE_DETAIL_INFOR_ST_LEN)/NODE_SUMMARY_INFOR_ST_LEN)+1)
+/* Valid data in buffer. */
+#define EHM_BUF_VALID_DATA_LEN          (EHM_TX_LEN - EHM_BUF_HEAD_RESERVED_LEN - EHM_BUF_TAIL_RESERED_LEN)
 
 
 
-#define EHM_TXBUF_DATA_PTR(txbuf)  (txbuf->data_ptr)
-#define EHM_TXBUF_INFO_PTR(txbuf)  (&(txbuf->info))
-
-#define EHM_RXBUF_DATA_PTR(rxbuf)  (rxbuf->data_ptr)
-#define EHM_RXBUF_INFO_PTR(rxbuf)  (&(rxbuf->info))
 #define ANGLE(g) ((g)/PI*180.0f) 
+
+
+
+
 
 
 /************************** ehm param *********************/
@@ -104,13 +98,6 @@ typedef enum _V2X_MSG_TYPE {
 	V2X_NB_VEHICLE_ALERT,
 	V2X_ROADSIZE_ALERT,
 }V2X_MSG_TYPE_E;
-/* ehm param config */
-typedef struct _ehm_config {
-
-    NODE_TYPE_E report_node_type;
-    NODE_INFOR_TYPE_E node_info_type;
-    
-} ehm_config_t;
 
 /************************** ehm param *********************/
 
@@ -128,16 +115,13 @@ typedef struct _ehm_txinfo {
 
 
 /* ehm module txbuf strtct follow by wnet module */
-typedef struct _ehm_txbuf {
-    /**
-     * DO NOT MODIFY IT
-     */
+typedef struct _ehm_txbuf 
+{
+    /* Caution: Do not modify it.*/
     list_head_t list;
-
     ehm_txinfo_t info;
-    /**
-     * END
-     */
+    /* END */
+    
     uint32_t flag;   /* buffer's status */
     
     uint8_t *data_ptr;
@@ -145,6 +129,7 @@ typedef struct _ehm_txbuf {
 
     uint8_t buffer[EHM_TX_LEN];
 }ehm_txbuf_t;
+
 
 /* ehm module rxbuf strtct follow by wnet module */
 typedef struct _ehm_rxinfo {
@@ -175,17 +160,25 @@ typedef struct _ehm_rxbuf {
     uint8_t buffer[EHM_RX_LEN];
 }ehm_rxbuf_t;
 
-typedef struct _comport_config{
-	uint8_t		verify;			//校验方式
-	uint8_t		ndata;			//数据位位数
-	uint8_t		nstop;			//停止位位数
-	uint8_t		timeout;		//超时时间（单位100ms，为0时永久阻塞，0xff不阻塞）
-	uint32_t	baud;			//波特率
-	uint8_t		rtscts;			//是否使用rtscts流控信号线
-} comport_config_t;
 
-typedef struct _ehm_envar {
 
+
+#define EHM_BUF_NUM      5
+
+
+/* ehm param config structure. */
+typedef struct _ehm_config 
+{
+    NODE_TYPE_E     report_node_type;
+    NODE_INFOR_TYPE_E node_info_type;
+    
+} ehm_config_t;
+
+
+
+
+typedef struct _ehm_envar 
+{
     ehm_config_t *working_param;
 
     
@@ -198,24 +191,42 @@ typedef struct _ehm_envar {
     osal_sem_t       * sem_ehm_rx;
     osal_task_t     * task_ehm_rx;
 
-    
+
+    /* Tx and Rx data buffer list.*/
     list_head_t    txbuf_free_list;
     list_head_t txbuf_waiting_list;
     
     list_head_t    rxbuf_free_list;
     list_head_t rxbuf_waiting_list;
 
-
+    /* Tx and Rx data buffer storage. */
     ehm_txbuf_t txbuf[EHM_BUF_NUM];
     ehm_rxbuf_t rxbuf[EHM_BUF_NUM];
 
-}ehm_envar_t;
+}ehm_envar_t, *ehm_envar_t_ptr;
 
 
 
 void ehm_init(void);
 int inform_ehm_caculate_done(void);
 ehm_txbuf_t *ehm_get_txbuf(void);
+
+
+
+
+typedef struct _comport_config{
+	uint8_t		verify;			//校验方式
+	uint8_t		ndata;			//数据位位数
+	uint8_t		nstop;			//停止位位数
+	uint8_t		timeout;		//超时时间（单位100ms，为0时永久阻塞，0xff不阻塞）
+	uint32_t	baud;			//波特率
+	uint8_t		rtscts;			//是否使用rtscts流控信号线
+} comport_config_t;
+
+
+
+
+
 
 
 #endif

@@ -128,7 +128,7 @@ void lip_update_local(t_nmea_rmc *p_rmc, float *p_accu)
     }
 
     if (p_accu){
-        p_vam->local.pos.accu = *p_accu;
+    //    p_vam->local.pos.accu = *p_accu;
     }
 }
 

@@ -302,7 +302,7 @@ int32_t vam_get_peer_relative_speed(uint8_t *pid)
     return 0;
 }
 
-int32_t vam_get_peer_absolute_speed(uint8_t *pid)
+float vam_get_peer_absolute_speed(uint8_t *pid)
 {
     vam_envar_t *p_vam = p_vam_envar;
     vam_sta_node_t *p_sta = NULL;
@@ -318,6 +318,10 @@ int32_t vam_get_peer_absolute_speed(uint8_t *pid)
             memcpy(&sta, &p_sta->s, sizeof(vam_stastatus_t));
             break;
         }
+	else
+	{	
+            sta.speed = 0;
+	}
 	}
     osal_sem_release(p_vam->sem_sta);
     

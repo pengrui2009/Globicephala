@@ -18,6 +18,7 @@
 #include "nmea.h"
 #include "cv_rcp.h"
 
+#include "app_msg_format.h"
 #define VAM_ABS(x)                    (x < 0) ? (-x) : x
 
 /*****************************************************************************
@@ -103,12 +104,22 @@ enum VAM_EVT{
 /*****************************************************************************
  * definition of struct                                                      *
 *****************************************************************************/
+typedef struct _vam_position_accu
+{
+    /* Position accuracy from GPGST command.  */
+    float        semi_major_accu;
+    float        semi_minor_accu;
+    float 		 semi_major_orientation;
+
+}__COMPILE_PACK__ vam_position_accu;
 
 typedef struct _vam_position{
     float lat;
     float lon ;
     float elev;
-    float accu;
+
+    /* Position accuracy. */
+    vam_position_accu accu;
 }vam_position_t;
 
 typedef float vam_dir_t ;
@@ -122,17 +133,46 @@ typedef struct _vam_acce{
 }vam_acce_t;
 
 
-typedef struct _vam_stastatus{
+typedef struct _vam_stastatus
+{
     uint8_t pid[RCP_TEMP_ID_LEN];  //temporary ID
+
     uint16_t timestamp;
+
     vam_position_t  pos ;
-    float  dir;
-    float  speed;
-    vam_acce_t  acce;
+
+    float          dir;	//¶È
+    float        speed;	//km/h
+    vam_acce_t    acce;
+
+    /* Transmission status. */
+    uint8_t		   tran_state;
+
+    /* Steering wheel angle. */
+    float	steer_wheel_angle;
+
+    /* Brake system status. */
+    brake_system_status_st    braksta;
+
+    /* Exterior lights status. */
+    exterior_lights_st exterior_light; 
+
+
+    /* Vehicle type. */
+    uint8_t       vec_type;
+    
+    /* Vehicle size unit: m. */
+    float	 vehicle_width;
+    float   vehicle_length;
+
+
+
     uint16_t alert_mask;  //bit0-VBD, bit1-EBD;  1-active, 0-cancel; Í¬evamÖÐalert_mask
+
     uint32_t time;  /* This location point corresponding time */     
+
     uint8_t  cnt;
-}vam_stastatus_t;
+}__COMPILE_PACK__ vam_stastatus_t;
 
 typedef struct _vam_sta_node{
     /* !!!DON'T modify it!!! */
@@ -213,7 +253,6 @@ typedef struct _vam_envar{
     osal_sem_t *sem_sta;
 
 }vam_envar_t;
-
 
 typedef struct _vam_rsa_evt_info {
     uint16_t rsa_mask;

@@ -52,6 +52,54 @@ enum VSA_TARGET_LOCATION{
     LEFT
 };
 
+typedef struct _adpcm{
+
+    uint32_t addr;
+    uint32_t size;
+    uint8_t  channel;
+    uint8_t  cmd;
+
+}adpcm_t;
+
+/* Vehicle heading slice definition. */
+typedef enum _vehicle_heading_slice
+{
+    SLICEx_NO_HEADING = 0,
+    SLICEx_ALL_HEADING,
+
+    SLICE0_000_0T022_5,  /* 22.5 degree starting from North and moving Eastward. */
+    SLICE1_022_5T045_0,
+    SLICE2_045_0T067_5,
+    SLICE3_067_5T090_0,
+
+    SLICE4_090_0T112_5,
+    SLICE5_112_5T135_0,
+    SLICE6_135_0T157_5,
+    SLICE7_157_5T180_0,
+
+    SLICE8_180_0T202_5,
+    SLICE9_202_5T225_0,
+    SLICE10_225_0T247_5,
+    SLICE11_247_5T270_0,
+
+    SLICE12_270_0T292_5,
+    SLICE13_292_5T315_0,
+    SLICE14_315_0T337_5,
+    SLICE15_337_5T360_0
+
+}vehicle_heading_slice;
+
+
+#define DEGREE_PER_HEADING_SLICE    ((float)22.5)
+
+
+
+
+
+
+
+
+
 typedef struct _vsa_info{
 
     uint8_t pid[RCP_TEMP_ID_LEN];
@@ -63,7 +111,8 @@ typedef struct _vsa_info{
     float remote_speed;
 
     float relative_speed;
-
+    float relative_dir;
+    
     uint32_t v_offset;
 
     uint32_t h_offset;
@@ -131,24 +180,37 @@ typedef struct _vsa_envar{
 
     uint32_t gps_status;
 
+    /* Vsa functionality switch definition. */
     uint32_t alert_mask;
+
+
     uint32_t alert_pend;
+
+    /* add by wangliang */
+    uint32_t alert_num;
 
     vam_stastatus_t local;
     vam_stastatus_t remote;
 
-	/*List head*/	
+    adpcm_t adpcm_data;
+
+    /*List head*/
     list_head_t crd_list;
     list_head_t position_list;
-    vsa_position_node_t position_node[VAM_NEIGHBOUR_MAXNUM];    
+
+    vsa_position_node_t position_node[VAM_NEIGHBOUR_MAXNUM];
+
 
     /* os related */
     osal_task_t  *task_vsa_l;
     osal_task_t  *task_vsa_r;
 
-    osal_sem_t   *sem_vsa_proc;
+    osal_sem_t * sem_vsa_proc;
+    osal_sem_t * sem_alert_list;
     
     osal_queue_t *queue_vsa;
+
+    osal_queue_t *queue_voc;
 
     osal_timer_t *timer_ebd_send;
 
@@ -162,6 +224,14 @@ typedef struct _vsa_crd_node{
 
     uint8_t pid[RCP_TEMP_ID_LEN];  //temporary ID
 
+    /*add by wangliang alarm node brief infor*/
+    int16_t v_offset;
+
+    int16_t h_offset;
+
+    uint32_t alert_flag;
+    /*add by wangliang*/
+    
     /* ccw_id = 1(VSA_ID_CRD) is cfcw,ccw_id = 2(VSA_ID_CRD_REAR) is crcw.*/
     uint8_t ccw_id;
 
