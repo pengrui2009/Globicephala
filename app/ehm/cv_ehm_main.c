@@ -203,7 +203,7 @@ float decode_longitude(int32_t longitude)
 
     /* unit 0.1 micro degree. */
     longitude = cv_ntohl(longitude);
-    result = (float)((float)latitude / (float)10000000);
+    result = (float)((float)longitude / (float)10000000);
     if(result != 180.0000001)
     {
         result = (180.0000000 < result)? 180.0000000 : result;
@@ -294,7 +294,7 @@ uint16_t encode_vehicle_width(float width)
     uint16_t result = 0;
 
     
-	result = (uint16_t)(witdh * 100);
+	result = (uint16_t)(width * 100);
     result = cv_ntohs(result);
 
     return result;
@@ -365,7 +365,7 @@ float decode_velocity(int16_t velocity)
     float result = 0;
 
     velocity = cv_ntohs(velocity);
-    float = (float)velocity * 0.02;
+    result = (float)velocity * 0.02;
     return result;
 }
 
@@ -537,7 +537,7 @@ int inform_ehm_caculate_done(void)
 
     if (p_ehm->queue_ehm_main) 
     {
-        ehm_add_event_queue(p_ehm, EHM_MSG_VSA_ANALY_DONE, 0, NULL, NULL);
+        ehm_add_event_queue(p_ehm, EHM_MSG_VSA_ANALY_DONE, 0, 0, NULL);
     }
     return 0;
 }
@@ -562,7 +562,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_t * p_ehm, vam_envar_t *p_v
     nb_node_summary_infor_st_ptr node_summary_ptr = NULL;
 
     vam_sta_node_t *p_sta = NULL;
-    vsa_info_t vsa_position = { 0 };
+    vsa_info_t vsa_position = { { 0 }, 0 };
 
     vsa_crd_node_t *p_alert_node = NULL;
 
@@ -631,11 +631,11 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_t * p_ehm, vam_envar_t *p_v
             }
                
             node_summary_ptr->longitudinal_dis = cv_ntohs(node_summary_ptr->longitudinal_dis);
-            node_summary_ptr->latitudinal_dis = cv_ntohs(node_summary_ptr->latitudinal_dis);
+            node_summary_ptr->lateral_dis = cv_ntohs(node_summary_ptr->lateral_dis);
         }
         else 
         {
-            node_summary_ptr->latitudinal_dis = 0;
+            node_summary_ptr->lateral_dis = 0;
             node_summary_ptr->longitudinal_dis = 0;
         }
 
@@ -710,9 +710,6 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_t * p_ehm, vam_envar_t *p_va
     nb_node_detail_infor_st_ptr   node_detail_ptr = NULL;
 
     vam_sta_node_t *p_sta = NULL;
-    vsa_info_t vsa_position = { 0 };
-
-    vsa_crd_node_t *p_alert_node = NULL;
 
 
     /* Get tx buffer from ehm tx buffer list. */
@@ -790,16 +787,16 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_t * p_ehm, vam_envar_t *p_va
         node_detail_ptr->brake.auxbrakes = 0;
 
         /* external light. */
-        node_detail_ptr->exterlight.bit.lowbeamheadlight = 0;
-        node_detail_ptr->exterlight.bit.highbeamheadlight = 0;
-        node_detail_ptr->exterlight.bit.liftturnsignallight = 0;
-        node_detail_ptr->exterlight.bit.rightturnsignallight = 0;
-        node_detail_ptr->exterlight.bit.hazardsignallight = 0;
-        node_detail_ptr->exterlight.bit.automaticlight = 0;
-        node_detail_ptr->exterlight.bit.daytimerunninglight = 0;
-        node_detail_ptr->exterlight.bit.foglighton = 0;
-        node_detail_ptr->exterlight.bit.parkinglight = 0;
-        node_detail_ptr->exterlight.bit.reserved = 0;
+        node_detail_ptr->exterlight.lowbeamheadlight = 0;
+        node_detail_ptr->exterlight.highbeamheadlight = 0;
+        node_detail_ptr->exterlight.leftturnsignallight = 0;
+        node_detail_ptr->exterlight.rightturnsignallight = 0;
+        node_detail_ptr->exterlight.hazardsignallight = 0;
+        node_detail_ptr->exterlight.automaticlight = 0;
+        node_detail_ptr->exterlight.daytimerunninglight = 0;
+        node_detail_ptr->exterlight.foglighton = 0;
+        node_detail_ptr->exterlight.parkinglight = 0;
+        node_detail_ptr->exterlight.reserved = 0;
 
         
         /* Update data length and node number. */
@@ -840,7 +837,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_t * p_ehm)
         
     frame_msg_header_st_ptr       msg_head_ptr = NULL;
     msg_vehicle_basic_status_st_ptr status_ptr = NULL;
-    vam_stastatus_t               local_status = { 0 };
+    vam_stastatus_t               local_status = { { 0 }, 0 };
     
 
     /* Get tx buffer from ehm tx buffer list. */
@@ -912,7 +909,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_t * p_ehm)
 int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
 {
 	int ret;
-	vam_stastatus_t                      local = { 0 };
+	vam_stastatus_t                      local = { { 0 }, 0 };
 	msg_vehicle_basic_status_st_ptr status_ptr = (msg_vehicle_basic_status_st_ptr)pdata;
 
 
@@ -924,7 +921,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
 
     /* position. */
 	local.pos.lat =  decode_latitude(status_ptr->position.latitude);
-	local.pos.lon =  decode_longtitude(status_ptr->position.longitude);
+	local.pos.lon =  decode_longitude(status_ptr->position.longitude);
 	local.pos.elev = decode_elevation(status_ptr->position.elevation);
 
     /* position accuracy. */
@@ -967,7 +964,7 @@ err:
 int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
 {
 	int ret;
-	vam_stastatus_t                      local = { 0 };
+	vam_stastatus_t                      local = { { 0 }, 0 };
 	msg_vehicle_full_status_st_ptr  status_ptr = (msg_vehicle_full_status_st_ptr)pdata;
 
 
@@ -979,7 +976,7 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
 
     /* position. */
 	local.pos.lat =  decode_latitude(status_ptr->position.latitude);
-	local.pos.lon =  decode_longtitude(status_ptr->position.longitude);
+	local.pos.lon =  decode_longitude(status_ptr->position.longitude);
 	local.pos.elev = decode_elevation(status_ptr->position.elevation);
 
     /* position accuracy. */
@@ -1030,7 +1027,7 @@ err:
 int decode_vehicle_static_infor(uint8_t *pdata, uint16_t len)
 {
     int ret;
-	vam_stastatus_t                      local = { 0 };
+	vam_stastatus_t                      local = { { 0 }, 0 };
 	msg_vehicle_static_info_st_ptr  status_ptr = (msg_vehicle_static_info_st_ptr)pdata;
 
 
@@ -1058,11 +1055,12 @@ err:
 	return ret;
 }
 
+#if 0
 /* Decode message: local vehicle alert set. */
 int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 {
     int ret;
-	vam_stastatus_t                      local = { 0 };
+	vam_stastatus_t                      local = { { 0 }, 0 };
 	msg_local_vehicle_alert_st_ptr  status_ptr = (msg_local_vehicle_alert_st_ptr)pdata;
 
 
@@ -1086,6 +1084,7 @@ int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 err:
 	return ret;
 }
+#endif
 
 #if 0
 /*****************************************************************************
@@ -1195,7 +1194,9 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_t * p_ehm, vam_envar_t *p_vam, v
     nb_node_summary_infor_st_ptr node_summary_ptr = NULL;
 
     vam_sta_node_t *p_sta = NULL;
-    vsa_info_t vsa_position = { 0 };
+    vsa_info_t vsa_position = { { 0 }, 0 };
+    uint16_t nodenumber = 0;
+
 
     vsa_crd_node_t *p_alert_node = NULL;
 
@@ -1217,7 +1218,7 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_t * p_ehm, vam_envar_t *p_vam, v
     msg_head_ptr->type = MSGTYPE_V2X_APPLY;
 
     /* Initial message body 1. */
-    nb_node_ptr = (msg_vehicle_nb_status_st_ptr)(txbuf->data_ptr + FRAME_MSG_HEADER_ST_LEN);
+    nb_node_ptr = (msg_nb_vehicle_alert_st_ptr)(txbuf->data_ptr + FRAME_MSG_HEADER_ST_LEN);
     nb_node_ptr->msg_id = MSGID_NBVEHICLE_ALERT;
     nb_node_ptr->system_time = cv_ntohl(osal_get_systemtime());
 
@@ -1262,11 +1263,11 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_t * p_ehm, vam_envar_t *p_vam, v
             }
                
             node_summary_ptr->longitudinal_dis = cv_ntohs(node_summary_ptr->longitudinal_dis);
-            node_summary_ptr->latitudinal_dis = cv_ntohs(node_summary_ptr->latitudinal_dis);
+            node_summary_ptr->lateral_dis = cv_ntohs(node_summary_ptr->lateral_dis);
         }
         else 
         {
-            node_summary_ptr->latitudinal_dis = 0;
+            node_summary_ptr->lateral_dis = 0;
             node_summary_ptr->longitudinal_dis = 0;
         }
 
@@ -1302,12 +1303,11 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_t * p_ehm, vam_envar_t *p_vam, v
         
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_SUMMARY_INFOR_ST_LEN;
-        nb_node_ptr->nodenumber ++;
         
         node_summary_ptr ++;
 
         /* Stop the loop when no enough room for node infor. */
-        if((EHM_BUF_VALID_DATA_LEN / NB_NODE_SUMMARY_INFOR_ST_LEN) <= nb_node_ptr->nodenumber)
+        if((EHM_BUF_VALID_DATA_LEN / NB_NODE_SUMMARY_INFOR_ST_LEN) <= nodenumber)
         {
             break;
         }
@@ -1337,8 +1337,7 @@ void ehm_rx_handle_complete(ehm_envar_t * p_ehm)
 {
 	ehm_rxbuf_t *rxbuf = NULL;
 	list_head_t *p_rxbuf_waiting_list = &p_ehm->rxbuf_waiting_list;
-
-	//osal_enter_critical();
+    
 
 	if (!list_empty(p_rxbuf_waiting_list))
 	{
@@ -1359,7 +1358,9 @@ void ehm_rx_handle_complete(ehm_envar_t * p_ehm)
 static int msg_check_sum(uint8_t *buf,uint16_t len)
 {
 	uint16_t chksum = 0x0;
-	uint16_t *chk;
+	uint16_t chk = 0x00;
+
+    
 	while(len--)
 	{
 		chksum += *buf;
@@ -1436,16 +1437,16 @@ int ehm_prase_v2x(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo, uint8_t *pdata, uin
 	switch(v2x_id)
 	{
 	case V2X_BASIC_VEHICLE_STATUS:
-		ehm_v2x_basic_vehicle_notice(p_ehm, rxinfo, pdata, len);
+		//ehm_v2x_basic_vehicle_notice(p_ehm, rxinfo, pdata, len);
 		break;
 	case V2X_FULL_VEHICLE_STATUS:
-		ehm_v2x_full_vehicle_notice(p_ehm, rxinfo, pdata, len);
+		//ehm_v2x_full_vehicle_notice(p_ehm, rxinfo, pdata, len);
 		break;
 	case V2X_VEHICLE_STATIC_INFO:
-		ehm_v2x_static_vehicle_notice(p_ehm, rxinfo,pdata, len);
+		//ehm_v2x_static_vehicle_notice(p_ehm, rxinfo,pdata, len);
 		break;
 	case V2X_LC_VEHICLE_ALERT_SET:
-		ehm_v2x_alert_vehicle_notice(p_ehm, rxinfo, pdata, len);
+		//ehm_v2x_alert_vehicle_notice(p_ehm, rxinfo, pdata, len);
 		break;
 	}
 	return 0;
@@ -1465,11 +1466,11 @@ int ehm_prase_v2x(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo, uint8_t *pdata, uin
 int ehm_parse_frame(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo, uint8_t *pdata,uint16_t len)
 {
 	int ret = 0;
-	msg_header_st *msg_header;
-	msg_header = (msg_header_st *)pdata;
+	frame_msg_header_st_ptr msg_header = (frame_msg_header_st_ptr)pdata;
 
-	len += MSG_HEADER_ST_LEN;
-	pdata += MSG_HEADER_ST_LEN;
+
+	len += FRAME_MSG_HEADER_ST_LEN;
+	pdata += FRAME_MSG_HEADER_ST_LEN;
 	if((msg_header->mark == MSG_HEADER_MARK) && (msg_header->src == MSG_SRC_HOST))
 	{
 		switch(msg_header->type)
@@ -1529,7 +1530,7 @@ void ehm_parse_msg(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo,uint8_t *pdata,uint
 					len = len - MSG_CHK_LEN;
 					if(msg_check_sum(pdata, len) == 0)
 					{
-						ret = ehm_parse_frame(p_ehm, pdata, rxinfo,len);
+						ret = ehm_parse_frame(p_ehm, rxinfo, pdata, len);
 						if(ret < 0)
 						{
 							goto err;
@@ -1558,14 +1559,13 @@ void ehm_rx_handle(ehm_envar_t * p_ehm)
 	ehm_rxbuf_t * rxbuf;
 	int recv_next = 0;
 	p_rxbuf_waiting_list = (list_head_t *)&p_ehm->rxbuf_waiting_list;
-	//    osal_enter_critical();
 
 	if (!list_empty(p_rxbuf_waiting_list))
 	{
 		rxbuf = list_first_entry(p_rxbuf_waiting_list, ehm_rxbuf_t, list);
 		recv_next = 1;
 	}
-	//    osal_leave_critical();
+
 
 	if (recv_next)
 	{
@@ -1591,7 +1591,7 @@ void ehm_main_proc(ehm_envar_t * p_ehm, sys_msg_t *p_msg)
         {
             if ((p_work_param->report_node_type == ALERT_NODE)) 
             {
-                alert_node_report(p_ehm);  
+                //alert_node_report(p_ehm);  
             }
             
             else if (p_work_param->report_node_type == ALL_NODE) 
@@ -1603,7 +1603,7 @@ void ehm_main_proc(ehm_envar_t * p_ehm, sys_msg_t *p_msg)
 
                 if (p_work_param->node_info_type ==DETAIL_INFO) 
                 {
-                    detail_node_report(p_ehm);
+                    //detail_node_report(p_ehm);
                 }
             }
             
@@ -1630,7 +1630,7 @@ void ehm_main_proc(ehm_envar_t * p_ehm, sys_msg_t *p_msg)
  @param   : void *param  
  @return  : 
 *****************************************************************************/
-void ehm_main_thread_entry(void *param)
+void * ehm_main_thread_entry(void *param)
 {
     ehm_envar_t *p_ehm = param;
     osal_status_t err;
@@ -1651,6 +1651,8 @@ void ehm_main_thread_entry(void *param)
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: osal_queue_recv error [%d]\n", __FUNCTION__, err);            
         }
     }
+
+    return NULL;
 }
 
 
@@ -1664,16 +1666,12 @@ void ehm_tx_complete(ehm_envar_t *p_ehm)
 {
     ehm_txbuf_t *txbuf = NULL;
 
-
-    osal_enter_critical();
     
     if (!list_empty(&(p_ehm->txbuf_waiting_list))) 
     {
         txbuf = list_first_entry(&(p_ehm->txbuf_waiting_list), ehm_txbuf_t, list);
         list_move_tail(&txbuf->list, &p_ehm->txbuf_free_list);
     }		
-    
-    osal_leave_critical();
 }
 
 
@@ -1707,10 +1705,10 @@ static int ehm_package_send(ehm_envar_t * p_ehm, ehm_txinfo_t* tx_info, uint8_t 
     uart_ptr->length = cv_ntohs(length + SIZEOF_MSG_CHK_DOMAIN);
 
     /* send data to periph */  
-    result = comport_send(uart_ptr, cv_ntohs(uart_ptr->length) + UART_MSG_HEADER_ST_LEN);
+  //  result = comport_send(uart_ptr, cv_ntohs(uart_ptr->length) + UART_MSG_HEADER_ST_LEN);
     if(result < 0)
     {
-    	osal_printf("comport_send error ret=%d\n",ret);
+    	osal_printf("comport_send error ret=%d\n", result);
     }
     
     return result;
@@ -1734,7 +1732,7 @@ static int ehm_package_send(ehm_envar_t * p_ehm, ehm_txinfo_t* tx_info, uint8_t 
  @param   : ehm_envar_t * p_ehm
  @return  : none
 *****************************************************************************/
-void ehm_tx_thread_entry(ehm_envar_t *p_ehm)
+void * ehm_tx_thread_entry(ehm_envar_t *p_ehm)
 {
     int                 err = 0;
     ehm_txbuf_t * txbuf_ptr = NULL;
@@ -1745,11 +1743,18 @@ void ehm_tx_thread_entry(ehm_envar_t *p_ehm)
 
     while(1)
     {
+
+
+
+        encode_nb_node_summary_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+        encode_nb_node_detail_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+        encode_basic_vehicle_status(p_ehm);
+        encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+
+    
         err = osal_sem_take(p_ehm->sem_ehm_tx, OSAL_WAITING_FOREVER);
         if (err == OSAL_STATUS_SUCCESS)
         {
-            osal_enter_critical();
-            
             if (!list_empty(&(p_ehm->txbuf_waiting_list))) 
             {
                 txbuf_ptr = list_first_entry(&(p_ehm->txbuf_waiting_list), ehm_txbuf_t, list);
@@ -1758,8 +1763,6 @@ void ehm_tx_thread_entry(ehm_envar_t *p_ehm)
             {
                 txbuf_ptr = NULL;
             }
-            
-            osal_leave_critical();
 
             /* Send tx_buffer data when data valid. */
             if (txbuf_ptr != NULL) 
@@ -1779,6 +1782,8 @@ void ehm_tx_thread_entry(ehm_envar_t *p_ehm)
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "Thread %s: Failed to take semaphore(%d)\n", __FUNCTION__, err);
         }
     }
+    
+    return NULL;    
 }
 
 
@@ -1788,9 +1793,9 @@ void ehm_tx_thread_entry(ehm_envar_t *p_ehm)
  @param   : void *param
  @return  :	none
 *****************************************************************************/
-void ehm_rx_thread_entry(ehm_envar_t *p_ehm)
+void * ehm_rx_thread_entry(ehm_envar_t *p_ehm)
 {
-    int ret;
+    int ret = 0;
     ehm_rxbuf_t * rxbuf;
     ehm_rxinfo_t *p_node_info;
     list_head_t *p_rxbuf_waiting_list = &p_ehm->rxbuf_waiting_list;
@@ -1803,11 +1808,11 @@ void ehm_rx_thread_entry(ehm_envar_t *p_ehm)
     while(1)
     {
     	rxbuf = ehm_get_rxbuf();
-    	p_node_info = (ehm_rxinfo_t *)EHM_RXBUF_INFO_PTR(rxbuf);;
+    	p_node_info = (ehm_rxinfo_t *)(&(rxbuf->info));;
 
         
-    	ret = comport_recv(rxbuf->data_ptr, EHM_RX_LEN);
-    	if(ret >0)
+    	//ret = comport_recv(rxbuf->data_ptr, EHM_RX_LEN);
+    	if(ret > 0)
     	{
     		data_time = osal_get_systemtime();
     		p_node_info->data_systime = data_time;
@@ -1817,10 +1822,12 @@ void ehm_rx_thread_entry(ehm_envar_t *p_ehm)
             
     		if (p_ehm->queue_ehm_main) 
             {
-    			ehm_add_event_queue(p_ehm, EHM_MSG_VSA_ANALY_DATA, 0, NULL, NULL);
+    			ehm_add_event_queue(p_ehm, EHM_MSG_VSA_ANALY_DATA, 0, 0, NULL);
     		}
     	}
     }
+
+    return NULL;
 }
 
 
@@ -1838,7 +1845,7 @@ void ehm_init(ehm_envar_t *p_ehm)
 
 
     /* Open uart module. */
-    ret = comport_init();
+   // ret = comport_init();
     if(ret < 0)
     {
     	osal_printf("comport_init error\n");
@@ -1875,14 +1882,14 @@ void ehm_init(ehm_envar_t *p_ehm)
     p_ehm->sem_ehm_tx = osal_sem_create("sem-ehmtx", 0);
     osal_assert(p_ehm->sem_ehm_tx != NULL);
 
-    p_ehm->task_ehm_tx = osal_task_create("t-ehm-tx", ehm_tx_thread_entry,p_ehm, EHM_TX_THREAD_STACK_SIZE, EHM_TX_THREAD_PRIORITY);
+    p_ehm->task_ehm_tx = osal_task_create("t-ehm-tx", (void *(*)(void *))ehm_tx_thread_entry,p_ehm, EHM_TX_THREAD_STACK_SIZE, EHM_TX_THREAD_PRIORITY);
     osal_assert(p_ehm->task_ehm_tx != NULL);
 
     /* ehm module rx thread related. */
     p_ehm->sem_ehm_rx = osal_sem_create("sem-ehmrx", 0);
     osal_assert(p_ehm->sem_ehm_rx != NULL);
 
-    p_ehm->task_ehm_rx = osal_task_create("t-ehm-tx", ehm_rx_thread_entry,p_ehm, EHM_RX_THREAD_STACK_SIZE, EHM_RX_THREAD_PRIORITY);
+    p_ehm->task_ehm_rx = osal_task_create("t-ehm-tx", (void *(*)(void *))ehm_rx_thread_entry,p_ehm, EHM_RX_THREAD_STACK_SIZE, EHM_RX_THREAD_PRIORITY);
     osal_assert(p_ehm->task_ehm_tx != NULL);
 
 }

@@ -207,11 +207,11 @@ typedef struct _ehm_envar
 
 
 
-void ehm_init(void);
+extern void ehm_init(ehm_envar_t *p_ehm);
 int inform_ehm_caculate_done(void);
 ehm_txbuf_t *ehm_get_txbuf(void);
 
-
+extern ehm_rxbuf_t *ehm_get_rxbuf(void);
 
 
 typedef struct _comport_config{

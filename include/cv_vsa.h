@@ -251,6 +251,16 @@ typedef int (*vsa_app_handler)(vsa_envar_t *p_vsa, void *p_msg);
 /*****************************************************************************
  * declaration of global variables and functions                             *
 *****************************************************************************/
+
+
+
+extern int8_t vsa_position_get(uint8_t *pid,vsa_info_t *p_vsa_position);
+
+
+
+
+
+
 void vsa_start(void);
 
 osal_status_t vsa_add_event_queue(vsa_envar_t *p_vsa, 

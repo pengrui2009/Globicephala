@@ -316,6 +316,8 @@ int32_t vam_active_alert(uint16_t alert);
 int32_t vam_cancel_alert(uint16_t alert);
 void vam_gsnr_ebd_detected(uint8_t status);
 
+extern int32_t vam_set_local_status(vam_stastatus_t *local);
+
 int32_t vam_get_all_peer_pid(uint8_t pid[][RCP_TEMP_ID_LEN], uint32_t maxitem, uint32_t *actual);
 
 int32_t vam_get_local_status(vam_stastatus_t *local);

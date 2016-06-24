@@ -17,6 +17,7 @@ endif
 	SUBDIRS += $(TOPDIR)/drivers/vnet/simu
 	
 SUBDIRS += $(TOPDIR)/app/sys \
+    $(TOPDIR)/app/ehm \
     $(TOPDIR)/app/vam \
     $(TOPDIR)/app/wnet \
     $(TOPDIR)/app/vsa \

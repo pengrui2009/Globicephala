@@ -123,7 +123,6 @@ void timer_stat_callback(void* parameter)
 
 void wnet_init(void)
 {
-//    int i;
     int ret;
     ret = 0;
     wnet_envar_t *p_wnet;

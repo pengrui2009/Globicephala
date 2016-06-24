@@ -279,7 +279,7 @@ typedef struct _exterior_lights_st
 	/* 停车指示灯开启*/
 	uint16_t		parkinglight:1;
 	/* 雾灯开启*/
-	uint16_t		fogligthon:1;
+	uint16_t		foglighton:1;
 	/* 日间行车灯开启*/
 	uint16_t		daytimerunninglight:1;
 	/* 自动亮度调节开启*/
@@ -312,7 +312,7 @@ typedef struct _exterior_lights_st
 	/* 日间行车灯开启*/
 	uint16_t		daytimerunninglight:1;
 		/* 雾灯开启*/
-	uint16_t		fogligthon:1;    
+	uint16_t		foglighton:1;    
     /* 停车指示灯开启*/
 	uint16_t		parkinglight:1;
     /* reserved*/
@@ -451,7 +451,7 @@ typedef  struct  _uart_msg_header_st
 
 	/*帧长度: DATA + CHK */
 	uint16_t    length;
-}uart_msg_header_st,uart_msg_header_st_ptr;
+}uart_msg_header_st, *uart_msg_header_st_ptr;
 
 #define UART_MSG_HEADER_ST_LEN         (sizeof(uart_msg_header_st))
 
