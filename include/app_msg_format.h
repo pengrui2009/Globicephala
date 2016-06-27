@@ -482,33 +482,43 @@ typedef  struct  _uart_msg_header_st
 typedef  struct  _frame_msg_header_st
 {
 #ifndef __LITTLE_ENDIAN
+
 	/*消息标识符:	0xE*/
-	uint8_t	mark:4;//B1110[0xE]
+	uint8_t	mark:     4;
+
 	/*消息源：	0:v2x	1:host*/
-	uint8_t	src:1;//0: from v2x 1: from host
+	uint8_t	src:      1;
+    
 	/*预留字段：	0*/
-	uint8_t	reserved1:3;//B000[0x0]
+	uint8_t	reserved1:3;
 	
 	/*预留字段：	0*/
-	uint8_t	reserved2:4;//B000[0x0]
+	uint8_t	reserved2:4;
+    
 	/*消息类型:	0:预留 1:调试消息 2:系统管理消息 3:v2x应用消息 4:dsrc消息 5:gps消息 6:未定义*/
-	uint8_t	type:4;//0:reserved 1:debug 2:sys manager 3:v2x apply 4:dsrc 5:gps 6:undefine
+	uint8_t	type     :4;
+	
 #else
+
 	/*预留字段：	0*/
-	uint8_t	reserved1:3;//B000[0x0]
+	uint8_t	reserved1:3;
+
 	/*消息源：	0:v2x	1:host*/
-	uint8_t	src:1;//0: from v2x 1: from host
+	uint8_t	src:      1;
+    
 	/*消息标识符:	0xE*/
-	uint8_t	mark:4;//:B1110[0xE]
-	
+	uint8_t	mark:     4;
+    	
 	/*消息类型:	0:预留 1:调试消息 2:系统管理消息 3:v2x应用消息 4:dsrc消息 5:gps消息 6:未定义*/
-	uint8_t	type:4;//0:reserved 1:debug 2:sys manager 3:v2x apply 4:dsrc 5:gps
+	uint8_t	type:     4;
+    
 	/*预留字段：	0*/
-	uint8_t	reserved2:4;//B000[0x0]
+	uint8_t	reserved2:4;
+	
 #endif
 }frame_msg_header_st, *frame_msg_header_st_ptr;
 
-#define FRAME_MSG_HEADER_ST_LEN              		(sizeof(frame_msg_header_st))
+#define FRAME_MSG_HEADER_ST_LEN    (sizeof(frame_msg_header_st))
 
 #define MSG_HEADER_MARK						0xE
 #define MSG_SRC_V2X							0x0
@@ -542,18 +552,23 @@ typedef struct  _msg_vehicle_nb_status_st
 typedef struct _msg_basic_status_st
 {
     /* Message id. */
-    uint8_t                  msg_id;
+    uint8_t              msg_id;
 
 	/* 节点ID:(0,0,0,0)-invalid id */
-	uint8_t       			node_id[4];
+	uint8_t          node_id[4];
+    
 	/*3D位置*/
-	position_3d_st 			position;
+	position_3d_st 	   position;
+    
 	/* 位置精确度 */
-	position_accu_st		posaccu;//位置精确度
+	position_accu_st	posaccu;
+    
 	/* 速度: unit 0.02 m/s, (0 - 8191), 8191 means invalid. */
-	uint16_t				velocity;//速度
+	uint16_t		   velocity;
+	
 	/* 行驶方向: unit 0.0125 degree (相对正北顺时针夹角), (0 - 28800), 28800 means invalid. */
-	uint16_t				angle;//行驶方向
+	uint16_t			  angle;
+    
 }msg_vehicle_basic_status_st, *msg_vehicle_basic_status_st_ptr;
 
 #define MSG_VEHICLE_BASIC_STATUS_ST_LEN		(sizeof(msg_vehicle_basic_status_st))

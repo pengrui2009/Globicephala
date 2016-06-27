@@ -29,9 +29,18 @@
 *****************************************************************************/
 
 /* need add to global param  later*/
-ehm_config_t ehm_config = { ALL_NODE, DETAIL_INFO };
+ehm_config_st ehm_config = 
+{ 
+    UART_RECV_TYPE,
+        
+    { COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE },
+    
+    ALL_NODE, 
+    
+    DETAIL_INFO 
+};
 
-ehm_envar_t   ehm_envar = { &ehm_config, 0 };
+ehm_envar_st   ehm_envar = { &ehm_config, 0 };
 
 
 
@@ -497,7 +506,7 @@ __COMPILE_INLINE__ uint16_t decode_vehicle_alert_flag(uint32_t x)
  @param   : void    *msg_argv   
  @return  : 
 *****************************************************************************/
-int ehm_add_event_queue(ehm_envar_t *p_ehm, 
+int ehm_add_event_queue(ehm_envar_st *p_ehm, 
                              uint16_t msg_id, 
                              uint16_t msg_len, 
                              uint32_t msg_argc,
@@ -513,7 +522,7 @@ int ehm_add_event_queue(ehm_envar_t *p_ehm,
     p_msg->len = msg_len;
     p_msg->argc = msg_argc;
     p_msg->argv = msg_argv;
-    err = osal_queue_send(p_ehm->queue_ehm_main, p_msg, len, 0, OSAL_NO_WAIT);
+    err = osal_queue_send(p_ehm->queue_main, p_msg, len, 0, OSAL_NO_WAIT);
 
     if (err != OSAL_STATUS_SUCCESS) 
     {
@@ -523,27 +532,18 @@ int ehm_add_event_queue(ehm_envar_t *p_ehm,
 
     return err;
 }
-/*****************************************************************************
- @funcname: inform_ehm_caculate_done
- @brief   :
- @param   : none
- @return  :
-			0		- success
-			others 	- error
-*****************************************************************************/
-int inform_ehm_caculate_done(void)
-{
-    ehm_envar_t *p_ehm = &ehm_envar;
-
-    if (p_ehm->queue_ehm_main) 
-    {
-        ehm_add_event_queue(p_ehm, EHM_MSG_VSA_ANALY_DONE, 0, 0, NULL);
-    }
-    return 0;
-}
 
 
 /* Message group.----------------------------------------------------------- */
+
+
+void * ehm_get_txbuf(void)
+{
+    return NULL;
+}
+
+
+
 
 
 /*****************************************************************************
@@ -553,7 +553,7 @@ int inform_ehm_caculate_done(void)
  @param   : 
  @return  :
 *****************************************************************************/
-static int8_t encode_nb_node_summary_infor(ehm_envar_t * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
+static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
 {
     ehm_txbuf_t * txbuf;
         
@@ -684,11 +684,6 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_t * p_ehm, vam_envar_t *p_v
     
     osal_sem_release(p_vam->sem_sta);
 
-    
-    /* mount buf to waiting list and inform tx thread waiting list have data. */
-    list_add_tail(&txbuf->list, &p_ehm->txbuf_waiting_list);
-    osal_sem_release(p_ehm->sem_ehm_tx);
-
     return 0;    
     
 }
@@ -701,7 +696,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_t * p_ehm, vam_envar_t *p_v
  @param   : 
  @return  :
 *****************************************************************************/
-static int8_t encode_nb_node_detail_infor(ehm_envar_t * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
+static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
 {
     ehm_txbuf_t * txbuf;
         
@@ -814,11 +809,6 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_t * p_ehm, vam_envar_t *p_va
     
     osal_sem_release(p_vam->sem_sta);
 
-    
-    /* mount buf to waiting list and inform tx thread waiting list have data. */
-    list_add_tail(&txbuf->list, &p_ehm->txbuf_waiting_list);
-    osal_sem_release(p_ehm->sem_ehm_tx);
-
     return 0;    
     
 }
@@ -831,7 +821,7 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_t * p_ehm, vam_envar_t *p_va
  @param   : 
  @return  :
 *****************************************************************************/
-static int8_t encode_basic_vehicle_status(ehm_envar_t * p_ehm)
+static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
 {
     ehm_txbuf_t                   * txbuf = NULL;
         
@@ -886,10 +876,6 @@ static int8_t encode_basic_vehicle_status(ehm_envar_t * p_ehm)
     /* Set data length. */
     txbuf->data_len += FRAME_MSG_HEADER_ST_LEN + MSG_VEHICLE_BASIC_STATUS_ST_LEN;
 
-    /* mount buf to waiting list and inform tx thread waiting list have data. */
-    list_add_tail(&txbuf->list, &p_ehm->txbuf_waiting_list);
-    osal_sem_release(p_ehm->sem_ehm_tx);
-
     return 0;    
     
 }
@@ -917,7 +903,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
     vam_get_local_current_status(&local);
 
     /* node id. */
-    memcpy(local.pid, status_ptr->node_id, RCP_TEMP_ID_LEN);
+    memcpy(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id));
 
     /* position. */
 	local.pos.lat =  decode_latitude(status_ptr->position.latitude);
@@ -1055,7 +1041,7 @@ err:
 	return ret;
 }
 
-#if 0
+
 /* Decode message: local vehicle alert set. */
 int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 {
@@ -1069,7 +1055,7 @@ int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 
 
     /*- Set local alert. -----------------------------*/
-
+    local.alert_mask = status_ptr->vecbrakedownalert;
     
     /* Set new local status. */
 	ret = vam_set_local_status(&local);
@@ -1084,7 +1070,7 @@ int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 err:
 	return ret;
 }
-#endif
+
 
 #if 0
 /*****************************************************************************
@@ -1093,7 +1079,7 @@ err:
  @param   : None
  @return  : 
 *****************************************************************************/
-static int8_t encode_nb_vehicle_alert_OLD(ehm_envar_t * p_ehm)
+static int8_t encode_nb_vehicle_alert_OLD(ehm_envar_st * p_ehm)
 {
 
     ehm_txbuf_t * txbuf;
@@ -1185,7 +1171,7 @@ static int8_t encode_nb_vehicle_alert_OLD(ehm_envar_t * p_ehm)
  @param   : 
  @return  :
 *****************************************************************************/
-static int8_t encode_nb_vehicle_alert(ehm_envar_t * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
+static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
 {
     ehm_txbuf_t * txbuf = NULL;
         
@@ -1315,11 +1301,6 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_t * p_ehm, vam_envar_t *p_vam, v
     
     osal_sem_release(p_vam->sem_sta);
 
-    
-    /* mount buf to waiting list and inform tx thread waiting list have data. */
-    list_add_tail(&txbuf->list, &p_ehm->txbuf_waiting_list);
-    osal_sem_release(p_ehm->sem_ehm_tx);
-
     return 0;    
     
 }
@@ -1327,24 +1308,6 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_t * p_ehm, vam_envar_t *p_vam, v
 
 
 
-/*****************************************************************************
- @funcname: ehm_rx_handle_complete
- @brief   : release the rxbuf
- @param   : ehm_envar_t * p_ehm
- @return  : void
-*****************************************************************************/
-void ehm_rx_handle_complete(ehm_envar_t * p_ehm)
-{
-	ehm_rxbuf_t *rxbuf = NULL;
-	list_head_t *p_rxbuf_waiting_list = &p_ehm->rxbuf_waiting_list;
-    
-
-	if (!list_empty(p_rxbuf_waiting_list))
-	{
-		rxbuf = list_first_entry(p_rxbuf_waiting_list, ehm_rxbuf_t, list);
-		list_move_tail(&rxbuf->list, &p_ehm->rxbuf_free_list);
-	}
-}
 /*****************************************************************************
  @funcname: msg_check_sum
  @brief   : check the chk of receive msg
@@ -1355,7 +1318,7 @@ void ehm_rx_handle_complete(ehm_envar_t * p_ehm)
 			0			- success
 			others		- error
 *****************************************************************************/
-static int msg_check_sum(uint8_t *buf,uint16_t len)
+static int ehm_msg_check_sum(uint8_t *buf, uint16_t len)
 {
 	uint16_t chksum = 0x0;
 	uint16_t chk = 0x00;
@@ -1372,257 +1335,238 @@ static int msg_check_sum(uint8_t *buf,uint16_t len)
 	else
 		return -1;
 }
-/*****************************************************************************
- @funcname: ehm_parse_sys_manage
- @brief   : parse sys manage msg
- @param   :
-			p_ehm			-	global ehm variable
-			pdata			-	frame data
-			len				-	frame data len
- @return  :
-			0				- success
-			others			- error
-*****************************************************************************/
-int ehm_parse_sys_manage(ehm_envar_t * p_ehm, uint8_t *pdata, uint16_t len)
-{
-	return 0;
-}
 
 
 
-/*****************************************************************************
- @funcname: ehm_v2x_static_vehicle_notice
- @brief   : apply v2x static vehicle info
- @param   :
-			p_ehm		- global ehm variable
-			rxinfo		- rxinfo structure
-			pdata		- v2x static vehicle info frame data
-			len			- pdata len
- @return  :
-			0				- success
-			others			- error
-*****************************************************************************/
-void ehm_v2x_static_vehicle_notice(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo,uint8_t *pdata, uint16_t len)
-{
+/**
+  * @brief  Parse message header according to data type.
+  * @param  See below.
+  * @retval 0 access,-1 failure.
+  */
+void ehm_receive_msg
+(
+    /* Message receive type. */
+    EHM_RECV_TYPE_E recv_type, 
 
-}
-/*****************************************************************************
- @funcname: ehm_v2x_alert_vehicle_notice
- @brief   : apply v2x alert vehicle info
- @param   : ehm_envar_t * p_ehm
- @param   :
-			p_ehm		- global ehm variable
-			rxinfo		- rxinfo structure
-			pdata		- v2x alert vehicle info frame data
-			len			- pdata len
- @return  :
-			0			- success
-			others		- error
-*****************************************************************************/
-void ehm_v2x_alert_vehicle_notice(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo,uint8_t *pdata, uint16_t len)
-{
+    /* Pointer to receive buffer structure. */
+    ehm_buffer_st_ptr buff_ptr
+)
+{ 
+    int result = 0;
 
-}
-/*****************************************************************************
- @funcname: ehm_prase_v2x
- @brief   : ehm module main handle process
- @param   : ehm_envar_t * p_ehm
- @param   : sys_msg_t *p_msg
- @return  :
-*****************************************************************************/
-int ehm_prase_v2x(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo, uint8_t *pdata, uint16_t len)
-{
-	uint8_t v2x_id;
-	v2x_id = *pdata;
-	switch(v2x_id)
-	{
-	case V2X_BASIC_VEHICLE_STATUS:
-		//ehm_v2x_basic_vehicle_notice(p_ehm, rxinfo, pdata, len);
-		break;
-	case V2X_FULL_VEHICLE_STATUS:
-		//ehm_v2x_full_vehicle_notice(p_ehm, rxinfo, pdata, len);
-		break;
-	case V2X_VEHICLE_STATIC_INFO:
-		//ehm_v2x_static_vehicle_notice(p_ehm, rxinfo,pdata, len);
-		break;
-	case V2X_LC_VEHICLE_ALERT_SET:
-		//ehm_v2x_alert_vehicle_notice(p_ehm, rxinfo, pdata, len);
-		break;
-	}
-	return 0;
-}
-/*****************************************************************************
- @funcname: ehm_parse_frame
- @brief   : ehm parse the  data frame
- @param   :
-			p_ehm		- global ehm variable
-			rxinfo		- rxinfo structure
-			pdata		- frame info data
-			len			- pdata len
- @return  :
-			0			- success
-			others		- error
-*****************************************************************************/
-int ehm_parse_frame(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo, uint8_t *pdata,uint16_t len)
-{
-	int ret = 0;
-	frame_msg_header_st_ptr msg_header = (frame_msg_header_st_ptr)pdata;
-
-
-	len += FRAME_MSG_HEADER_ST_LEN;
-	pdata += FRAME_MSG_HEADER_ST_LEN;
-	if((msg_header->mark == MSG_HEADER_MARK) && (msg_header->src == MSG_SRC_HOST))
-	{
-		switch(msg_header->type)
-		{
-		case MSGTYPE_DEBUG:
-			break;
-		case MSGTYPE_SYS_MANAGE:
-			break;
-		case MSGTYPE_V2X_APPLY:
-			ret = ehm_prase_v2x(p_ehm, rxinfo, pdata, len);
-			break;
-//		case MSGTYPE_RAWDATA_DSRC:
-//			break;
-//		case MSGTYPE_RAWDATA_NMEA:
-//			break;
-		default:
-			break;
-		}
-	}else{
-		ret = -1;
-		goto err;
-	}
-err:
-	return ret;
-}
-/*****************************************************************************
- @funcname: ehm_parse_msg
- @brief   : ehm parse msg info
- @param   :
-			p_ehm		- global ehm variable
-			rxinfo		- rxinfo structure
-			pdata		- msg data
-			len			- pdata len
- @return  :
-			0			- success
-			others		- error
-*****************************************************************************/
-void ehm_parse_msg(ehm_envar_t * p_ehm, ehm_rxinfo_t *rxinfo,uint8_t *pdata,uint32_t msg_len)
-{
-	int ret;
-	uint16_t len;
-
-	uart_msg_header_st *uart_msg_header;
-	switch(rxinfo->recv_type)
-	{
-	case UART_RECV_TYPE:
-		if(msg_len >= UART_MSG_HEADER_ST_LEN)
-		{
-			uart_msg_header = (uart_msg_header_st *)pdata;
-
-			if((uart_msg_header->magic_num1 == MSG_HEADER_MAGIC_NUM1) && (uart_msg_header->magic_num2 == MSG_HEADER_MAGIC_NUM2))
-			{
-				len = cv_ntohs(uart_msg_header->length);
-				pdata += UART_MSG_HEADER_ST_LEN;
-				if(msg_len >= (len + UART_MSG_HEADER_ST_LEN))
-				{
-					len = len - MSG_CHK_LEN;
-					if(msg_check_sum(pdata, len) == 0)
-					{
-						ret = ehm_parse_frame(p_ehm, rxinfo, pdata, len);
-						if(ret < 0)
-						{
-							goto err;
-						}
-					}
-				}
-			}
-		}
-		break;
-	case ETH_RECV_TYPE:
-		break;
-	}
-
-err:
-	ehm_rx_handle_complete(p_ehm);
-}
-/*****************************************************************************
- @funcname: ehm_rx_handle
- @brief   : get rxbuf from waiting list and handle rx msg info
- @param   : ehm_envar_t * p_ehm
- @return  : void
-*****************************************************************************/
-void ehm_rx_handle(ehm_envar_t * p_ehm)
-{
-	list_head_t * p_rxbuf_waiting_list;
-	ehm_rxbuf_t * rxbuf;
-	int recv_next = 0;
-	p_rxbuf_waiting_list = (list_head_t *)&p_ehm->rxbuf_waiting_list;
-
-	if (!list_empty(p_rxbuf_waiting_list))
-	{
-		rxbuf = list_first_entry(p_rxbuf_waiting_list, ehm_rxbuf_t, list);
-		recv_next = 1;
-	}
-
-
-	if (recv_next)
-	{
-		/* data packed according to data type */
-		ehm_parse_msg(p_ehm, &rxbuf->info, rxbuf->data_ptr, rxbuf->data_len);
-	}
-
-}
-/*****************************************************************************
- @funcname: ehm_main_proc
- @brief   : ehm module main handle process
- @param   : ehm_envar_t * p_ehm  
- @param   : sys_msg_t *p_msg     
- @return  : void
-*****************************************************************************/
-void ehm_main_proc(ehm_envar_t * p_ehm, sys_msg_t *p_msg)
-{
-    ehm_config_t *p_work_param = p_ehm->working_param;
     
-    switch (p_msg->id) 
+    /* Receive data from the specific pipeline. */
+    switch(recv_type)
     {
-        case EHM_MSG_VSA_ANALY_DONE: 
+        case UART_RECV_TYPE:
         {
-            if ((p_work_param->report_node_type == ALERT_NODE)) 
+            /* Receive data from uart pipeline. */
+            result = dstream_device[DSTREAM_USBD].recv(buff_ptr->buffer, sizeof(buff_ptr->buffer));
+            if(0 < result)
             {
-                //alert_node_report(p_ehm);  
+                buff_ptr->data_ptr = buff_ptr->buffer;
+                buff_ptr->data_len = result;
             }
-            
-            else if (p_work_param->report_node_type == ALL_NODE) 
+            else
             {
-                if (p_work_param->node_info_type ==SUMMARY_INFO) 
-                {
-                    
-                }
-
-                if (p_work_param->node_info_type ==DETAIL_INFO) 
-                {
-                    //detail_node_report(p_ehm);
-                }
+                buff_ptr->data_ptr = buff_ptr->buffer;
+                buff_ptr->data_len = 0;
             }
-            
-            break;  
-        }
-        
-        case EHM_MSG_VSA_ANALY_DATA:
+            break;
+        }	
+        case ETH_RECV_TYPE:
         {
-            ehm_rx_handle(p_ehm);
-        	break;
+            break;
         }
-        	
-        default: 
+        default:
         {
+            break;
+        }
 
-        }
-        break;
-    }
+	}
 }
+
+
+/**
+  * @brief  Parse message header according to data type.
+  * @param  See below.
+  * @retval 0 access,-1 failure.
+  */
+int ehm_parse_msg_header
+(
+    /* Message receive type. */
+    EHM_RECV_TYPE_E recv_type, 
+
+    /* Pointer to receive buffer structure. */
+    ehm_buffer_st_ptr buff_ptr
+)
+{
+	uart_msg_header_st_ptr uart_ptr = (uart_msg_header_st_ptr)buff_ptr->data_ptr;
+    
+    
+    switch(recv_type)
+    {
+        case UART_RECV_TYPE:
+        {
+            if(UART_MSG_HEADER_ST_LEN <= buff_ptr->data_len)
+            {
+                /* Update effective data address and length. */
+                buff_ptr->data_len -= UART_MSG_HEADER_ST_LEN;
+                buff_ptr->data_ptr += UART_MSG_HEADER_ST_LEN;
+
+                /* Detect uart message header magic number. */
+                if( (uart_ptr->magic_num1 != MSG_HEADER_MAGIC_NUM1) || (uart_ptr->magic_num2 != MSG_HEADER_MAGIC_NUM2))
+                {   
+                    osal_printf("%x, %x \n", uart_ptr->magic_num1, uart_ptr->magic_num2);
+                    goto ERR_OUT;
+                }
+                
+                /* Detect uart message header length. */
+                if(cv_ntohs(uart_ptr->length) <= buff_ptr->data_len)
+                {
+                    buff_ptr->data_len = cv_ntohs(uart_ptr->length);
+                }
+                else
+                {   
+                    osal_printf("%d, %d\n",uart_ptr->length, buff_ptr->data_len);
+                    goto ERR_OUT;
+                }
+            }
+            else
+            {
+                osal_printf("%d \n", buff_ptr->data_len);
+                goto ERR_OUT;
+            }
+
+            break;
+        }	
+        case ETH_RECV_TYPE:
+        {
+            break;
+        }
+        default:
+        {
+            goto ERR_OUT;
+            break;
+        }
+
+	}
+
+
+    return 0;
+
+ERR_OUT:
+
+    return -1;
+}
+
+
+/**
+  * @brief  Parse message type v2x apply according to message id.
+  * @param  See below.
+  * @retval 0 access,-1 failure.
+  */
+int ehm_prase_msgtype_v2x_apply
+(
+    /* Pointer to data address. */
+    uint8_t *data_ptr, 
+
+    /* Data length. */
+    uint16_t data_len
+)
+{
+    int     result = 0;
+    uint8_t msg_id = *(uint8_t *)data_ptr;
+
+    
+    switch(msg_id)
+	{
+    	case V2X_BASIC_VEHICLE_STATUS: {
+            result = decode_basic_vehicle_status(data_ptr, data_len);     break;
+        }
+    	case V2X_FULL_VEHICLE_STATUS:  {
+            result = decode_full_vehicle_status(data_ptr, data_len);      break;
+        }	
+    	case V2X_VEHICLE_STATIC_INFO:  {
+            result = decode_vehicle_static_infor(data_ptr, data_len);     break;
+        }	
+    	case V2X_LC_VEHICLE_ALERT_SET: {
+            result = decode_local_vehicle_alert_set(data_ptr, data_len);  break;
+        }
+        default:                       {
+            result = -1;                                                  break;
+        }		
+	}
+    
+	return result;
+}
+
+
+/**
+  * @brief  Parse message body according to message type and id.
+  * @param  See below.
+  * @retval 0 access,-1 failure.
+  */
+int ehm_parse_msg_body
+(
+    /* Pointer to receive buffer structure. */
+    ehm_buffer_st_ptr buff_ptr
+)
+{
+	int                      result = 0;
+	frame_msg_header_st_ptr msg_ptr = (frame_msg_header_st_ptr)buff_ptr->data_ptr;
+
+
+    /* Detect effective data length. */
+    if(buff_ptr->data_len < FRAME_MSG_HEADER_ST_LEN)
+    {
+        result = -1;
+        goto RETURN_MARK;
+    }
+
+    /* Update effective data address and length. */
+    buff_ptr->data_len -= FRAME_MSG_HEADER_ST_LEN - SIZEOF_MSG_CHK_DOMAIN;
+    buff_ptr->data_ptr += FRAME_MSG_HEADER_ST_LEN;
+
+    /* Detect frame header. */
+    if((msg_ptr->mark == MSG_HEADER_MARK) && (msg_ptr->src == MSG_SRC_HOST))
+    {
+		switch(msg_ptr->type)
+		{
+		    case MSGTYPE_RESERVED:    {  
+                result = -1;  break;  
+            }
+    		case MSGTYPE_DEBUG:       {  
+                result = -1;  break;  
+            }
+    		case MSGTYPE_SYS_MANAGE:  {  
+                result = -1;  break;  
+            }
+    		case MSGTYPE_V2X_APPLY:   {  
+                result = ehm_prase_msgtype_v2x_apply(buff_ptr->data_ptr, buff_ptr->data_len);  break; 
+            }  
+    		case MSGTYPE_RAWDATA_DSRC:{  
+                result = -1;  break;  
+            }
+    		case MSGTYPE_RAWDATA_NMEA:{  
+                result = -1;  break;  
+            }	
+    		default:                  {  
+              result = -1;  break;  
+            }	
+		}
+    }
+    else
+    {
+        result = -1;
+    }
+
+RETURN_MARK:
+
+	return result;
+}
+
+
 
 /*****************************************************************************
  @funcname: ehm_thread_entry
@@ -1631,54 +1575,14 @@ void ehm_main_proc(ehm_envar_t * p_ehm, sys_msg_t *p_msg)
  @return  : 
 *****************************************************************************/
 void * ehm_main_thread_entry(void *param)
-{
-    ehm_envar_t *p_ehm = param;
-    osal_status_t err;
-    sys_msg_t *p_msg;
-    uint32_t len;
-    
+{   
     while (1) 
     {
-        err = osal_queue_recv(p_ehm->queue_ehm_main, &p_msg, &len, OSAL_WAITING_FOREVER);
-        if (err == OSAL_STATUS_SUCCESS) 
-        {
-            /* ehm man process handle */
-            ehm_main_proc(p_ehm,p_msg);
-            osal_free(p_msg);
-        }
-        else 
-        {
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: osal_queue_recv error [%d]\n", __FUNCTION__, err);            
-        }
+        ;
     }
 
     return NULL;
 }
-
-
-/*****************************************************************************
- @funcname: ehm_tx_complete
- @brief   : Put the TXBUF in waiting list back to free list only.
- @param   : ehm_envar_t * p_ehm
- @return  : none
-*****************************************************************************/
-void ehm_tx_complete(ehm_envar_t *p_ehm)
-{
-    ehm_txbuf_t *txbuf = NULL;
-
-    
-    if (!list_empty(&(p_ehm->txbuf_waiting_list))) 
-    {
-        txbuf = list_first_entry(&(p_ehm->txbuf_waiting_list), ehm_txbuf_t, list);
-        list_move_tail(&txbuf->list, &p_ehm->txbuf_free_list);
-    }		
-}
-
-
-
-
-
-
 
 
 /*****************************************************************************
@@ -1693,7 +1597,7 @@ void ehm_tx_complete(ehm_envar_t *p_ehm)
 			0			- success
 			others		- error
 *****************************************************************************/
-static int ehm_package_send(ehm_envar_t * p_ehm, ehm_txinfo_t* tx_info, uint8_t *pdata, uint32_t length)
+static int ehm_package_send(ehm_envar_st * p_ehm, ehm_txinfo_t* tx_info, uint8_t *pdata, uint32_t length)
 {
     uart_msg_header_st_ptr uart_ptr = (uart_msg_header_st_ptr)(pdata - UART_MSG_HEADER_ST_LEN);
     int result = 0;
@@ -1716,23 +1620,14 @@ static int ehm_package_send(ehm_envar_t * p_ehm, ehm_txinfo_t* tx_info, uint8_t 
 }
 
 
-/* the reentrant should be considered */
-//void ehm_rx_handle(ehm_envar_t * p_ehm)
-//{
-//	ehm_rxbuf_t * rxbuf;
-//	list_head_t * p_rxbuf_waiting_list = &p_ehm->rxbuf_waiting_list;
-//	rxbuf = ehm_get_rxbuf();
-//
-//}
-
 
 /*****************************************************************************
  @funcname: ehm_tx_thread_entry
  @brief   : ehm tx thread process module
- @param   : ehm_envar_t * p_ehm
+ @param   : ehm_envar_st * p_ehm
  @return  : none
 *****************************************************************************/
-void * ehm_tx_thread_entry(ehm_envar_t *p_ehm)
+void * ehm_tx_thread_entry(ehm_envar_st *p_ehm)
 {
     int                 err = 0;
     ehm_txbuf_t * txbuf_ptr = NULL;
@@ -1740,6 +1635,8 @@ void * ehm_tx_thread_entry(ehm_envar_t *p_ehm)
 
     /* Print thread trace. */
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "Thread %s: ---->\n", __FUNCTION__);
+
+    return NULL;
 
     while(1)
     {
@@ -1752,18 +1649,9 @@ void * ehm_tx_thread_entry(ehm_envar_t *p_ehm)
         encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
 
     
-        err = osal_sem_take(p_ehm->sem_ehm_tx, OSAL_WAITING_FOREVER);
+        err = osal_sem_take(p_ehm->sem_tx, OSAL_WAITING_FOREVER);
         if (err == OSAL_STATUS_SUCCESS)
         {
-            if (!list_empty(&(p_ehm->txbuf_waiting_list))) 
-            {
-                txbuf_ptr = list_first_entry(&(p_ehm->txbuf_waiting_list), ehm_txbuf_t, list);
-            }
-            else
-            {
-                txbuf_ptr = NULL;
-            }
-
             /* Send tx_buffer data when data valid. */
             if (txbuf_ptr != NULL) 
             {
@@ -1773,7 +1661,7 @@ void * ehm_tx_thread_entry(ehm_envar_t *p_ehm)
                 /* Move the first element in waiting list to free list. */
                 if(0 <= err)
                 {
-                    ehm_tx_complete(p_ehm);
+                    
                 }               
             }
         }
@@ -1793,40 +1681,51 @@ void * ehm_tx_thread_entry(ehm_envar_t *p_ehm)
  @param   : void *param
  @return  :	none
 *****************************************************************************/
-void * ehm_rx_thread_entry(ehm_envar_t *p_ehm)
+void * ehm_rx_thread_entry(void *param_ptr)
 {
-    int ret = 0;
-    ehm_rxbuf_t * rxbuf;
-    ehm_rxinfo_t *p_node_info;
-    list_head_t *p_rxbuf_waiting_list = &p_ehm->rxbuf_waiting_list;
-    uint32_t data_time;
+    ehm_envar_st_ptr ehm_ptr = (ehm_envar_st_ptr)param_ptr;
+    int               result = 0;
 
 
-    /* Print thread trace. */
-    OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "Thread %s: ---->\n", __FUNCTION__);
+START_ROUTINE:
+    
+    /* Receive message from the specific pipeline. */
+    ehm_receive_msg(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx));
 
-    while(1)
-    {
-    	rxbuf = ehm_get_rxbuf();
-    	p_node_info = (ehm_rxinfo_t *)(&(rxbuf->info));;
-
-        
-    	//ret = comport_recv(rxbuf->data_ptr, EHM_RX_LEN);
-    	if(ret > 0)
-    	{
-    		data_time = osal_get_systemtime();
-    		p_node_info->data_systime = data_time;
-    		rxbuf->data_len = ret;
-            
-    		list_add_tail(&rxbuf->list, p_rxbuf_waiting_list);
-            
-    		if (p_ehm->queue_ehm_main) 
-            {
-    			ehm_add_event_queue(p_ehm, EHM_MSG_VSA_ANALY_DATA, 0, 0, NULL);
-    		}
-    	}
+    /* Start the next read process when data length error. */
+	if(ehm_ptr->buffer_rx.data_len == 0)
+	{
+	    osal_printf("ehm receive data error. \n");
+        goto START_ROUTINE;	  
+	}
+    
+    /* Parse message header according to data type. */
+    result = ehm_parse_msg_header(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx));
+    if(result != 0)
+    {   
+        osal_printf("ehm parse msg header error. \n");
+        goto START_ROUTINE;
     }
 
+    /* Check message.  */
+    result = ehm_msg_check_sum(ehm_ptr->buffer_rx.data_ptr, ehm_ptr->buffer_rx.data_len);
+    if(result != 0)
+    {   
+        osal_printf("ehm msg check sum error. \n");
+   //     goto START_ROUTINE;     
+    }
+    
+    /* Parse message body. */
+    result = ehm_parse_msg_body(&(ehm_ptr->buffer_rx));
+    if(result != 0)
+    {
+        osal_printf("ehm parse msg body error. \n");
+    }
+
+    
+    goto START_ROUTINE;
+
+    /* Only for format matching. */
     return NULL;
 }
 
@@ -1838,59 +1737,48 @@ void * ehm_rx_thread_entry(ehm_envar_t *p_ehm)
  @param   : void  
  @return  : 
 *****************************************************************************/
-void ehm_init(ehm_envar_t *p_ehm)
+void ehm_init(void)
 {
-	int ret = 0;
-    uint8_t i = 0;
+    int result = 0;
+    ehm_envar_st_ptr p_ehm = &ehm_envar;
 
 
     /* Open uart module. */
-   // ret = comport_init();
-    if(ret < 0)
+    result = dstream_device[DSTREAM_USBD].open();
+    if(result < 0)
     {
-    	osal_printf("comport_init error\n");
+    	osal_printf("comport open error\n");
     }
+    result = dstream_device[DSTREAM_USBD].config(&p_ehm->config_ptr->comport_config);
+	if(result < 0)
+	{
+		osal_printf("comport config error ret=%d \n", result);
+	}
 
-    
-    /* Initialize the txbuf queue. */
-    INIT_LIST_HEAD(&p_ehm->txbuf_waiting_list);
-    INIT_LIST_HEAD(&p_ehm->txbuf_free_list);
-    for(i = 0; i < (sizeof(p_ehm->txbuf) / sizeof(p_ehm->txbuf[0])); i++)
-    {
-        list_add_tail(&p_ehm->txbuf[i].list, &p_ehm->txbuf_free_list);
-    }
-
-    /* Initialize the rxbuf queue. */
-    INIT_LIST_HEAD(&p_ehm->rxbuf_waiting_list);
-    INIT_LIST_HEAD(&p_ehm->rxbuf_free_list);
-    for(i = 0; i < (sizeof(p_ehm->rxbuf) / sizeof(p_ehm->rxbuf[0])); i++)
-    {
-        list_add_tail(&p_ehm->rxbuf[i].list, &p_ehm->rxbuf_free_list);
-    }
-
-    
     /* ehm main process event queue. */
-    p_ehm->queue_ehm_main = osal_queue_create("q-ehm", EHM_QUEUE_SIZE, EHM_MQ_MSG_SIZE);
-    osal_assert(p_ehm->queue_ehm_main != NULL);
+    p_ehm->queue_main = osal_queue_create("q-ehm", EHM_QUEUE_SIZE, EHM_MQ_MSG_SIZE);
+    osal_assert(p_ehm->queue_main != NULL);
 
     /* ehm module main process. */
-    p_ehm->task_ehm_main = osal_task_create("t-ehm-main", ehm_main_thread_entry, p_ehm, EHM_MAIN_THREAD_STACK_SIZE, EHM_MAIN_THREAD_PRIORITY);
-    osal_assert(p_ehm->task_ehm_main !=NULL);
+    p_ehm->task_main = osal_task_create("t-ehm-main", ehm_main_thread_entry, p_ehm, EHM_MAIN_THREAD_STACK_SIZE, EHM_MAIN_THREAD_PRIORITY);
+    osal_assert(p_ehm->task_main !=NULL);
 
 
     /* ehm module tx thread related. */
-    p_ehm->sem_ehm_tx = osal_sem_create("sem-ehmtx", 0);
-    osal_assert(p_ehm->sem_ehm_tx != NULL);
+    p_ehm->sem_tx = osal_sem_create("sem-ehmtx", 0);
+    osal_assert(p_ehm->sem_tx != NULL);
 
-    p_ehm->task_ehm_tx = osal_task_create("t-ehm-tx", (void *(*)(void *))ehm_tx_thread_entry,p_ehm, EHM_TX_THREAD_STACK_SIZE, EHM_TX_THREAD_PRIORITY);
-    osal_assert(p_ehm->task_ehm_tx != NULL);
+    p_ehm->task_tx = osal_task_create("t-ehm-tx", (void *(*)(void *))ehm_tx_thread_entry,p_ehm, EHM_TX_THREAD_STACK_SIZE, EHM_TX_THREAD_PRIORITY);
+    osal_assert(p_ehm->task_tx != NULL);
+
+
 
     /* ehm module rx thread related. */
-    p_ehm->sem_ehm_rx = osal_sem_create("sem-ehmrx", 0);
-    osal_assert(p_ehm->sem_ehm_rx != NULL);
+    p_ehm->sem_rx = osal_sem_create("sem-ehmrx", 0);
+    osal_assert(p_ehm->sem_rx != NULL);
 
-    p_ehm->task_ehm_rx = osal_task_create("t-ehm-tx", (void *(*)(void *))ehm_rx_thread_entry,p_ehm, EHM_RX_THREAD_STACK_SIZE, EHM_RX_THREAD_PRIORITY);
-    osal_assert(p_ehm->task_ehm_tx != NULL);
+    p_ehm->task_rx = osal_task_create("task-ehmrx", ehm_rx_thread_entry, p_ehm, EHM_RX_THREAD_STACK_SIZE, EHM_RX_THREAD_PRIORITY);
+    osal_assert(p_ehm->task_rx != NULL);
 
 }
 

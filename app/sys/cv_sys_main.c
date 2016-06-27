@@ -42,6 +42,9 @@ extern void vam_init(void);
 extern void vsa_init(void);
 extern void sys_init(void);
 extern void mda_init(void);
+
+extern void ehm_init(void);
+
 cms_global_t cms_envar, *p_cms_envar;
 
 extern void cv_oam_init(void);
@@ -86,6 +89,8 @@ int main(int argc, char *argv[])
     vam_start();
 //    vsa_start();
 //    gps_init();
+
+    ehm_init();
 
     cv_oam_init();
     

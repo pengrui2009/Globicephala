@@ -11,15 +11,6 @@
 ******************************************************************************/
 
 
-
-/*****************************************************************************
- * declaration of variables and functions                                    *
-*****************************************************************************/
-
-
-/*****************************************************************************
- * implementation of functions                                               *
-*****************************************************************************/
 #ifndef __CV_EHM_MAIN_H__
 #define __CV_EHM_MAIN_H__
 #include <stdint.h>
@@ -28,7 +19,8 @@
 #include "cv_vam.h"
 #include "cv_rcp.h"
 #include "app_msg_format.h"
-//#include "arm_math.h"
+#include "uart.h"
+
 
 #define EHM_TX_LEN   256
 #define EHM_RX_LEN   256
@@ -88,8 +80,9 @@ typedef enum _EHM_RECV_TYPE
 
 }EHM_RECV_TYPE_E;
 
-typedef enum _V2X_MSG_TYPE {
-	VX2_RESERVED ,
+typedef enum _V2X_MSG_TYPE 
+{
+	V2X_RESERVED ,
 	V2X_NB_NODE_INFO,
 	V2X_BASIC_VEHICLE_STATUS,
 	V2X_FULL_VEHICLE_STATUS,
@@ -131,102 +124,66 @@ typedef struct _ehm_txbuf
 }ehm_txbuf_t;
 
 
-/* ehm module rxbuf strtct follow by wnet module */
-typedef struct _ehm_rxinfo {
 
-    EHM_RECV_TYPE_E recv_type;
-//    uint8_t f_node_num;
-    uint32_t data_systime;
-
-}ehm_rxinfo_t;
-
-/* ehm module rxbuf strtct follow by wnet module */
-typedef struct _ehm_rxbuf {
-    /**
-     * DO NOT MODIFY IT
-     */
-    list_head_t list;
-
-    ehm_rxinfo_t info;
-    /**
-     * END
-     */
-
-    uint32_t flag;   /* buffer's status */
-    
-    uint8_t *data_ptr;
-    int32_t data_len;
-
-    uint8_t buffer[EHM_RX_LEN];
-}ehm_rxbuf_t;
-
-
-
-
-#define EHM_BUF_NUM      5
-
-
-/* ehm param config structure. */
-typedef struct _ehm_config 
+/* ehm buffer structure. */
+typedef struct _ehm_buffer_st 
 {
+    /* Data buffer. */
+    uint8_t  buffer[1024];
+
+    /* Current effective data address and length. */
+    uint8_t    * data_ptr;
+    int32_t      data_len;
+    
+}ehm_buffer_st, *ehm_buffer_st_ptr;
+
+#define EHM_BUFFER_ST_LEN    sizeof(ehm_buffer_st)
+
+
+/* External host manage parameter config structure. */
+typedef struct _ehm_config_st 
+{
+    EHM_RECV_TYPE_E        recv_type;
+    comport_config_t  comport_config;
+
+
+    
     NODE_TYPE_E     report_node_type;
     NODE_INFOR_TYPE_E node_info_type;
     
-} ehm_config_t;
+} ehm_config_st, * ehm_config_st_ptr;
+
+#define EHM_CONFIG_ST_LEN    sizeof(ehm_config_st)
 
 
-
-
-typedef struct _ehm_envar 
+/* External host manage environment structure. */
+typedef struct _ehm_envar_st 
 {
-    ehm_config_t *working_param;
+    /* Pointer to ehm module's configurration structure. */
+    ehm_config_st_ptr config_ptr;
+
+
+    osal_queue_t * queue_main;
+    osal_task_t   * task_main;
+
+    osal_sem_t       * sem_tx;
+    osal_task_t     * task_tx;
+
+    osal_sem_t       * sem_rx;
 
     
-    osal_queue_t * queue_ehm_main;
-    osal_task_t   * task_ehm_main;
-
-    osal_sem_t       * sem_ehm_tx;
-    osal_task_t     * task_ehm_tx;
-
-    osal_sem_t       * sem_ehm_rx;
-    osal_task_t     * task_ehm_rx;
-
-
-    /* Tx and Rx data buffer list.*/
-    list_head_t    txbuf_free_list;
-    list_head_t txbuf_waiting_list;
-    
-    list_head_t    rxbuf_free_list;
-    list_head_t rxbuf_waiting_list;
-
-    /* Tx and Rx data buffer storage. */
-    ehm_txbuf_t txbuf[EHM_BUF_NUM];
-    ehm_rxbuf_t rxbuf[EHM_BUF_NUM];
-
-}ehm_envar_t, *ehm_envar_t_ptr;
+    osal_task_t     * task_rx;
+    ehm_buffer_st   buffer_rx;
 
 
 
-extern void ehm_init(ehm_envar_t *p_ehm);
+}ehm_envar_st, * ehm_envar_st_ptr;
+
+#define EHM_ENVAR_ST_LEN    sizeof(ehm_envar_st)
+
+
+
 int inform_ehm_caculate_done(void);
-ehm_txbuf_t *ehm_get_txbuf(void);
-
-extern ehm_rxbuf_t *ehm_get_rxbuf(void);
-
-
-typedef struct _comport_config{
-	uint8_t		verify;			//校验方式
-	uint8_t		ndata;			//数据位位数
-	uint8_t		nstop;			//停止位位数
-	uint8_t		timeout;		//超时时间（单位100ms，为0时永久阻塞，0xff不阻塞）
-	uint32_t	baud;			//波特率
-	uint8_t		rtscts;			//是否使用rtscts流控信号线
-} comport_config_t;
-
-
-
-
-
 
 
 #endif
