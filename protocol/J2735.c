@@ -489,8 +489,8 @@ inline uint16_t encode_absolute_velocity(float velocity)
 {
     uint16_t result = 0;
 
-
-    result = (uint16_t)(velocity * 100000.0f/ 2 / 3600);
+    //velocity * 100000.0f / 3600 / 2
+    result = (uint16_t)(velocity * 50000.0f / 3600);
 
     result = (8190 < result)? 8190 : result;
 
@@ -510,13 +510,14 @@ inline float decode_absolute_velocity(uint16_t velocity)
 {
     float result = 0;
 
+    //velocity * 3600 * 2 / 100000.0f
     velocity = cv_ntohs(velocity);
-    result = (float)(velocity * 3600 *2 / 100000.0f);
+    result = (float)(velocity * 3600 / 50000.0f);
     return result;
 }
 /******************************************************************************
 *	函数:	encode_relative_velocity
-*	功能:	将车辆相对速度数据从1m/s为单位转换为以0.02m/s为单位
+*	功能:	将车辆相对速度数据从1km/s为单位转换为以0.02m/s为单位
 *	参数:	velocity			- 	车辆绝对速度数据
 *	返回:	-8191 - 8191		-	正常数据
 *	 		8191				-	无效数据
@@ -527,8 +528,8 @@ inline int16_t encode_relative_velocity(float velocity)
 {
     int16_t result = 0;
 
-
-    result = (int16_t)(velocity / 0.02);
+    //velocity * 100000.0f / 3600 / 2
+    result = (int16_t)(velocity * 50000.0f / 3600);
 
     result = (8190 < result)? 8190 : result;
     result = (result < -8190)? -8190 : result;
@@ -538,21 +539,19 @@ inline int16_t encode_relative_velocity(float velocity)
 }
 /******************************************************************************
 *	函数:	decode_relative_velocity
-*	功能:	将车辆绝对速度数据从0.02m/s为单位转换为以1m/s为单位
+*	功能:	将车辆绝对速度数据从0.02m/s为单位转换为以1km/h为单位
 *	参数:	velocity			- 	车辆绝对速度数据
 *	返回:	-163.80 - 163.80	-	正常数据
 *	 		163.82				-	无效数据
 *	说明:	指目标节点的行驶速度或者道路指导速度，以 0.02 m/s 为单位，若速度无效则值为8191。
  ******************************************************************************/
-inline int16_t decode_relative_velocity(float velocity)
+inline float decode_relative_velocity(int16_t velocity)
 {
-    int16_t result = 0;
+    float result = 0;
+    //velocity * 3600 *2 / 100000.0f
+    velocity = cv_ntohs(velocity);
+    result = (float)(velocity * 3600 / 50000.0f);
 
-
-    result = (int16_t)(velocity / 0.02);
-
-    result = (8190 < result)? 8190 : result;
-    result = (result < -8190)? -8190 : result;
     result = cv_ntohs(result);
 
     return result;

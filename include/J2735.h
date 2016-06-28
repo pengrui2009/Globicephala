@@ -254,7 +254,7 @@ inline uint16_t encode_absolute_velocity(float velocity);
 inline float decode_absolute_velocity(uint16_t velocity);
 /******************************************************************************
 *	函数:	encode_relative_velocity
-*	功能:	将车辆相对速度数据从1m/s为单位转换为以0.02m/s为单位
+*	功能:	将车辆相对速度数据从1km/h为单位转换为以0.02m/s为单位
 *	参数:	velocity			- 	车辆绝对速度数据
 *	返回:	-8191 - 8191		-	正常数据
 *	 		8191				-	无效数据
@@ -263,14 +263,14 @@ inline float decode_absolute_velocity(uint16_t velocity);
  ******************************************************************************/
 inline int16_t encode_relative_velocity(float velocity);
 /******************************************************************************
-*	函数:	encode_relative_velocity
-*	功能:	将车辆绝对速度数据从0.02m/s为单位转换为以1m/s为单位
+*	函数:	decode_relative_velocity
+*	功能:	将车辆绝对速度数据从0.02m/s为单位转换为以1km/h为单位
 *	参数:	velocity			- 	车辆绝对速度数据
 *	返回:	-163.80 - 163.80	-	正常数据
 *	 		163.82				-	无效数据
 *	说明:	指目标节点的行驶速度或者道路指导速度，以 0.02 m/s 为单位，若速度无效则值为8191。
  ******************************************************************************/
-inline int16_t encode_relative_velocity(float velocity);
+inline int16_t decode_relative_velocity(float velocity);
 /******************************************************************************
 *	函数:	encode_vertical_acceleration
 *	功能:	将垂直加速度数据从19.80665m/s^2为单位转换为以0.1962m/s^2为单位

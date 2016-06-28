@@ -208,6 +208,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
                 if(memcmp(node_summary_ptr->node_id, p_alert_node->pid, RCP_TEMP_ID_LEN) == 0)
                 {   
                     /* Set alert flag when find the specific node and cancel the loop.  */
+                	//待完善代码，告警标识不对
                     node_summary_ptr->alert_flag.alert_word = cv_ntohl(p_alert_node->alert_flag);
                     break;
                 }
@@ -254,7 +255,7 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
     nb_node_detail_infor_st_ptr   node_detail_ptr = NULL;
 
     vam_sta_node_t *p_sta = NULL;
-
+    vsa_crd_node_t *p_alert_node = NULL;
 
     /* Get tx buffer from ehm tx buffer list. */
     txbuf = ehm_get_txbuf(p_ehm);
@@ -342,7 +343,30 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         node_detail_ptr->exterlight.parkinglight = 0;
         node_detail_ptr->exterlight.reserved = 0;
 
-        
+        /* alert flag. */
+	    if(list_empty(&p_vsa->crd_list))
+	    {
+		   /* Set alert flag to none when crd list empty. */
+	    	node_detail_ptr->alert_flag.alert_word = 0;
+	    }
+	    else
+	    {
+		   list_for_each_entry(p_alert_node, vsa_crd_node_t, &p_vsa->crd_list, list)
+		   {
+			   if(memcmp(node_detail_ptr->node_id, p_alert_node->pid, RCP_TEMP_ID_LEN) == 0)
+			   {
+				   /* Set alert flag when find the specific node and cancel the loop.  */
+				//待完善代码，告警标识不对
+				   node_detail_ptr->alert_flag.alert_word = cv_ntohl(p_alert_node->alert_flag);
+				   break;
+			   }
+			   else
+			   {
+				   /* Set alert flag to none when no specific node. */
+				   node_detail_ptr->alert_flag.alert_word = 0;
+			   }
+		   }
+	    }
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_DETAIL_INFOR_ST_LEN;
         nb_node_ptr->nodenumber ++;

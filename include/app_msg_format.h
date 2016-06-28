@@ -384,7 +384,7 @@ typedef struct  _nb_node_summary_infor_st
     int16_t  lateral_dis;
     /* 相对行驶方向(以本车行驶方向为基准)：uint 0.0125 degree (0 - +28799) +28800 means invalid*/
     uint16_t	angle;
-    /* 相对车速(以本车车速为基准)：uint 0.02m/s (0 - +8190) 8191 means invalid*/
+    /* 相对车速(以本车车速为基准)：uint 0.02m/s (-8190 - +8190) 8191 means invalid*/
     int16_t	        velocity;
     /* 信号强度(邻居-本车通信):uint 1dBm (-127 - +126) [-127 means <=-127 +126 means >=+126] +127 means unavailable value*/
     int8_t		signalstrength;
@@ -422,6 +422,9 @@ typedef struct _nb_node_detail_infor_st
 	brake_system_status_st   brake;
 	/* 外部灯光状态*/
 	exterior_lights_st	exterlight;
+	/* 告警标识*/
+	//待完善，为使用该标识
+	alert_flag_st			 alert_flag;
 }nb_node_detail_infor_st,*nb_node_detail_infor_st_ptr;
 
 #define NB_NODE_DETAIL_INFOR_ST_LEN    (sizeof(nb_node_detail_infor_st))
@@ -563,7 +566,7 @@ typedef struct _msg_basic_status_st
 	/* 位置精确度 */
 	position_accu_st	posaccu;
     
-	/* 速度: unit 1 m/s, (0 - 8191), 8191 means invalid. */
+	/* 速度: unit 0.02 m/s, (0 - 8191), 8191 means invalid. */
 	uint16_t		   velocity;
 	
 	/* 行驶方向: unit 0.0125 degree (相对正北顺时针夹角), (0 - 28800), 28800 means invalid. */
@@ -600,8 +603,7 @@ typedef struct _msg_full_status_st
 	brake_system_status_st	 braksta;
 	/* 外部灯光状态*/
 	exterior_lights_st	  exterlight;
-	/* 告警标识*/
-	uint32_t			 alertflag;//待完善，为使用该标识
+
 
 }msg_vehicle_full_status_st, *msg_vehicle_full_status_st_ptr;
 
