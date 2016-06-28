@@ -363,11 +363,8 @@ int32_t vam_active_alert(uint16_t alert)
     vam_envar_t *p_vam = p_vam_envar;
 
     p_vam->local.alert_mask |= alert; 
-    if(!(p_vam->flag & VAM_FLAG_TX_BSM_ALERT))
-    {
-        p_vam->flag |= VAM_FLAG_TX_BSM_ALERT;       
-    }
-        
+    p_vam->flag |= VAM_FLAG_TX_BSM_ALERT; 
+    
     return 0;
 }
 
@@ -380,6 +377,7 @@ int32_t vam_cancel_alert(uint16_t alert)
 {
     vam_envar_t *p_vam = p_vam_envar;
     p_vam->local.alert_mask &= ~alert; 
+    
     return 0;
 }
 

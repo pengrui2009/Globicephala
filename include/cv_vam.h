@@ -135,7 +135,8 @@ typedef struct _vam_acce{
 
 typedef struct _vam_stastatus
 {
-    uint8_t pid[RCP_TEMP_ID_LEN];  //temporary ID
+    /* Product id. */
+    uint8_t pid[RCP_TEMP_ID_LEN];  
 
     uint16_t timestamp;
 
@@ -145,11 +146,12 @@ typedef struct _vam_stastatus
     float        speed;	//km/h
     vam_acce_t    acce;
 
+
     /* Transmission status. */
-    uint8_t		   tran_state;
+    uint8_t		           tran_state;
 
     /* Steering wheel angle. */
-    float	steer_wheel_angle;
+    float	        steer_wheel_angle;
 
     /* Brake system status. */
     brake_system_status_st    braksta;
@@ -157,21 +159,21 @@ typedef struct _vam_stastatus
     /* Exterior lights status. */
     exterior_lights_st exterior_light; 
 
-
     /* Vehicle type. */
-    uint8_t       vec_type;
+    uint8_t                  vec_type;
     
     /* Vehicle size unit: m. */
-    float	 vehicle_width;
-    float   vehicle_length;
+    float	            vehicle_width;
+    float              vehicle_length;
 
 
+    /* bit0-VBD, bit1-EBD;  1-active, 0-cancel; 同evam中alert_mask. */
+    uint16_t               alert_mask;  
 
-    uint16_t alert_mask;  //bit0-VBD, bit1-EBD;  1-active, 0-cancel; 同evam中alert_mask
+    /* This location point corresponding time */  
+    uint32_t                     time;     
 
-    uint32_t time;  /* This location point corresponding time */     
-
-    uint8_t  cnt;
+    uint8_t                       cnt;
 }__COMPILE_PACK__ vam_stastatus_t;
 
 typedef struct _vam_sta_node{

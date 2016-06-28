@@ -635,12 +635,12 @@ typedef struct _msg_local_vehicle_alert_st
 	uint32_t vecbrakehardalert    :2;
 
     /* ³µÁ¾¹ÊÕÏ¸æ¾¯£º00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t	vecbrakedownalert :2;
+	uint32_t	vecbreakdownalert :2;
   
   #else
 
     /* ³µÁ¾¹ÊÕÏ¸æ¾¯£º00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t	vecbrakedownalert :2;
+	uint32_t	vecbreakdownalert :2;
   
 	/* ½ô¼±É²³µ¸æ¾¯:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
 	uint32_t vecbrakehardalert    :2;
@@ -652,6 +652,18 @@ typedef struct _msg_local_vehicle_alert_st
 }msg_local_vehicle_alert_st,*msg_local_vehicle_alert_st_ptr;
 
 #define MSG_LOCAL_VEHICLE_ALERT_ST_LEN	sizeof(msg_local_vehicle_alert_st)
+
+/* Macro definition for vehicle alert set. */
+#define VEHICLE_ALERT_INVALID    0x00
+#define VEHICLE_ALERT_OFF        0x01
+#define VEHICLE_ALERT_ON         0x02
+#define VEHICLE_ALERT_RESERVED   0x03
+
+
+
+
+
+
 
 
 /* ÁÚ³µÎ£ÏÕ¸æ¾¯ neighbour vehicle alert info structure*/
