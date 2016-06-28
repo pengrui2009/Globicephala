@@ -108,8 +108,8 @@ enum SYSTEM_MSG_TYPE{
     VSA_MSG_XXX_RC,
 
     EHM_MSG_BASE = 0x0400,
-    EHM_MSG_VSA_ANALY_DONE,
-    EHM_MSG_VSA_ANALY_DATA,
+    EHM_MSG_VSA_RECV_DONE,
+    EHM_MSG_VSA_SEND_DATA,
     EHM_MSG_XXX
 };
 
@@ -224,70 +224,6 @@ typedef struct _cms_global{
     sys_envar_t sys;
     mda_envar_t mda;
 }cms_global_t;
-
-
-static inline uint16_t cv_ntohs(uint16_t s16)
-{
-	uint16_t ret = 0;
-#ifdef __LITTLE_ENDIAN
-	uint8_t *s, *d;
-#endif
-	#ifndef __LITTLE_ENDIAN	
-	ret = s16;
-	#else
-	s = (uint8_t *)(&s16);
-	d = (uint8_t *)(&ret) + 1;
-	*d-- = *s++;
-	*d-- = *s++;
-	#endif
-	return ret;
-}
-
-static inline uint32_t cv_ntohl(uint32_t l32)
-{
-	uint32_t ret = 0;
-#ifdef __LITTLE_ENDIAN
-	uint8_t *s, *d;
-#endif
-	//#ifdef BIG_ENDIAN	
-	#ifndef __LITTLE_ENDIAN	
-	ret = l32;
-	#else
- 	s = (uint8_t *)(&l32);
- 	d = (uint8_t *)(&ret) + 3;
-
- 	*d-- = *s++;
-	*d-- = *s++;
-	*d-- = *s++;
-	*d-- = *s++;
-	#endif
-
-
-
-	return ret;
-}
-
-static inline float cv_ntohf(float f32)
-{
-	float ret;
-#ifdef __LITTLE_ENDIAN
-	uint8_t *s, *d;
-#endif
-    #ifndef __LITTLE_ENDIAN	
-	ret = f32;
-	#else
-	s = (uint8_t *)(&f32);
-	d = (uint8_t *)(&ret) + 3;
-
-
-	*d-- = *s++;
-	*d-- = *s++;
-	*d-- = *s++;
-	*d-- = *s++;
-	#endif
-	return ret;
-}
-
 
 /*****************************************************************************
  * declare of global functions and variables                                 *

@@ -182,7 +182,7 @@ typedef struct  _position_3d_st
     /* 经度: unit 0.1 micro degree, (1799999999 - 1800000001), 1800000001 means invalid. */
     int32_t longitude;                      /* 经度 */
     /* 海拔: unit 0.1 meter, (-4096 - +61439), -4096 means invalid. */
-    int16_t elevation;                      /* 海拔 */
+    int32_t elevation;                      /* 海拔 */
     
 }position_3d_st, *position3d_st_ptr;
 
@@ -563,7 +563,7 @@ typedef struct _msg_basic_status_st
 	/* 位置精确度 */
 	position_accu_st	posaccu;
     
-	/* 速度: unit 0.02 m/s, (0 - 8191), 8191 means invalid. */
+	/* 速度: unit 1 m/s, (0 - 8191), 8191 means invalid. */
 	uint16_t		   velocity;
 	
 	/* 行驶方向: unit 0.0125 degree (相对正北顺时针夹角), (0 - 28800), 28800 means invalid. */
@@ -600,6 +600,9 @@ typedef struct _msg_full_status_st
 	brake_system_status_st	 braksta;
 	/* 外部灯光状态*/
 	exterior_lights_st	  exterlight;
+	/* 告警标识*/
+	uint32_t			 alertflag;//待完善，为使用该标识
+
 }msg_vehicle_full_status_st, *msg_vehicle_full_status_st_ptr;
 
 #define	MSG_VEHICLE_FULL_STATUS_ST_LEN	(sizeof(msg_vehicle_full_status_st))

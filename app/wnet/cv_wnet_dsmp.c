@@ -20,7 +20,7 @@
 #include "cv_cms_def.h"
 #include "cv_wnet.h"
 
-
+#include "J2735.h"
 #include "cv_dsmp.h"
 
 

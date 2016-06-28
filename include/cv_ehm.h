@@ -28,7 +28,7 @@
 #define EHM_SRC_V2X		0
 #define EHM_SRC_HOST	1
 
-
+#define EHM_BUF_NUM      5
 /* Reserved data head and tail in uart format. */
 #define EHM_BUF_HEAD_RESERVED_LEN       (UART_MSG_HEADER_ST_LEN) 
 #define EHM_BUF_TAIL_RESERED_LEN        2
@@ -82,14 +82,15 @@ typedef enum _EHM_RECV_TYPE
 
 typedef enum _V2X_MSG_TYPE 
 {
-	V2X_RESERVED ,
-	V2X_NB_NODE_INFO,
-	V2X_BASIC_VEHICLE_STATUS,
-	V2X_FULL_VEHICLE_STATUS,
-	V2X_VEHICLE_STATIC_INFO,
-	V2X_LC_VEHICLE_ALERT_SET,
-	V2X_NB_VEHICLE_ALERT,
-	V2X_ROADSIZE_ALERT,
+	V2X_RESERVED = 0,
+	V2X_NB_NODE_SUMMRAY_INFO = 1,
+	V2X_NB_NODE_DETAIL_INFO = 2,
+	V2X_BASIC_VEHICLE_STATUS = 4,
+	V2X_FULL_VEHICLE_STATUS = 8,
+	V2X_VEHICLE_STATIC_INFO = 16,
+	V2X_LC_VEHICLE_ALERT_SET = 32,
+	V2X_NB_VEHICLE_ALERT = 64,
+	V2X_ROADSIZE_ALERT = 128,
 }V2X_MSG_TYPE_E;
 
 /************************** ehm param *********************/
@@ -145,12 +146,10 @@ typedef struct _ehm_config_st
 {
     EHM_RECV_TYPE_E        recv_type;
     comport_config_t  comport_config;
-
-
     
-    NODE_TYPE_E     report_node_type;
-    NODE_INFOR_TYPE_E node_info_type;
-    
+//    NODE_TYPE_E     report_node_type;
+//    NODE_INFOR_TYPE_E node_info_type;
+    uint8_t		v2x_report_info;//0:不上报	1:邻车概要信息	2:邻车详细信息	4:车辆基本状态	8:邻居车辆危险告警	16:路测告警
 } ehm_config_st, * ehm_config_st_ptr;
 
 #define EHM_CONFIG_ST_LEN    sizeof(ehm_config_st)
@@ -171,11 +170,15 @@ typedef struct _ehm_envar_st
 
     osal_sem_t       * sem_rx;
 
-    
     osal_task_t     * task_rx;
     ehm_buffer_st   buffer_rx;
 
-
+    ehm_buffer_st   buffer_tx;
+//    list_head_t    txbuf_free_list;
+//    list_head_t 	txbuf_waiting_list;
+//    ehm_txbuf_t 	txbuf[EHM_BUF_NUM];
+    /*心跳定时器*/
+    osal_timer_t *p_timer_heartbeat;
 
 }ehm_envar_st, * ehm_envar_st_ptr;
 

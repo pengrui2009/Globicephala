@@ -4,6 +4,7 @@ TARGET := rsu
 
 SUBDIRS += $(TOPDIR)/osal/linux
 SUBDIRS += $(TOPDIR)/osal
+SUBDIRS	+= $(TOPDIR)/protocol 
 SUBDIRS += $(TOPDIR)/drivers/gps
 SUBDIRS += $(TOPDIR)/drivers/cmn
 

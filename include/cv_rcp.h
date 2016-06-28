@@ -199,15 +199,15 @@ typedef struct _rcp_msgid {
 typedef struct _rcp_position{
     int32_t lat;
     int32_t lon;
-    int16_t elev;
+    int32_t elev;
     int32_t accu;
 }__COMPILE_PACK__ rcp_position_t;
 
 typedef struct _rcp_acceleration{
-    uint16_t lon;
-    uint16_t lat;
-    uint16_t vert;
-    uint8_t  yaw;
+    int16_t lon;
+    int16_t lat;
+    int8_t vert;
+    int16_t  yaw;
 }__COMPILE_PACK__ rcp_acceleration_t;
 
 
@@ -249,7 +249,7 @@ typedef struct _full_position_vector {
 	//struct DDateTime utcTime;       /* OPTIONAL */
 	int32_t	 lon;
 	int32_t	 lat;
-	int16_t  elev;  	            /* OPTIONAL */
+	int32_t  elev;  	            /* OPTIONAL */
 	uint16_t heading;	            /* OPTIONAL */
 	transmission_speed_t speed;	    /* OPTIONAL */
 	int32_t	posAccuracy;	        /* OPTIONAL */

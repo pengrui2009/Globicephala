@@ -36,6 +36,85 @@ void osal_sleep(int32_t milliseconds)
     os_sleep(milliseconds);
     return;
 }
+/******************************************************************************
+*	函数:	cv_ntohs
+*	功能:	调整2个字节之间的网络字节序
+*	参数:	s16					- 	数据
+*	返回:	>0					-	成功
+*	说明:	无
+ ******************************************************************************/
+inline uint16_t cv_ntohs(uint16_t s16)
+{
+	uint16_t ret = 0;
+#ifdef __LITTLE_ENDIAN
+	uint8_t *s, *d;
+#endif
+	#ifndef __LITTLE_ENDIAN
+	ret = s16;
+	#else
+	s = (uint8_t *)(&s16);
+	d = (uint8_t *)(&ret) + 1;
+	*d-- = *s++;
+	*d-- = *s++;
+	#endif
+	return ret;
+}
+/******************************************************************************
+*	函数:	cv_ntohl
+*	功能:	调整4个字节之间的网络字节序
+*	参数:	l32					- 	数据
+*	返回:	>0					-	成功
+*	说明:	无
+ ******************************************************************************/
+inline uint32_t cv_ntohl(uint32_t l32)
+{
+	uint32_t ret = 0;
+#ifdef __LITTLE_ENDIAN
+	uint8_t *s, *d;
+#endif
+	//#ifdef BIG_ENDIAN
+	#ifndef __LITTLE_ENDIAN
+	ret = l32;
+	#else
+ 	s = (uint8_t *)(&l32);
+ 	d = (uint8_t *)(&ret) + 3;
 
+ 	*d-- = *s++;
+	*d-- = *s++;
+	*d-- = *s++;
+	*d-- = *s++;
+	#endif
+
+
+
+	return ret;
+}
+/******************************************************************************
+*	函数:	cv_ntohf
+*	功能:	调整4个字节之间的网络字节序
+*	参数:	f32					- 	数据
+*	返回:	>0					-	成功
+*	说明:	无
+ ******************************************************************************/
+inline float cv_ntohf(float f32)
+{
+	float ret;
+#ifdef __LITTLE_ENDIAN
+	uint8_t *s, *d;
+#endif
+    #ifndef __LITTLE_ENDIAN
+	ret = f32;
+	#else
+	s = (uint8_t *)(&f32);
+	d = (uint8_t *)(&ret) + 3;
+
+
+	*d-- = *s++;
+	*d-- = *s++;
+	*d-- = *s++;
+	*d-- = *s++;
+	#endif
+	return ret;
+}
 /*lint -restore*/
 

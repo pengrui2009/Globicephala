@@ -23,7 +23,7 @@
 #include "cv_ehm.h"
 //#include "drv_wnet.h"
 #include "cv_rcp.h"
-
+#include "J2735.h"
 /*****************************************************************************
  * declaration of variables and functions                                    *
 *****************************************************************************/
@@ -35,466 +35,10 @@ ehm_config_st ehm_config =
         
     { COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE },
     
-    ALL_NODE, 
-    
-    DETAIL_INFO 
+    V2X_NB_NODE_SUMMRAY_INFO|V2X_NB_NODE_DETAIL_INFO
 };
 
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
-
-
-
-
-
-/* Encode acceleration data from float to int16 format. */
-int16_t encode_acceleration(float acceleration)
-{
-    int16_t result = 0;
-
-
-    /* unit 0.01m/s^2. */
-    result = (int16_t)(acceleration * (float)100);
-    if(result != 2001)
-    {
-        result = (2000 < result)? 2000 : result;
-        result = (result < -2000)? -2000 : result;
-    }
-    result = cv_ntohs(result);
-    
-	return result;
-}
-
-/* Decode acceleration data from int16 to float format. */
-float decode_acceleration(int16_t acceleration)
-{
-    float result = 0;
-
-
-    /* unit 0.01m/s^2. */
-    acceleration = cv_ntohs(acceleration);
-    result = (float)((float)acceleration / (float)100);
-    if(result != 20.01)
-    {
-        result = (20.00 < result)? 20.00 : result;
-        result = (result < -20.00)? -20.00 : result;
-    }
-
-	return result;
-}
-
-/* Encode angle data from float to uint16 format. */
-uint16_t encode_angle(float angle)
-{
-    uint16_t result = 0;
-
-    
-	result = ((uint16_t)(angle / 0.0125));
-    if(28800 <= result)
-    {
-        result = 28800;
-    }
-    result = cv_ntohs(result);
-    
-    return result;
-}
-
-/* Decode angle data from uint16 to float format. */
-float decode_angle(uint16_t angle)
-{
-    float result = 0;
-
-
-    angle = cv_ntohs(angle);
-    if(28800 <= angle)
-    {
-        angle = 28800;
-    }
-    result = ((float)((float)angle * 0.0125));  
-    
-	return result; 
-}
-
-/* Encode elevation data from float to int32 format. */
-int32_t encode_elevation(float elevation)
-{
-    int32_t result = 0;
-
-
-    /* unit 10 cm. */
-    result = (int32_t)(elevation * (float)10);
-    if(result != -4096)
-    {
-        result = (61439 < result)? 61439 : result;
-        result = (result < -4095)? -4095 : result;
-    }
-    result = cv_ntohl(result);
-    
-	return result;
-}
-
-/* Decode elevation data from int32 to float format. */
-float decode_elevation(int32_t elevation)
-{
-    float result = 0;
-
-
-    /* unit 10 cm. */
-    elevation = cv_ntohl(elevation);
-    result = (float)((float)elevation / (float)10);
-    if(result != -409.6)
-    {
-        result = (6143.9 < result)? 6143.9 : result;
-        result = (result < -409.5)? -409.5 : result;
-    }
-
-	return result;
-}
-
-/* Encode latitude data from float to int32 format. */
-int32_t encode_latitude(float latitude)
-{
-    int32_t result = 0;
-
-
-    /* unit 0.1 micro degree. */
-    result = (int32_t)(latitude * (float)10000000);
-    if(result != 900000001)
-    {
-        result = (900000000 < result)? 900000000 : result;
-        result = (result < -900000000)? -900000000 : result;
-    }
-    result = cv_ntohl(result);
-    
-	return result;
-}
-
-/* Decode latitude data from int32 to float format. */
-float decode_latitude(int32_t latitude)
-{
-    float result = 0;
-
-
-    /* unit 0.1 micro degree. */
-    latitude = cv_ntohl(latitude);
-    result = (float)((float)latitude / (float)10000000);
-    if(result != 90.0000001)
-    {
-        result = (90.0 < result)? 90.0 : result;
-        result = (result < -90.0)? -90.0 : result;
-    }
-
-	return result;
-}
-
-/* Encode longitude data from float to int32 format. */
-int32_t encode_longitude(float longitude)
-{
-    int32_t result = 0;
-
-
-    /* unit 0.1 micro degree. */
-    result = (int32_t)(longitude * (float)10000000);
-    if(result != 1800000001)
-    {
-        result = (1800000000 < result)? 1800000000 : result;
-        result = (result < -1799999999)? -1799999999 : result;
-    }
-    result = cv_ntohl(result);
-    
-	return result;
-}
-
-/* Decode longitude data from int32 to float format. */
-float decode_longitude(int32_t longitude)
-{
-    float result = 0;
-
-
-    /* unit 0.1 micro degree. */
-    longitude = cv_ntohl(longitude);
-    result = (float)((float)longitude / (float)10000000);
-    if(result != 180.0000001)
-    {
-        result = (180.0000000 < result)? 180.0000000 : result;
-        result = (result < -179.9999999)? -179.9999999 : result;
-    }
-
-	return result;
-}
-
-/* Encode semi-major axis accuracy data from float to uint8 format. */
-uint8_t encode_semimajor_axis_accuracy(float accuracy)
-{
-    uint8_t result = 0;
-
-    
-	result = ((uint8_t)(accuracy / 0.05));
-    return result;
-}
-
-/* Decode semi-major axis accuracy data from uint8 to float format. */
-float decode_semimajor_axis_accuracy(uint8_t accuracy)
-{
-    float result = 0;
-
-
-    result = ((float)((float)accuracy * 0.05));  
-	return result; 
-}
-
-/* Encode semi-major axis orientation data from float to uint8 format. */
-uint16_t encode_semimajor_axis_orientation(float orientation)
-{
-    uint16_t result = 0;
-
-    
-	result = ((uint16_t)(orientation / 0.0054932479));
-    result = cv_ntohs(result);
-    
-    return result;
-}
-
-/* Decode semi-major axis arientation data from uint8 to float format. */
-float decode_semimajor_axis_orientation(uint16_t orientation)
-{
-    float result = 0;
-
-
-    orientation = cv_ntohs(orientation);
-    result = ((float)((float)orientation * 0.0054932479));  
-	return result; 
-}
-
-/* Encode semi-minor axis accuracy data from float to uint8 format. */
-uint8_t encode_semiminor_axis_accuracy(float accuracy)
-{
-    uint8_t result = 0;
-
-    
-	result = ((uint8_t)(accuracy / 0.05));
-    return result;
-}
-
-/* Decode semi-minor axis accuracy data from uint8 to float format. */
-float decode_semiminor_axis_accuracy(uint8_t accuracy)
-{
-    float result = 0;
-
-
-    result = ((float)((float)accuracy * 0.05));  
-	return result; 
-}
-
-/* Encode semi-minor axis accuracy data from float to uint8 format. */
-int8_t encode_steer_wheel_angle(float angle)
-{
-	return ((int8_t)(angle / 1.5));
-}
-
-/* Decode semi-minor axis accuracy data from float to uint8 format. */
-float decode_steer_wheel_angle(int8_t angle)
-{
-	return ((float)((float)angle * 1.5));
-}
-
-/* Encode width data from float to uint16 format. */
-uint16_t encode_vehicle_width(float width)
-{
-    uint16_t result = 0;
-
-    
-	result = (uint16_t)(width * 100);
-    result = cv_ntohs(result);
-
-    return result;
-}
-
-/* Decode width data from uint16 to float format. */
-float decode_vehicle_width(uint16_t width)
-{   
-    float result = 0;
-
-
-    width = cv_ntohs(width);
-    result = (float)width / (float)100;
-    
-	return result;
-}
-
-/* Encode length data from float to uint16 format. */
-uint16_t encode_vehicle_length(float length)
-{
-    uint16_t result = 0;
-
-    
-	result = (uint16_t)(length * 100);
-    result = cv_ntohs(result);
-
-    return result;
-}
-
-/* Decode length data from uint16 to float format. */
-float decode_vehicle_length(uint16_t length)
-{   
-    float result = 0;
-
-
-    length = cv_ntohs(length);
-    result = (float)length / (float)100;
-    
-	return result;
-}
-
-
-
-
-
-
-
-
-
-/* Encode velocity data from float to int16 format. */
-int16_t encode_velocity(float velocity)
-{
-    int16_t result = 0;
-
-
-    result = (int16_t)(velocity / 0.02);
-
-    result = (8190 < result)? 8190 : result;
-    result = (result < -8190)? -8190 : result;
-    result = cv_ntohs(result);
-    
-    return result;
-}
-
-/* Decode velocity data from int16 to float. */
-float decode_velocity(int16_t velocity)
-{
-    float result = 0;
-
-    velocity = cv_ntohs(velocity);
-    result = (float)velocity * 0.02;
-    return result;
-}
-
-/* Encode vertical acceleration data from float to int8 format. */
-int8_t encode_vertical_acceleration(float acceleration)
-{
-    int8_t result = 0;
-
-
-    /* Correct the acceleration data. */
-    if((127 * 0.1962) < acceleration)
-    {
-        acceleration = 127 * 0.1962;
-    }
-    if(acceleration < -(126 * 0.1962))
-    {
-        acceleration = -(126 * 0.1962);
-    }
-    
-    result = (int8_t)(acceleration / 0.1962);
-
-    return result;
-}
-
-/* Decode vertical acceleration data from int8 to float format. */
-float decode_vertical_acceleration(int8_t acceleration)
-{
-    float result = 0;
-
-    result = (float)((float)acceleration * 0.1962);
-    return result;
-}
-
-/* Encode yawrate data from float to int16 format. */
-int16_t encode_yawrate(float yawrate)
-{
-    int16_t result = 0;
-
-
-    /* Unit 0.01 degree/s. */
-    result = (int16_t)(yawrate / 0.01);
-    result = cv_ntohs(result);
-    
-    return result;    
-}
-
-/* Decode yawrate data from int16 to float format. */
-float decode_yawrate(int16_t yawrate)
-{
-    float result = 0;
-
-    /* Unit 0.01 degree/s. */
-    yawrate = cv_ntohs(yawrate);
-    result = (float)((float)yawrate * 0.01);
-    return result;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*****************************************************************************
- @funcname: encode_vehicle_alert_flag
- @brief   : tran the local vehicle alert flag to extrenal vehicle alert flag
- @param   : warning_id		-	the local vehicle alert flag
- @return  :	extrenal vehicle alert flag
-*****************************************************************************/
-__COMPILE_INLINE__ uint32_t encode_vehicle_alert_flag(uint16_t warning_id)
-{
-    alert_flag_st alert_flag;
-
-    alert_flag.alert_word = 0;
-
-    if (warning_id & VAM_ALERT_MASK_VBD) {
-
-        alert_flag.alert_bit.vec_breakdown = 1;
-    }
-
-    if (warning_id & VAM_ALERT_MASK_EBD) {
-
-        alert_flag.alert_bit.vec_brake_hard = 1;
-    }
-
-    return alert_flag.alert_word;
-}
-/*****************************************************************************
- @funcname: decode_vehicle_alert_flag
- @brief   : tran extrenal vehicle alert flag to the local vehicle alert flag
- @param   : warning_id		- the extrenal vehicle alert flag
- @return  : the local vehicle alert flag
-*****************************************************************************/
-__COMPILE_INLINE__ uint16_t decode_vehicle_alert_flag(uint32_t x)
-{
-    uint16_t r = 0;
-    x = cv_ntohl(x);
-    if (x & EventHazardLights) {
-        r |= VAM_ALERT_MASK_VBD;
-    }
-
-    if (x & EventHardBraking){
-        r |= VAM_ALERT_MASK_EBD;
-    }
-
-    if (x & EventDisabledVehicle){
-        r |= VAM_ALERT_MASK_VOT;
-    }
-    return r;
-}
-
-
-
 
 /*****************************************************************************
  @funcname: ehm_add_event_queue
@@ -537,14 +81,21 @@ int ehm_add_event_queue(ehm_envar_st *p_ehm,
 /* Message group.----------------------------------------------------------- */
 
 
-void * ehm_get_txbuf(void)
+ehm_buffer_st * ehm_get_txbuf(ehm_envar_st * p_ehm)
 {
-    return NULL;
+	ehm_buffer_st *txbuf = &p_ehm->buffer_tx;
+	memset(txbuf->buffer, 0x0, sizeof(txbuf->buffer));
+	txbuf->data_len = 0;
+	if(p_ehm->config_ptr->recv_type == UART_RECV_TYPE)
+	{
+		txbuf->data_ptr = txbuf->buffer + UART_MSG_HEADER_ST_LEN;
+		//txbuf->data_len = UART_MSG_HEADER_ST_LEN + 2;//2byte CRC
+	}else{
+		txbuf->data_ptr = txbuf->buffer;
+	}
+
+	return txbuf;
 }
-
-
-
-
 
 /*****************************************************************************
  @funcname: nb_node_summary_infor
@@ -555,8 +106,7 @@ void * ehm_get_txbuf(void)
 *****************************************************************************/
 static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
 {
-    ehm_txbuf_t * txbuf;
-        
+	ehm_buffer_st * txbuf = NULL;
     frame_msg_header_st_ptr          msg_head_ptr = NULL;
     msg_vehicle_nb_status_st_ptr      nb_node_ptr = NULL;
     nb_node_summary_infor_st_ptr node_summary_ptr = NULL;
@@ -568,12 +118,12 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
 
 
     /* Get tx buffer from ehm tx buffer list. */
-    txbuf = ehm_get_txbuf();
-    if (txbuf == NULL) 
-    {
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
-        return -1;
-    }
+    txbuf = ehm_get_txbuf(p_ehm);
+//    if (txbuf == NULL)
+//    {
+//        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
+//        return -1;
+//    }
     
     /* Initial message header. */
     msg_head_ptr = (frame_msg_header_st_ptr)txbuf->data_ptr;
@@ -641,7 +191,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
 
         /* angle. */
         node_summary_ptr->angle = encode_angle(vsa_position.relative_dir);
-        node_summary_ptr->velocity = encode_velocity(vsa_position.relative_speed);
+        node_summary_ptr->velocity = encode_relative_velocity(vsa_position.relative_speed);
         node_summary_ptr->signalstrength = 0;
         node_summary_ptr->losstolerance = 0;
 
@@ -683,7 +233,6 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
     }  
     
     osal_sem_release(p_vam->sem_sta);
-
     return 0;    
     
 }
@@ -698,7 +247,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
 *****************************************************************************/
 static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
 {
-    ehm_txbuf_t * txbuf;
+	ehm_buffer_st * txbuf = NULL;
         
     frame_msg_header_st_ptr          msg_head_ptr = NULL;
     msg_vehicle_nb_status_st_ptr      nb_node_ptr = NULL;
@@ -708,7 +257,7 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
 
 
     /* Get tx buffer from ehm tx buffer list. */
-    txbuf = ehm_get_txbuf();
+    txbuf = ehm_get_txbuf(p_ehm);
     if (txbuf == NULL) 
     {
         OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
@@ -754,7 +303,7 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         node_detail_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(0);
 
         /* velocity. */
-        node_detail_ptr->velocity = encode_velocity(p_sta->s.speed);
+        node_detail_ptr->velocity = encode_absolute_velocity(p_sta->s.speed);
 
         /* angle. */
         node_detail_ptr->angle = encode_angle(p_sta->s.dir);
@@ -823,7 +372,7 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
 *****************************************************************************/
 static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
 {
-    ehm_txbuf_t                   * txbuf = NULL;
+	ehm_buffer_st * txbuf = NULL;
         
     frame_msg_header_st_ptr       msg_head_ptr = NULL;
     msg_vehicle_basic_status_st_ptr status_ptr = NULL;
@@ -831,7 +380,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
     
 
     /* Get tx buffer from ehm tx buffer list. */
-    txbuf = ehm_get_txbuf();
+    txbuf = ehm_get_txbuf(p_ehm);
     if (txbuf == NULL) 
     {
         OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
@@ -867,7 +416,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
     status_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(0);
 
     /* velocity. */
-    status_ptr->velocity = encode_velocity(local_status.speed);
+    status_ptr->velocity = encode_absolute_velocity(local_status.speed);
 
     /* angle. */
     status_ptr->angle = encode_angle(local_status.dir);
@@ -902,6 +451,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
     /* Get local valid data. */
     vam_get_local_current_status(&local);
 
+    //待完善，处理node_id关系
     /* node id. */
     memcpy(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id));
 
@@ -916,7 +466,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
     local.pos.accu.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
 
     /* velocity. */
-    local.speed = decode_velocity(status_ptr->velocity);
+    local.speed = decode_absolute_velocity(status_ptr->velocity);
 
     /* angle. */
     local.dir = decode_angle(status_ptr->angle);
@@ -974,7 +524,7 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
     local.tran_state = status_ptr->tran_state;
 
     /* velocity. */
-    local.speed = decode_velocity(status_ptr->velocity);
+    local.speed = decode_absolute_velocity(status_ptr->velocity);
 
     /* angle. */
     local.dir = decode_angle(status_ptr->angle);
@@ -1173,7 +723,7 @@ static int8_t encode_nb_vehicle_alert_OLD(ehm_envar_st * p_ehm)
 *****************************************************************************/
 static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
 {
-    ehm_txbuf_t * txbuf = NULL;
+	ehm_buffer_st * txbuf = NULL;
         
     frame_msg_header_st_ptr          msg_head_ptr = NULL;
     msg_nb_vehicle_alert_st_ptr       nb_node_ptr = NULL;
@@ -1188,12 +738,13 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
 
 
     /* Get tx buffer from ehm tx buffer list. */
-    txbuf = ehm_get_txbuf();
-    if (txbuf == NULL) 
-    {
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
-        return -1;
-    }
+    txbuf = ehm_get_txbuf(p_ehm);
+
+//    if (txbuf == NULL)
+//    {
+//        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
+//        return -1;
+//    }
     
     /* Initial message header. */
     msg_head_ptr = (frame_msg_header_st_ptr)txbuf->data_ptr;
@@ -1259,7 +810,7 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
 
         /* angle. */
         node_summary_ptr->angle = encode_angle(vsa_position.relative_dir);
-        node_summary_ptr->velocity = encode_velocity(vsa_position.relative_speed);
+        node_summary_ptr->velocity = encode_relative_velocity(vsa_position.relative_speed);
         node_summary_ptr->signalstrength = 0;
         node_summary_ptr->losstolerance = 0;
 
@@ -1305,7 +856,22 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
     
 }
 
-
+/*****************************************************************************
+ @funcname: encode_roadsze_alert
+ @brief   : report roadsize alert msg
+ @param   : p_ehm			- ehm enviroment point
+			p_vam			- vam enviroment point
+			p_vsa			- vsa enviroment point
+ @return  : 0				- success
+			<0				- error
+*****************************************************************************/
+static int8_t encode_roadsze_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
+{
+//	ehm_buffer_st * txbuf = NULL;
+//
+//	txbuf = ehm_get_txbuf(p_ehm);
+	return 0;
+}
 
 
 /*****************************************************************************
@@ -1597,29 +1163,35 @@ void * ehm_main_thread_entry(void *param)
 			0			- success
 			others		- error
 *****************************************************************************/
-static int ehm_package_send(ehm_envar_st * p_ehm, ehm_txinfo_t* tx_info, uint8_t *pdata, uint32_t length)
+static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint8_t *pdata, uint32_t length)
 {
-    uart_msg_header_st_ptr uart_ptr = (uart_msg_header_st_ptr)(pdata - UART_MSG_HEADER_ST_LEN);
-    int result = 0;
+	uint8_t *pdata;
+	uint32_t length;
+	int result = 0;
+    uart_msg_header_st_ptr uart_ptr;
 
+    pdata = p_ehm->buffer_tx.buffer;
+    uart_ptr = (uart_msg_header_st_ptr)pdata;
 
+    length = p_ehm->buffer_tx.data_len;
     /* Build uart message header. */
     uart_ptr->magic_num1 = MSG_HEADER_MAGIC_NUM1;
     uart_ptr->magic_num2 = MSG_HEADER_MAGIC_NUM2;
     uart_ptr->length = cv_ntohs(length + SIZEOF_MSG_CHK_DOMAIN);
 
-    /* send data to periph */  
-  //  result = comport_send(uart_ptr, cv_ntohs(uart_ptr->length) + UART_MSG_HEADER_ST_LEN);
+    //待完善功能-增加CHK,CHK长度数据已经计算
+    /*uart send data to periph */
+    result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
     if(result < 0)
     {
     	osal_printf("comport_send error ret=%d\n", result);
     }
+    //待完善功能-增加网络发送
+    /* eth send data to periph*/
     
     return result;
     
 }
-
-
 
 /*****************************************************************************
  @funcname: ehm_tx_thread_entry
@@ -1627,48 +1199,102 @@ static int ehm_package_send(ehm_envar_st * p_ehm, ehm_txinfo_t* tx_info, uint8_t
  @param   : ehm_envar_st * p_ehm
  @return  : none
 *****************************************************************************/
-void * ehm_tx_thread_entry(ehm_envar_st *p_ehm)
+void * ehm_tx_thread_entry(void *arg)
 {
-    int                 err = 0;
-    ehm_txbuf_t * txbuf_ptr = NULL;
-
-
+    int		ret = 0;
+    uint32_t 	len;
+//    ehm_txbuf_t * txbuf_ptr = NULL;
+    ehm_envar_st *p_ehm = (ehm_envar_st *)arg;
+    uint8_t buf[SYS_MQ_MSG_SIZE];
+    sys_msg_t *p_msg = (sys_msg_t *)buf;
     /* Print thread trace. */
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "Thread %s: ---->\n", __FUNCTION__);
 
-    return NULL;
-
     while(1)
     {
+    	ret = osal_queue_recv(p_ehm->queue_main, buf, &len, OSAL_WAITING_FOREVER);
+		if (ret == OSAL_STATUS_SUCCESS)
+		{
+			if(p_msg->id ==  EHM_MSG_VSA_SEND_DATA)
+			{
+				uint8_t v2x_report_info = p_ehm->config_ptr->v2x_report_info;
+				if(v2x_report_info & V2X_NB_NODE_SUMMRAY_INFO)
+				{
+					ret = encode_nb_node_summary_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+					if(ret < 0)
+					{
+						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+					}
+					ret = ehm_package_send(p_ehm);
+					if(ret < 0)
+					{
+						osal_printf("ehm_package_send error ret=%d\n",ret);
+					}
+				}
 
+				if(v2x_report_info & V2X_NB_NODE_DETAIL_INFO)
+				{
+					ret = encode_nb_node_detail_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+					if(ret < 0)
+					{
+						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+					}
+					ret = ehm_package_send(p_ehm);
+					if(ret < 0)
+					{
+						osal_printf("ehm_package_send error ret=%d\n",ret);
+					}
+				}
 
+				if(v2x_report_info & V2X_BASIC_VEHICLE_STATUS)
+				{
+					ret = encode_basic_vehicle_status(p_ehm);
+					if(ret < 0)
+					{
+						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+					}
+					ret = ehm_package_send(p_ehm);
+					if(ret < 0)
+					{
+						osal_printf("ehm_package_send error ret=%d\n",ret);
+					}
+				}
 
-        encode_nb_node_summary_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
-        encode_nb_node_detail_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
-        encode_basic_vehicle_status(p_ehm);
-        encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+				if(v2x_report_info & V2X_NB_VEHICLE_ALERT)
+				{
+					ret = encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+					if(ret < 0)
+					{
+						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+					}
+					ret = ehm_package_send(p_ehm);
+					if(ret < 0)
+					{
+						osal_printf("ehm_package_send error ret=%d\n",ret);
+					}
+				}
 
-    
-        err = osal_sem_take(p_ehm->sem_tx, OSAL_WAITING_FOREVER);
-        if (err == OSAL_STATUS_SUCCESS)
-        {
-            /* Send tx_buffer data when data valid. */
-            if (txbuf_ptr != NULL) 
-            {
-                /* data packed according to data type */
-                err = ehm_package_send(p_ehm, &txbuf_ptr->info, txbuf_ptr->data_ptr, txbuf_ptr->data_len);
+				if(v2x_report_info & V2X_ROADSIZE_ALERT)
+				{
+					//待完善,添加路测告警上报功能
+					ret = encode_roadsze_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+					if(ret < 0)
+					{
+						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+					}
+					ret = ehm_package_send(p_ehm);
+					if(ret < 0)
+					{
+						osal_printf("ehm_package_send error ret=%d\n",ret);
+					}
+				}
 
-                /* Move the first element in waiting list to free list. */
-                if(0 <= err)
-                {
-                    
-                }               
-            }
-        }
-        else
-        {
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "Thread %s: Failed to take semaphore(%d)\n", __FUNCTION__, err);
-        }
+			}
+		}
+		else
+		{
+			OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: osal_queue_recv error [%d]\n", __FUNCTION__, ret);
+		}
     }
     
     return NULL;    
@@ -1729,7 +1355,15 @@ START_ROUTINE:
     return NULL;
 }
 
-
+void timer_heartbeat_callback(void *arg)
+{
+	ehm_envar_st *p_ehm = (ehm_envar_st *)arg;
+//	inform_ehm_caculate_done();
+	if (p_ehm->queue_main)
+	{
+		ehm_add_event_queue(p_ehm, EHM_MSG_VSA_SEND_DATA, 0, 0, NULL);
+	}
+}
 
 /*****************************************************************************
  @funcname: ehm_init
@@ -1739,9 +1373,17 @@ START_ROUTINE:
 *****************************************************************************/
 void ehm_init(void)
 {
+//	int i;
     int result = 0;
     ehm_envar_st_ptr p_ehm = &ehm_envar;
 
+    /* Initialize the txbuf queue. */
+//    INIT_LIST_HEAD(&p_ehm->txbuf_waiting_list);
+//    INIT_LIST_HEAD(&p_ehm->txbuf_free_list);
+//    for(i = 0; i < (sizeof(p_ehm->txbuf) / sizeof(p_ehm->txbuf[0])); i++)
+//    {
+//        list_add_tail(&p_ehm->txbuf[i].list, &p_ehm->txbuf_free_list);
+//    }
 
     /* Open uart module. */
     result = dstream_device[DSTREAM_USBD].open();
@@ -1780,6 +1422,12 @@ void ehm_init(void)
     p_ehm->task_rx = osal_task_create("task-ehmrx", ehm_rx_thread_entry, p_ehm, EHM_RX_THREAD_STACK_SIZE, EHM_RX_THREAD_PRIORITY);
     osal_assert(p_ehm->task_rx != NULL);
 
+
+    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm,\
+            100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
+        osal_assert(p_ehm->p_timer_heartbeat != NULL);
+
+    osal_timer_start(p_ehm->p_timer_heartbeat);
 }
 
 

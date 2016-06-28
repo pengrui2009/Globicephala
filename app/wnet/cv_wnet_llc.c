@@ -14,7 +14,7 @@
 #define OSAL_MODULE_DEBUG_LEVEL OSAL_DEBUG_INFO
 #define MODULE_NAME "llc"
 #include "cv_osal_dbg.h"
-
+#include "J2735.h"
 #include "cv_vam.h"
 #include "cv_cms_def.h"
 #include "cv_wnet.h"

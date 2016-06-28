@@ -56,11 +56,14 @@ static inline void osal_delay(int usec)
 
 static inline uint32_t osal_get_systemtime(void)
 {
+	int ret;
     struct os_reltime t;
-    if (os_get_reltime(&t)){
+    ret = os_get_reltime(&t);
+    if(ret == 0){
         return t.sec*1000 + t.usec/1000;
+    }else{
+    	return 0;
     }
-    return 0;
 }
 
 /**
