@@ -478,7 +478,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
 		osal_printf("%s: vam_set_local_status err ret = %d. \n",__FUNCTION__, result);
 	}
     
-	return ret;
+	return result;
 }
 
 
