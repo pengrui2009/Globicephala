@@ -927,14 +927,17 @@ static int vsa_manual_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
 
 static int vsa_eebl_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
 {
-        vam_active_alert(VAM_ALERT_MASK_EBD);
-        osal_timer_stop(p_vsa->timer_ebd_send);
-        osal_timer_start(p_vsa->timer_ebd_send);
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "Detect Emergency braking \n\n");
-        sys_add_event_queue(&p_cms_envar->sys, \
-                                    SYS_MSG_ALARM_ACTIVE, 0, VSA_ID_EBD, NULL);
-        return 0;
+    OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "Detect Emergency braking \n\n");
 
+    
+    vam_active_alert(VAM_ALERT_MASK_EBD);
+
+    osal_timer_stop(p_vsa->timer_ebd_send);
+    osal_timer_start(p_vsa->timer_ebd_send);
+    
+    sys_add_event_queue(&p_cms_envar->sys, SYS_MSG_ALARM_ACTIVE, 0, VSA_ID_EBD, NULL);
+    
+    return 0;
 }
 static int vsa_auto_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
 {

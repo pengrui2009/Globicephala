@@ -121,9 +121,11 @@ typedef struct {
 
 
 
-typedef struct _oam_client {
+typedef struct _oam_client 
+{
     uint8_t valid;
     uint16_t sock_port;
+    
 	int sock_fd;
 	struct sockaddr_in client_addr;
 } oam_client_t;

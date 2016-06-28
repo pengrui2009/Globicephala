@@ -138,7 +138,8 @@ void *cv_oam_proc_thread(void * param)
 		client_sockfd = accept(server_sockfd, (struct sockaddr*)&client_addr, (socklen_t *)&client_len);
 
 	    //新线程，读取客户端发过来的信息，处理信息，再发送应答给客户端
-        if (client_sockfd > 0) {
+        if (client_sockfd > 0) 
+        {
             memset(name, 0, sizeof(name));
             sprintf(name, "tk_oam_rx_%d", client_sockfd);
             os_pthread_create(&thread_id, 

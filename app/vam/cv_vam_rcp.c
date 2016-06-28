@@ -81,6 +81,9 @@ float rcp_dbg_distance = 0;
 __COMPILE_INLINE__ uint16_t encode_vehicle_alert(uint16_t x)
 {
     uint16_t r = 0;
+
+
+    /* Vehicle break down. */
     if (x & VAM_ALERT_MASK_VBD){
         r |= EventHazardLights;        
     }
@@ -88,13 +91,15 @@ __COMPILE_INLINE__ uint16_t encode_vehicle_alert(uint16_t x)
         r &= ~EventHazardLights;
     }
 
+    /* Vehicle emergency brake down. */
     if (x & VAM_ALERT_MASK_EBD){
         r |= EventHardBraking;        
     }
     else {
         r &= ~EventHardBraking;
     }
-    
+
+    /* Vehicle overturned. */
     if (x & VAM_ALERT_MASK_VOT){
         r |= EventDisabledVehicle;
     }
@@ -108,6 +113,8 @@ __COMPILE_INLINE__ uint16_t encode_vehicle_alert(uint16_t x)
 __COMPILE_INLINE__ uint16_t decode_vehicle_alert(uint16_t x)
 {
     uint16_t r = 0;
+
+    
     x = cv_ntohs(x);
     if (x & EventHazardLights) {
         r |= VAM_ALERT_MASK_VBD;        
@@ -120,6 +127,7 @@ __COMPILE_INLINE__ uint16_t decode_vehicle_alert(uint16_t x)
     if (x & EventDisabledVehicle){
         r |= VAM_ALERT_MASK_VOT;        
     }
+    
     return r;
 }
 

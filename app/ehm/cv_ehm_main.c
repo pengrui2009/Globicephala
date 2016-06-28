@@ -443,7 +443,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
 *****************************************************************************/
 int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
 {
-	int ret;
+	int                                 result = 0;
 	vam_stastatus_t                      local = { { 0 }, 0 };
 	msg_vehicle_basic_status_st_ptr status_ptr = (msg_vehicle_basic_status_st_ptr)pdata;
 
@@ -472,16 +472,12 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
     local.dir = decode_angle(status_ptr->angle);
 
     /* Set new local status. */
-	ret = vam_set_local_status(&local);
-	if(ret < 0)
+	result = vam_set_local_status(&local);
+	if(result < 0)
 	{
-		osal_printf("%s:vam_set_local_status err ret=%d\n",__FUNCTION__,ret);
-		goto err;
+		osal_printf("%s: vam_set_local_status err ret = %d. \n",__FUNCTION__, result);
 	}
     
-	ret = 0;
-    
-err:
 	return ret;
 }
 
@@ -499,7 +495,7 @@ err:
 *****************************************************************************/
 int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
 {
-	int ret;
+	int                                 result = 0;
 	vam_stastatus_t                      local = { { 0 }, 0 };
 	msg_vehicle_full_status_st_ptr  status_ptr = (msg_vehicle_full_status_st_ptr)pdata;
 
@@ -508,7 +504,7 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
     vam_get_local_current_status(&local);
 
     /* node id. */
-    memcpy(local.pid, status_ptr->node_id, RCP_TEMP_ID_LEN);
+    memcpy(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id));
 
     /* position. */
 	local.pos.lat =  decode_latitude(status_ptr->position.latitude);
@@ -545,24 +541,20 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
     local.exterior_light = status_ptr->exterlight;
 
     /* Set new local status. */
-	ret = vam_set_local_status(&local);
-	if(ret < 0)
+	result = vam_set_local_status(&local);
+	if(result < 0)
 	{
-		osal_printf("%s:vam_set_local_status err ret=%d\n",__FUNCTION__,ret);
-		goto err;
+		osal_printf("%s: vam_set_local_status err ret = %d. \n", __FUNCTION__, result);
 	}
     
-	ret = 0;
-    
-err:
-	return ret;
+	return result;
 }
 
 
 /* Decode message: vehicle static information. */
 int decode_vehicle_static_infor(uint8_t *pdata, uint16_t len)
 {
-    int ret;
+    int                                 result = 0;
 	vam_stastatus_t                      local = { { 0 }, 0 };
 	msg_vehicle_static_info_st_ptr  status_ptr = (msg_vehicle_static_info_st_ptr)pdata;
 
@@ -578,47 +570,52 @@ int decode_vehicle_static_infor(uint8_t *pdata, uint16_t len)
     local.vehicle_length = decode_vehicle_length(status_ptr->vehicle_size.vehiclelength);
 
     /* Set new local status. */
-	ret = vam_set_local_status(&local);
-	if(ret < 0)
+	result = vam_set_local_status(&local);
+	if(result < 0)
 	{
-		osal_printf("%s:vam_set_local_status err ret=%d\n",__FUNCTION__,ret);
-		goto err;
+		osal_printf("%s: vam_set_local_status err ret=%d. \n",__FUNCTION__, result);
 	}
     
-	ret = 0;
-    
-err:
-	return ret;
+	return result;
 }
 
 
 /* Decode message: local vehicle alert set. */
 int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 {
-    int ret;
-	vam_stastatus_t                      local = { { 0 }, 0 };
+    int                                 result = 0;
 	msg_local_vehicle_alert_st_ptr  status_ptr = (msg_local_vehicle_alert_st_ptr)pdata;
 
 
-    /* Get local valid data. */
-    vam_get_local_current_status(&local);
+    /* Update vehicle break down alert. */
+    if(status_ptr->vecbreakdownalert == VEHICLE_ALERT_ON) 
+    {
+        vam_active_alert(VAM_ALERT_MASK_VBD);
+    }
+    else if(status_ptr->vecbreakdownalert == VEHICLE_ALERT_OFF)
+    {
+        vam_cancel_alert(VAM_ALERT_MASK_VBD);
+    }
+    else if(status_ptr->vecbreakdownalert == VEHICLE_ALERT_INVALID)
+    {
+        vam_cancel_alert(VAM_ALERT_MASK_VBD);
+    }    
 
+    /* Update vehicle brake hard alert. */
+    if(status_ptr->vecbrakehardalert == VEHICLE_ALERT_ON) 
+    {
+        vam_active_alert(VAM_ALERT_MASK_EBD);
+    }
+    else if(status_ptr->vecbrakehardalert == VEHICLE_ALERT_OFF)
+    {
+        vam_cancel_alert(VAM_ALERT_MASK_EBD);
+    }
+    else if(status_ptr->vecbrakehardalert == VEHICLE_ALERT_INVALID)
+    {
+        vam_cancel_alert(VAM_ALERT_MASK_EBD);
+    }    
 
-    /*- Set local alert. -----------------------------*/
-    local.alert_mask = status_ptr->vecbrakedownalert;
-    
-    /* Set new local status. */
-	ret = vam_set_local_status(&local);
-	if(ret < 0)
-	{
-		osal_printf("%s:vam_set_local_status err ret=%d\n",__FUNCTION__,ret);
-		goto err;
-	}
-    
-	ret = 0;
-    
-err:
-	return ret;
+	return result;
 }
 
 
