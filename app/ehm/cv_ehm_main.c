@@ -50,28 +50,17 @@ ehm_envar_st   ehm_envar = { &ehm_config, 0 };
  @param   : void    *msg_argv   
  @return  : 
 *****************************************************************************/
-int ehm_add_event_queue(ehm_envar_st *p_ehm, 
-                             uint16_t msg_id, 
-                             uint16_t msg_len, 
-                             uint32_t msg_argc,
-                             void    *msg_argv)
-
+int ehm_add_event_queue(ehm_envar_st *p_ehm, uint16_t msg_id, uint16_t msg_len, uint32_t msg_argc, void *msg_argv)
 {
-    int err = OSAL_STATUS_NOMEM;
-    sys_msg_t *p_msg;
-    uint32_t len = sizeof(sys_msg_t);
+    int       err = OSAL_STATUS_NOMEM;
+    sys_msg_t msg = { msg_id, msg_len, msg_argc, msg_argv };
 
-    p_msg = osal_malloc(sizeof(sys_msg_t));
-    p_msg->id = msg_id;
-    p_msg->len = msg_len;
-    p_msg->argc = msg_argc;
-    p_msg->argv = msg_argv;
-    err = osal_queue_send(p_ehm->queue_main, p_msg, len, 0, OSAL_NO_WAIT);
 
-    if (err != OSAL_STATUS_SUCCESS) 
+    /* Send message to tx task. */
+    err = osal_queue_send(p_ehm->queue_tx, &msg, sizeof(msg), 0, OSAL_NO_WAIT);
+    if(err != OSAL_STATUS_SUCCESS) 
     {
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: failed=[%d], msg=%04x\n", __FUNCTION__, err, msg_id);
-        osal_free(p_msg);  
+        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: failed = [%d], msg = %04x. \n", __FUNCTION__, err, msg_id);
     }
 
     return err;
@@ -1163,10 +1152,6 @@ RETURN_MARK:
 *****************************************************************************/
 void * ehm_main_thread_entry(void *param)
 {   
-    while (1) 
-    {
-        ;
-    }
 
     return NULL;
 }
@@ -1214,6 +1199,100 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
     
 }
 
+
+
+
+void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
+{
+    int		             ret = 0;
+
+    
+    /* neighour node summary information. */
+	if(send_info & V2X_NB_NODE_SUMMRAY_INFO)
+	{
+		ret = encode_nb_node_summary_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+		if(ret < 0)
+		{
+			osal_printf("encode_nb_node_summary_infor error ret=%d. \n", ret);
+		}
+		ret = ehm_package_send(p_ehm);
+		if(ret < 0)
+		{
+			osal_printf("ehm_package_send error ret=%d. \n", ret);
+		}
+	}
+
+    /* Neighbour node detail information. */
+	if(send_info & V2X_NB_NODE_DETAIL_INFO)
+	{
+		ret = encode_nb_node_detail_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+		if(ret < 0)
+		{
+			osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+		}
+		ret = ehm_package_send(p_ehm);
+		if(ret < 0)
+		{
+			osal_printf("ehm_package_send error ret=%d\n",ret);
+		}
+	}
+
+    /* Local node basic status. */
+	if(send_info & V2X_BASIC_VEHICLE_STATUS)
+	{
+		ret = encode_basic_vehicle_status(p_ehm);
+		if(ret < 0)
+		{
+			osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+		}
+		ret = ehm_package_send(p_ehm);
+		if(ret < 0)
+		{
+			osal_printf("ehm_package_send error ret=%d\n",ret);
+		}
+	}
+
+    /* Neighour node alert. */
+	if(send_info & V2X_NB_VEHICLE_ALERT)
+	{
+		ret = encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+		if(ret < 0)
+		{
+			osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+		}
+		ret = ehm_package_send(p_ehm);
+		if(ret < 0)
+		{
+			osal_printf("ehm_package_send error ret=%d\n",ret);
+		}
+	}
+
+    /* Roadside alert. */
+	if(send_info & V2X_ROADSIZE_ALERT)
+	{
+		//待完善,添加路测告警上报功能
+		ret = encode_roadsze_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+		if(ret < 0)
+		{
+			osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
+		}
+		ret = ehm_package_send(p_ehm);
+		if(ret < 0)
+		{
+			osal_printf("ehm_package_send error ret=%d\n",ret);
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
 /*****************************************************************************
  @funcname: ehm_tx_thread_entry
  @brief   : ehm tx thread process module
@@ -1222,101 +1301,37 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
 *****************************************************************************/
 void * ehm_tx_thread_entry(void *arg)
 {
-    int		ret = 0;
-    uint32_t 	len;
-//    ehm_txbuf_t * txbuf_ptr = NULL;
-    ehm_envar_st *p_ehm = (ehm_envar_st *)arg;
-    uint8_t buf[SYS_MQ_MSG_SIZE];
-    sys_msg_t *p_msg = (sys_msg_t *)buf;
+    int		             ret = 0;
+    ehm_envar_st      *p_ehm = (ehm_envar_st *)arg;
+    
+    uint8_t buf[EHM_MQ_MSG_SIZE] = { 0 };
+    uint32_t 	             len = 0;
+
+    
     /* Print thread trace. */
-    OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "Thread %s: ---->\n", __FUNCTION__);
+    OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "Thread %s: ----> \n", __FUNCTION__);
 
-    while(1)
+RCV_MSGQ:
+
+    /* Waiting for msg queue forever. */
+    ret = osal_queue_recv(p_ehm->queue_tx, buf, &len, OSAL_WAITING_FOREVER);
+    if (ret != OSAL_STATUS_SUCCESS)
     {
-    	ret = osal_queue_recv(p_ehm->queue_main, buf, &len, OSAL_WAITING_FOREVER);
-		if (ret == OSAL_STATUS_SUCCESS)
-		{
-			if(p_msg->id ==  EHM_MSG_VSA_SEND_DATA)
-			{
-				uint8_t v2x_report_info = p_ehm->config_ptr->v2x_report_info;
-				if(v2x_report_info & V2X_NB_NODE_SUMMRAY_INFO)
-				{
-					ret = encode_nb_node_summary_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
-					if(ret < 0)
-					{
-						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
-					}
-					ret = ehm_package_send(p_ehm);
-					if(ret < 0)
-					{
-						osal_printf("ehm_package_send error ret=%d\n",ret);
-					}
-				}
-
-				if(v2x_report_info & V2X_NB_NODE_DETAIL_INFO)
-				{
-					ret = encode_nb_node_detail_infor(p_ehm, p_vam_envar, &p_cms_envar->vsa);
-					if(ret < 0)
-					{
-						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
-					}
-					ret = ehm_package_send(p_ehm);
-					if(ret < 0)
-					{
-						osal_printf("ehm_package_send error ret=%d\n",ret);
-					}
-				}
-
-				if(v2x_report_info & V2X_BASIC_VEHICLE_STATUS)
-				{
-					ret = encode_basic_vehicle_status(p_ehm);
-					if(ret < 0)
-					{
-						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
-					}
-					ret = ehm_package_send(p_ehm);
-					if(ret < 0)
-					{
-						osal_printf("ehm_package_send error ret=%d\n",ret);
-					}
-				}
-
-				if(v2x_report_info & V2X_NB_VEHICLE_ALERT)
-				{
-					ret = encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
-					if(ret < 0)
-					{
-						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
-					}
-					ret = ehm_package_send(p_ehm);
-					if(ret < 0)
-					{
-						osal_printf("ehm_package_send error ret=%d\n",ret);
-					}
-				}
-
-				if(v2x_report_info & V2X_ROADSIZE_ALERT)
-				{
-					//待完善,添加路测告警上报功能
-					ret = encode_roadsze_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
-					if(ret < 0)
-					{
-						osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
-					}
-					ret = ehm_package_send(p_ehm);
-					if(ret < 0)
-					{
-						osal_printf("ehm_package_send error ret=%d\n",ret);
-					}
-				}
-
-			}
-		}
-		else
-		{
-			OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: osal_queue_recv error [%d]\n", __FUNCTION__, ret);
-		}
+    	OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: osal_queue_recv error [%d]. \n", __FUNCTION__, ret);
+        goto RCV_MSGQ;
     }
+
+    /* Start next receive when msg not for tx thread.  */
+    if(((sys_msg_t *)buf)->id != EHM_MSG_VSA_SEND_DATA)
+    {
+        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: Msg not for this thread. [%d]. \n", __FUNCTION__);
+        goto RCV_MSGQ;
+    }
+
+    /* Send message group based on information. */
+    ehm_send_msg_group(p_ehm, p_ehm->config_ptr->v2x_report_info);
+
+    goto RCV_MSGQ;
     
     return NULL;    
 }
@@ -1379,8 +1394,9 @@ START_ROUTINE:
 void timer_heartbeat_callback(void *arg)
 {
 	ehm_envar_st *p_ehm = (ehm_envar_st *)arg;
-//	inform_ehm_caculate_done();
-	if (p_ehm->queue_main)
+
+
+	if (p_ehm->queue_tx)
 	{
 		ehm_add_event_queue(p_ehm, EHM_MSG_VSA_SEND_DATA, 0, 0, NULL);
 	}
@@ -1419,8 +1435,7 @@ void ehm_init(void)
 	}
 
     /* ehm main process event queue. */
-    p_ehm->queue_main = osal_queue_create("q-ehm", EHM_QUEUE_SIZE, EHM_MQ_MSG_SIZE);
-    osal_assert(p_ehm->queue_main != NULL);
+
 
     /* ehm module main process. */
     p_ehm->task_main = osal_task_create("t-ehm-main", ehm_main_thread_entry, p_ehm, EHM_MAIN_THREAD_STACK_SIZE, EHM_MAIN_THREAD_PRIORITY);
@@ -1428,25 +1443,20 @@ void ehm_init(void)
 
 
     /* ehm module tx thread related. */
-    p_ehm->sem_tx = osal_sem_create("sem-ehmtx", 0);
-    osal_assert(p_ehm->sem_tx != NULL);
-
-    p_ehm->task_tx = osal_task_create("t-ehm-tx", (void *(*)(void *))ehm_tx_thread_entry,p_ehm, EHM_TX_THREAD_STACK_SIZE, EHM_TX_THREAD_PRIORITY);
+    p_ehm->queue_tx = osal_queue_create("q-ehmtx", EHM_QUEUE_SIZE, EHM_MQ_MSG_SIZE);
+    osal_assert(p_ehm->queue_tx != NULL);
+    
+    p_ehm->task_tx = osal_task_create("task-ehmtx", ehm_tx_thread_entry, p_ehm, EHM_TX_THREAD_STACK_SIZE, EHM_TX_THREAD_PRIORITY);
     osal_assert(p_ehm->task_tx != NULL);
 
-
-
     /* ehm module rx thread related. */
-    p_ehm->sem_rx = osal_sem_create("sem-ehmrx", 0);
-    osal_assert(p_ehm->sem_rx != NULL);
-
     p_ehm->task_rx = osal_task_create("task-ehmrx", ehm_rx_thread_entry, p_ehm, EHM_RX_THREAD_STACK_SIZE, EHM_RX_THREAD_PRIORITY);
     osal_assert(p_ehm->task_rx != NULL);
 
 
-    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm,\
-            100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
-        osal_assert(p_ehm->p_timer_heartbeat != NULL);
+    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
+    osal_assert(p_ehm->p_timer_heartbeat != NULL);
+
 
     osal_timer_start(p_ehm->p_timer_heartbeat);
 }

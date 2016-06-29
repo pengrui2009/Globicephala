@@ -144,12 +144,15 @@ typedef struct _ehm_buffer_st
 /* External host manage parameter config structure. */
 typedef struct _ehm_config_st 
 {
+    /* Data receive type for rx thread. */
     EHM_RECV_TYPE_E        recv_type;
+
+    /* uart configure parameter. */
     comport_config_t  comport_config;
+
+    /* 0:不上报	1:邻车概要信息	2:邻车详细信息	4:车辆基本状态	8:邻居车辆危险告警	16:路测告警 */
+    uint32_t		 v2x_report_info;
     
-//    NODE_TYPE_E     report_node_type;
-//    NODE_INFOR_TYPE_E node_info_type;
-    uint8_t		v2x_report_info;//0:不上报	1:邻车概要信息	2:邻车详细信息	4:车辆基本状态	8:邻居车辆危险告警	16:路测告警
 } ehm_config_st, * ehm_config_st_ptr;
 
 #define EHM_CONFIG_ST_LEN    sizeof(ehm_config_st)
@@ -161,13 +164,13 @@ typedef struct _ehm_envar_st
     /* Pointer to ehm module's configurration structure. */
     ehm_config_st_ptr config_ptr;
 
-
-    osal_queue_t * queue_main;
     osal_task_t   * task_main;
 
-    osal_sem_t       * sem_tx;
+    /* Tx task related. */
     osal_task_t     * task_tx;
+    osal_queue_t   * queue_tx;
 
+    
     osal_sem_t       * sem_rx;
 
     osal_task_t     * task_rx;
@@ -184,9 +187,6 @@ typedef struct _ehm_envar_st
 
 #define EHM_ENVAR_ST_LEN    sizeof(ehm_envar_st)
 
-
-
-int inform_ehm_caculate_done(void);
 
 
 #endif
