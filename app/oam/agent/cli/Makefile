@@ -30,7 +30,7 @@ app:
 	done
 
 	$(CC) $(CLIOBJ_FILES) $(CLI_LDFLAGS) -o $(TARGET)
-	$(STRIP) --strip-unneeded  --remove-section=.comment --remove-section=.note $(TARGET)
+	#$(STRIP) --strip-unneeded  --remove-section=.comment --remove-section=.note $(TARGET)
 
 install:
 	cp -f $(TARGET) $(IMAGES_DIR)/

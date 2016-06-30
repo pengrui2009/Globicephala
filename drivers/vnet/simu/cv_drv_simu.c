@@ -398,7 +398,9 @@ int drv_simu_send(wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_t length)
     struct ieee80211_hdr *p_hdr_80211;
     uint8_t *pPayload;
     uint8_t ipaddr[4];
+    uint16_t port;
     drv_simu_envar_t *p_simu = &g_simu_envar;
+    port = htons(p_simu->local_port);
     memcpy(ipaddr, p_simu->local_ipaddr, IPADDR_LENGTH);
     ipaddr[3] = 0xFF;
     pPayload = pdata - MAC_BEACON_FIX_LENGTH;
@@ -414,7 +416,7 @@ int drv_simu_send(wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_t length)
 
 	memcpy(p_hdr_80211->addr1, BroadcastAddr, MACADDR_LENGTH);
 	memcpy(p_hdr_80211->addr2, p_simu->local_ipaddr,IPADDR_LENGTH);
-	memcpy(p_hdr_80211->addr2 + IPADDR_LENGTH, &htons(p_simu->local_port), IPADDR_LENGTH);
+	memcpy(p_hdr_80211->addr2 + IPADDR_LENGTH, &port, MACADDR_LENGTH-IPADDR_LENGTH);
 	memcpy(p_hdr_80211->addr3, BssidForV2V, MACADDR_LENGTH);
 
 	if(p_simu->monitor_sock)

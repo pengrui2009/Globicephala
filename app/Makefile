@@ -39,7 +39,7 @@ app:
 	done
 
 	@$(CC) $(OBJ_FILES) $(LDFLAGS) -o $(TARGET)
-	$(STRIP) --strip-unneeded  --remove-section=.comment --remove-section=.note $(TARGET)
+	#$(STRIP) --strip-unneeded  --remove-section=.comment --remove-section=.note $(TARGET)
 
 install:
 	cp -f $(TARGET) $(IMAGES_DIR)/

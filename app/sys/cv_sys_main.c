@@ -83,11 +83,11 @@ int main(int argc, char *argv[])
     wnet_init();
     vam_init();
     mda_init();
-//    vsa_init();    
+    vsa_init();
     sys_init();
 
     vam_start();
-//    vsa_start();
+    vsa_start();
 //    gps_init();
 
     ehm_init();

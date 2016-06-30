@@ -45,7 +45,7 @@ INCLUDEFLAGS += -I$(TOPDIR)/include \
 		
 WARNING = -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common
 #-Werror-implicit-function-declaration
-CFLAGS = -O2 -Werror $(OSFLAG) $(WARNING) $(INCLUDEFLAGS)
+CFLAGS = -g3 -O2 -Werror $(OSFLAG) $(WARNING) $(INCLUDEFLAGS)
 
 DEPENDENCIES = dependence
 

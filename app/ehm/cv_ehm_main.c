@@ -35,7 +35,7 @@ ehm_config_st ehm_config =
         
     { COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE },
     
-    V2X_NB_NODE_SUMMRAY_INFO|V2X_NB_NODE_DETAIL_INFO
+    V2X_NB_NODE_SUMMRAY_INFO|V2X_NB_NODE_DETAIL_INFO|V2X_BASIC_VEHICLE_STATUS|V2X_NB_VEHICLE_ALERT|V2X_ROADSIZE_ALERT
 };
 
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
@@ -877,9 +877,21 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
 *****************************************************************************/
 static int8_t encode_roadsze_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa_envar_t *p_vsa)
 {
-//	ehm_buffer_st * txbuf = NULL;
-//
-//	txbuf = ehm_get_txbuf(p_ehm);
+	ehm_buffer_st * txbuf = NULL;
+
+	frame_msg_header_st_ptr          msg_head_ptr = NULL;
+
+	/* Get tx buffer from ehm tx buffer list. */
+	txbuf = ehm_get_txbuf(p_ehm);
+
+	/* Initial message header. */
+	msg_head_ptr = (frame_msg_header_st_ptr)txbuf->data_ptr;
+	msg_head_ptr->mark = 0x0E;
+	msg_head_ptr->src = 0;
+	msg_head_ptr->reserved1 = 0;
+	msg_head_ptr->reserved2 = 0;
+	msg_head_ptr->type = MSGTYPE_V2X_APPLY;
+
 	return 0;
 }
 
