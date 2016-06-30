@@ -30,4 +30,5 @@
 #define ERR_DEVUNSTAB	13     	/* 设备不稳定 */
 #define ERR_DISCONNECT	14      /* 连接已断开 */
 
+#define ERR_OTHER		80		/* 其他错误 */
 #endif /* ERROR_H_ */

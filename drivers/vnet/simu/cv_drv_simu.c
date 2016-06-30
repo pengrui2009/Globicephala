@@ -20,7 +20,7 @@
 #include "cv_vam.h"
 #include "cv_osal_dbg.h"
 #include "cv_drv_simu.h"
-#include "cv_drv_simu_error.h"
+#include "error.h"
 /*************************************************
   ∫Í∂®“Â
 *************************************************/

@@ -180,6 +180,7 @@ void wnet_init(void)
     p_wnet->task_wnet_rx = osal_task_create("wnrx",
                            wnet_rx_thread_entry, p_wnet,
                            DEF_THREAD_STACK_SIZE, RT_WNETRX_THREAD_PRIORITY);
+
     osal_assert(p_wnet->task_wnet_rx != NULL);
     
 }
