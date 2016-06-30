@@ -27,9 +27,9 @@
 #define RCP_TEMP_ID_LEN 4
 #define RCP_MACADR_LEN 8
 
-#define RCP_MSG_ID_BSM   DSRCmsgID_basicSafetyMessage
-#define RCP_MSG_ID_EVAM  DSRCmsgID_emergencyVehicleAlert
-#define RCP_MSG_ID_RSA   DSRCmsgID_roadSideAlert
+#define RCP_MSG_ID_BSM   DSRCmsgID_basicSafetyMessage_D
+#define RCP_MSG_ID_EVAM  DSRCmsgID_emergencyVehicleAlert_D
+#define RCP_MSG_ID_RSA   DSRCmsgID_roadSideAlert_D
 
 
 #define BSM_BC_MODE_DISABLE 0
@@ -104,6 +104,19 @@ enum VAM_EVT{
 /*****************************************************************************
  * definition of struct                                                      *
 *****************************************************************************/
+/*
+ * CAUTION:
+ *    The sentence "declaration __attribute__ ((aligned(x)))" can not be working in this IDE.
+ *    We can use this parameter to make the storage larger then the natural size; but we can
+ *    not make the storage smaller than the natural size.
+ * */
+
+/* Save all the compiler settings. */
+#pragma pack(push)
+
+/* store data to reduce data size and off the optimization. */
+#pragma pack(1)
+
 typedef struct _vam_position_accu
 {
     /* Position accuracy from GPGST command.  */
@@ -111,7 +124,7 @@ typedef struct _vam_position_accu
     float        semi_minor_accu;
     float 		 semi_major_orientation;
 
-}__COMPILE_PACK__ vam_position_accu;
+} vam_position_accu;
 
 typedef struct _vam_position{
     float lat;
@@ -174,7 +187,7 @@ typedef struct _vam_stastatus
     uint32_t                     time;     
 
     uint8_t                       cnt;
-}__COMPILE_PACK__ vam_stastatus_t;
+} vam_stastatus_t;
 
 typedef struct _vam_sta_node{
     /* !!!DON'T modify it!!! */
@@ -272,6 +285,9 @@ typedef struct _vam_pos_data{
 
 }vam_pos_data;
 
+
+/* restore all compiler settings in stacks. */
+#pragma pack(pop)
 /*****************************************************************************
  * declaration of global variables and functions                             *
 *****************************************************************************/
@@ -337,6 +353,8 @@ int rcp_parse_msg(vam_envar_t *p_vam,
 int rcp_send_bsm(vam_envar_t *p_vam);
 int rcp_send_evam(vam_envar_t *p_vam);
 int rcp_send_rsa(vam_envar_t *p_vam);
+
+
 
 #endif /* __CV_VAM_H__ */
 

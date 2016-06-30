@@ -62,7 +62,7 @@ osal_status_t sys_add_event_queue(sys_envar_t *p_sys,
     if (err != OSAL_STATUS_SUCCESS) {
         OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: failed=[%d], msg=%04x\n",\
                            __FUNCTION__, err, msg_id);
-        osal_free(p_msg);                   
+        osal_free(p_msg);
     }
 
     return err;
@@ -90,7 +90,7 @@ osal_status_t hi_add_event_queue(sys_envar_t *p_sys,
     if (err != OSAL_STATUS_SUCCESS) {
         OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: failed=[%d], msg=%04x\n",\
                            __FUNCTION__, err, msg_id);
-        osal_free(hi_msg);                   
+        osal_free(hi_msg);
     }
 
     return err;

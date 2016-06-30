@@ -703,3 +703,46 @@ inline uint16_t decode_vehicle_alert_flag(uint32_t x)
     }
     return r;
 }
+/******************************************************************************
+*	函数:	encode_brake_sytem_status
+*	功能:	将制动应用状态数据进行转换
+*	参数:	p_local_brakes			- 本地应用制动状态信息
+			p_remote_brakes			- 远程应用制动状态信息
+*	返回:	none
+*	说明:	制动系统状态涵盖了一系列当前车辆制动和系统控制行为的信息，该结构提供了每个车轮的刹车状态、牵
+			引力控制系统状态、 ABS 防抱死系统状态、 SC 车身稳定控制系统状态、制动增压系统状态和辅助制动系统状态。
+ ******************************************************************************/
+inline void encode_brake_sytem_status(brake_system_status_st *p_local_brakes, brake_system_status_t *p_remote_brakes)
+{
+	p_remote_brakes->wheel_brakes_leftfront = p_local_brakes->wheel_brakes.wheel_brake_bit.leftfront;
+	p_remote_brakes->wheel_brakes_leftrear = p_local_brakes->wheel_brakes.wheel_brake_bit.leftrear;
+	p_remote_brakes->wheel_brakes_rightfront = p_local_brakes->wheel_brakes.wheel_brake_bit.rightfront;
+	p_remote_brakes->wheel_brakes_rightrear = p_local_brakes->wheel_brakes.wheel_brake_bit.rightrear;
+	p_remote_brakes->traction = p_local_brakes->traction;
+	p_remote_brakes->abs = p_local_brakes->abs;
+	p_remote_brakes->scs = p_local_brakes->scs;
+	p_remote_brakes->brake_boost = p_local_brakes->brakeboost;
+	p_remote_brakes->aux_brakes = p_local_brakes->auxbrakes;
+}
+/******************************************************************************
+*	函数:	decode_brake_sytem_status
+*	功能:	将制动应用状态数据进行转换
+*	参数:	p_local_brakes			- 本地应用制动状态信息
+			p_remote_brakes			- 远程应用制动状态信息
+*	返回:	none
+*	说明:	制动系统状态涵盖了一系列当前车辆制动和系统控制行为的信息，该结构提供了每个车轮的刹车状态、牵
+			引力控制系统状态、 ABS 防抱死系统状态、 SC 车身稳定控制系统状态、制动增压系统状态和辅助制动系统状态。
+ ******************************************************************************/
+inline void decode_brake_sytem_status(brake_system_status_t *p_remote_brakes, brake_system_status_st *p_local_brakes)
+{
+    p_local_brakes->wheel_brakes.wheel_brake_bit.leftfront = p_remote_brakes->wheel_brakes_leftfront;
+    p_local_brakes->wheel_brakes.wheel_brake_bit.leftrear = p_remote_brakes->wheel_brakes_leftrear;
+    p_local_brakes->wheel_brakes.wheel_brake_bit.rightfront = p_remote_brakes->wheel_brakes_rightfront;
+    p_local_brakes->wheel_brakes.wheel_brake_bit.rightrear = p_remote_brakes->wheel_brakes_rightrear;
+    p_local_brakes->traction = p_remote_brakes->traction;
+    p_local_brakes->abs = p_remote_brakes->abs;
+    p_local_brakes->scs = p_remote_brakes->scs;
+    p_local_brakes->brakeboost = p_remote_brakes->brake_boost;
+    p_local_brakes->auxbrakes = p_remote_brakes->aux_brakes;
+}
+

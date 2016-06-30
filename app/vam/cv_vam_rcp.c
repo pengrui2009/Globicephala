@@ -241,15 +241,23 @@ int rcp_parse_bsm(vam_envar_t *p_vam,
         p_sta->s.pos.lon = decode_longitude(p_bsm->position.lon);
         p_sta->s.pos.lat = decode_latitude(p_bsm->position.lat);
         p_sta->s.pos.elev = decode_elevation(p_bsm->position.elev);
-        //p_sta->s.pos.accu = decode_accuracy(p_bsm->position.accu);
-        //decode_accuracy(&(p_sta->s.pos.accu), &(p_bsm->position.accu));
+        p_sta->s.pos.accu.semi_major_accu = decode_semimajor_axis_accuracy(p_bsm->position.accu.semi_major);
+        p_sta->s.pos.accu.semi_major_orientation = decode_semimajor_axis_orientation(p_bsm->position.accu.semi_major_orientation);
+        p_sta->s.pos.accu.semi_minor_accu = decode_semiminor_axis_accuracy(p_bsm->position.accu.semi_minor);
 
-        p_sta->s.dir = decode_angle(p_bsm->motion.heading);
+        p_sta->s.tran_state = p_bsm->motion.transmission_state;
         p_sta->s.speed = decode_absolute_velocity(p_bsm->motion.speed);
+        p_sta->s.dir = decode_angle(p_bsm->motion.heading);
+        p_sta->s.steer_wheel_angle = decode_steer_wheel_angle(p_bsm->motion.steering_wheel_angle);
         p_sta->s.acce.lon = decode_acceleration(p_bsm->motion.acce.lon);
         p_sta->s.acce.lat = decode_acceleration(p_bsm->motion.acce.lat);
         p_sta->s.acce.vert = decode_vertical_acceleration(p_bsm->motion.acce.vert);
         p_sta->s.acce.yaw = decode_yawrate(p_bsm->motion.acce.yaw);
+
+        decode_brake_sytem_status(&p_bsm->brakes, &p_sta->s.braksta);
+
+        p_sta->s.vehicle_length = decode_vehicle_length(p_bsm->size.length);
+        p_sta->s.vehicle_width = decode_vehicle_width(p_bsm->size.width);
 
         //dump_pos(&p_sta->s);
 
@@ -449,15 +457,23 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     p_bsm->position.lon = encode_longitude(p_local->pos.lon);
     p_bsm->position.lat = encode_latitude(p_local->pos.lat);
     p_bsm->position.elev = encode_elevation(p_local->pos.elev);
-    //p_bsm->position.accu = encode_accuracy(p_local->pos.accu);
-    //encode_accuracy(&(p_bsm->position.accu), &(p_local->pos.accu));
+    p_bsm->position.accu.semi_major = encode_semimajor_axis_accuracy(p_local->pos.accu.semi_major_accu);
+    p_bsm->position.accu.semi_major_orientation = encode_semimajor_axis_orientation(p_local->pos.accu.semi_major_orientation);
+    p_bsm->position.accu.semi_minor = encode_semiminor_axis_accuracy(p_local->pos.accu.semi_minor_accu);
 
+    p_bsm->motion.transmission_state = p_local->tran_state;
     p_bsm->motion.heading = encode_angle(p_local->dir);
     p_bsm->motion.speed = encode_absolute_velocity(p_local->speed);
+    p_bsm->motion.steering_wheel_angle = encode_steer_wheel_angle(p_local->steer_wheel_angle);
     p_bsm->motion.acce.lon = encode_acceleration(p_local->acce.lon);
     p_bsm->motion.acce.lat = encode_acceleration(p_local->acce.lat);
     p_bsm->motion.acce.vert = encode_vertical_acceleration(p_local->acce.vert);
     p_bsm->motion.acce.yaw = encode_yawrate(p_local->acce.yaw);
+
+    encode_brake_sytem_status(&p_local->braksta, &p_bsm->brakes);
+
+    p_bsm->size.length = encode_vehicle_length(p_local->vehicle_length);
+    p_bsm->size.width = encode_vehicle_width(p_local->vehicle_width);
 
     if(p_vam->flag & VAM_FLAG_TX_BSM_ALERT)
     {
@@ -480,7 +496,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     txinfo->prority = WNET_TRANS_RRORITY_NORMAL;
     txinfo->timestamp = osal_get_systemtime();
 
-    return wnet_send(txinfo, (uint8_t *)p_bsm, len);
+    return  wnet_send(txinfo, (uint8_t *)p_bsm, len);
 }
 
 int rcp_send_evam(vam_envar_t *p_vam)
@@ -509,7 +525,7 @@ int rcp_send_evam(vam_envar_t *p_vam)
         memcpy(p_evam->forward_id, p_local->pid, RCP_TEMP_ID_LEN);
     }
 
-
+    p_evam->time_stamp = cv_ntohs(osal_get_systemtime());
     p_evam->rsa.msg_count = p_vam->tx_evam_msg_cnt++;
     p_evam->rsa.position.lon = encode_longitude(p_local->pos.lon);
     p_evam->rsa.position.lat = encode_latitude(p_local->pos.lat);
@@ -565,7 +581,7 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     p_rsa->msg_count = p_vam->tx_rsa_msg_cnt++;
     vam_active_rsa(RSA_TYPE_CURVE);
     p_rsa->typeEvent = encode_itiscode(p_local->alert_mask, p_rsa->description);
-
+    p_rsa->time_stamp = cv_ntohl(osal_get_systemtime());
 #if 0
     p_local->pos.lon = 132.327144*3.1415926/180.0;
     p_local->pos.lat = 40.0*3.1415926/180.0;
@@ -707,16 +723,24 @@ void timer_test_bsm_rx_callback(void* parameter)
     p_bsm->position.lon = encode_longitude(p_local->pos.lon);
     p_bsm->position.lat = encode_latitude(p_local->pos.lat);
     p_bsm->position.elev = encode_elevation(p_local->pos.elev);
-    //p_bsm->position.accu = encode_accuracy(p_local->pos.accu);
-    //encode_accuracy(&(p_bsm->position.accu), &(p_local->pos.accu));
+    p_bsm->position.accu.semi_major = encode_semimajor_axis_accuracy(p_local->pos.accu.semi_major_accu);
+    p_bsm->position.accu.semi_major_orientation = encode_semimajor_axis_orientation(p_local->pos.accu.semi_major_orientation);
+    p_bsm->position.accu.semi_minor = encode_semiminor_axis_accuracy(p_local->pos.accu.semi_minor_accu);
 
+    p_bsm->motion.transmission_state = p_local->tran_state;
     p_bsm->motion.heading = encode_angle(p_local->dir);
     p_bsm->motion.speed = encode_absolute_velocity(p_local->speed);
+    p_bsm->motion.steering_wheel_angle = encode_steer_wheel_angle(p_local->steer_wheel_angle);
     p_bsm->motion.acce.lon = encode_acceleration(p_local->acce.lon);
     p_bsm->motion.acce.lat = encode_acceleration(p_local->acce.lat);
     p_bsm->motion.acce.vert = encode_vertical_acceleration(p_local->acce.vert);
     p_bsm->motion.acce.yaw = encode_yawrate(p_local->acce.yaw);
     
+    encode_brake_sytem_status(&p_local->braksta, &p_bsm->brakes);
+
+    p_bsm->size.length = encode_vehicle_length(p_local->vehicle_length);
+    p_bsm->size.width = encode_vehicle_width(p_local->vehicle_width);
+
     rcp_parse_bsm(p_vam, NULL, (uint8_t *)p_bsm, (sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)));
 }
 

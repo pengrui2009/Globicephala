@@ -288,9 +288,9 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         node_detail_ptr->pos3d.elevation = encode_elevation(p_sta->s.pos.elev);
 
         /* position accuracy. */
-        node_detail_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(0);
-        node_detail_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(0);
-        node_detail_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(0);
+        node_detail_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(p_sta->s.pos.accu.semi_major_accu);
+        node_detail_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(p_sta->s.pos.accu.semi_minor_accu);
+        node_detail_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(p_sta->s.pos.accu.semi_major_orientation);
 
         /* velocity. */
         node_detail_ptr->velocity = encode_absolute_velocity(p_sta->s.speed);
@@ -299,26 +299,26 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         node_detail_ptr->angle = encode_angle(p_sta->s.dir);
 
         /* steer wheel angle. */
-        node_detail_ptr->steer_wheel_angle = encode_steer_wheel_angle(0);
+        node_detail_ptr->steer_wheel_angle = encode_steer_wheel_angle(p_sta->s.steer_wheel_angle);
 
         /* acceleration set 4 way. */  
-        node_detail_ptr->acc.lonacce = encode_acceleration(0);
-        node_detail_ptr->acc.latacce = encode_acceleration(0);
-        node_detail_ptr->acc.veracce = encode_vertical_acceleration(0);
-        node_detail_ptr->acc.yawrate = encode_yawrate(0);
+        node_detail_ptr->acc.lonacce = encode_acceleration(p_sta->s.acce.lon);
+        node_detail_ptr->acc.latacce = encode_acceleration(p_sta->s.acce.lat);
+        node_detail_ptr->acc.veracce = encode_vertical_acceleration(p_sta->s.acce.vert);
+        node_detail_ptr->acc.yawrate = encode_yawrate(p_sta->s.acce.yaw);
 
         /* brake. */
-        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.reserved = 0;
-        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightrear = 0;
-        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightfront = 0;
-        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftrear = 0;
-        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftfront = 0;
-        
-        node_detail_ptr->brake.traction = 0;
-        node_detail_ptr->brake.abs = 0;
-        node_detail_ptr->brake.scs = 0;
-        node_detail_ptr->brake.brakeboost = 0;
-        node_detail_ptr->brake.auxbrakes = 0;
+        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.reserved = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.reserved;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightrear = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.rightrear;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightfront = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.rightfront;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftrear = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.leftrear;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftfront = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.leftfront;
+
+		node_detail_ptr->brake.traction = p_sta->s.braksta.traction;
+		node_detail_ptr->brake.abs = p_sta->s.braksta.abs;
+		node_detail_ptr->brake.scs = p_sta->s.braksta.scs;
+		node_detail_ptr->brake.brakeboost = p_sta->s.braksta.brakeboost;
+		node_detail_ptr->brake.auxbrakes = p_sta->s.braksta.auxbrakes;
 
         /* external light. */
         node_detail_ptr->exterlight.lowbeamheadlight = 0;
@@ -424,9 +424,9 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
     status_ptr->position.elevation = encode_elevation(local_status.pos.elev);
 
     /* position accuracy. */
-    status_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(0);
-    status_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(0);
-    status_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(0);
+    status_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(local_status.pos.accu.semi_major_accu);
+    status_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(local_status.pos.accu.semi_minor_accu);
+    status_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(local_status.pos.accu.semi_major_orientation);
 
     /* velocity. */
     status_ptr->velocity = encode_absolute_velocity(local_status.speed);

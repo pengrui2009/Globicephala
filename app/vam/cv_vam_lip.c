@@ -126,9 +126,15 @@ void lip_update_local(t_nmea_rmc *p_rmc, float *p_accu)
             (p_vam->evt_handler[VAM_EVT_LOCAL_UPDATE])(&p_vam->local); 
         }
     }
-
-    if (p_accu){
-    //    p_vam->local.pos.accu = *p_accu;
+    //待完善,此处的p_accu单位不对
+    if (p_accu)
+    {
+    	p_vam->local.pos.accu.semi_major_accu = 0;
+        p_vam->local.pos.accu.semi_major_orientation = 0;
+        p_vam->local.pos.accu.semi_minor_accu = 0;
+//        p_vam->local.pos.accu.semi_major_accu = p_accu.semi_major_accu;
+//        p_vam->local.pos.accu.semi_major_orientation = p_accu.semi_major_orientation;
+//        p_vam->local.pos.accu.semi_minor_accu = p_accu.semi_minor_accu;
     }
 }
 

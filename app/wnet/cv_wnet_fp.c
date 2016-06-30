@@ -96,7 +96,7 @@ int fp_send(wnet_envar_t *p_wnet, wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_
  */
 int fp_recv(wnet_envar_t *p_wnet, wnet_rxinfo_t *rxinfo, uint8_t *pdata, uint32_t length)
 {
-    wnet_rxbuf_t *rxbuf = NULL;
+    wnet_rxbuf_t rxbuf;
 
 
     /* Examine the data length. */
@@ -106,30 +106,30 @@ int fp_recv(wnet_envar_t *p_wnet, wnet_rxinfo_t *rxinfo, uint8_t *pdata, uint32_
         return -1;
     }
 
-    rxbuf = (wnet_rxbuf_t *)malloc(sizeof(wnet_rxbuf_t));
-    if(rxbuf != NULL)
-    {
+//    rxbuf = (wnet_rxbuf_t *)malloc(sizeof(wnet_rxbuf_t));
+//    if(rxbuf != NULL)
+//    {
         /* Empty the reiceved buffer. */	
-        memset(rxbuf, 0, sizeof(wnet_rxbuf_t));
+        memset(&rxbuf, 0, sizeof(wnet_rxbuf_t));
 
         /* Reconfig the received buffer.  */
-        memcpy(&rxbuf->info, rxinfo, sizeof(wnet_rxinfo_t));
-        memcpy(rxbuf->buffer, pdata, length);
-        rxbuf->data_ptr = rxbuf->buffer;
-        rxbuf->data_len = length;
+        memcpy(&rxbuf.info, rxinfo, sizeof(wnet_rxinfo_t));
+        memcpy(rxbuf.buffer, pdata, length);
+        rxbuf.data_ptr = rxbuf.buffer;
+        rxbuf.data_len = length;
 
-        llc_recv(p_wnet, rxinfo, rxbuf->data_ptr, rxbuf->data_len);
+        llc_recv(p_wnet, rxinfo, rxbuf.data_ptr, rxbuf.data_len);
 	
         /* Free the received buffer. */
-        free(rxbuf);
+//        free(rxbuf);
 
         return 0;
-    }    
-    else
-    {
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "Failed to get rxbuf\n");
-        return -1;
-    }   
+//    }
+//    else
+//    {
+//        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "Failed to get rxbuf\n");
+//        return -1;
+//    }
 }
 
 wnet_txbuf_t *wnet_get_txbuf(void)

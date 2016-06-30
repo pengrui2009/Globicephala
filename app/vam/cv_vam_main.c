@@ -285,8 +285,12 @@ void dump_pos(vam_stastatus_t *p_sta)
     osal_printf("pos.lon:%s\n", str);
     sprintf(str,"%f", p_sta->pos.elev);
     osal_printf("pos.elev:%s\n", str);
-    //sprintf(str,"%f", p_sta->pos.accu);
-    //osal_printf("pos.accu:%s\n", str);
+    sprintf(str,"%f", p_sta->pos.accu.semi_major_accu);
+    osal_printf("pos.accu.semi_major_accu:%s\n", str);
+    sprintf(str,"%f", p_sta->pos.accu.semi_major_orientation);
+    osal_printf("pos.accu.semi_major_orientation:%s\n", str);
+    sprintf(str,"%f", p_sta->pos.accu.semi_minor_accu);
+    osal_printf("pos.accu.semi_minor_accu:%s\n", str);
     sprintf(str,"%f", p_sta->dir);
     osal_printf("pos.heading:%s\n", str);
     sprintf(str,"%f", p_sta->speed);
