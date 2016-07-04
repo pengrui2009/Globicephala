@@ -87,7 +87,6 @@ void * wnet_rx_thread_entry(void *parameter)
 			{
 				err = drv_vnet_recv(&rxinfo, RxDataBuffer, &len);
 				if (err == OSAL_STATUS_SUCCESS && len > 0){
-					osal_printf("drv_vnet_recv len=%d\n");
 					wnet_recv(&rxinfo, RxDataBuffer, len);
 				}else{
 					//OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s:failed to recv frame(err = %d,len = %d)\n", __FUNCTION__, err,len);
@@ -110,6 +109,7 @@ void * wnet_rx_thread_entry(void *parameter)
 #endif
 	    }
      }
+    return NULL;
 }
 
 extern void test_comm(void);

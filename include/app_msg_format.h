@@ -225,7 +225,7 @@ typedef union _wheel_brake_st
 	struct _wheel_brake_bit{
 		#ifndef __LITTLE_ENDIAN
 		/*预留*/
-			uint8_t	reserved:4;
+			uint8_t	reserved:3;
 		/*右后轮 	0:disactive		1:active ,如果车辆后轮只有一个轮子,则该位:0*/
 			uint8_t rightrear:1;
 		/*右前轮		0:active		1:active ,如果车辆后轮只有一个轮子,则该位:0*/
@@ -234,7 +234,11 @@ typedef union _wheel_brake_st
 			uint8_t leftrear:1;
 		/*左前轮		0:active		1:active ,如果车辆前轮只有一个轮子,则左侧轮子代表有效*/
 			uint8_t leftfront:1;
+		/*不可用状态	0:active		1:active ,如果置1,则表示当前所以轮子处于不可用状态*/
+			uint8_t unavailable:1;
 		#else
+		/*不可用状态	0:active		1:active ,如果置1,则表示当前所以轮子处于不可用状态*/
+			uint8_t unavailable:1;
 		/*左前轮		0:active		1:active ,如果车辆前轮只有一个轮子,则左侧轮子代表有效*/
 			uint8_t leftfront:1;
 		/*左后轮		0:active		1:active ,如果车辆后轮只有一个轮子,则左侧轮子代表有效*/
@@ -243,7 +247,8 @@ typedef union _wheel_brake_st
 			uint8_t rightfront:1;
 		/*右后轮 	0:disactive		1:active ,如果车辆后轮只有一个轮子,则该位:0*/
 			uint8_t rightrear:1;
-			uint8_t	reserved:4;
+		/*预留*/
+			uint8_t	reserved:3;
 		#endif
 	} wheel_brake_bit;
 }wheel_brake_st;
