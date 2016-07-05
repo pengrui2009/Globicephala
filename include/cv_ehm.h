@@ -83,6 +83,14 @@ typedef enum _EHM_RECV_TYPE
 typedef enum _V2X_MSG_TYPE 
 {
 	V2X_RESERVED = 0,
+	V2X_NB_NODE_MSG = 1,
+	V2X_BASIC_VEHICLE_MSG = 2,
+	V2X_FULL_VEHICLE_MSG = 3,
+	V2X_VEHICLE_STATIC_MSG = 4,
+	V2X_LC_VEHICLE_ALERT_MSG = 5,
+	V2X_NB_VEHICLE_ALERT_MSG = 6,
+	V2X_ROADSIZE_ALERT_MSG = 7,
+
 	V2X_NB_NODE_SUMMRAY_INFO = 1,
 	V2X_NB_NODE_DETAIL_INFO = 2,
 	V2X_BASIC_VEHICLE_STATUS = 4,
@@ -135,7 +143,7 @@ typedef struct _ehm_buffer_st
     /* Current effective data address and length. */
     uint8_t    * data_ptr;
     int32_t      data_len;
-    
+    uint32_t 	time;
 }ehm_buffer_st, *ehm_buffer_st_ptr;
 
 #define EHM_BUFFER_ST_LEN    sizeof(ehm_buffer_st)
