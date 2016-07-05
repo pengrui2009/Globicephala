@@ -351,14 +351,6 @@ vsa_position_node_t *vsa_find_pn(vsa_envar_t *p_vsa, uint8_t *temporary_id)
 }
 
 
-void vsa_local_status_update(void* parameter)
-{
-    vam_stastatus_t *p_sta = (vam_stastatus_t *)parameter;
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-
-    memcpy(&p_vsa->local, p_sta, sizeof(vam_stastatus_t));
-}
-
 void vsa_bsm_status_update(void *parameter)
 {
     vam_stastatus_t *p_sta = (vam_stastatus_t *)parameter;
@@ -372,17 +364,6 @@ void vsa_bsm_status_update(void *parameter)
         sys_add_event_queue(&p_cms_envar->sys,SYS_MSG_BSM_UPDATE, 0, HI_OUT_BSM_NONE, NULL);
     }
 }
-
-void vsa_gps_status_update(void *parameter)
-{
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-
-    p_vsa->gps_status = (uint32_t)parameter;
-    sys_add_event_queue(&p_cms_envar->sys, \
-                                SYS_MSG_GPS_UPDATE, 0, (uint32_t)parameter, NULL);
-}
-
-
 
 void vsa_receive_alarm_update(void *parameter)
 {
@@ -447,20 +428,15 @@ void vsa_eebl_broadcast_update(void *parameter)
 void vsa_start(void)
 {
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;    
-    vam_set_event_handler(VAM_EVT_LOCAL_UPDATE, vsa_local_status_update);
+
+    
     vam_set_event_handler(VAM_EVT_PEER_UPDATE, vsa_bsm_status_update);
     vam_set_event_handler(VAM_EVT_PEER_ALARM, vsa_receive_alarm_update);
-    vam_set_event_handler(VAM_EVT_GPS_STATUS, vsa_gps_status_update);
     vam_set_event_handler(VAM_EVT_GSNR_EBD_DETECT, vsa_eebl_broadcast_update);
     vam_set_event_handler(VAM_EVT_RSA_UPDATE, vsa_receive_rsa_update);
     osal_timer_start(p_vsa->timer_position_prepro);
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s: --->\n", __FUNCTION__);
 
-    if(vam_get_gps_status()){
-        
-        vsa_gps_status_update((void *)1);
-
-    }        
 }
 
 /*****************************************************************************

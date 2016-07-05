@@ -36,7 +36,6 @@
 
 extern void osal_dbg_init(void);
 extern void param_init(void);
-extern void gps_init(void);
 extern void wnet_init(void);
 extern void vam_init(void);
 extern void vsa_init(void);
@@ -88,7 +87,6 @@ int main(int argc, char *argv[])
 
     vam_start();
     vsa_start();
-//    gps_init();
 
     ehm_init();
 

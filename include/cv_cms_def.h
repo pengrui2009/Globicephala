@@ -72,12 +72,12 @@ enum SYSTEM_MSG_TYPE{
     SYS_MSG_INITED,
     SYS_MSG_KEY_PRESSED,
     SYS_MSG_KEY_RELEASED,
-    SYS_MSG_START_ALERT,
-    SYS_MSG_STOP_ALERT,
-    SYS_MSG_ALARM_ACTIVE,
-    SYS_MSG_ALARM_CANCEL,
-    SYS_MSG_GPS_UPDATE,
-    SYS_MSG_BSM_UPDATE,
+    SYS_MSG_START_ALERT, //
+    SYS_MSG_STOP_ALERT,//
+    SYS_MSG_ALARM_ACTIVE, //
+    SYS_MSG_ALARM_CANCEL, //
+    SYS_MSG_GPS_UPDATE,   //
+    SYS_MSG_BSM_UPDATE,//
     SYS_MSG_HI_IN_UPDATE,
     SYS_MSG_HI_OUT_UPDATE,
     SYS_MSG_XXX,
@@ -88,7 +88,6 @@ enum SYSTEM_MSG_TYPE{
     VAM_MSG_RCPTX,
     VAM_MSG_RCPRX,
     VAM_MSG_NEIGH_TIMEOUT,
-    VAM_MSG_GPSDATA,
 
 
     VSA_MSG_BASE = 0x0300,
@@ -207,9 +206,6 @@ typedef struct _sys_envar{
     osal_task_t *task_sys_mng;
     osal_queue_t *queue_sys_mng;
 
-    osal_task_t *task_sys_hi;
-    osal_queue_t *queue_sys_hi;
-
 }sys_envar_t;
 
 
@@ -236,12 +232,6 @@ osal_status_t sys_add_event_queue(sys_envar_t *p_sys,
                              uint16_t msg_len, 
                              uint32_t msg_argc,
                              void    *msg_argv);
-osal_status_t hi_add_event_queue(sys_envar_t *p_sys, 
-                             uint16_t msg_id, 
-                             uint16_t msg_len, 
-                             uint32_t msg_argc,
-                             void    *msg_argv);
-
 
 #endif /* __CV_CMS_DEF_H__ */
 
