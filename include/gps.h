@@ -97,16 +97,14 @@ typedef struct _driving_action_st
 extern driving_action_st G_Action;
 extern uint8_t IsLocate;
 
-int os_device_open(char *dev);
+
 int os_device_read(int fd, uint8_t *buf, int len);
 int os_device_write(int fd, void *buf, int len);
 int uart_set_speed(int fd, int speed);
 int uart_set_parity(int fd, int databits, int stopbits, int parity);
 
 void gps_chip_config(int fd, int freq);
-void gps_callback_register(gps_data_callback fp);
-void gps_init(void);
-void gps_deinit(void);
+
 
 void gps_task (void) ;
 

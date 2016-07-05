@@ -41,7 +41,7 @@
 #define VAM_FLAG_TX_BSM_ALERT (0x0004)
 #define VAM_FLAG_TX_BSM_PAUSE (0x0008)
 #define VAM_FLAG_TX_EVAM      (0x0010)
-#define VAM_FLAG_GPS_FIXED    (0x0020)
+#define VAM_FLAG_GPS_FIXED    (0x0020)    /* gps captured flag. */
 #define VAM_FLAG_XXX          (0x0040)
 
 /* for test roadside alert */
@@ -90,10 +90,8 @@ typedef enum _VAM_RSA_TYPE
 
 
 enum VAM_EVT{
-    VAM_EVT_LOCAL_UPDATE = 0,
-    VAM_EVT_PEER_UPDATE,
+    VAM_EVT_PEER_UPDATE = 0,
     VAM_EVT_PEER_ALARM,
-    VAM_EVT_GPS_STATUS,
     VAM_EVT_GSNR_EBD_DETECT, 
 
     VAM_EVT_RSA_UPDATE, 
@@ -309,10 +307,6 @@ int vam_add_event_queue_2(vam_envar_t *p_vam, void *p_msg, uint32_t len);
 vam_sta_node_t *vam_find_sta(vam_envar_t *p_vam, uint8_t *temporary_id);
 void vam_update_sta(vam_envar_t *p_vam);
 
-
-void lip_gps_proc(vam_envar_t *p_vam, uint8_t *databuf, uint32_t len);
-void lip_update_local(t_nmea_rmc *p_rmc, float *p_accu);
-void lip_update_local_acc(float x, float y, float z);
 
 float vsm_get_distance(vam_position_t *p_src, vam_position_t *p_dest);
 vam_pos_data vsm_get_data(vam_stastatus_t *p_src, vam_stastatus_t *p_dest);

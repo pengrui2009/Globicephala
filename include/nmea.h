@@ -53,6 +53,5 @@ typedef enum{
 void nmea_init(void);
 int32_t nmea_get(t_nmea_rmc *recvBuff, int8_t flag);
 
-void nmea_parse(uint8_t *buff, uint32_t len);
 
 #endif

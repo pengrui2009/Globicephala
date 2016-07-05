@@ -189,7 +189,6 @@ typedef struct _vsa_envar{
     /* add by wangliang */
     uint32_t alert_num;
 
-    vam_stastatus_t local;
     vam_stastatus_t remote;
 
     adpcm_t adpcm_data;

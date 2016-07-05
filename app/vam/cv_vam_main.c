@@ -102,11 +102,6 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
         case VAM_MSG_NEIGH_TIMEOUT:
             vam_update_sta(p_vam);
             break;
-
-        case VAM_MSG_GPSDATA:
-            lip_gps_proc(p_vam, (uint8_t *)p_msg->argv, p_msg->len);
-
-            break;
             
         default:
             break;
@@ -240,6 +235,9 @@ void vam_init(void)
     p_vam->timer_gps_life = osal_timer_create("tm-gl",timer_gps_life_callback,p_vam,\
         BSM_GPS_LIFE_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_gps_life != NULL);
+
+    /* Stop the timer. */
+    osal_timer_stop(p_vam->timer_gps_life);
 
     p_vam->timer_neighbour_life = osal_timer_create("tm-nl",timer_neigh_time_callback,p_vam,\
         NEIGHBOUR_LIFE_ACCUR, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					

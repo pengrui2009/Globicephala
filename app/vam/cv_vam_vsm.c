@@ -179,15 +179,6 @@ void timer_bsm_pause_callback(void* parameter)
 
 void timer_gps_life_callback(void* parameter)
 {
-    vam_envar_t *p_vam = (vam_envar_t *)parameter;
-
-    if (p_vam->flag & VAM_FLAG_GPS_FIXED){
-        p_vam->flag &= ~VAM_FLAG_GPS_FIXED;
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "gps is lost!\n");
-        if (p_vam->evt_handler[VAM_EVT_GPS_STATUS]){
-            (p_vam->evt_handler[VAM_EVT_GPS_STATUS])((void *)0);
-        }
-    }
 }
 
 
