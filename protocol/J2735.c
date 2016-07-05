@@ -318,9 +318,10 @@ inline float decode_semimajor_axis_accuracy(uint8_t accuracy)
 inline uint16_t encode_semimajor_axis_orientation(float orientation)
 {
     uint16_t result = 0;
-
-
-	result = ((uint16_t)(orientation / 0.0054932479));
+    if(orientation == 360.00)
+    	result = 0xFFFF;
+    else
+    	result = ((uint16_t)(orientation / 0.0054932479));
     result = cv_ntohs(result);
 
     return result;
@@ -338,9 +339,11 @@ inline float decode_semimajor_axis_orientation(uint16_t orientation)
 {
     float result = 0;
 
-
     orientation = cv_ntohs(orientation);
-    result = ((float)((float)orientation * 0.0054932479));
+    if(orientation == 0xFFFF)
+    	result = 360.00;
+    else
+    	result = ((float)((float)orientation * 0.0054932479));
 	return result;
 }
 /******************************************************************************

@@ -454,7 +454,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
 			0				- success
 			others			- error
 *****************************************************************************/
-int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
+int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 {
 	int                                 result = 0;
 	vam_stastatus_t                      local = { { 0 }, 0 };
@@ -484,13 +484,13 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
     /* angle. */
     local.dir = decode_angle(status_ptr->angle);
 
+    local.time = time;
     /* Set new local status. */
 	result = vam_set_local_status(&local);
 	if(result < 0)
 	{
 		osal_printf("%s: vam_set_local_status err ret = %d. \n",__FUNCTION__, result);
 	}
-    
 	return result;
 }
 
@@ -506,7 +506,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len)
 			0				- success
 			others			- error
 *****************************************************************************/
-int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
+int decode_full_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 {
 	int                                 result = 0;
 	vam_stastatus_t                      local = { { 0 }, 0 };
@@ -552,7 +552,8 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len)
 
     /* exterior light. */
     local.exterior_light = status_ptr->exterlight;
-
+    /*recv msg time*/
+    local.time = time;
     /* Set new local status. */
 	result = vam_set_local_status(&local);
 	if(result < 0)
@@ -954,6 +955,7 @@ void ehm_receive_msg
             {
                 buff_ptr->data_ptr = buff_ptr->buffer;
                 buff_ptr->data_len = result;
+                buff_ptr->time = osal_get_systemtime();
             }
             else
             {
@@ -1060,7 +1062,10 @@ int ehm_prase_msgtype_v2x_apply
     uint8_t *data_ptr, 
 
     /* Data length. */
-    uint16_t data_len
+    uint16_t data_len,
+
+    /* recv msg time*/
+    uint32_t time
 )
 {
     int     result = 0;
@@ -1069,16 +1074,16 @@ int ehm_prase_msgtype_v2x_apply
     
     switch(msg_id)
 	{
-    	case V2X_BASIC_VEHICLE_STATUS: {
-            result = decode_basic_vehicle_status(data_ptr, data_len);     break;
+    	case V2X_BASIC_VEHICLE_MSG: {
+            result = decode_basic_vehicle_status(data_ptr, data_len ,time);     break;
         }
-    	case V2X_FULL_VEHICLE_STATUS:  {
-            result = decode_full_vehicle_status(data_ptr, data_len);      break;
+    	case V2X_FULL_VEHICLE_MSG:  {
+            result = decode_full_vehicle_status(data_ptr, data_len ,time);      break;
         }	
-    	case V2X_VEHICLE_STATIC_INFO:  {
+    	case V2X_VEHICLE_STATIC_MSG:  {
             result = decode_vehicle_static_infor(data_ptr, data_len);     break;
         }	
-    	case V2X_LC_VEHICLE_ALERT_SET: {
+    	case V2X_LC_VEHICLE_ALERT_MSG: {
             result = decode_local_vehicle_alert_set(data_ptr, data_len);  break;
         }
         default:                       {
@@ -1131,7 +1136,7 @@ int ehm_parse_msg_body
                 result = -1;  break;  
             }
     		case MSGTYPE_V2X_APPLY:   {  
-                result = ehm_prase_msgtype_v2x_apply(buff_ptr->data_ptr, buff_ptr->data_len);  break; 
+                result = ehm_prase_msgtype_v2x_apply(buff_ptr->data_ptr, buff_ptr->data_len, buff_ptr->time);  break;
             }  
     		case MSGTYPE_RAWDATA_DSRC:{  
                 result = -1;  break;  
