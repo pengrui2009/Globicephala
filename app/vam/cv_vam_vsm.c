@@ -321,20 +321,14 @@ void vam_update_sta(vam_envar_t *p_vam)
     if(p_vam->evt_handler[VAM_EVT_PEER_ALARM]){
         while(num_peer_alert_timeout > 0){
             num_peer_alert_timeout--;
-#if 0
-            osal_printf("%dPID=%02x %02x %02x %02x\r\n", num_peer_alert_timeout, p_sta[num_peer_alert_timeout]->pid[0], 
-                p_sta[num_peer_alert_timeout]->pid[1], p_sta[num_peer_alert_timeout]->pid[2], p_sta[num_peer_alert_timeout]->pid[3]);
-#endif
+            
             (p_vam->evt_handler[VAM_EVT_PEER_ALARM])(p_sta[num_peer_alert_timeout]);
         }
     }
 
     /* neighbour list turn to empty */
     if(gotNeighbour && isEmpty)
-    {
-        if(p_vam->evt_handler[VAM_EVT_PEER_UPDATE]){
-            (p_vam->evt_handler[VAM_EVT_PEER_UPDATE])(NULL);
-        }  
+    {  
         gotNeighbour = 0;
         p_vam->neighbour_cnt = 0;
     }
