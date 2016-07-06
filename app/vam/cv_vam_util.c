@@ -19,7 +19,6 @@
 
 #include "cv_vam.h"
 #include "cv_cms_def.h"
-#include "nmea.h"
 
 
 

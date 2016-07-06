@@ -20,7 +20,6 @@
 #include "cv_vam.h"
 #include "cv_cms_def.h"
 #include "cv_wnet.h"
-#include "nmea.h"
 
 
 

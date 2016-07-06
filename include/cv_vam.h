@@ -15,7 +15,6 @@
 #include "list.h"
 #include "cv_osal.h"
 
-#include "nmea.h"
 #include "cv_rcp.h"
 
 #include "app_msg_format.h"
