@@ -133,7 +133,7 @@ float vsm_get_distance(vam_position_t *p_src, vam_position_t *p_dest)
 {
     float d = 1000.0;
 
-    d *= getDistanceVer2(p_src->lat, p_src->lon, p_dest->lat, p_dest->lon);
+    d *= getDistanceVer2(p_src->latitude, p_src->longitude, p_dest->latitude, p_dest->longitude);
 
     #if 0
     {
@@ -200,12 +200,12 @@ vam_pos_data vsm_get_data(vam_stastatus_t *p_src, vam_stastatus_t *p_dest)
     vam_pos_data  pos_data;
     
     /* reference point */
-    lat1 = p_src->pos.lat;
-    lng1 = p_src->pos.lon;
+    lat1 = p_src->pos.latitude;
+    lng1 = p_src->pos.longitude;
 
     /* destination point */
-    lat2 = p_dest->pos.lat;
-    lng2 = p_dest->pos.lon;
+    lat2 = p_dest->pos.latitude;
+    lng2 = p_dest->pos.longitude;
 
     /* temp point */
     lat3 = lat1;
@@ -230,12 +230,12 @@ float vsm_get_pos(vam_stastatus_t *p_src, vam_stastatus_t *p_dest,vam_pos_data *
     float angle, delta;
 
     /* reference point */
-    lat1 = p_src->pos.lat;
-    lng1 = p_src->pos.lon;
+    lat1 = p_src->pos.latitude;
+    lng1 = p_src->pos.longitude;
 
     /* destination point */
-    lat2 = p_dest->pos.lat;
-    lng2 = p_dest->pos.lon;
+    lat2 = p_dest->pos.latitude;
+    lng2 = p_dest->pos.longitude;
 
 
     distance_1_2 = pos_data->distance_1_2;
@@ -287,12 +287,12 @@ float vsm_get_relative_pos(vam_stastatus_t *p_src, vam_stastatus_t *p_dest)
     float angle, delta;
 
     /* reference point */
-    lat1 = p_src->pos.lat;
-    lng1 = p_src->pos.lon;
+    lat1 = p_src->pos.latitude;
+    lng1 = p_src->pos.longitude;
 
     /* destination point */
-    lat2 = p_dest->pos.lat;
-    lng2 = p_dest->pos.lon;
+    lat2 = p_dest->pos.latitude;
+    lng2 = p_dest->pos.longitude;
 
     /* temp point */
     lat3 = lat1;
@@ -392,8 +392,8 @@ int32_t vsm_get_dr_current(vam_stastatus_t *last, vam_stastatus_t *current)
     }
     
     /* deltaT != 0, the calculate the "current" value */
-    lon1 = (float)last->pos.lon;//RAD((float)last->pos.lon);
-    lat1 = (float)last->pos.lat;//RAD((float)last->pos.lat);
+    lon1 = (float)last->pos.longitude;//RAD((float)last->pos.lon);
+    lat1 = (float)last->pos.latitude;//RAD((float)last->pos.lat);
     dir = RAD((float)last->dir);
     
     /* uniform rectilinear motion */ 
@@ -410,8 +410,8 @@ int32_t vsm_get_dr_current(vam_stastatus_t *last, vam_stastatus_t *current)
 
     current->time = t;
 
-    current->pos.lon = lon2 ;//* 180.0 / PI;
-    current->pos.lat = lat2 ;//* 180.0 / PI;
+    current->pos.longitude = lon2 ;//* 180.0 / PI;
+    current->pos.latitude = lat2 ;//* 180.0 / PI;
 #if 0
     char buf[100];
     sprintf(buf, "(lon=%f,lat=%f),h=%f,d=%f,s=%f,v=%f", current->pos.lon, current->pos.lat, current->dir, 

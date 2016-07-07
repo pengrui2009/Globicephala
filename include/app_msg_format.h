@@ -599,9 +599,9 @@ typedef struct _msg_full_status_st
 	/* 速度: unit 0.02 m/s, (0 - 8191), 8191 means invalid. */
 	uint16_t				velocity;
 	/* 行驶方向: unit 0.0125 degree(相对正北顺时针夹角), 	(0 - 28800), 28800 means invalid. */
-	uint16_t				angle;
+	uint16_t				   angle;
 	/* 方向盘转角: unit 1.5 degree, (-126 - +127), 127 means invalid. */
-	int8_t					steerwa;
+	int8_t					 steerwa;
 	/* 4路加速度集   */
 	accleration_set4way_st	acce4way;
 	/* 制动系统状态  */

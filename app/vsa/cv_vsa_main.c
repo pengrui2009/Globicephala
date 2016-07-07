@@ -65,12 +65,12 @@ uint32_t  vsa_position_classify(const vam_stastatus_t *local, const vam_stastatu
     float angle, delta;
 
     /* reference point */
-    lat1 = local->pos.lat;
-    lng1 = local->pos.lon;
+    lat1 = local->pos.latitude;
+    lng1 = local->pos.longitude;
 
     /* destination point */
-    lat2 = remote->pos.lat;
-    lng2 = remote->pos.lon;
+    lat2 = remote->pos.latitude;
+    lng2 = remote->pos.longitude;
 
 
     angle = pos_data->angle;

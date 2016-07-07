@@ -51,24 +51,27 @@ vam_envar_t *p_vam_envar;
 
 void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
 {  
-    switch(p_msg->id){
+    switch(p_msg->id)
+    {
         case VAM_MSG_START:
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "%s: VAM_MSG_START\n", 
-                                __FUNCTION__);
+        {
+            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "%s: VAM_MSG_START. \n",__FUNCTION__);
 
             p_vam->flag |= VAM_FLAG_RX;
             osal_timer_start(p_vam->timer_neighbour_life);
             
-            if (p_vam->working_param.bsm_boardcast_mode != BSM_BC_MODE_DISABLE){
+            if(p_vam->working_param.bsm_boardcast_mode != BSM_BC_MODE_DISABLE)
+            {
                 p_vam->flag |= VAM_FLAG_TX_BSM;
                 vsm_start_bsm_broadcast(p_vam);
             }
             
-            break;
-
+            break;    
+        }
         case VAM_MSG_STOP:
-
-            if (p_vam->flag & VAM_FLAG_TX_BSM){
+        {
+            if (p_vam->flag & VAM_FLAG_TX_BSM)
+            {
                 vsm_stop_bsm_broadcast(p_vam);
             }
 
@@ -76,54 +79,65 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
             osal_timer_stop(p_vam->timer_neighbour_life);
             
             break;
-
+        }
         case VAM_MSG_RCPTX:
-            if (p_msg->argc == RCP_MSG_ID_BSM){
+        {
+            if (p_msg->argc == RCP_MSG_ID_BSM)
+            {
                 rcp_send_bsm(p_vam);
             }
-            if (p_msg->argc == RCP_MSG_ID_EVAM){
+            if (p_msg->argc == RCP_MSG_ID_EVAM)
+            {
                 rcp_send_evam(p_vam);
             }
-            if (p_msg->argc == RCP_MSG_ID_RSA){
+            if (p_msg->argc == RCP_MSG_ID_RSA)
+            {
                 rcp_send_rsa(p_vam);
             }
 
             break;
-
+        }
         case VAM_MSG_RCPRX:
+        {
             rcp_parse_msg(p_vam, (wnet_rxinfo_t *)p_msg->argv, (uint8_t *)p_msg->argc, p_msg->len);
             wnet_release_rxbuf(WNET_RXBUF_PTR(p_msg->argv));
             
             break;
-
+        }
         case VAM_MSG_NEIGH_TIMEOUT:
+        {
             vam_update_sta(p_vam);
-            break;
-            
+            break;  
+        }   
         default:
+        {
             break;
+        }       
     }
 }
 
 void * vam_thread_entry (void *parameter)
 {
-    int err;
-    sys_msg_t *p_msg;
-    vam_envar_t *p_vam = (vam_envar_t *)parameter;
-    uint32_t len = 0;
-    uint8_t buf[VAM_MQ_MSG_SIZE];
-    OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s: ---->\n", __FUNCTION__);
+    int                      err = 0;
+    vam_envar_t           *p_vam = (vam_envar_t *)parameter;
+    uint32_t                 len = 0;
+    uint8_t buf[VAM_MQ_MSG_SIZE] = { 0 };
 
-    p_msg = (sys_msg_t *)buf;
-	while(1){
+    
+    OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s: ---->\n", __FUNCTION__);
+    
+	while(1)
+    {
         memset(buf, 0, VAM_MQ_MSG_SIZE);
+        
         err = osal_queue_recv(p_vam->queue_vam, buf, &len, OSAL_WAITING_FOREVER);
-        if (err == OSAL_STATUS_SUCCESS && len > 0){
-            vam_main_proc(p_vam, p_msg);
+        if((err == OSAL_STATUS_SUCCESS) && (0 < len))
+        {
+            vam_main_proc(p_vam, (sys_msg_t *)buf);
         }
-        else{
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: osal_queue_recv error [%d]\n",\
-                            __FUNCTION__, err);
+        else
+        {
+            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: osal_queue_recv error [%d]. \n", __FUNCTION__, err);
         }
 	}
 }
@@ -275,17 +289,17 @@ void dump_pos(vam_stastatus_t *p_sta)
     osal_printf("------------sta---------\n");
     osal_printf("PID:%02x-%02x-%02x-%02x\n", p_sta->pid[0], p_sta->pid[1]\
                                           , p_sta->pid[2], p_sta->pid[3]);
-    sprintf(str,"%f", p_sta->pos.lat);
+    sprintf(str,"%f", p_sta->pos.latitude);
     osal_printf("pos.lat:%s\n", str);
-    sprintf(str,"%f", p_sta->pos.lon);
+    sprintf(str,"%f", p_sta->pos.longitude);
     osal_printf("pos.lon:%s\n", str);
-    sprintf(str,"%f", p_sta->pos.elev);
+    sprintf(str,"%f", p_sta->pos.elevation);
     osal_printf("pos.elev:%s\n", str);
-    sprintf(str,"%f", p_sta->pos.accu.semi_major_accu);
+    sprintf(str,"%f", p_sta->pos_accuracy.semi_major_accu);
     osal_printf("pos.accu.semi_major_accu:%s\n", str);
-    sprintf(str,"%f", p_sta->pos.accu.semi_major_orientation);
+    sprintf(str,"%f", p_sta->pos_accuracy.semi_major_orientation);
     osal_printf("pos.accu.semi_major_orientation:%s\n", str);
-    sprintf(str,"%f", p_sta->pos.accu.semi_minor_accu);
+    sprintf(str,"%f", p_sta->pos_accuracy.semi_minor_accu);
     osal_printf("pos.accu.semi_minor_accu:%s\n", str);
     sprintf(str,"%f", p_sta->dir);
     osal_printf("pos.heading:%s\n", str);

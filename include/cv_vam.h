@@ -111,71 +111,112 @@ enum VAM_EVT
 /* store data to reduce data size and off the optimization. */
 #pragma pack(1)
 
-typedef struct _vam_position_accu
+
+
+/* Vehicle position accuracy structure. */
+typedef struct _vam_pos_accuracy_t
 {
-    /* Position accuracy from GPGST command.  */
-    float        semi_major_accu;
-    float        semi_minor_accu;
-    float 		 semi_major_orientation;
+    /* Radius of semi-major axis of an ellipsoid. Unit: meter. */
+    float   semi_major_accu;
 
-} vam_position_accu;
+    /* Radius of semi-minor axis of an ellipsoid. Unit: meter. */
+    float   semi_minor_accu;
 
-typedef struct _vam_position{
-    float lat;
-    float lon ;
-    float elev;
+    /* Angle of semi-major axis of an ellipsoid. Unit: degree. */
+    float   semi_major_orientation;
 
-    /* Position accuracy. */
-    vam_position_accu accu;
-}vam_position_t;
+}vam_pos_accuracy_t, * vam_pos_accuracy_t_ptr;
 
-typedef float vam_dir_t ;
-typedef float  vam_speed_t ;
-
-typedef struct _vam_acce{
-    float lon;
-    float lat;
-    float vert;
-    float yaw;
-}vam_acce_t;
+#define VAM_POS_ACCURACY_T_LEN    (sizeof(vam_pos_accuracy_t))
 
 
-typedef struct _vam_stastatus
+/* Vehicle position structure. */
+typedef struct _vam_position_t
+{
+    /* Geographic latitude. Unit: degree. */
+    float  latitude;
+
+    /* Geographic longitude. Unit: degree. */
+    float longitude;
+
+    /* Geographic position above or below the reference ellipsoid. Unit: meter. */
+    float elevation;
+    
+}vam_position_t, * vam_position_t_ptr;
+
+#define VAM_POSITION_T_LEN    (sizeof(vam_position_t))
+
+
+/* Acceleration set 4 way. */
+typedef struct _vam_acceset_t
+{   
+    /* Along the vehicle longitudinal axis. Unit: m/s^2. */
+    float  longitudinal;
+
+    /* Along the vehicle lateral axis. Unit: m/s^2. */
+    float       lateral;
+
+    /* Alone the vehicle vertical axis. Unit: m/s^2. */
+    float      vertical;
+
+    /* Vehicle's yaw rate. Unit: degrees per second. */
+    float      yaw_rate;
+    
+}vam_acceset_t, * vam_acceset_t_ptr;
+
+#define VAM_ACCESET_T_LEN    (sizeof(vam_acceset_t))
+
+
+/* Vehicle size structure. */
+typedef struct _vam_vehicle_size_t
+{
+    /* Vehicle size unit: m. */
+    float   vec_width;
+    float  vec_length;
+
+}vam_vehicle_size_t, * vam_vehicle_size_t_ptr;
+
+#define VAM_VEHICLE_SIZE_T_LEN    (sizeof(vam_vehicle_size_t))
+
+
+
+
+
+
+
+/* Vehicle status structure. */
+typedef struct _vam_stastatus_t
 {
     /* Product id. */
     uint8_t      pid[RCP_TEMP_ID_LEN];  
+    /* DSRC second. */
+    uint16_t                  dsecond;
 
-    uint16_t                timestamp;
-
+    /* Vehicle position. */
     vam_position_t                pos;
-
-    /* Driving direction. Unit degree. */
-    float                         dir;
-
-    /* Driving speed. Unit km/h. */
-    float                       speed;
-
-    /* Driving acceleration. */
-    vam_acce_t                   acce;
+    /* Vehicle position accuracy. */
+    vam_pos_accuracy_t   pos_accuracy;
 
     /* Transmission status. */
-    uint8_t	               tran_state;
-
-    /* Steering wheel angle. */
-    float	        steer_wheel_angle;
+    uint8_t	       transmission_state;
+    /* Driving speed. Unit km/h. */
+    float                       speed;
+    /* Driving direction. Unit degree. */
+    float                         dir;
+    /* Steering wheel angle. Unit degree. */
+    float	        steer_wheel_angle; 
+    /* Driving acceleration set. */
+    vam_acceset_t            acce_set;
 
     /* Brake system status. */
-    brake_system_status_st    braksta;
-
+    brake_system_status_st brake_stat;
     /* Exterior lights status. */
     exterior_lights_st exterior_light; 
 
     /* Vehicle type. */
     uint8_t                  vec_type;
-    
-    /* Vehicle size unit: m. */
-    float	            vehicle_width;
-    float              vehicle_length;
+    /* Vehicle size. */
+    vam_vehicle_size_t       vec_size;
 
 
     /* bit0-VBD, bit1-EBD;  1-active, 0-cancel; 同evam中alert_mask. */
@@ -186,7 +227,10 @@ typedef struct _vam_stastatus
 
     uint8_t                       cnt;
     
-} vam_stastatus_t;
+} vam_stastatus_t, * vam_stastatus_t_ptr;
+
+#define VAM_STASTATUS_T_LEN    (sizeof(vam_stastatus_t))
+
 
 typedef struct _vam_sta_node
 {
@@ -206,7 +250,8 @@ typedef struct _vam_sta_node
 }vam_sta_node_t;
 
 
-typedef struct _vam_config{
+typedef struct _vam_config
+{
 
     /* 
         Basic Safty Message TX function:    
@@ -217,6 +262,7 @@ typedef struct _vam_config{
     uint8_t bsm_pause_mode;  /* 0 - disable, 1-tx evam enable, 2-rx evam pause bsm*/
     uint8_t bsm_pause_hold_time;  /* unit:s */
     uint16_t bsm_boardcast_period;  /* 100~3000, unit:ms, min accuracy :10ms */
+
     /* 
         Emergency Vehicle Alert Message TX function:    
     */
@@ -226,7 +272,6 @@ typedef struct _vam_config{
 	
 	uint16_t evam_broadcast_peroid;  //EVAM消息广播周期 ms
     
-
 }vam_config_t;
 
 
@@ -235,7 +280,8 @@ typedef void (*vam_evt_handler)(void *);
 
 
 
-typedef struct _vam_envar{
+typedef struct _vam_envar
+{
 
     /* working_param */
     vam_config_t working_param;

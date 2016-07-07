@@ -106,7 +106,7 @@ void dump_pos_lite(vam_stastatus_t *p_sta)
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO,"pos.speed:%s\n", str);
 */
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO,"lat:%f, lon:%f, speed:%f\n",\
-                    p_sta->pos.lat,p_sta->pos.lon,p_sta->speed);
+                    p_sta->pos.latitude, p_sta->pos.longitude, p_sta->speed);
 }
 
 //static uint8_t print_cnt = 0;

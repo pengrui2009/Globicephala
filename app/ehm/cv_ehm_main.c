@@ -283,14 +283,14 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         memcpy(node_detail_ptr->node_id, p_sta->s.pid, RCP_TEMP_ID_LEN);
 
         /* position 3d. */
-        node_detail_ptr->pos3d.latitude = encode_latitude(p_sta->s.pos.lat);
-        node_detail_ptr->pos3d.longitude = encode_longitude(p_sta->s.pos.lon);
-        node_detail_ptr->pos3d.elevation = encode_elevation(p_sta->s.pos.elev);
+        node_detail_ptr->pos3d.latitude = encode_latitude(p_sta->s.pos.latitude);
+        node_detail_ptr->pos3d.longitude = encode_longitude(p_sta->s.pos.longitude);
+        node_detail_ptr->pos3d.elevation = encode_elevation(p_sta->s.pos.elevation);
 
         /* position accuracy. */
-        node_detail_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(p_sta->s.pos.accu.semi_major_accu);
-        node_detail_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(p_sta->s.pos.accu.semi_minor_accu);
-        node_detail_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(p_sta->s.pos.accu.semi_major_orientation);
+        node_detail_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(p_sta->s.pos_accuracy.semi_major_accu);
+        node_detail_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(p_sta->s.pos_accuracy.semi_minor_accu);
+        node_detail_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(p_sta->s.pos_accuracy.semi_major_orientation);
 
         /* velocity. */
         node_detail_ptr->velocity = encode_absolute_velocity(p_sta->s.speed);
@@ -302,23 +302,23 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         node_detail_ptr->steer_wheel_angle = encode_steer_wheel_angle(p_sta->s.steer_wheel_angle);
 
         /* acceleration set 4 way. */  
-        node_detail_ptr->acc.lonacce = encode_acceleration(p_sta->s.acce.lon);
-        node_detail_ptr->acc.latacce = encode_acceleration(p_sta->s.acce.lat);
-        node_detail_ptr->acc.veracce = encode_vertical_acceleration(p_sta->s.acce.vert);
-        node_detail_ptr->acc.yawrate = encode_yawrate(p_sta->s.acce.yaw);
+        node_detail_ptr->acc.lonacce = encode_acceleration(p_sta->s.acce_set.longitudinal);
+        node_detail_ptr->acc.latacce = encode_acceleration(p_sta->s.acce_set.lateral);
+        node_detail_ptr->acc.veracce = encode_vertical_acceleration(p_sta->s.acce_set.vertical);
+        node_detail_ptr->acc.yawrate = encode_yawrate(p_sta->s.acce_set.yaw_rate);
 
         /* brake. */
-        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.reserved = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.reserved;
-		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightrear = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.rightrear;
-		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightfront = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.rightfront;
-		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftrear = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.leftrear;
-		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftfront = p_sta->s.braksta.wheel_brakes.wheel_brake_bit.leftfront;
+        node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.reserved = p_sta->s.brake_stat.wheel_brakes.wheel_brake_bit.reserved;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightrear = p_sta->s.brake_stat.wheel_brakes.wheel_brake_bit.rightrear;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.rightfront = p_sta->s.brake_stat.wheel_brakes.wheel_brake_bit.rightfront;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftrear = p_sta->s.brake_stat.wheel_brakes.wheel_brake_bit.leftrear;
+		node_detail_ptr->brake.wheel_brakes.wheel_brake_bit.leftfront = p_sta->s.brake_stat.wheel_brakes.wheel_brake_bit.leftfront;
 
-		node_detail_ptr->brake.traction = p_sta->s.braksta.traction;
-		node_detail_ptr->brake.abs = p_sta->s.braksta.abs;
-		node_detail_ptr->brake.scs = p_sta->s.braksta.scs;
-		node_detail_ptr->brake.brakeboost = p_sta->s.braksta.brakeboost;
-		node_detail_ptr->brake.auxbrakes = p_sta->s.braksta.auxbrakes;
+		node_detail_ptr->brake.traction = p_sta->s.brake_stat.traction;
+		node_detail_ptr->brake.abs = p_sta->s.brake_stat.abs;
+		node_detail_ptr->brake.scs = p_sta->s.brake_stat.scs;
+		node_detail_ptr->brake.brakeboost = p_sta->s.brake_stat.brakeboost;
+		node_detail_ptr->brake.auxbrakes = p_sta->s.brake_stat.auxbrakes;
 
         /* external light. */
         node_detail_ptr->exterlight.lowbeamheadlight = 0;
@@ -419,14 +419,14 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
     memcpy(status_ptr->node_id, local_status.pid, RCP_TEMP_ID_LEN);
 
     /* position. */
-    status_ptr->position.latitude = encode_latitude(local_status.pos.lat);
-    status_ptr->position.longitude = encode_longitude(local_status.pos.lon);
-    status_ptr->position.elevation = encode_elevation(local_status.pos.elev);
+    status_ptr->position.latitude = encode_latitude(local_status.pos.latitude);
+    status_ptr->position.longitude = encode_longitude(local_status.pos.longitude);
+    status_ptr->position.elevation = encode_elevation(local_status.pos.elevation);
 
     /* position accuracy. */
-    status_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(local_status.pos.accu.semi_major_accu);
-    status_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(local_status.pos.accu.semi_minor_accu);
-    status_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(local_status.pos.accu.semi_major_orientation);
+    status_ptr->posaccu.semimajoraxisAccu = encode_semimajor_axis_accuracy(local_status.pos_accuracy.semi_major_accu);
+    status_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(local_status.pos_accuracy.semi_minor_accu);
+    status_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(local_status.pos_accuracy.semi_major_orientation);
 
     /* velocity. */
     status_ptr->velocity = encode_absolute_velocity(local_status.speed);
@@ -469,14 +469,14 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
     memcpy(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id));
 
     /* position. */
-	local.pos.lat =  decode_latitude(status_ptr->position.latitude);
-	local.pos.lon =  decode_longitude(status_ptr->position.longitude);
-	local.pos.elev = decode_elevation(status_ptr->position.elevation);
+	local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
+	local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
+	local.pos.elevation = decode_elevation(status_ptr->position.elevation);
 
     /* position accuracy. */
-    local.pos.accu.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
-    local.pos.accu.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
-    local.pos.accu.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
+    local.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
+    local.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
+    local.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
 
     /* velocity. */
     local.speed = decode_absolute_velocity(status_ptr->velocity);
@@ -520,17 +520,17 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
     memcpy(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id));
 
     /* position. */
-	local.pos.lat =  decode_latitude(status_ptr->position.latitude);
-	local.pos.lon =  decode_longitude(status_ptr->position.longitude);
-	local.pos.elev = decode_elevation(status_ptr->position.elevation);
+	local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
+	local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
+	local.pos.elevation = decode_elevation(status_ptr->position.elevation);
 
     /* position accuracy. */
-    local.pos.accu.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
-    local.pos.accu.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
-    local.pos.accu.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
+    local.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
+    local.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
+    local.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
 
     /* transmission state. */
-    local.tran_state = status_ptr->tran_state;
+    local.transmission_state = status_ptr->tran_state;
 
     /* velocity. */
     local.speed = decode_absolute_velocity(status_ptr->velocity);
@@ -542,18 +542,19 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
     local.steer_wheel_angle = status_ptr->steerwa;
 
     /* acceleration set4way. */
-    local.acce.lat = decode_acceleration(status_ptr->acce4way.latacce);
-    local.acce.lon = decode_acceleration(status_ptr->acce4way.lonacce);
-    local.acce.vert = decode_vertical_acceleration(status_ptr->acce4way.veracce);
-    local.acce.yaw = decode_yawrate(status_ptr->acce4way.yawrate);
+    local.acce_set.lateral = decode_acceleration(status_ptr->acce4way.latacce);
+    local.acce_set.longitudinal = decode_acceleration(status_ptr->acce4way.lonacce);
+    local.acce_set.vertical = decode_vertical_acceleration(status_ptr->acce4way.veracce);
+    local.acce_set.yaw_rate = decode_yawrate(status_ptr->acce4way.yawrate);
 
     /* brake system status. */
-    local.braksta = status_ptr->braksta;
+    local.brake_stat = status_ptr->braksta;
 
     /* exterior light. */
     local.exterior_light = status_ptr->exterlight;
     /*recv msg time*/
     local.time = time;
+    
     /* Set new local status. */
 	result = vam_set_local_status(&local);
 	if(result < 0)
@@ -580,8 +581,8 @@ int decode_vehicle_static_infor(uint8_t *pdata, uint16_t len)
     local.vec_type = status_ptr->vehicle_type;
 
     /* Vehicle size. */
-    local.vehicle_width = decode_vehicle_width(status_ptr->vehicle_size.vehiclewidth);
-    local.vehicle_length = decode_vehicle_length(status_ptr->vehicle_size.vehiclelength);
+    local.vec_size.vec_width = decode_vehicle_width(status_ptr->vehicle_size.vehiclewidth);
+    local.vec_size.vec_length = decode_vehicle_length(status_ptr->vehicle_size.vehiclelength);
 
     /* Set new local status. */
 	result = vam_set_local_status(&local);
