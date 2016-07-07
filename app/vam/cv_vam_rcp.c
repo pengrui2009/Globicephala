@@ -207,36 +207,37 @@ int16_t rcp_get_system_time(void)
     return osal_get_systemtime();
 }
 
-int rcp_parse_bsm(vam_envar_t *p_vam,
-                  wnet_rxinfo_t *rxinfo,
-                  uint8_t *databuf, 
-                  uint32_t datalen)
-{
-    vam_sta_node_t *p_sta;
-    rcp_msg_basic_safty_t *p_bsm;
-    uint16_t alert_mask;  
 
-    if (datalen < (sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t))){
+
+int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{
+    vam_sta_node_t        *p_sta = NULL;
+    rcp_msg_basic_safty_t *p_bsm = (rcp_msg_basic_safty_t *)databuf;;
+
+
+    /* Return error when data length less then bsm minimum length. */
+    if(datalen < (sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)))
+    {
         return -1;
     }
 
-    p_bsm = (rcp_msg_basic_safty_t *)databuf;
-    if (0 == memcmp(p_bsm->header.temporary_id, p_vam->local.pid, RCP_TEMP_ID_LEN)){
+    /* Return out when receive my own's bsm message. */
+    if(0 == memcmp(p_bsm->header.temporary_id, p_vam->local.pid, RCP_TEMP_ID_LEN))
+    {
         return 0;
     }
     
     rcp_mda_process(p_bsm->header.msg_id.hops, p_bsm->header.msg_count, 
                      p_bsm->header.temporary_id, p_bsm->forward_id, databuf, datalen);
 
+    /* Find the current sta node id structure from neighbour list.*/
     p_sta = vam_find_sta(p_vam, p_bsm->header.temporary_id);
 
-    if (p_sta){
-        p_sta->life = VAM_NEIGHBOUR_MAXLIFE;
+    if(p_sta != NULL)
+    {
+        p_sta->exist_life = VAM_NEIGHBOUR_MAXLIFE;
         p_sta->s.timestamp = p_bsm->dsecond;
-        
-        /* BEGIN: Added by wanglei, 2014/10/16 */
         p_sta->s.time = osal_get_systemtime();
-        /* END:   Added by wanglei, 2014/10/16 */
 
         p_sta->s.pos.lon = decode_longitude(p_bsm->position.lon);
         p_sta->s.pos.lat = decode_latitude(p_bsm->position.lat);
@@ -248,7 +249,9 @@ int rcp_parse_bsm(vam_envar_t *p_vam,
         p_sta->s.tran_state = p_bsm->motion.transmission_state;
         p_sta->s.speed = decode_absolute_velocity(p_bsm->motion.speed);
         p_sta->s.dir = decode_angle(p_bsm->motion.heading);
+        
         p_sta->s.steer_wheel_angle = decode_steer_wheel_angle(p_bsm->motion.steering_wheel_angle);
+        
         p_sta->s.acce.lon = decode_acceleration(p_bsm->motion.acce.lon);
         p_sta->s.acce.lat = decode_acceleration(p_bsm->motion.acce.lat);
         p_sta->s.acce.vert = decode_vertical_acceleration(p_bsm->motion.acce.vert);
@@ -259,24 +262,24 @@ int rcp_parse_bsm(vam_envar_t *p_vam,
         p_sta->s.vehicle_length = decode_vehicle_length(p_bsm->size.length);
         p_sta->s.vehicle_width = decode_vehicle_width(p_bsm->size.width);
 
-        //dump_pos(&p_sta->s);
-
         /* for test  */
-        if (1 == g_dbg_print_type){
+        if (1 == g_dbg_print_type)
+        {
             rcp_dbg_distance = vsm_get_distance(&p_vam->local.pos, &p_sta->s.pos); 
         }
 
-        if(datalen > (sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t))){
+        /* Parsing event domain when has extra data. */
+        if((sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)) < datalen)
+        {
             p_sta->alert_life = VAM_REMOTE_ALERT_MAXLIFE;
-            alert_mask = decode_vehicle_alert(p_bsm->safetyExt.events);
-            p_sta->s.alert_mask = alert_mask;
+            p_sta->s.alert_mask = decode_vehicle_alert(p_bsm->safetyExt.events);
+            
             /* inform the app layer once */
-            if (p_vam->evt_handler[VAM_EVT_PEER_ALARM]){
+            if (p_vam->evt_handler[VAM_EVT_PEER_ALARM])
+            {
                 (p_vam->evt_handler[VAM_EVT_PEER_ALARM])(&p_sta->s);
             }        
-        }
-
-        
+        }   
     }
 
     return 0;
@@ -370,33 +373,45 @@ int rcp_parse_msg(vam_envar_t *p_vam,
                   uint8_t *databuf, 
                   uint32_t datalen)
 {
-    rcp_msgid_t *p_msgid;
+    rcp_msgid_t *p_msgid = (rcp_msgid_t *)databuf;
 
-    if (datalen < sizeof(rcp_msg_head_t)){
+
+    /* Error detection. */
+    if (datalen < sizeof(rcp_msg_head_t))
+    {
         return -1;
     }
 
-    p_msgid = (rcp_msgid_t *)databuf;
-
-    switch(p_msgid->id){
-    case RCP_MSG_ID_BSM:
-        rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);
-        break;
-#ifndef RSU_TEST
-    case RCP_MSG_ID_EVAM:
-        /* receive evam, then pause sending bsm msg */
-        if(2 == p_vam->working_param.bsm_pause_mode)
+    switch(p_msgid->id)
+    {
+        case RCP_MSG_ID_BSM:
         {
-            vsm_pause_bsm_broadcast(p_vam);
+            rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);    break;
         }
-        rcp_parse_evam(p_vam, rxinfo, databuf, datalen);
-        break;
-    case RCP_MSG_ID_RSA:
-        rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);
-        break;
-#endif    
-    default:
-        break;
+        
+        case RCP_MSG_ID_EVAM:
+        {
+            /* receive evam, then pause sending bsm msg */
+            if(2 == p_vam->working_param.bsm_pause_mode)
+            {
+                vsm_pause_bsm_broadcast(p_vam);
+            }
+            
+            rcp_parse_evam(p_vam, rxinfo, databuf, datalen);
+
+            break;
+        }
+        
+        case RCP_MSG_ID_RSA:
+        {
+            rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);  break;   
+        }
+        
+        default:
+        {
+            break; 
+        }
+        
     }
 
     return p_msgid->id;

@@ -91,9 +91,7 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
             break;
 
         case VAM_MSG_RCPRX:
-            rcp_parse_msg(p_vam, (wnet_rxinfo_t *)p_msg->argv, \
-                          (uint8_t *)p_msg->argc, p_msg->len);
-
+            rcp_parse_msg(p_vam, (wnet_rxinfo_t *)p_msg->argv, (uint8_t *)p_msg->argc, p_msg->len);
             wnet_release_rxbuf(WNET_RXBUF_PTR(p_msg->argv));
             
             break;
@@ -192,15 +190,21 @@ void vam_init(void)
     memset(p_vam, 0, sizeof(vam_envar_t));
     memcpy(&p_vam->working_param, &p_cms_param->vam, sizeof(vam_config_t));
 
-   
-    if (0 == memcmp(p_cms_param->pid, zero_pid, RCP_TEMP_ID_LEN)){
-        for (i=0; i<RCP_TEMP_ID_LEN; i++){
+
+    /* Set local's pid. */                    
+    if (0 == memcmp(p_cms_param->pid, zero_pid, RCP_TEMP_ID_LEN))
+    {
+        for (i=0; i<RCP_TEMP_ID_LEN; i++)
+        {
             p_vam->local.pid[i] = des(RCP_TEMP_ID_LEN-1-i);
         }
     }
-    else {
+    else 
+    {
         memcpy(p_vam->local.pid, p_cms_param->pid, RCP_TEMP_ID_LEN);
     }
+
+    
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "PID: %02x %02x %02x %02x\r\n", \
         p_vam->local.pid[0], p_vam->local.pid[1], p_vam->local.pid[2], p_vam->local.pid[3]);
 
@@ -210,30 +214,25 @@ void vam_init(void)
         list_add_tail(&p_vam->remote[i].list, &p_vam->sta_free_list);
     }
     
-     /* os object for vam */
+    /* os object for vam */
     p_vam->queue_vam = osal_queue_create("q-vam", VAM_QUEUE_SIZE, VAM_MQ_MSG_SIZE);
     osal_assert(p_vam->queue_vam != NULL);
 
-	p_vam->task_vam = osal_task_create("tk-vam",
-                           vam_thread_entry, p_vam,
-                           RT_VAM_THREAD_STACK_SIZE, RT_VAM_THREAD_PRIORITY);
+	p_vam->task_vam = osal_task_create("tk-vam", vam_thread_entry, p_vam, RT_VAM_THREAD_STACK_SIZE, RT_VAM_THREAD_PRIORITY);
     osal_assert(p_vam->task_vam != NULL);
         
-    p_vam->timer_send_bsm = osal_timer_create("tm-sb",timer_send_bsm_callback,p_vam,\
-        BSM_SEND_PERIOD_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
+    p_vam->timer_send_bsm = osal_timer_create("tm-sb",timer_send_bsm_callback,p_vam, BSM_SEND_PERIOD_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_send_bsm != NULL);
 
-    p_vam->timer_bsm_pause = osal_timer_create("tm-bp",timer_bsm_pause_callback,p_vam,\
-        BSM_PAUSE_HOLDTIME_DEFAULT, TIMER_ONESHOT|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
+    p_vam->timer_bsm_pause = osal_timer_create("tm-bp",timer_bsm_pause_callback,p_vam, BSM_PAUSE_HOLDTIME_DEFAULT, TIMER_ONESHOT|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_bsm_pause != NULL);
 
-    p_vam->timer_send_evam = osal_timer_create("tm-se",timer_send_evam_callback, p_vam,\
-        EVAM_SEND_PERIOD_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
+    p_vam->timer_send_evam = osal_timer_create("tm-se",timer_send_evam_callback, p_vam, EVAM_SEND_PERIOD_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_send_evam != NULL);
 
-    p_vam->timer_gps_life = osal_timer_create("tm-gl",timer_gps_life_callback,p_vam,\
-        BSM_GPS_LIFE_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
+    p_vam->timer_gps_life = osal_timer_create("tm-gl",timer_gps_life_callback, p_vam, BSM_GPS_LIFE_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_gps_life != NULL);
+
 
     /* Stop the timer. */
     osal_timer_stop(p_vam->timer_gps_life);

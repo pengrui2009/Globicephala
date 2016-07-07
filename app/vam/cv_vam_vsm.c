@@ -203,7 +203,9 @@ void timer_send_evam_callback(void* parameter)
     static uint16_t mask = 0;
     vam_envar_t *p_vam = (vam_envar_t *)parameter;
     static uint8_t count = VAM_NO_ALERT_EVAM_TX_TIMES;
-    if (p_vam->flag&VAM_FLAG_TX_EVAM)
+
+    
+    if(p_vam->flag&VAM_FLAG_TX_EVAM)
     {
         /* broadcast evam, then pause bsm broadcast */
         if((1 == p_vam->working_param.bsm_pause_mode) && (p_vam->local.alert_mask != mask))
@@ -240,31 +242,39 @@ void timer_send_evam_callback(void* parameter)
 
 vam_sta_node_t *vam_find_sta(vam_envar_t *p_vam, uint8_t *temporary_id)
 {
-    vam_sta_node_t *p_sta = NULL, *pos;
+    vam_sta_node_t *p_sta = NULL, *pos = NULL;
 
-	list_for_each_entry(pos, vam_sta_node_t, &p_vam->neighbour_list, list){
-        if (memcmp(pos->s.pid, temporary_id, RCP_TEMP_ID_LEN) == 0){
+
+    /* Loop find the specific node and stop find when succeed. */
+	list_for_each_entry(pos, vam_sta_node_t, &p_vam->neighbour_list, list)
+    {
+        if(memcmp(pos->s.pid, temporary_id, RCP_TEMP_ID_LEN) == 0)
+        {
             p_sta = pos;
             break;
         }
 	}
 
     /* not found, allocate new one */
-    if (p_sta == NULL){
-
+    if(p_sta == NULL)
+    {
+        /* Allocate a new sta node from free list when not empty. */
         osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
-    	if (!list_empty(&p_vam->sta_free_list)) {
+    	if(!list_empty(&p_vam->sta_free_list)) 
+        {
     		p_sta = list_first_entry(&p_vam->sta_free_list, vam_sta_node_t, list);
     		list_move(&p_sta->list, &p_vam->neighbour_list);
     	}
         osal_sem_release(p_vam->sem_sta);
 
-        if (p_sta){
+        if(p_sta != NULL)
+        {
             p_vam->neighbour_cnt ++;
 			memcpy(p_sta->s.pid, temporary_id, RCP_TEMP_ID_LEN);  
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "one neighbour join\n");                 
+            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "one neighbour join. \n");                 
         }
-        else{
+        else
+        {
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: no free sta.\n", __FUNCTION__);
         }
     }
@@ -295,8 +305,8 @@ void vam_update_sta(vam_envar_t *p_vam)
         p_sta_node = (vam_sta_node_t *)pos;
         pos = pos->next;
 
-        if(p_sta_node->life)
-            p_sta_node->life--;
+        if(p_sta_node->exist_life)
+            p_sta_node->exist_life--;
         if(p_sta_node->alert_life)
             p_sta_node->alert_life--;
         
@@ -308,7 +318,7 @@ void vam_update_sta(vam_envar_t *p_vam)
             num_peer_alert_timeout++;
         }
 
-        if (p_sta_node->life == 0 && p_sta_node->alert_life == 0){
+        if (p_sta_node->exist_life == 0 && p_sta_node->alert_life == 0){
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "one neighbour is kick out\n");
 
             list_move_tail(&p_sta_node->list, &p_vam->sta_free_list);
@@ -374,7 +384,7 @@ void vam_list_sta(void)
 	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
         osal_printf("STA:[%02x-%02x-%02x-%02x], life:%d, alert_life:%d alert_mask:%d\n",\
             p_sta->s.pid[0],p_sta->s.pid[1],p_sta->s.pid[2],p_sta->s.pid[3],\
-            p_sta->life, p_sta->alert_life, p_sta->s.alert_mask);
+            p_sta->exist_life, p_sta->alert_life, p_sta->s.alert_mask);
     }
     osal_sem_release(p_vam->sem_sta);
 }

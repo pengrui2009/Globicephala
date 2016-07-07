@@ -46,15 +46,12 @@
 /* for test roadside alert */
 #define VAM_FLAG_TX_RSA       (0x0100)
 
-#define VAM_NEIGHBOUR_MAXNUM   (80)  //
-#define VAM_NEIGHBOUR_MAXLIFE  (5)   //unit: second
+#define VAM_NEIGHBOUR_MAXNUM       (80) //
+#define VAM_NEIGHBOUR_MAXLIFE      (5)  //unit: second
 
+#define VAM_REMOTE_ALERT_MAXLIFE   (5)  //unit: second
+#define VAM_NO_ALERT_EVAM_TX_TIMES (5)  //取消所有警告的evam消息发送次数
 
-/* BEGIN: Added by wanglei, 2014/8/1 */
-#define VAM_REMOTE_ALERT_MAXLIFE  (5)  //unit: second
-#define VAM_NO_ALERT_EVAM_TX_TIMES (5) //取消所有警告的evam消息发送次数
-
-/* END:   Added by wanglei, 2014/8/1 */
 
 
 /* vehicle alert, need to conver to Eventflag when sended by bsm msg */
@@ -88,7 +85,8 @@ typedef enum _VAM_RSA_TYPE
 } E_VAM_RSA_TYPE;
 
 
-enum VAM_EVT{
+enum VAM_EVT
+{
     VAM_EVT_PEER_ALARM = 0,
     VAM_EVT_GSNR_EBD_DETECT, 
 
@@ -145,19 +143,23 @@ typedef struct _vam_acce{
 typedef struct _vam_stastatus
 {
     /* Product id. */
-    uint8_t pid[RCP_TEMP_ID_LEN];  
+    uint8_t      pid[RCP_TEMP_ID_LEN];  
 
-    uint16_t timestamp;
+    uint16_t                timestamp;
 
-    vam_position_t  pos ;
+    vam_position_t                pos;
 
-    float          dir;	//度
-    float        speed;	//km/h
-    vam_acce_t    acce;
+    /* Driving direction. Unit degree. */
+    float                         dir;
 
+    /* Driving speed. Unit km/h. */
+    float                       speed;
+
+    /* Driving acceleration. */
+    vam_acce_t                   acce;
 
     /* Transmission status. */
-    uint8_t		           tran_state;
+    uint8_t	               tran_state;
 
     /* Steering wheel angle. */
     float	        steer_wheel_angle;
@@ -183,18 +185,24 @@ typedef struct _vam_stastatus
     uint32_t                     time;     
 
     uint8_t                       cnt;
+    
 } vam_stastatus_t;
 
-typedef struct _vam_sta_node{
-    /* !!!DON'T modify it!!! */
-    list_head_t list;
+typedef struct _vam_sta_node
+{
+    /* Don't modify it! */
+    list_head_t    list;
 
-    vam_stastatus_t s;
 
-    /* private */
-    uint16_t life;
+    /* Node status. */
+    vam_stastatus_t   s;
+
+    /* Node's exist life in my neighbour list. */
+    uint16_t exist_life;
+
+    /* Node's alert life in alert list. */
     uint16_t alert_life;
-    /* os related */
+
 }vam_sta_node_t;
 
 

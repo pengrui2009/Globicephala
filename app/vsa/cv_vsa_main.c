@@ -357,38 +357,50 @@ void vsa_receive_alarm_update(void *parameter)
     vam_stastatus_t *p_sta = (vam_stastatus_t *)parameter;
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;
     uint16_t peer_alert;
+
+    
     vam_get_peer_alert_status(&peer_alert);
     memcpy(&p_vsa->remote, p_sta, sizeof(vam_stastatus_t));
 
-    if ((peer_alert&VAM_ALERT_MASK_VBD)&&(vbd_judge(p_vsa))){
-        if (!(p_vsa->alert_pend & (1<<VSA_ID_VBD))){
+    if ((peer_alert&VAM_ALERT_MASK_VBD)&&(vbd_judge(p_vsa)))
+    {
+        if (!(p_vsa->alert_pend & (1<<VSA_ID_VBD)))
+        {
             vsa_add_event_queue(p_vsa, VSA_MSG_ACC_RC, 1,VAM_ALERT_MASK_VBD,NULL);
         }
     }
-    else{
-        if (p_vsa->alert_pend & (1<<VSA_ID_VBD)){
+    else
+    {
+        if (p_vsa->alert_pend & (1<<VSA_ID_VBD))
+        {
             vsa_add_event_queue(p_vsa, VSA_MSG_ACC_RC, 0,VAM_ALERT_MASK_VBD,NULL);
         }
     }
 
-    if ((peer_alert&VAM_ALERT_MASK_EBD)&&(ebd_judge(p_vsa))){
+    if ((peer_alert&VAM_ALERT_MASK_EBD)&&(ebd_judge(p_vsa)))
+    {
         if (!(p_vsa->alert_pend & (1<<VSA_ID_EBD))){
             vsa_add_event_queue(p_vsa, VSA_MSG_EEBL_RC, 1,VAM_ALERT_MASK_EBD,NULL);
         }
     }
     else{
-        if (p_vsa->alert_pend & (1<<VSA_ID_EBD)){
+        if (p_vsa->alert_pend & (1<<VSA_ID_EBD))
+        {
             vsa_add_event_queue(p_vsa, VSA_MSG_EEBL_RC, 0,VAM_ALERT_MASK_EBD,NULL);
         }
     } 
     
-    if (peer_alert&VAM_ALERT_MASK_VOT){
-        if (!(p_vsa->alert_pend & (1<<VSA_ID_VOT))){
+    if (peer_alert&VAM_ALERT_MASK_VOT)
+    {
+        if (!(p_vsa->alert_pend & (1<<VSA_ID_VOT)))
+        {
             vsa_add_event_queue(p_vsa, VSA_MSG_ACC_RC, 1,VAM_ALERT_MASK_VOT,NULL);
         }
     }
-    else{
-        if (p_vsa->alert_pend & (1<<VSA_ID_VOT)){
+    else
+    {
+        if (p_vsa->alert_pend & (1<<VSA_ID_VOT))
+        {
             vsa_add_event_queue(p_vsa, VSA_MSG_ACC_RC, 0,VAM_ALERT_MASK_VOT,NULL);
         }
     }
@@ -1030,8 +1042,8 @@ static int vsa_xxx_recieve_proc(vsa_envar_t *p_vsa, void *arg)
 
   return 0;
 }
-vsa_app_handler vsa_app_handler_tbl[] = {
-
+vsa_app_handler vsa_app_handler_tbl[] = 
+{
     vsa_manual_broadcast_proc,
     vsa_eebl_broadcast_proc,
     vsa_auto_broadcast_proc,
@@ -1056,12 +1068,10 @@ void * vsa_base_proc(void *parameter)
     vsa_id = 0;
     vsa_envar_t *p_vsa = (vsa_envar_t *)parameter;
     
-    while(1){
+    while(1)
+    {
         osal_sem_take(p_vsa->sem_vsa_proc, OSAL_WAITING_FOREVER);
-#if 0 //gps detect
-        if(!p_vsa->gps_status)
-            continue;
-#endif
+
         count_neighour = vsa_preprocess_pos();
 
         if(( count_neighour < 0)||(count_neighour > VAM_NEIGHBOUR_MAXNUM)){
@@ -1126,16 +1136,19 @@ void * vsa_thread_entry(void *parameter)
     uint8_t buf[VSA_MQ_MSG_SIZE];
     p_msg = (sys_msg_t *)buf;
         
-    while(1){
+    while(1)
+    {
         memset(buf, 0, VSA_MQ_MSG_SIZE);
         err = osal_queue_recv(p_vsa->queue_vsa, buf, &len, OSAL_WAITING_FOREVER);
-        if (err == OSAL_STATUS_SUCCESS){
-        
+        if (err == OSAL_STATUS_SUCCESS)
+        {
             if(vsa_app_handler_tbl[p_msg->id - VSA_MSG_PROC] != NULL)
-                    err = vsa_app_handler_tbl[p_msg->id - VSA_MSG_PROC](p_vsa,p_msg);
-
-       }
-        else{
+            {
+                err = vsa_app_handler_tbl[p_msg->id - VSA_MSG_PROC](p_vsa,p_msg); 
+            }
+        }
+        else
+        {
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s: rt_mq_recv error [%d]\n", __FUNCTION__, err);          
         }      
     }
@@ -1221,14 +1234,10 @@ void vsa_init(void)
     p_vsa->sem_vsa_proc = osal_sem_create("sem-vsa",0);
     osal_assert(p_vsa->sem_vsa_proc != NULL);
     
-    p_vsa->task_vsa_l = osal_task_create("t-vsa-l",
-                           vsa_base_proc, p_vsa,
-                           RT_VSA_THREAD_STACK_SIZE, RT_VSA_THREAD_PRIORITY);
+    p_vsa->task_vsa_l = osal_task_create("t-vsa-l", vsa_base_proc, p_vsa, RT_VSA_THREAD_STACK_SIZE, RT_VSA_THREAD_PRIORITY);
     osal_assert(p_vsa->task_vsa_l != NULL);
     
-    p_vsa->task_vsa_r = osal_task_create("t-vsa-r",
-                           vsa_thread_entry, p_vsa,
-                           RT_VSA_THREAD_STACK_SIZE, RT_VSA_THREAD_PRIORITY);
+    p_vsa->task_vsa_r = osal_task_create("t-vsa-r", vsa_thread_entry, p_vsa, RT_VSA_THREAD_STACK_SIZE, RT_VSA_THREAD_PRIORITY);
     osal_assert(p_vsa->task_vsa_r != NULL);
 
 
