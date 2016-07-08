@@ -80,8 +80,8 @@ typedef struct {
 	driving_rush_type type;	    /* type */
 	float value;				/* acc value */
 	t_time time;				/* time point */
-	float latitude;
-	float longitude;
+	double latitude;
+	double longitude;
 	float speed;
 } driving_rush_value_st;
 

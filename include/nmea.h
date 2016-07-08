@@ -34,8 +34,8 @@ typedef struct{
     uint8_t isTrue;
     t_time updateTime;
     float speed;
-    float latitude;
-    float longitude;
+    double latitude;
+    double longitude;
     float  heading;
     t_time tt;
 } t_nmea_rmc;

@@ -125,8 +125,8 @@ typedef struct _vam_position_accu
 } vam_position_accu;
 
 typedef struct _vam_position{
-    float lat;
-    float lon ;
+    double lat;
+    double lon ;
     float elev;
 
     /* Position accuracy. */

@@ -1,9 +1,9 @@
 /*****************************************************************************
  Copyright(C) Beijing Carsmart Technology Co., Ltd.
  All rights reserved.
- 
+
  @file   : app_msg_format.h
- @brief  : this file include the application variables and functions prototypes for 
+ @brief  : this file include the application variables and functions prototypes for
            the message format module.
  @author : wangxianwen
  @history:
@@ -20,8 +20,8 @@
 
 /*
  * CAUTION:
- *    The sentence "declaration __attribute__ ((aligned(x)))" can not be working in this IDE. 
- *    We can use this parameter to make the storage larger then the natural size; but we can 
+ *    The sentence "declaration __attribute__ ((aligned(x)))" can not be working in this IDE.
+ *    We can use this parameter to make the storage larger then the natural size; but we can
  *    not make the storage smaller than the natural size.
  * */
 
@@ -45,7 +45,7 @@ typedef enum _msg_type_em
     MSGTYPE_V2X_APPLY  		= 0x3,
     MSGTYPE_RAWDATA_DSRC 	= 0x4,
     MSGTYPE_RAWDATA_NMEA 	= 0x5
-    
+
 }MSG_TYPE_EM, *MSG_TYPE_EM_PTR;
 
 #define MSG_TYPE_EM_LEN    (sizeof(MSG_TYPE_EM))
@@ -72,7 +72,7 @@ typedef enum _node_infor_type_em
 {
     NODE_INFOR_TYPE_SUMMARY = 0x01,       /* 节点概要信息 */
     NODE_INFOR_TYPE_DETAIL  = 0x02        /* 节点详细信息 */
-    
+
 }NODE_INFOR_TYPE_EM, *NODE_INFOR_TYPE_EM_PTR;
 
 #define NODE_INFOR_TYPE_EM_LEN    (sizeof(NODE_INFOR_TYPE_EM))
@@ -183,7 +183,7 @@ typedef struct  _position_3d_st
     int32_t longitude;                      /* 经度 */
     /* 海拔: unit 0.1 meter, (-4096 - +61439), -4096 means invalid. */
     int32_t elevation;                      /* 海拔 */
-    
+
 }position_3d_st, *position3d_st_ptr;
 
 #define POSITION3D_ST_LEN    (sizeof(position3d_st))
@@ -275,55 +275,58 @@ typedef struct _brake_system_status_st
 
 
 /* 外部灯状态external lights structure*/
-typedef struct _exterior_lights_st
+typedef union _exterior_lights_st
 {
-#ifndef __LITTLE_ENDIAN
- 
-	/* reserved*/
-	uint16_t		reserved:7;
-	/* 停车指示灯开启*/
-	uint16_t		parkinglight:1;
-	/* 雾灯开启*/
-	uint16_t		foglighton:1;
-	/* 日间行车灯开启*/
-	uint16_t		daytimerunninglight:1;
-	/* 自动亮度调节开启*/
-	uint16_t		automaticlight:1;
-	/* 危险指示灯开启*/
-	uint16_t		hazardsignallight:1;
-	/* 右转信号灯开启*/
-	uint16_t		rightturnsignallight:1;
-	/* 左转信号灯开启*/
-	uint16_t		leftturnsignallight:1;
-	/* 远光灯开启*/
-	uint16_t		highbeamheadlight:1;
-	/* 近光灯开启*/
-	uint16_t		lowbeamheadlight:1;
+	uint16_t exterior_lights_word;
+	struct _exterior_lights_bit
+	{
+	#ifndef __LITTLE_ENDIAN
 
-#else
-
-	/* 近光灯开启*/
-	uint16_t		lowbeamheadlight:1;
-    /* 远光灯开启*/
-	uint16_t		highbeamheadlight:1;
-    /* 左转信号灯开启*/
-	uint16_t		leftturnsignallight:1;
-    /* 右转信号灯开启*/
-	uint16_t		rightturnsignallight:1;
-    /* 危险指示灯开启*/
-	uint16_t		hazardsignallight:1;
-	/* 自动亮度调节开启*/
-	uint16_t		automaticlight:1;
-	/* 日间行车灯开启*/
-	uint16_t		daytimerunninglight:1;
+		/* reserved*/
+		uint16_t		reserved:7;
+		/* 停车指示灯开启*/
+		uint16_t		parkinglight:1;
 		/* 雾灯开启*/
-	uint16_t		foglighton:1;    
-    /* 停车指示灯开启*/
-	uint16_t		parkinglight:1;
-    /* reserved*/
-	uint16_t		reserved:7;
-#endif
-        
+		uint16_t		foglighton:1;
+		/* 日间行车灯开启*/
+		uint16_t		daytimerunninglight:1;
+		/* 自动亮度调节开启*/
+		uint16_t		automaticlight:1;
+		/* 危险指示灯开启*/
+		uint16_t		hazardsignallight:1;
+		/* 右转信号灯开启*/
+		uint16_t		rightturnsignallight:1;
+		/* 左转信号灯开启*/
+		uint16_t		leftturnsignallight:1;
+		/* 远光灯开启*/
+		uint16_t		highbeamheadlight:1;
+		/* 近光灯开启*/
+		uint16_t		lowbeamheadlight:1;
+
+	#else
+
+		/* 近光灯开启*/
+		uint16_t		lowbeamheadlight:1;
+		/* 远光灯开启*/
+		uint16_t		highbeamheadlight:1;
+		/* 左转信号灯开启*/
+		uint16_t		leftturnsignallight:1;
+		/* 右转信号灯开启*/
+		uint16_t		rightturnsignallight:1;
+		/* 危险指示灯开启*/
+		uint16_t		hazardsignallight:1;
+		/* 自动亮度调节开启*/
+		uint16_t		automaticlight:1;
+		/* 日间行车灯开启*/
+		uint16_t		daytimerunninglight:1;
+			/* 雾灯开启*/
+		uint16_t		foglighton:1;
+		/* 停车指示灯开启*/
+		uint16_t		parkinglight:1;
+		/* reserved*/
+		uint16_t		reserved:7;
+	#endif
+	}exterior_lights_bit;
 }exterior_lights_st, * exterior_lights_st_ptr;
 
 
@@ -344,7 +347,7 @@ typedef union _alert_flag_st
 {
     /* Alert word for whole group. */
     uint32_t alert_word;                  /* 告警位组合 */
-    
+
     /* Alert bits. */
     struct _alert_bit
     {
@@ -368,7 +371,7 @@ typedef union _alert_flag_st
 		uint32_t reserved          :25;   /* 保留位 */
 	#endif
     } alert_bit;
-    
+
 }alert_flag_st, *alert_flag_st_ptr;
 
 #define ALERT_FLAG_ST_LEN    (sizeof(alert_flag_st))
@@ -376,6 +379,36 @@ typedef union _alert_flag_st
 /* Alert bit status. */
 #define ALERT_FLAG_BIT_YES         0x01
 #define ALERT_FLAG_BIT_NO          0x00
+/* 本地车辆告警标识*/
+typedef union __vehicle_alert_st{
+	/* 本地车辆告警标识字*/
+	uint32_t  vehicle_alert_words;
+	/* 本地车辆告警标识位*/
+	struct _vehicle_alert_bit{
+	#ifndef __LITTLE_ENDIAN
+
+		uint32_t reserved             :28;
+
+		/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t vecbrakehardalert    :2;
+
+		/* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t	vecbreakdownalert :2;
+
+	  #else
+
+		/* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t	vecbreakdownalert :2;
+
+		/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t vecbrakehardalert    :2;
+
+		uint32_t reserved             :28;
+
+	  #endif
+	}vehicle_alert_bit;
+
+}vehicle_alert_st;
 
 
 /* 邻节点概要信息neigbhour node summary information structure. */
@@ -398,7 +431,7 @@ typedef struct  _nb_node_summary_infor_st
 
     /* 告警标记 */
 	alert_flag_st alert_flag;
-   
+
 }nb_node_summary_infor_st, *nb_node_summary_infor_st_ptr;
 
 #define NB_NODE_SUMMARY_INFOR_ST_LEN	sizeof(nb_node_summary_infor_st)
@@ -440,7 +473,7 @@ typedef union _nb_node_infor_st
 {
     nb_node_summary_infor_st summary_infor;
     nb_node_detail_infor_st   detail_infor;
-    
+
 }nb_node_infor_st, *nb_node_infor_st_ptr;
 
 
@@ -496,16 +529,16 @@ typedef  struct  _frame_msg_header_st
 
 	/*消息源：	0:v2x	1:host*/
 	uint8_t	src:      1;
-    
+
 	/*预留字段：	0*/
 	uint8_t	reserved1:3;
-	
+
 	/*预留字段：	0*/
 	uint8_t	reserved2:4;
-    
+
 	/*消息类型:	0:预留 1:调试消息 2:系统管理消息 3:v2x应用消息 4:dsrc消息 5:gps消息 6:未定义*/
 	uint8_t	type     :4;
-	
+
 #else
 
 	/*预留字段：	0*/
@@ -513,16 +546,16 @@ typedef  struct  _frame_msg_header_st
 
 	/*消息源：	0:v2x	1:host*/
 	uint8_t	src:      1;
-    
+
 	/*消息标识符:	0xE*/
 	uint8_t	mark:     4;
-    	
+
 	/*消息类型:	0:预留 1:调试消息 2:系统管理消息 3:v2x应用消息 4:dsrc消息 5:gps消息 6:未定义*/
 	uint8_t	type:     4;
-    
+
 	/*预留字段：	0*/
 	uint8_t	reserved2:4;
-	
+
 #endif
 }frame_msg_header_st, *frame_msg_header_st_ptr;
 
@@ -537,10 +570,10 @@ typedef  struct  _frame_msg_header_st
 
 /* 邻居节点信息  msg neighbour node info structure */
 typedef struct  _msg_vehicle_nb_status_st
-{   
+{
     /* Message id. */
     uint8_t                  msg_id;
-    
+
     /* Message system time. */
     uint32_t            system_time;
     /*Node Number*/
@@ -548,9 +581,9 @@ typedef struct  _msg_vehicle_nb_status_st
     /* Set the neigbour's node information type. */
     uint8_t         	node_infor_type;
 
-    /* 邻车概要信息/邻车完整信息 N * (Node summary/detail information structure). (0 <= N) */ 
+    /* 邻车概要信息/邻车完整信息 N * (Node summary/detail information structure). (0 <= N) */
     /* nb_node_infor_st_ptr node_infor_ptr; */
-    
+
 }msg_vehicle_nb_status_st, *msg_vehicle_nb_status_st_ptr;
 
 #define MSG_VEHICLE_NB_STATUS_ST_LEN    (sizeof(msg_vehicle_nb_status_st))
@@ -564,19 +597,19 @@ typedef struct _msg_basic_status_st
 
 	/* 节点ID:(0,0,0,0)-invalid id */
 	uint8_t          node_id[4];
-    
+
 	/*3D位置*/
 	position_3d_st 	   position;
-    
+
 	/* 位置精确度 */
 	position_accu_st	posaccu;
-    
+
 	/* 速度: unit 0.02 m/s, (0 - 8191), 8191 means invalid. */
 	uint16_t		   velocity;
-	
+
 	/* 行驶方向: unit 0.0125 degree (相对正北顺时针夹角), (0 - 28800), 28800 means invalid. */
 	uint16_t			  angle;
-    
+
 }msg_vehicle_basic_status_st, *msg_vehicle_basic_status_st_ptr;
 
 #define MSG_VEHICLE_BASIC_STATUS_ST_LEN		(sizeof(msg_vehicle_basic_status_st))
@@ -625,7 +658,7 @@ typedef struct _vehicle_static_info_st
 	uint8_t			  vehicle_type;
 	/* 车辆尺寸*/
 	vehicle_size_st   vehicle_size;
-    
+
 }msg_vehicle_static_info_st, *msg_vehicle_static_info_st_ptr;
 
 #define MSG_VEHICLE_STATIC_INFO_ST_LEN	sizeof(msg_vehicle_static_info_st)
@@ -636,29 +669,9 @@ typedef struct _msg_local_vehicle_alert_st
 {
     /* Message id. */
     uint8_t                  msg_id;
+    /*车辆告警设置*/
+    vehicle_alert_st		vehicle_alert_set;
 
-  #ifndef __LITTLE_ENDIAN
-
-    uint32_t reserved             :28;
-    
-	/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t vecbrakehardalert    :2;
-
-    /* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t	vecbreakdownalert :2;
-  
-  #else
-
-    /* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t	vecbreakdownalert :2;
-  
-	/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t vecbrakehardalert    :2;
-
-    uint32_t reserved             :28;
-
-  #endif
-   
 }msg_local_vehicle_alert_st,*msg_local_vehicle_alert_st_ptr;
 
 #define MSG_LOCAL_VEHICLE_ALERT_ST_LEN	sizeof(msg_local_vehicle_alert_st)
@@ -684,10 +697,10 @@ typedef struct _msg_nb_vehicle_alert_st
 
 	/* Message system time. */
 	uint32_t            system_time;
-    
+
 	/*邻节点告警信息,可选数据*/
     //nb_node_summary_infor_st_ptr nb_node_ptr;
-    
+
 }msg_nb_vehicle_alert_st, *msg_nb_vehicle_alert_st_ptr;
 
 #define	MSG_NB_VEHICLE_ALERT_LEN	sizeof(msg_nb_vehicle_alert_st)

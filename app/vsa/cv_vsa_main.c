@@ -61,7 +61,7 @@ uint32_t  vsa_position_classify(const vam_stastatus_t *local, const vam_stastatu
 	                                  vam_pos_data *pos_data, float *delta_offset)
 {
 
-    float lat1, lng1, lat2, lng2;
+    double lat1, lng1, lat2, lng2;
     float angle, delta;
 
     /* reference point */

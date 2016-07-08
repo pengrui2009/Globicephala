@@ -195,9 +195,9 @@ const char *_directfromangle(int angle)
 }
 vam_pos_data vsm_get_data(vam_stastatus_t *p_src, vam_stastatus_t *p_dest)
 {
-    float lat1, lng1, lat2, lng2, lat3, lng3;
+    double lat1, lng1, lat2, lng2, lat3, lng3;
     float distance_1_2, distance_2_3;
-    float angle;
+    double angle;
     vam_pos_data  pos_data;
     
     /* reference point */
@@ -226,7 +226,7 @@ vam_pos_data vsm_get_data(vam_stastatus_t *p_src, vam_stastatus_t *p_dest)
 
 float vsm_get_pos(vam_stastatus_t *p_src, vam_stastatus_t *p_dest,vam_pos_data *pos_data)
 {
-    float lat1, lng1, lat2, lng2;
+    double lat1, lng1, lat2, lng2;
     float distance_1_2;
     float angle, delta;
 
@@ -238,7 +238,7 @@ float vsm_get_pos(vam_stastatus_t *p_src, vam_stastatus_t *p_dest,vam_pos_data *
     lat2 = p_dest->pos.lat;
     lng2 = p_dest->pos.lon;
 
-
+    osal_printf("local={lon=%.07f lat=%.07f} remote={lon=%.07f lat=%.07f}\n",lng1,lat1,lng2,lat2);
     distance_1_2 = pos_data->distance_1_2;
     angle = pos_data->angle;
 
@@ -283,7 +283,7 @@ float vsm_get_pos(vam_stastatus_t *p_src, vam_stastatus_t *p_dest,vam_pos_data *
 
 float vsm_get_relative_pos(vam_stastatus_t *p_src, vam_stastatus_t *p_dest)
 {
-    float lat1, lng1, lat2, lng2, lat3, lng3;
+    double lat1, lng1, lat2, lng2, lat3, lng3;
     float distance_1_2, distance_2_3;
     float angle, delta;
 
@@ -374,8 +374,9 @@ int8_t vsm_get_rear_dir(vam_stastatus_t *p_dest)
 int32_t vsm_get_dr_current(vam_stastatus_t *last, vam_stastatus_t *current)
 {
     float deltaT = 0.0;
-    float v, s, dR;
-    float dir, lon1, lat1, lon2, lat2; /* Radians */
+    double v, s, dR;
+    double dir; /* Radians */
+    double lon1,lat1,lon2,lat2;
   	uint32_t t = osal_get_systemtime();
     
 	if(!last || !current)
@@ -393,14 +394,14 @@ int32_t vsm_get_dr_current(vam_stastatus_t *last, vam_stastatus_t *current)
     }
     
     /* deltaT != 0, the calculate the "current" value */
-    lon1 = (float)last->pos.lon;//RAD((float)last->pos.lon);
-    lat1 = (float)last->pos.lat;//RAD((float)last->pos.lat);
-    dir = RAD((float)last->dir);
+    lon1 = RAD(last->pos.lon);
+    lat1 = RAD(last->pos.lat);
+    dir = RAD(last->dir);
     
     /* uniform rectilinear motion */ 
     v = last->speed / 3.6f;
     s = v*deltaT; 
-    
+
 	/* lat2 = asin( sin lat1 * cos dR + cos lat1 * sin dR * cos ¦È )
     lon2 = lon1 + atan2( sin ¦È * sin dR * cos lat1, cos dR- sin lat1 * sin lat2 )
     where lat is latitude, lon is longitude, ¦Èis the bearing (clockwise from north), 
@@ -409,10 +410,12 @@ int32_t vsm_get_dr_current(vam_stastatus_t *last, vam_stastatus_t *current)
     lat2 = asin(sin(lat1)*cos(dR) + cos(lat1)*sin(dR)*cos(dir));
     lon2 = lon1 + atan2(sin(dir)*sin(dR)*cos(lat1), cos(dR)-sin(lat1)*sin(lat2));
 
+
     current->time = t;
 
-    current->pos.lon = lon2 ;//* 180.0 / PI;
-    current->pos.lat = lat2 ;//* 180.0 / PI;
+    current->pos.lon = lon2 * 180.0 / PI;
+    current->pos.lat = lat2 * 180.0 / PI;
+
 #if 0
     char buf[100];
     sprintf(buf, "(lon=%f,lat=%f),h=%f,d=%f,s=%f,v=%f", current->pos.lon, current->pos.lat, current->dir, 

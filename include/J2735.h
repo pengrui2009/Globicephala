@@ -88,7 +88,7 @@ inline float decode_elevation(int32_t elevation);
 *	 		900000001					-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 900000001 时，纬度数据无效
  ******************************************************************************/
-inline int32_t encode_latitude(float latitude);
+inline int32_t encode_latitude(double latitude);
 /******************************************************************************
 *	函数:	decode_latitude
 *	功能:	将纬度数据从0.1个微度为单位转换为以1度为单位
@@ -97,7 +97,7 @@ inline int32_t encode_latitude(float latitude);
 *	 		>90.00					-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 900000001 时，纬度数据无效。
  ******************************************************************************/
-inline float decode_latitude(int32_t latitude);
+inline double decode_latitude(int32_t latitude);
 /******************************************************************************
 *	函数:	encode_longitude
 *	功能:	将经度数据从以1度为单位转换为以0.1微度为单位
@@ -106,7 +106,7 @@ inline float decode_latitude(int32_t latitude);
 *	 		+1800000001						-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 1800000001 时，经度数据无效。
  ******************************************************************************/
-inline int32_t encode_longitude(float longitude);
+inline int32_t encode_longitude(double longitude);
 /******************************************************************************
 *	函数:	decode_longitude
 *	功能:	将经度数据从以0.1微度为单位转换为以1度为单位
@@ -115,7 +115,7 @@ inline int32_t encode_longitude(float longitude);
 *	 		>180.00							-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 1800000001 时，经度数据无效。
  ******************************************************************************/
-inline float decode_longitude(int32_t longitude);
+inline double decode_longitude(int32_t longitude);
 /******************************************************************************
 *	函数:	encode_semimajor_axis_accuracy
 *	功能:	将长半轴准确度数据从1m为单位转换为以5cm为单位

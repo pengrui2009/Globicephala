@@ -321,17 +321,18 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
 		node_detail_ptr->brake.auxbrakes = p_sta->s.braksta.auxbrakes;
 
         /* external light. */
-        node_detail_ptr->exterlight.lowbeamheadlight = 0;
-        node_detail_ptr->exterlight.highbeamheadlight = 0;
-        node_detail_ptr->exterlight.leftturnsignallight = 0;
-        node_detail_ptr->exterlight.rightturnsignallight = 0;
-        node_detail_ptr->exterlight.hazardsignallight = 0;
-        node_detail_ptr->exterlight.automaticlight = 0;
-        node_detail_ptr->exterlight.daytimerunninglight = 0;
-        node_detail_ptr->exterlight.foglighton = 0;
-        node_detail_ptr->exterlight.parkinglight = 0;
-        node_detail_ptr->exterlight.reserved = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.lowbeamheadlight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.highbeamheadlight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.leftturnsignallight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.rightturnsignallight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.hazardsignallight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.automaticlight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.daytimerunninglight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.foglighton = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.parkinglight = 0;
+        node_detail_ptr->exterlight.exterior_lights_bit.reserved = 0;
 
+        node_detail_ptr->exterlight.exterior_lights_word = cv_ntohs(node_detail_ptr->exterlight.exterior_lights_word);
         /* alert flag. */
 	    if(list_empty(&p_vsa->crd_list))
 	    {
@@ -472,7 +473,6 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 	local.pos.lat =  decode_latitude(status_ptr->position.latitude);
 	local.pos.lon =  decode_longitude(status_ptr->position.longitude);
 	local.pos.elev = decode_elevation(status_ptr->position.elevation);
-
     /* position accuracy. */
     local.pos.accu.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
     local.pos.accu.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
@@ -602,29 +602,29 @@ int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 
 
     /* Update vehicle break down alert. */
-    if(status_ptr->vecbreakdownalert == VEHICLE_ALERT_ON) 
+    if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbreakdownalert == VEHICLE_ALERT_ON)
     {
         vam_active_alert(VAM_ALERT_MASK_VBD);
     }
-    else if(status_ptr->vecbreakdownalert == VEHICLE_ALERT_OFF)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbreakdownalert == VEHICLE_ALERT_OFF)
     {
         vam_cancel_alert(VAM_ALERT_MASK_VBD);
     }
-    else if(status_ptr->vecbreakdownalert == VEHICLE_ALERT_INVALID)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbreakdownalert == VEHICLE_ALERT_INVALID)
     {
         vam_cancel_alert(VAM_ALERT_MASK_VBD);
     }    
 
     /* Update vehicle brake hard alert. */
-    if(status_ptr->vecbrakehardalert == VEHICLE_ALERT_ON) 
+    if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_ON)
     {
         vam_active_alert(VAM_ALERT_MASK_EBD);
     }
-    else if(status_ptr->vecbrakehardalert == VEHICLE_ALERT_OFF)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_OFF)
     {
         vam_cancel_alert(VAM_ALERT_MASK_EBD);
     }
-    else if(status_ptr->vecbrakehardalert == VEHICLE_ALERT_INVALID)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_INVALID)
     {
         vam_cancel_alert(VAM_ALERT_MASK_EBD);
     }    
@@ -907,25 +907,44 @@ static int8_t encode_roadsze_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa
 			0			- success
 			others		- error
 *****************************************************************************/
-static int ehm_msg_check_sum(uint8_t *buf, uint16_t len)
+static int ehm_msg_check_chk(uint8_t *buf, uint16_t len)
 {
 	uint16_t chksum = 0x0;
 	uint16_t chk = 0x00;
-
-    
+	len = len - 2;
 	while(len--)
 	{
 		chksum += *buf;
 		buf++;
 	}
 	chk = *(uint16_t *)buf;
-	if(cv_ntohs(chk) == chksum)
+	if(chk == chksum)
 		return 0;
 	else
 		return -1;
 }
 
+/*****************************************************************************
+ @funcname: ehm_msg_get_chk
+ @brief   : calcalute the chk of receive msg
+ @param   :
+			buf			- msg data
+			len			- frame data len,without uart header ,length ,chk
+ @return  :
+			0			- success
+			others		- error
+*****************************************************************************/
+static uint16_t ehm_msg_get_chk(uint8_t *buf, uint16_t len)
+{
+	uint16_t chksum = 0x0;
 
+	while(len--)
+	{
+		chksum += *buf;
+		buf++;
+	}
+	return (cv_ntohs(chksum));
+}
 
 /**
   * @brief  Parse message header according to data type.
@@ -1189,6 +1208,7 @@ void * ehm_main_thread_entry(void *param)
 static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint8_t *pdata, uint32_t length)
 {
 	uint8_t *pdata;
+	uint16_t *chksum;
 	uint32_t length;
 	int result = 0;
     uart_msg_header_st_ptr uart_ptr;
@@ -1202,6 +1222,8 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
     uart_ptr->magic_num2 = MSG_HEADER_MAGIC_NUM2;
     uart_ptr->length = cv_ntohs(length + SIZEOF_MSG_CHK_DOMAIN);
 
+    chksum = (uint16_t *)(pdata + length + UART_MSG_HEADER_ST_LEN);
+    *chksum = ehm_msg_get_chk(pdata + UART_MSG_HEADER_ST_LEN, length);
     //待完善功能-增加CHK,CHK长度数据已经计算
     /*uart send data to periph */
     result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
@@ -1387,7 +1409,7 @@ START_ROUTINE:
     }
 
     /* Check message.  */
-    result = ehm_msg_check_sum(ehm_ptr->buffer_rx.data_ptr, ehm_ptr->buffer_rx.data_len);
+    result = ehm_msg_check_chk(ehm_ptr->buffer_rx.data_ptr, ehm_ptr->buffer_rx.data_len);
     if(result != 0)
     {   
         osal_printf("ehm msg check sum error. \n");
