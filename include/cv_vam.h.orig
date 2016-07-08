@@ -46,15 +46,12 @@
 /* for test roadside alert */
 #define VAM_FLAG_TX_RSA       (0x0100)
 
-#define VAM_NEIGHBOUR_MAXNUM   (80)  //
-#define VAM_NEIGHBOUR_MAXLIFE  (5)   //unit: second
+#define VAM_NEIGHBOUR_MAXNUM       (80) //
+#define VAM_NEIGHBOUR_MAXLIFE      (5)  //unit: second
 
+#define VAM_REMOTE_ALERT_MAXLIFE   (5)  //unit: second
+#define VAM_NO_ALERT_EVAM_TX_TIMES (5)  //取消所有警告的evam消息发送次数
 
-/* BEGIN: Added by wanglei, 2014/8/1 */
-#define VAM_REMOTE_ALERT_MAXLIFE  (5)  //unit: second
-#define VAM_NO_ALERT_EVAM_TX_TIMES (5) //取消所有警告的evam消息发送次数
-
-/* END:   Added by wanglei, 2014/8/1 */
 
 
 /* vehicle alert, need to conver to Eventflag when sended by bsm msg */
@@ -88,9 +85,9 @@ typedef enum _VAM_RSA_TYPE
 } E_VAM_RSA_TYPE;
 
 
-enum VAM_EVT{
-    VAM_EVT_PEER_UPDATE = 0,
-    VAM_EVT_PEER_ALARM,
+enum VAM_EVT
+{
+    VAM_EVT_PEER_ALARM = 0,
     VAM_EVT_GSNR_EBD_DETECT, 
 
     VAM_EVT_RSA_UPDATE, 
@@ -137,10 +134,10 @@ typedef struct _vam_pos_accuracy_t
 typedef struct _vam_position_t
 {
     /* Geographic latitude. Unit: degree. */
-    double  latitude;
+    float  latitude;
 
     /* Geographic longitude. Unit: degree. */
-    double longitude;
+    float longitude;
 
     /* Geographic position above or below the reference ellipsoid. Unit: meter. */
     float elevation;
@@ -149,6 +146,13 @@ typedef struct _vam_position_t
 
 #define VAM_POSITION_T_LEN    (sizeof(vam_position_t))
 
+<<<<<<< HEAD
+typedef struct _vam_position{
+    double lat;
+    double lon ;
+    float elev;
+=======
+>>>>>>> 7a5be482db8d40923428b215b89d8de4a79c2267
 
 /* Acceleration set 4 way. */
 typedef struct _vam_acceset_t

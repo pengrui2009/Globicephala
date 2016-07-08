@@ -39,7 +39,6 @@ extern void param_init(void);
 extern void wnet_init(void);
 extern void vam_init(void);
 extern void vsa_init(void);
-extern void sys_init(void);
 extern void mda_init(void);
 
 extern void ehm_init(void);
@@ -83,7 +82,6 @@ int main(int argc, char *argv[])
     vam_init();
     mda_init();
     vsa_init();
-    sys_init();
 
     vam_start();
     vsa_start();

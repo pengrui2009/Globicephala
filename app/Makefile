@@ -5,7 +5,6 @@ TARGET := rsu
 SUBDIRS += $(TOPDIR)/osal/linux
 SUBDIRS += $(TOPDIR)/osal
 SUBDIRS	+= $(TOPDIR)/protocol 
-SUBDIRS += $(TOPDIR)/drivers/gps
 SUBDIRS += $(TOPDIR)/drivers/cmn
 
 ifeq ($(VNET_DRIVER_TYPE), VNET_DRIVER_TYPE_WIFI)

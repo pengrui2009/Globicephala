@@ -340,9 +340,9 @@ typedef struct _rcp_motion
 
 typedef struct _rcp_msg_head
 {
-    rcp_msgid_t   msg_id;
-    uint8_t   msg_count;
-    uint8_t   temporary_id[4];
+    rcp_msgid_t      msg_id;
+    uint8_t       msg_count;
+    uint8_t temporary_id[4];
     
 }rcp_msg_head_t;
 
@@ -492,21 +492,21 @@ typedef struct _rcp_msg_basic_safty
 
 /* -----Part 1, Sent at all times with each message.----- */
 
-    rcp_msg_head_t header;
+    rcp_msg_head_t         header;
 
     /* Forward pid, not in J2735. */
-    uint8_t        forward_id[4];  
+    uint8_t         forward_id[4];  
     
-    uint16_t  dsecond;
-    rcp_position_t position;
+    uint16_t              dsecond;
+    rcp_position_t       position;
     
-    rcp_motion_t motion;
+    rcp_motion_t           motion;
 
     /* Brake system status. */
-    brake_system_status_t	 brakes;
+    brake_system_status_t  brakes;
 
     /* Vehicle size. */
-	vehicle_size_t	 size;
+	vehicle_size_t	         size;
 
 
 /* -----Part 2 Content. Optianal data for message.------ */
@@ -516,6 +516,7 @@ typedef struct _rcp_msg_basic_safty
 
     /* Vehicle safety extensions. */
 	vehicle_safety_ext_t safetyExt;
+    
 }rcp_msg_basic_safty_t;
 
 
