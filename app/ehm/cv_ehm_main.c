@@ -389,7 +389,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
         
     frame_msg_header_st_ptr       msg_head_ptr = NULL;
     msg_vehicle_basic_status_st_ptr status_ptr = NULL;
-    vam_stastatus_t               local_status = { { 0 }, 0 };
+    vam_stastatus_t               local_status = { 0, { 0 }, 0 };
     
 
     /* Get tx buffer from ehm tx buffer list. */
@@ -457,7 +457,7 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
 int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 {
 	int                                 result = 0;
-	vam_stastatus_t                      local = { { 0 }, 0 };
+	vam_stastatus_t                      local = { 0, { 0 }, 0 };
 	msg_vehicle_basic_status_st_ptr status_ptr = (msg_vehicle_basic_status_st_ptr)pdata;
 
 
@@ -509,7 +509,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 int decode_full_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 {
 	int                                 result = 0;
-	vam_stastatus_t                      local = { { 0 }, 0 };
+	vam_stastatus_t                      local = { 0, { 0 }, 0 };
 	msg_vehicle_full_status_st_ptr  status_ptr = (msg_vehicle_full_status_st_ptr)pdata;
 
 
@@ -570,7 +570,7 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 int decode_vehicle_static_infor(uint8_t *pdata, uint16_t len)
 {
     int                                 result = 0;
-	vam_stastatus_t                      local = { { 0 }, 0 };
+	vam_stastatus_t                      local = { 0, { 0 }, 0 };
 	msg_vehicle_static_info_st_ptr  status_ptr = (msg_vehicle_static_info_st_ptr)pdata;
 
 

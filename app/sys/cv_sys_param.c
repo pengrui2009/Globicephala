@@ -66,7 +66,6 @@ void load_default_param_custom(cfg_param_t *param)
     param->vam.bsm_hops = 1; 
     param->vam.bsm_boardcast_mode = 2;  /* 0 - disable, 1 - auto, 2 - fixed period */
     param->vam.bsm_boardcast_saftyfactor = 5;  /* 1~10 */
-    param->vam.bsm_pause_mode = 1;  /* 0 - disable, 1 - enable */
     param->vam.bsm_pause_hold_time = 5;  /* unit:s */
     param->vam.bsm_boardcast_period = 100;  /* 100~3000, unit:ms, min accuracy :10ms */
     
@@ -103,7 +102,6 @@ void load_default_param_highway(cfg_param_t *param)
     param->vam.bsm_hops = 1; 
     param->vam.bsm_boardcast_mode = 1;  /* 0 - disable, 1 - auto, 2 - fixed period */
     param->vam.bsm_boardcast_saftyfactor = 5;  /* 1~10 */
-    param->vam.bsm_pause_mode = 1;  /* 0 - disable, 1 - enable */
     param->vam.bsm_pause_hold_time = 5;  /* unit:s */
     param->vam.bsm_boardcast_period = 100;  /* 100~3000, unit:ms, min accuracy :10ms */
     
@@ -139,7 +137,6 @@ void load_default_param_mountain(cfg_param_t *param)
     param->vam.bsm_hops = 1; 
     param->vam.bsm_boardcast_mode = 1;  /* 0 - disable, 1 - auto, 2 - fixed period */
     param->vam.bsm_boardcast_saftyfactor = 5;  /* 1~10 */
-    param->vam.bsm_pause_mode = 1;  /* 0 - disable, 1 - enable */
     param->vam.bsm_pause_hold_time = 5;  /* unit:s */
     param->vam.bsm_boardcast_period = 100;  /* 100~3000, unit:ms, min accuracy :10ms */
     
@@ -174,7 +171,6 @@ void load_default_param_city(cfg_param_t *param)
     param->vam.bsm_hops = 1; 
     param->vam.bsm_boardcast_mode = 1;  /* 0 - disable, 1 - auto, 2 - fixed period */
     param->vam.bsm_boardcast_saftyfactor = 5;  /* 1~10 */
-    param->vam.bsm_pause_mode = 1;  /* 0 - disable, 1 - enable */
     param->vam.bsm_pause_hold_time = 5;  /* unit:s */
     param->vam.bsm_boardcast_period = 100;  /* 100~3000, unit:ms, min accuracy :10ms */
     
@@ -214,7 +210,6 @@ void load_default_param(cfg_param_t *param)
     param->vam.bsm_hops = 1; 
     param->vam.bsm_boardcast_mode = 2;  /* 0 - disable, 1 - auto, 2 - fixed period */
     param->vam.bsm_boardcast_saftyfactor = 5;  /* 1~10 */
-    param->vam.bsm_pause_mode = 1;  /* 0 - disable, 1 - enable */
     param->vam.bsm_pause_hold_time = 5;  /* unit:s */
     param->vam.bsm_boardcast_period = 100;  /* 100~3000, unit:ms, min accuracy :10ms */
     
@@ -454,7 +449,6 @@ void param_get(void)
     OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,"vam.bsm_hops(1)=%d\n", p_cms_param->vam.bsm_hops);
     OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,"vam.bsm_boardcast_mode(2)=%d\n", p_cms_param->vam.bsm_boardcast_mode);
     OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,"vam.bsm_boardcast_saftyfactor(3)=%d\n", p_cms_param->vam.bsm_boardcast_saftyfactor);
-    OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,"vam.bsm_pause_mode(4)=%d\n", p_cms_param->vam.bsm_pause_mode);
     OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,"vam.bsm_pause_hold_time(5)=%d (s)\n", p_cms_param->vam.bsm_pause_hold_time);
     OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,"vam.bsm_boardcast_period(6)=%d (ms)\n", p_cms_param->vam.bsm_boardcast_period);
 
@@ -566,7 +560,6 @@ int param_set(uint8_t param, int32_t value)
         cfg_param->vam.bsm_boardcast_saftyfactor = value;
         break;
     case 4:
-        cfg_param->vam.bsm_pause_mode = value;
         break;
     case 5:
         cfg_param->vam.bsm_pause_hold_time = value;

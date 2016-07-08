@@ -55,12 +55,15 @@ static uint16_t _cal_peroid_from_speed(float speed, uint8_t bsm_boardcast_saftyf
 void vsm_start_bsm_broadcast(vam_envar_t *p_vam)
 {
     uint16_t period = 0;
-    
-    if(p_vam->working_param.bsm_boardcast_mode == BSM_BC_MODE_AUTO){
-        //calcute peroid from speed
+
+
+    /* Calcute bsm send peroid. */
+    if(p_vam->working_param.bsm_boardcast_mode == BSM_BC_MODE_AUTO)
+    {
         period = _cal_peroid_from_speed(p_vam->local.speed, p_vam->working_param.bsm_boardcast_saftyfactor);
     }
-    else if (p_vam->working_param.bsm_boardcast_mode == BSM_BC_MODE_FIXED){
+    else if (p_vam->working_param.bsm_boardcast_mode == BSM_BC_MODE_FIXED)
+    {
         period = p_vam->working_param.bsm_boardcast_period;
     }
  
@@ -70,25 +73,6 @@ void vsm_start_bsm_broadcast(vam_envar_t *p_vam)
     osal_timer_start(p_vam->timer_send_bsm);
 }
 
-void vsm_stop_bsm_broadcast(vam_envar_t *p_vam)
-{
-    osal_timer_stop(p_vam->timer_send_bsm);
-}
-
-void vsm_pause_bsm_broadcast(vam_envar_t *p_vam)
-{
-    uint16_t period = 0;
-    uint32_t ticks;
-
-    if (!(p_vam->flag & VAM_FLAG_TX_BSM_PAUSE))
-    {
-        p_vam->flag |= VAM_FLAG_TX_BSM_PAUSE;
-        period = p_vam->working_param.bsm_pause_hold_time;
-        ticks = SECOND_TO_TICK(period);      
-        osal_timer_change(p_vam->timer_bsm_pause, ticks);
-        osal_timer_start(p_vam->timer_bsm_pause);
-    }
-}
 
 void dump_pos_lite(vam_stastatus_t *p_sta)
 {
@@ -109,33 +93,34 @@ void dump_pos_lite(vam_stastatus_t *p_sta)
                     p_sta->pos.latitude, p_sta->pos.longitude, p_sta->speed);
 }
 
+
 //static uint8_t print_cnt = 0;
 void timer_send_bsm_callback(void* parameter)
 {
-    vam_envar_t *p_vam = (vam_envar_t *)parameter;
-
+    vam_envar_t   *p_vam = (vam_envar_t *)parameter;
     static uint8_t count = VAM_NO_ALERT_EVAM_TX_TIMES;
-    if (p_vam->flag&VAM_FLAG_TX_BSM_ALERT){
-        /* 所有alter已取消 */
-        if (p_vam->local.alert_mask == 0){
-            /* 发送VAM_NO_ALERT_EVAM_TX_TIMES次后停止发送bsm alter消息数据 */
-            if (0 == count--){
+
+    
+    if(p_vam->flag & VAM_FLAG_TX_BSM_ALERT)
+    {
+        if(p_vam->local.alert_mask == 0)
+        {
+            if(0 == count--)
+            {
                 p_vam->flag &= ~VAM_FLAG_TX_BSM_ALERT;
             }
         }
-        else{
+        else
+        {
             count = VAM_NO_ALERT_EVAM_TX_TIMES;
         }
     }
 
-    if ((p_vam->flag&VAM_FLAG_TX_BSM)&&(!(p_vam->flag&VAM_FLAG_TX_BSM_PAUSE))){
-        #ifdef RSU_TEST
-        vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_RSA, NULL);
-        #else
-        vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_BSM, NULL);
-        #endif
-    }
-        
+  #ifdef RSU_TEST
+    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_RSA, NULL);
+  #else
+    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_BSM, NULL);
+  #endif    
 }
 
 /* update timeout time of the bsm broadcast timer*/
@@ -143,6 +128,8 @@ void vsm_update_bsm_bcast_timer(vam_envar_t *p_vam)
 {
     uint16_t period;
     uint32_t timeout;
+
+    
     if(p_vam->working_param.bsm_boardcast_mode == BSM_BC_MODE_AUTO)
     {
         period = _cal_peroid_from_speed(p_vam->local.speed, p_vam->working_param.bsm_boardcast_saftyfactor);
@@ -151,10 +138,12 @@ void vsm_update_bsm_bcast_timer(vam_envar_t *p_vam)
     {
         /* neighbour count <= 50, bsm send period 100ms
            neighbour count > 50,  bsm send period 200ms */
-        if (p_vam->neighbour_cnt > 50){
+        if (p_vam->neighbour_cnt > 50)
+        {
             period = 200;
         }
-        else {
+        else 
+        {
             period = p_vam->working_param.bsm_boardcast_period;
         }
     }
@@ -168,14 +157,6 @@ void vsm_update_bsm_bcast_timer(vam_envar_t *p_vam)
 
 }
 
-void timer_bsm_pause_callback(void* parameter)
-{
-    vam_envar_t *p_vam = (vam_envar_t *)parameter;
-
-    if (p_vam->flag & VAM_FLAG_TX_BSM){
-        p_vam->flag &= ~VAM_FLAG_TX_BSM_PAUSE;
-    }
-}
 
 void timer_gps_life_callback(void* parameter)
 {
@@ -200,42 +181,24 @@ void vsm_start_evam_broadcast(vam_envar_t *p_vam)
 
 void timer_send_evam_callback(void* parameter)
 {
-    static uint16_t mask = 0;
-    vam_envar_t *p_vam = (vam_envar_t *)parameter;
+    vam_envar_t   *p_vam = (vam_envar_t *)parameter;
     static uint8_t count = VAM_NO_ALERT_EVAM_TX_TIMES;
 
+
+    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_EVAM, NULL);
     
-    if(p_vam->flag&VAM_FLAG_TX_EVAM)
+    /* 所有alter已取消 */
+    if(p_vam->local.alert_mask == 0)
     {
-        /* broadcast evam, then pause bsm broadcast */
-        if((1 == p_vam->working_param.bsm_pause_mode) && (p_vam->local.alert_mask != mask))
+        /* 发送VAM_NO_ALERT_EVAM_TX_TIMES次后停止发送EVAM消息数据 */
+        if(0 == count--)
         {
-            vsm_pause_bsm_broadcast(p_vam);
-            mask = p_vam->local.alert_mask;
+            vam_stop_alert();
         }
-
-        vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_EVAM, NULL);
-        /* 所有alter已取消 */
-        if(p_vam->local.alert_mask == 0)
-        {
-            /* 发送VAM_NO_ALERT_EVAM_TX_TIMES次后停止发送EVAM消息数据 */
-            if(0 == count--)
-            {
-                p_vam->flag &= ~VAM_FLAG_TX_EVAM;
-                osal_timer_stop(p_vam->timer_send_evam);
-
-                /* don't wait timer_bsm_pause timeout. restart to send bsm */
-                if(p_vam->flag & VAM_FLAG_TX_BSM_PAUSE)
-                {
-                    p_vam->flag &= ~VAM_FLAG_TX_BSM_PAUSE;
-                    osal_timer_stop(p_vam->timer_bsm_pause);
-                }
-            }
-        }
-        else
-        {
-            count = VAM_NO_ALERT_EVAM_TX_TIMES;
-        }
+    }
+    else
+    {
+        count = VAM_NO_ALERT_EVAM_TX_TIMES;
     }
 }
 
@@ -286,21 +249,25 @@ vam_sta_node_t *vam_find_sta(vam_envar_t *p_vam, uint8_t *temporary_id)
 void vam_update_sta(vam_envar_t *p_vam)
 {
     vam_sta_node_t *p_sta_node = NULL;
-    list_head_t *pos;
-    list_head_t *head = &p_vam->neighbour_list;
-    vam_stastatus_t *p_sta[VAM_NEIGHBOUR_MAXNUM];
+    list_head_t           *pos = NULL;
+    vam_stastatus_t *p_sta[VAM_NEIGHBOUR_MAXNUM] = { 0 };
     static uint8_t gotNeighbour = 0;
     uint8_t isEmpty = 1;
     uint8_t num_peer_alert_timeout = 0;
 
-    if (osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER) != OSAL_EOK){
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "semaphor return failed\n");
+
+    /* Take the semaphore. */
+    if(osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER) != OSAL_EOK)
+    {
+        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "Semaphore return failed. \n");
         return;
     }
 
-    for (pos = head->next; pos != (head); ){
+    for(pos = p_vam->neighbour_list.next; pos != &(p_vam->neighbour_list); )
+    {
         isEmpty = 0;
         gotNeighbour = 1;
+        
         /* must prefatch the next pointer */
         p_sta_node = (vam_sta_node_t *)pos;
         pos = pos->next;
@@ -310,7 +277,8 @@ void vam_update_sta(vam_envar_t *p_vam)
         if(p_sta_node->alert_life)
             p_sta_node->alert_life--;
         
-        if ((p_sta_node->alert_life == 0) && (p_sta_node->s.alert_mask) ){
+        if((p_sta_node->alert_life == 0) && (p_sta_node->s.alert_mask) )
+        {
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "one neighbour's alert is timeout to canceled.\n");  
             p_sta_node->s.alert_mask = 0;
             p_sta[num_peer_alert_timeout] = (vam_stastatus_t *)osal_malloc(sizeof(vam_stastatus_t));
@@ -318,7 +286,8 @@ void vam_update_sta(vam_envar_t *p_vam)
             num_peer_alert_timeout++;
         }
 
-        if (p_sta_node->exist_life == 0 && p_sta_node->alert_life == 0){
+        if (p_sta_node->exist_life == 0 && p_sta_node->alert_life == 0)
+        {
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "one neighbour is kick out\n");
 
             list_move_tail(&p_sta_node->list, &p_vam->sta_free_list);
@@ -328,8 +297,10 @@ void vam_update_sta(vam_envar_t *p_vam)
     osal_sem_release(p_vam->sem_sta);
 
     /* one neighbours's alert msg timeout */
-    if(p_vam->evt_handler[VAM_EVT_PEER_ALARM]){
-        while(num_peer_alert_timeout > 0){
+    if(p_vam->evt_handler[VAM_EVT_PEER_ALARM])
+    {
+        while(num_peer_alert_timeout > 0)
+        {
             num_peer_alert_timeout--;
             
             (p_vam->evt_handler[VAM_EVT_PEER_ALARM])(p_sta[num_peer_alert_timeout]);
@@ -352,14 +323,6 @@ void timer_neigh_time_callback(void* parameter)
     vam_envar_t *p_vam = (vam_envar_t *)parameter;
 
     vam_add_event_queue(p_vam, VAM_MSG_NEIGH_TIMEOUT, 0, 0, NULL);
-
-#if 0
-     if((log_store.log_media == LOG_SD_CARD)&&(++print_cnt > 10)){
- 
-         dump_pos_lite(&p_vam->local);
-         print_cnt = 0;
-     }
-#endif
 }
 
 

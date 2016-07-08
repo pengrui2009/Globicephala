@@ -263,12 +263,11 @@ int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, 
     //rt_kprintf("recv evam: alert_mask = 0x%04x\r\n", alert_mask);
 
     p_sta = vam_find_sta(p_vam, p_evam->temporary_id);
-    if (p_sta){
+    if(p_sta != NULL)
+    {
         p_sta->alert_life = VAM_REMOTE_ALERT_MAXLIFE;
 
-        /* BEGIN: Added by wanglei, 2014/10/16 */
         p_sta->s.time = osal_get_systemtime();
-        /* END:   Added by wanglei, 2014/10/16 */
 
         p_sta->s.pos.longitude = decode_longitude(p_evam->rsa.position.lon);
         p_sta->s.pos.latitude = decode_latitude(p_evam->rsa.position.lat);
@@ -329,34 +328,18 @@ int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 
     switch(p_msgid->id)
     {
-        case RCP_MSG_ID_BSM:
-        {
+        case RCP_MSG_ID_BSM:  {
             rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);    break;
+        } 
+        case RCP_MSG_ID_EVAM: {
+            rcp_parse_evam(p_vam, rxinfo, databuf, datalen);   break;
+        } 
+        case RCP_MSG_ID_RSA:  {
+            rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);    break;   
         }
-        
-        case RCP_MSG_ID_EVAM:
-        {
-            /* receive evam, then pause sending bsm msg */
-            if(2 == p_vam->working_param.bsm_pause_mode)
-            {
-                vsm_pause_bsm_broadcast(p_vam);
-            }
-            
-            rcp_parse_evam(p_vam, rxinfo, databuf, datalen);
-
-            break;
-        }
-        
-        case RCP_MSG_ID_RSA:
-        {
-            rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);  break;   
-        }
-        
-        default:
-        {
-            break; 
-        }
-        
+        default:              {
+                                                               break; 
+        }   
     }
 
     return p_msgid->id;
@@ -434,7 +417,6 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     if(p_vam->flag & VAM_FLAG_TX_BSM_ALERT)
     {
         p_bsm->header.msg_id.hops = p_vam->working_param.bsm_hops;
-        /* need to send part2 safetyextenrion */
         p_bsm->safetyExt.events = encode_vehicle_alert(p_vam->local.alert_mask);
     }
     else
