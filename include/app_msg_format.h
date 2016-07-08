@@ -1,9 +1,9 @@
 /*****************************************************************************
  Copyright(C) Beijing Carsmart Technology Co., Ltd.
  All rights reserved.
- 
+
  @file   : app_msg_format.h
- @brief  : this file include the application variables and functions prototypes for 
+ @brief  : this file include the application variables and functions prototypes for
            the message format module.
  @author : wangxianwen
  @history:
@@ -20,8 +20,8 @@
 
 /*
  * CAUTION:
- *    The sentence "declaration __attribute__ ((aligned(x)))" can not be working in this IDE. 
- *    We can use this parameter to make the storage larger then the natural size; but we can 
+ *    The sentence "declaration __attribute__ ((aligned(x)))" can not be working in this IDE.
+ *    We can use this parameter to make the storage larger then the natural size; but we can
  *    not make the storage smaller than the natural size.
  * */
 
@@ -275,55 +275,58 @@ typedef struct _brake_system_status_st
 
 
 /* 外部灯状态external lights structure*/
-typedef struct _exterior_lights_st
+typedef union _exterior_lights_st
 {
-#ifndef __LITTLE_ENDIAN
- 
-	/* reserved*/
-	uint16_t		reserved:7;
-	/* 停车指示灯开启*/
-	uint16_t		parkinglight:1;
-	/* 雾灯开启*/
-	uint16_t		foglighton:1;
-	/* 日间行车灯开启*/
-	uint16_t		daytimerunninglight:1;
-	/* 自动亮度调节开启*/
-	uint16_t		automaticlight:1;
-	/* 危险指示灯开启*/
-	uint16_t		hazardsignallight:1;
-	/* 右转信号灯开启*/
-	uint16_t		rightturnsignallight:1;
-	/* 左转信号灯开启*/
-	uint16_t		leftturnsignallight:1;
-	/* 远光灯开启*/
-	uint16_t		highbeamheadlight:1;
-	/* 近光灯开启*/
-	uint16_t		lowbeamheadlight:1;
+	uint16_t exterior_lights_word;
+	struct _exterior_lights_bit
+	{
+	#ifndef __LITTLE_ENDIAN
 
-#else
-
-	/* 近光灯开启*/
-	uint16_t		lowbeamheadlight:1;
-    /* 远光灯开启*/
-	uint16_t		highbeamheadlight:1;
-    /* 左转信号灯开启*/
-	uint16_t		leftturnsignallight:1;
-    /* 右转信号灯开启*/
-	uint16_t		rightturnsignallight:1;
-    /* 危险指示灯开启*/
-	uint16_t		hazardsignallight:1;
-	/* 自动亮度调节开启*/
-	uint16_t		automaticlight:1;
-	/* 日间行车灯开启*/
-	uint16_t		daytimerunninglight:1;
+		/* reserved*/
+		uint16_t		reserved:7;
+		/* 停车指示灯开启*/
+		uint16_t		parkinglight:1;
 		/* 雾灯开启*/
-	uint16_t		foglighton:1;    
-    /* 停车指示灯开启*/
-	uint16_t		parkinglight:1;
-    /* reserved*/
-	uint16_t		reserved:7;
-#endif
-        
+		uint16_t		foglighton:1;
+		/* 日间行车灯开启*/
+		uint16_t		daytimerunninglight:1;
+		/* 自动亮度调节开启*/
+		uint16_t		automaticlight:1;
+		/* 危险指示灯开启*/
+		uint16_t		hazardsignallight:1;
+		/* 右转信号灯开启*/
+		uint16_t		rightturnsignallight:1;
+		/* 左转信号灯开启*/
+		uint16_t		leftturnsignallight:1;
+		/* 远光灯开启*/
+		uint16_t		highbeamheadlight:1;
+		/* 近光灯开启*/
+		uint16_t		lowbeamheadlight:1;
+
+	#else
+
+		/* 近光灯开启*/
+		uint16_t		lowbeamheadlight:1;
+		/* 远光灯开启*/
+		uint16_t		highbeamheadlight:1;
+		/* 左转信号灯开启*/
+		uint16_t		leftturnsignallight:1;
+		/* 右转信号灯开启*/
+		uint16_t		rightturnsignallight:1;
+		/* 危险指示灯开启*/
+		uint16_t		hazardsignallight:1;
+		/* 自动亮度调节开启*/
+		uint16_t		automaticlight:1;
+		/* 日间行车灯开启*/
+		uint16_t		daytimerunninglight:1;
+			/* 雾灯开启*/
+		uint16_t		foglighton:1;
+		/* 停车指示灯开启*/
+		uint16_t		parkinglight:1;
+		/* reserved*/
+		uint16_t		reserved:7;
+	#endif
+	}exterior_lights_bit;
 }exterior_lights_st, * exterior_lights_st_ptr;
 
 
@@ -344,7 +347,7 @@ typedef union _alert_flag_st
 {
     /* Alert word for whole group. */
     uint32_t alert_word;                  /* 告警位组合 */
-    
+
     /* Alert bits. */
     struct _alert_bit
     {
@@ -376,6 +379,36 @@ typedef union _alert_flag_st
 /* Alert bit status. */
 #define ALERT_FLAG_BIT_YES         0x01
 #define ALERT_FLAG_BIT_NO          0x00
+/* 本地车辆告警标识*/
+typedef union __vehicle_alert_st{
+	/* 本地车辆告警标识字*/
+	uint32_t  vehicle_alert_words;
+	/* 本地车辆告警标识位*/
+	struct _vehicle_alert_bit{
+	#ifndef __LITTLE_ENDIAN
+
+		uint32_t reserved             :28;
+
+		/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t vecbrakehardalert    :2;
+
+		/* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t	vecbreakdownalert :2;
+
+	  #else
+
+		/* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t	vecbreakdownalert :2;
+
+		/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
+		uint32_t vecbrakehardalert    :2;
+
+		uint32_t reserved             :28;
+
+	  #endif
+	}vehicle_alert_bit;
+
+}vehicle_alert_st;
 
 
 /* 邻节点概要信息neigbhour node summary information structure. */
@@ -599,9 +632,9 @@ typedef struct _msg_full_status_st
 	/* 速度: unit 0.02 m/s, (0 - 8191), 8191 means invalid. */
 	uint16_t				velocity;
 	/* 行驶方向: unit 0.0125 degree(相对正北顺时针夹角), 	(0 - 28800), 28800 means invalid. */
-	uint16_t				   angle;
+	uint16_t				angle;
 	/* 方向盘转角: unit 1.5 degree, (-126 - +127), 127 means invalid. */
-	int8_t					 steerwa;
+	int8_t					steerwa;
 	/* 4路加速度集   */
 	accleration_set4way_st	acce4way;
 	/* 制动系统状态  */
@@ -636,29 +669,9 @@ typedef struct _msg_local_vehicle_alert_st
 {
     /* Message id. */
     uint8_t                  msg_id;
+    /*车辆告警设置*/
+    vehicle_alert_st		vehicle_alert_set;
 
-  #ifndef __LITTLE_ENDIAN
-
-    uint32_t reserved             :28;
-    
-	/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t vecbrakehardalert    :2;
-
-    /* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t	vecbreakdownalert :2;
-  
-  #else
-
-    /* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t	vecbreakdownalert :2;
-  
-	/* 紧急刹车告警:00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
-	uint32_t vecbrakehardalert    :2;
-
-    uint32_t reserved             :28;
-
-  #endif
-   
 }msg_local_vehicle_alert_st,*msg_local_vehicle_alert_st_ptr;
 
 #define MSG_LOCAL_VEHICLE_ALERT_ST_LEN	sizeof(msg_local_vehicle_alert_st)

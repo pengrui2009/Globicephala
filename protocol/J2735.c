@@ -184,13 +184,13 @@ inline float decode_elevation(int32_t elevation)
 *	 		900000001					-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 900000001 时，纬度数据无效
  ******************************************************************************/
-inline int32_t encode_latitude(float latitude)
+inline int32_t encode_latitude(double latitude)
 {
     int32_t result = 0;
 
 
     /* unit 0.1 micro degree. */
-    result = (int32_t)(latitude * (float)10000000);
+    result = (int32_t)(latitude * (double)10000000);
     if(result != 900000001)
     {
         result = (900000000 < result)? 900000000 : result;
@@ -208,14 +208,14 @@ inline int32_t encode_latitude(float latitude)
 *	 		>90.00					-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 900000001 时，纬度数据无效。
  ******************************************************************************/
-inline float decode_latitude(int32_t latitude)
+inline double decode_latitude(int32_t latitude)
 {
-    float result = 0;
+    double result = 0;
 
 
     /* unit 0.1 micro degree. */
     latitude = cv_ntohl(latitude);
-    result = (float)((float)latitude / (float)10000000);
+    result = (double)(latitude / 10000000.0);
     if(result != 90.0000001)
     {
         result = (90.0 < result)? 90.0 : result;
@@ -232,13 +232,13 @@ inline float decode_latitude(int32_t latitude)
 *	 		+1800000001						-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 1800000001 时，经度数据无效。
  ******************************************************************************/
-inline int32_t encode_longitude(float longitude)
+inline int32_t encode_longitude(double longitude)
 {
     int32_t result = 0;
 
 
     /* unit 0.1 micro degree. */
-    result = (int32_t)(longitude * (float)10000000);
+    result = (int32_t)(longitude * (double)10000000);
     if(result != 1800000001)
     {
         result = (1800000000 < result)? 1800000000 : result;
@@ -256,14 +256,13 @@ inline int32_t encode_longitude(float longitude)
 *	 		>180.00							-	无效数据
 *	说明:	表示以 0.1 个微度为单位的物体位置，当值为 1800000001 时，经度数据无效。
  ******************************************************************************/
-inline float decode_longitude(int32_t longitude)
+inline double decode_longitude(int32_t longitude)
 {
-    float result = 0;
-
+    double result = 0;
 
     /* unit 0.1 micro degree. */
     longitude = cv_ntohl(longitude);
-    result = (float)((float)longitude / (float)10000000);
+    result = (double)(longitude / 10000000.0);
     if(result != 180.0000001)
     {
         result = (180.0000000 < result)? 180.0000000 : result;
