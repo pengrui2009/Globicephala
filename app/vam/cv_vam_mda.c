@@ -359,8 +359,7 @@ int mda_handle(mda_envar_t *p_mda,
                 add_forward_list(p_mda, txbuf, src_sta, forward_delay_time);
             }
         }
-    }
-    else {
+    }else {
         txbuf = find_forward_list(p_mda, src_sta);
         if (txbuf) {
             /* Received the same frame */

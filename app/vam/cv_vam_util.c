@@ -98,35 +98,30 @@ void print_f(float* data_f)
     memset(strbuf, 0x0, sizeof(strbuf));
     sprintf(strbuf, "%3.8f", *data_f);
     osal_printf("dis2 is %s\n",strbuf);
-
-
 }
 
-
-float getDistanceVer2(float lat1, float lng1, float lat2, float lng2)
-
+float getDistanceVer2(double lat1, double lng1, double lat2, double lng2)
 {
 //    float pSrc;
 //    float pResult1;
 //    float pResult2;
 //
 //    float pOut;
-
     float s;
-   //float radLat1 = RAD(lat1);
+    double radLat1 = RAD(lat1);
+    double radLat2 = RAD(lat2);
+    double radLng1 = RAD(lng1);
+    double radLng2 = RAD(lng2);
 
-   //float radLat2 = RAD(lat2);
+    double a = radLat1 - radLat2;//radLat1 - radLat2;
 
-    float a = lat1 - lat2;//radLat1 - radLat2;
-
-    float b = lng1 - lng2;//RAD(lng1) - RAD(lng2);
+    double b = radLng1 - radLng2;//RAD(lng1) - RAD(lng2);
 
     s = 2 * asin(sqrt(pow(sin(a/2),2) + cos(lat1)*cos(lat2)*pow(sin(b/2),2)));
 
     s = s * EARTH_RADIUS;
 
-   return s;
-
+    return s;
 }
 
 float vsm_get_distance(vam_position_t *p_src, vam_position_t *p_dest)
@@ -218,7 +213,6 @@ vam_pos_data vsm_get_data(vam_stastatus_t *p_src, vam_stastatus_t *p_dest)
     pos_data.distance_1_2 = distance_1_2;
     pos_data.distance_2_3 = distance_2_3;
     pos_data.angle = angle;
-
     return pos_data;
 
 }
