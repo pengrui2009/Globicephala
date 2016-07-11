@@ -187,7 +187,6 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 
     if(p_sta != NULL)
     {
-        p_sta->exist_life = VAM_NEIGHBOUR_MAXLIFE;
         p_sta->s.dsecond = p_bsm->dsecond;
         p_sta->s.time = osal_get_systemtime();
 
@@ -223,7 +222,6 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
         /* Parsing event domain when has extra data. */
         if((sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)) < datalen)
         {
-            p_sta->alert_life = VAM_REMOTE_ALERT_MAXLIFE;
             p_sta->s.alert_mask = decode_vehicle_alert(p_bsm->safetyExt.events);
             
             /* inform the app layer once */
@@ -231,7 +229,11 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
             {
                 (p_vam->evt_handler[VAM_EVT_PEER_ALARM])(&p_sta->s);
             }        
-        }   
+        }
+        else
+        {
+            p_sta->s.alert_mask = 0;
+        }
     }
 
     return 0;
@@ -265,8 +267,6 @@ int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, 
     p_sta = vam_find_sta(p_vam, p_evam->temporary_id);
     if(p_sta != NULL)
     {
-        p_sta->alert_life = VAM_REMOTE_ALERT_MAXLIFE;
-
         p_sta->s.time = osal_get_systemtime();
 
         p_sta->s.pos.longitude = decode_longitude(p_evam->rsa.position.lon);

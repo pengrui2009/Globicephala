@@ -250,10 +250,6 @@ void vam_update_sta(vam_envar_t *p_vam)
 {
     vam_sta_node_t *p_sta_node = NULL;
     list_head_t           *pos = NULL;
-    vam_stastatus_t *p_sta[VAM_NEIGHBOUR_MAXNUM] = { 0 };
-    static uint8_t gotNeighbour = 0;
-    uint8_t isEmpty = 1;
-    uint8_t num_peer_alert_timeout = 0;
 
 
     /* Take the semaphore. */
@@ -263,57 +259,25 @@ void vam_update_sta(vam_envar_t *p_vam)
         return;
     }
 
+    /* Kick out the out of data node from neighbour list. */
     for(pos = p_vam->neighbour_list.next; pos != &(p_vam->neighbour_list); )
     {
-        isEmpty = 0;
-        gotNeighbour = 1;
-        
         /* must prefatch the next pointer */
         p_sta_node = (vam_sta_node_t *)pos;
         pos = pos->next;
 
-        if(p_sta_node->exist_life)
-            p_sta_node->exist_life--;
-        if(p_sta_node->alert_life)
-            p_sta_node->alert_life--;
-        
-        if((p_sta_node->alert_life == 0) && (p_sta_node->s.alert_mask) )
+        if(VAM_NEIGHBOUR_MAXLIFE <= (osal_get_systemtime() - p_sta_node->s.time))
         {
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "one neighbour's alert is timeout to canceled.\n");  
-            p_sta_node->s.alert_mask = 0;
-            p_sta[num_peer_alert_timeout] = (vam_stastatus_t *)osal_malloc(sizeof(vam_stastatus_t));
-            memcpy(p_sta[num_peer_alert_timeout], &p_sta_node->s, sizeof(vam_stastatus_t));
-            num_peer_alert_timeout++;
-        }
-
-        if (p_sta_node->exist_life == 0 && p_sta_node->alert_life == 0)
-        {
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "one neighbour is kick out\n");
+            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "One neighbour is kick out.\n");
 
             list_move_tail(&p_sta_node->list, &p_vam->sta_free_list);
             p_vam->neighbour_cnt--;
         }
     }
+    
     osal_sem_release(p_vam->sem_sta);
 
-    /* one neighbours's alert msg timeout */
-    if(p_vam->evt_handler[VAM_EVT_PEER_ALARM])
-    {
-        while(num_peer_alert_timeout > 0)
-        {
-            num_peer_alert_timeout--;
-            
-            (p_vam->evt_handler[VAM_EVT_PEER_ALARM])(p_sta[num_peer_alert_timeout]);
-        }
-    }
-
-    /* neighbour list turn to empty */
-    if(gotNeighbour && isEmpty)
-    {  
-        gotNeighbour = 0;
-        p_vam->neighbour_cnt = 0;
-    }
-
+    /* Updata bsm broadcast timer based on current node number. */
     vsm_update_bsm_bcast_timer(p_vam);
     
 }
@@ -345,9 +309,8 @@ void vam_list_sta(void)
     osal_printf("neighbor node:%d\n", VAM_NEIGHBOUR_MAXNUM - i);
 
 	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
-        osal_printf("STA:[%02x-%02x-%02x-%02x], life:%d, alert_life:%d alert_mask:%d\n",\
-            p_sta->s.pid[0],p_sta->s.pid[1],p_sta->s.pid[2],p_sta->s.pid[3],\
-            p_sta->exist_life, p_sta->alert_life, p_sta->s.alert_mask);
+        osal_printf("STA:[%02x-%02x-%02x-%02x], alert_mask:%d\n",\
+            p_sta->s.pid[0],p_sta->s.pid[1],p_sta->s.pid[2],p_sta->s.pid[3], p_sta->s.alert_mask);
     }
     osal_sem_release(p_vam->sem_sta);
 }

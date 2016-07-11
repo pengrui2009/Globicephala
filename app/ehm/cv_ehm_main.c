@@ -553,6 +553,7 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 
     /* exterior light. */
     local.exterior_light = status_ptr->exterlight;
+
     /*recv msg time*/
     local.time = time;
     

@@ -304,16 +304,19 @@ float vam_get_peer_absolute_speed(uint8_t *pid)
 
     osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
 
-	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
-        if (memcmp(p_sta->s.pid, pid, RCP_TEMP_ID_LEN)==0){
+	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list)
+    {
+        if(memcmp(p_sta->s.pid, pid, RCP_TEMP_ID_LEN)==0)
+        {
             memcpy(&sta, &p_sta->s, sizeof(vam_stastatus_t));
             break;
         }
-	else
-	{	
+    	else
+    	{	
             sta.speed = 0;
+    	}
 	}
-	}
+    
     osal_sem_release(p_vam->sem_sta);
     
     return sta.speed;

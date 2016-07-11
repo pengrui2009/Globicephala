@@ -144,14 +144,14 @@ enum HI_IN_TYPE{
  * declaration of structs                                                    *
 *****************************************************************************/
 
-/**
-    structure of system global message 
-*/
-typedef struct _sys_msg{
-    uint16_t id;
-    uint16_t len;
+/* structure of system global message. */
+typedef struct _sys_msg
+{
+    uint16_t   id;
+    uint16_t  len;
     uint32_t argc; 
     void    *argv;
+    
 }sys_msg_t;
 
 /**
