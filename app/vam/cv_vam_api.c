@@ -136,20 +136,27 @@ int32_t vam_get_all_peer_pid(uint8_t pid[][RCP_TEMP_ID_LEN], uint32_t maxitem, u
     vam_sta_node_t *p_sta = NULL;
     int count = 0;
 
-    if(!pid || !actual){
+
+    /* Error detection. */
+    if((pid == NULL) || (actual == NULL))
+    {
         return -1;
     }
 
+    /* Tranverse all the neighbour list and get the pid. */
     osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
-	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
-        if (count < maxitem){
-            memcpy(pid[count], p_sta->s.pid, RCP_TEMP_ID_LEN);           
-        }
-        count++;
+	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list)
+    {
+        if(count < maxitem)
+        {
+            memcpy(pid[count], p_sta->s.pid, RCP_TEMP_ID_LEN);   
+            count++;        
+        } 
 	}    
     osal_sem_release(p_vam->sem_sta);
 
     *actual = count;
+    
     return 0;
 }
 
@@ -158,14 +165,19 @@ int32_t vam_get_peer_status(uint8_t *pid, vam_stastatus_t *local)
     vam_envar_t *p_vam = p_vam_envar;
     vam_sta_node_t *p_sta = NULL;
 
-    if(!pid || !local){
+
+    /* Error detection. */
+    if((pid == NULL) || (local == NULL))
+    {
         return -1;
     }
-    
-    osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
 
-	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
-        if (memcmp(p_sta->s.pid, pid, RCP_TEMP_ID_LEN)==0){
+    /* Get the specific pid's vam status structure. */
+    osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
+	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list)
+    {
+        if(memcmp(p_sta->s.pid, pid, RCP_TEMP_ID_LEN) == 0)
+        {
             memcpy(local, &p_sta->s, sizeof(vam_stastatus_t));
             break;
         }
@@ -175,28 +187,7 @@ int32_t vam_get_peer_status(uint8_t *pid, vam_stastatus_t *local)
     return 0;
 }
 
-int32_t vam_set_peer_cnt(uint8_t *pid, uint8_t cnt)
-{
-    vam_envar_t *p_vam = p_vam_envar;
-    vam_sta_node_t *p_sta = NULL;
 
-    if(!pid){
-        return -1;
-    }
-    
-    osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
-
-	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
-        if (memcmp(p_sta->s.pid, pid, RCP_TEMP_ID_LEN)==0){
-            p_sta->s.cnt = cnt;
-            break;
-        }
-	}
-    osal_sem_release(p_vam->sem_sta);
-    
-    return 0;
-
-}
 int32_t vam_get_peer_current_status(uint8_t *pid, vam_stastatus_t *local)
 {
     vam_envar_t *p_vam = p_vam_envar;
@@ -386,6 +377,8 @@ int32_t vam_cancel_alert(uint16_t alert)
 void vam_stop_alert(void)
 {
     vam_envar_t *p_vam = p_vam_envar;
+
+    
     p_vam->flag &= ~VAM_FLAG_TX_EVAM;
     osal_timer_stop(p_vam->timer_send_evam);
 }

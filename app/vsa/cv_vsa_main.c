@@ -39,6 +39,8 @@ void space_null(void)
 #define VSA_MSG_PROC    (VSA_MSG_BASE+1)
 #define CCW_DEBOUNCE     5
 
+static uint32_t peer_count = 0;
+
 float getDistanceVer2(float lat1, float lng1, float lat2, float lng2);
 static int vbd_judge(vsa_envar_t *p_vsa);
 static int ebd_judge(vsa_envar_t *p_vsa);
@@ -171,48 +173,12 @@ uint32_t vsa_safe_distance(int32_t position,vam_stastatus_t local,vam_stastatus_
 
 }
 
-
-/*****************************************************************************
- @funcname: vsa_set_period
- @brief   : set the period of vsa process
- @param   : None
- @return  : 
-*****************************************************************************/
-void  vsa_set_period(vsa_info_t* vsa_node,vam_stastatus_t* remote)
-{
-    vsa_info_t* node_info;
-
-    uint32_t ldistance;
-    ldistance = 0;
-    node_info = vsa_node;
-
-    ldistance = abs(node_info->linear_distance);
-
-    remote->cnt = 0;
-    osal_printf("ldistance is %d\n", ldistance);
-#if 0
-    if(node_info->relative_speed <= 5.0f)
-        remote->cnt ++;
-    if(node_info->local_speed <= 50.0f)
-        remote->cnt ++;
-    if(ldistance >= 500)
-        remote->cnt ++;
-
-    if((node_info->relative_speed <= 5.0f)&&(node_info->local_speed <= 20.0f)&&(ldistance >= 500))    
-        remote->cnt = 10;
-   // osal_printf("cnt is %d\n",remote->cnt);
-#endif
-}
-
-
-uint32_t peer_count = 0;
 int8_t vsa_position_get(uint8_t *pid,vsa_info_t *p_vsa_position)
 {
     int8_t i = 0;
     int8_t ret = -1;
     vsa_position_node_t *p_pnt = NULL;
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-
     for (i = 0;i < peer_count;i++) {
         p_pnt = &p_vsa->position_node[i];
         if (memcmp(p_pnt->vsa_position.pid, pid, RCP_TEMP_ID_LEN)==0) {
@@ -233,82 +199,67 @@ int8_t vsa_position_get(uint8_t *pid,vsa_info_t *p_vsa_position)
  @return  : void 
 *****************************************************************************/
 
-int32_t  vsa_preprocess_pos(void)
+int32_t  vsa_preprocess_pos(vsa_envar_t_ptr p_vsa)
 {
     vam_stastatus_t local_status;  
     vam_stastatus_t remote_status;
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
     vsa_position_node_t *p_pnt = NULL;
     vam_pos_data temp_data;
     int8_t i = 0;
+    
     uint8_t peer_pid[VAM_NEIGHBOUR_MAXNUM][RCP_TEMP_ID_LEN];
-    uint32_t peer_count;
+    //uint32_t peer_count = 0;
 
-    char strbuf[64] = {0};
     float temp_delta = 0;
 
     //uint32_t count_pos = 0;
-    if (0x1 & g_dbg_print_type){
+    if (0x1 & g_dbg_print_type)
+    {
         test_comm();
     }
-    vam_get_all_peer_pid(peer_pid,VAM_NEIGHBOUR_MAXNUM,&peer_count);
+    
+    vam_get_all_peer_pid(peer_pid, VAM_NEIGHBOUR_MAXNUM, &peer_count);
 
-    if (peer_count != 0) {
-        vam_get_local_current_status(&local_status);
-        for (i = 0;i < peer_count;i++) {
-            vam_get_peer_status(peer_pid[i],&remote_status); /*!!查询不到的风险!!*/  
-            
-            p_pnt = &p_vsa->position_node[i];
-
-            memcpy(p_pnt->vsa_position.pid,remote_status.pid,RCP_TEMP_ID_LEN);
-
-            if(remote_status.cnt == 0){
-
-                temp_data = vsm_get_data(&local_status,&remote_status);
-
-                p_pnt->vsa_position.vsa_location = vsa_position_classify(&local_status,&remote_status,&temp_data,&temp_delta);
-
-                p_pnt->vsa_position.local_speed = local_status.speed;
-
-                p_pnt->vsa_position.remote_speed = remote_status.speed;
-
-                p_pnt->vsa_position.relative_speed = local_status.speed - remote_status.speed;                
-
-                p_pnt->vsa_position.linear_distance = (int32_t)vsm_get_pos(&local_status,&remote_status,&temp_data);//
-
-                p_pnt->vsa_position.v_offset = (uint32_t)(p_pnt->vsa_position.linear_distance*cos(temp_delta*PI/180.0f));
-
-                p_pnt->vsa_position.h_offset = (uint32_t)(p_pnt->vsa_position.linear_distance*sin(temp_delta*PI/180.0f));
-
-                p_pnt->vsa_position.safe_distance = vsa_safe_distance(p_pnt->vsa_position.linear_distance,local_status,remote_status);
-                    
-                p_pnt->vsa_position.dir = remote_status.dir;
-                p_pnt->vsa_position.relative_dir = vsm_get_relative_dir(&local_status,&remote_status);
-                p_pnt->vsa_position.flag_dir = vam_get_peer_relative_dir(&local_status,&remote_status);
-
-                vsa_set_period(&(p_pnt->vsa_position),&remote_status);
-                
-                if (0x2 & g_dbg_print_type){
-                    memset(strbuf, 0x0, sizeof(strbuf));
-                    sprintf(strbuf, "%3.6f", temp_delta);
-                    osal_printf("(%02X %02X %02X %02X), %d, %d, %d, %d, %s, %lu\r\n", \
-                        p_pnt->vsa_position.pid[0],p_pnt->vsa_position.pid[1], p_pnt->vsa_position.pid[2],p_pnt->vsa_position.pid[3],\
-                        p_pnt->vsa_position.vsa_location, p_pnt->vsa_position.linear_distance, p_pnt->vsa_position.v_offset,\
-                        p_pnt->vsa_position.h_offset,strbuf,p_pnt->vsa_position.safe_distance);
-            }
-                
-            }
-            else{
-
-                remote_status.cnt--;               
-            }
-            vam_set_peer_cnt(remote_status.pid,remote_status.cnt);                
-    						
-
-	    }
+    /* Return peer count when no pid. */
+    if(peer_count == 0) 
+    {
+        return peer_count;
     }
-    else
-        return 0; 
+
+
+    vam_get_local_current_status(&local_status);
+    
+    for (i = 0; i < peer_count; i++) 
+    {
+        vam_get_peer_status(peer_pid[i], &remote_status); /*!!查询不到的风险!!*/  
+        
+        p_pnt = &p_vsa->position_node[i];
+        memcpy(p_pnt->vsa_position.pid, remote_status.pid, RCP_TEMP_ID_LEN);
+
+
+        temp_data = vsm_get_data(&local_status,&remote_status);
+
+        p_pnt->vsa_position.vsa_location = vsa_position_classify(&local_status,&remote_status,&temp_data,&temp_delta);
+
+        p_pnt->vsa_position.local_speed = local_status.speed;
+
+        p_pnt->vsa_position.remote_speed = remote_status.speed;
+
+        p_pnt->vsa_position.relative_speed = local_status.speed - remote_status.speed;                
+
+        p_pnt->vsa_position.linear_distance = (int32_t)vsm_get_pos(&local_status,&remote_status,&temp_data);//
+
+        p_pnt->vsa_position.v_offset = (uint32_t)(p_pnt->vsa_position.linear_distance*cos(temp_delta*PI/180.0f));
+
+        p_pnt->vsa_position.h_offset = (uint32_t)(p_pnt->vsa_position.linear_distance*sin(temp_delta*PI/180.0f));
+
+        p_pnt->vsa_position.safe_distance = vsa_safe_distance(p_pnt->vsa_position.linear_distance,local_status,remote_status);
+            
+        p_pnt->vsa_position.dir = remote_status.dir;
+        p_pnt->vsa_position.relative_dir = vsm_get_relative_dir(&local_status,&remote_status);
+        p_pnt->vsa_position.flag_dir = vam_get_peer_relative_dir(&local_status,&remote_status);
+    }				
+    
     return peer_count;
 }
 
@@ -383,7 +334,8 @@ void vsa_receive_alarm_update(void *parameter)
             vsa_add_event_queue(p_vsa, VSA_MSG_EEBL_RC, 1,VAM_ALERT_MASK_EBD,NULL);
         }
     }
-    else{
+    else
+    {
         if (p_vsa->alert_pend & (1<<VSA_ID_EBD))
         {
             vsa_add_event_queue(p_vsa, VSA_MSG_EEBL_RC, 0,VAM_ALERT_MASK_EBD,NULL);
@@ -1072,11 +1024,13 @@ void * vsa_base_proc(void *parameter)
     {
         osal_sem_take(p_vsa->sem_vsa_proc, OSAL_WAITING_FOREVER);
 
-        count_neighour = vsa_preprocess_pos();
+        count_neighour = vsa_preprocess_pos(&(p_cms_envar->vsa));
 
-        if(( count_neighour < 0)||(count_neighour > VAM_NEIGHBOUR_MAXNUM)){
+        if(( count_neighour < 0)||(count_neighour > VAM_NEIGHBOUR_MAXNUM))
+        {
             continue;
         }
+        
         /*if bsm lost,after 15s,neighour list is empty,cancel all alert*/
         if(count_neighour == 0)
         {
@@ -1087,12 +1041,12 @@ void * vsa_base_proc(void *parameter)
             if (p_vsa->alert_pend & (1<<VSA_ID_CRD_REAR))
             {
                 p_vsa->alert_pend &= ~(1<<VSA_ID_CRD_REAR);
-
             }
             continue;
         }
 
-        for(i = 0;i < count_neighour;i++){
+        for(i = 0; i < count_neighour; i++)
+        {
             
             if(vsa_app_handler_tbl[VSA_MSG_CFCW_ALARM-VSA_MSG_PROC]){    
                 vsa_id = vsa_app_handler_tbl[VSA_MSG_CFCW_ALARM-VSA_MSG_PROC](p_vsa,&i);

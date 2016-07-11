@@ -28,13 +28,11 @@
  * declaration of variables and functions                                    *
 *****************************************************************************/
 #define BSM_SEND_PERIOD_DEFAULT      1000
-#define BSM_PAUSE_HOLDTIME_DEFAULT   5000
 #define BSM_GPS_LIFE_DEFAULT         5000
 #define NEIGHBOUR_LIFE_ACCUR         1000
 #define EVAM_SEND_PERIOD_DEFAULT     (50)
 
 extern void timer_send_bsm_callback(void* parameter);
-extern void timer_bsm_pause_callback(void* parameter);
 extern void timer_send_evam_callback(void* parameter);
 extern void timer_neigh_time_callback(void* parameter);
 extern void timer_gps_life_callback(void* parameter);
@@ -72,29 +70,33 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
         {
             if (p_vam->flag & VAM_FLAG_TX_BSM)
             {
-                vsm_stop_bsm_broadcast(p_vam);
+                osal_timer_stop(p_vam->timer_send_bsm);
             }
 
-            p_vam->flag &= ~(VAM_FLAG_RX|VAM_FLAG_TX_BSM);
+            p_vam->flag &= ~(VAM_FLAG_RX | VAM_FLAG_TX_BSM);
             osal_timer_stop(p_vam->timer_neighbour_life);
             
             break;
         }
         case VAM_MSG_RCPTX:
         {
-            if (p_msg->argc == RCP_MSG_ID_BSM)
+            /* Send bsm message. */
+            if(p_msg->argc == RCP_MSG_ID_BSM)  
             {
                 rcp_send_bsm(p_vam);
             }
-            if (p_msg->argc == RCP_MSG_ID_EVAM)
+
+            /* Send evam message. */
+            if(p_msg->argc == RCP_MSG_ID_EVAM) 
             {
                 rcp_send_evam(p_vam);
             }
-            if (p_msg->argc == RCP_MSG_ID_RSA)
+
+            /* Send rsa message. */
+            if(p_msg->argc == RCP_MSG_ID_RSA)  
             {
                 rcp_send_rsa(p_vam);
             }
-
             break;
         }
         case VAM_MSG_RCPRX:
@@ -235,11 +237,8 @@ void vam_init(void)
 	p_vam->task_vam = osal_task_create("tk-vam", vam_thread_entry, p_vam, RT_VAM_THREAD_STACK_SIZE, RT_VAM_THREAD_PRIORITY);
     osal_assert(p_vam->task_vam != NULL);
         
-    p_vam->timer_send_bsm = osal_timer_create("tm-sb",timer_send_bsm_callback,p_vam, BSM_SEND_PERIOD_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
+    p_vam->timer_send_bsm = osal_timer_create("tm-sb", timer_send_bsm_callback, p_vam, BSM_SEND_PERIOD_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_send_bsm != NULL);
-
-    p_vam->timer_bsm_pause = osal_timer_create("tm-bp",timer_bsm_pause_callback,p_vam, BSM_PAUSE_HOLDTIME_DEFAULT, TIMER_ONESHOT|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
-    osal_assert(p_vam->timer_bsm_pause != NULL);
 
     p_vam->timer_send_evam = osal_timer_create("tm-se",timer_send_evam_callback, p_vam, EVAM_SEND_PERIOD_DEFAULT, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_send_evam != NULL);
@@ -272,7 +271,6 @@ void vam_deinit(void)
     vam_envar_t *p_vam = &p_cms_envar->vam;
     osal_timer_delete(p_vam->timer_send_bsm);
     osal_timer_delete(p_vam->timer_send_evam);
-    osal_timer_delete(p_vam->timer_bsm_pause);
     osal_timer_delete(p_vam->timer_gps_life);
     osal_timer_delete(p_vam->timer_neighbour_life);
     osal_task_del(p_vam->task_vam);

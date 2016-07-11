@@ -347,9 +347,9 @@ float vsm_get_relative_dir(const vam_stastatus_t *p_src, const  vam_stastatus_t 
         delta = p_src->dir - p_dest->dir;
     }
 
-    if (delta > 180){
-        delta = 360 - delta;
-    }
+//    if (delta > 180){
+//        delta = 360 - delta;
+//    }
 
     return delta;
 }

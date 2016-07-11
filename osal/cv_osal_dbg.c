@@ -111,13 +111,8 @@ OSAL_DEBUG_ENTRY_DECLARE(wnet)
 // add your module here...
 
 const debug_entry_t debug_entry_table_end = {NULL, NULL};
-/**
- *  [block end]
- */
 
-/* BEGIN: Added by wanglei, 2015/5/12 */
 int g_dbg_print_type = 1;
-/* END:   Added by wanglei, 2015/5/12 */
 
 
 /*****************************************************************************

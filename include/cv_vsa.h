@@ -171,8 +171,10 @@ typedef struct _vsa_config{
 }vsa_config_t;
 
 
-typedef struct _vsa_envar{
-    
+
+/* Vsa environment structure. */
+typedef struct _vsa_envar_t
+{
     uint32_t vsa_mode;
     
     /* working_param */
@@ -215,7 +217,12 @@ typedef struct _vsa_envar{
 
     osal_timer_t *timer_position_prepro;
                  
-}vsa_envar_t;
+}vsa_envar_t, * vsa_envar_t_ptr;
+
+#define VSA_ENVAR_T_LEN    (sizeof(vsa_envar_t))
+
+
+
 
 typedef struct _vsa_crd_node{
     /* !!!DON'T modify it!!! */
