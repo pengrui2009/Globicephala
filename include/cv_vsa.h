@@ -16,6 +16,25 @@
  * definition of micro                                                       *
 *****************************************************************************/
 
+#define VSA_TIMER_PERIOD         SECOND_TO_TICK(1)
+#define VSA_EBD_SEND_PERIOD      SECOND_TO_TICK(5)
+#define VSA_POS_PERIOD           MS_TO_TICK(100)
+#define DIRECTION_DIVIDE         22.5f
+
+#define PI 3.1415926f
+
+#define VSA_MSG_PROC    (VSA_MSG_BASE+1)
+#define CCW_DEBOUNCE     5
+
+
+
+
+
+
+
+
+
+
 
 /*down to top*/
 #define  HIGHWAY_MODE   0x0F9F
@@ -100,8 +119,8 @@ typedef enum _vehicle_heading_slice
 
 
 
-typedef struct _vsa_info{
-
+typedef struct _vsa_info
+{
     uint8_t pid[RCP_TEMP_ID_LEN];
     
     uint32_t vsa_location;
@@ -114,12 +133,10 @@ typedef struct _vsa_info{
     float relative_dir;
     
     uint32_t v_offset;
-
     uint32_t h_offset;
 
     int32_t linear_distance;
-
-    uint32_t safe_distance;
+    uint32_t  safe_distance;
 
     float dir;
 

@@ -199,20 +199,24 @@ typedef enum _Extent {
 	Extent_forever	= 127
 } E_Extent;
 
-/* vehicle event flags */
-typedef enum _VehicleEventFlags {
+/* vehicle event flags. */
+typedef enum _VehicleEventFlags 
+{
     EventHazardLights               = 0x0001,
     EventStopLineViolation          = 0x0002, /* Intersection Violation */  
     EventABSactivated               = 0x0004,
     EventTractionControlLoss        = 0x0008,
+    
     EventStabilityControlactivated  = 0x0010,
-    EventHazardousMaterials         = 0x0020,
-    EventEmergencyResponse          = 0x0040,
+    EventHazardousMaterials         = 0x0020,    
+    EventReserved1                  = 0x0040,
     EventHardBraking                = 0x0080,
+    
     EventLightsChanged              = 0x0100,
     EventWipersChanged              = 0x0200,
     EventFlatTire                   = 0x0400,
     EventDisabledVehicle            = 0x0800,
+    
     EventAirBagDeployment           = 0x1000
     
 } E_VehicleEventFlags;

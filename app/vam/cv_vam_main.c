@@ -55,26 +55,29 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
         {
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "%s: VAM_MSG_START. \n",__FUNCTION__);
 
-            p_vam->flag |= VAM_FLAG_RX;
+            p_vam->flag |= (VAM_FLAG_RX | VAM_FLAG_TX_BSM);
+
             osal_timer_start(p_vam->timer_neighbour_life);
-            
-            if(p_vam->working_param.bsm_boardcast_mode != BSM_BC_MODE_DISABLE)
-            {
-                p_vam->flag |= VAM_FLAG_TX_BSM;
-                vsm_start_bsm_broadcast(p_vam);
-            }
-            
+            vsm_start_bsm_broadcast(p_vam);
             break;    
         }
         case VAM_MSG_STOP:
         {
-            if (p_vam->flag & VAM_FLAG_TX_BSM)
+            /* Stop send bsm timer. */
+            if(p_vam->timer_send_bsm != NULL)
             {
                 osal_timer_stop(p_vam->timer_send_bsm);
+                p_vam->timer_send_bsm = NULL;
             }
 
+            /* Stop neighbour life timer. */
+            if(p_vam->timer_neighbour_life)
+            {
+                osal_timer_stop(p_vam->timer_neighbour_life);
+                p_vam->timer_neighbour_life = NULL;
+            }
+            
             p_vam->flag &= ~(VAM_FLAG_RX | VAM_FLAG_TX_BSM);
-            osal_timer_stop(p_vam->timer_neighbour_life);
             
             break;
         }
@@ -144,47 +147,20 @@ void * vam_thread_entry (void *parameter)
 	}
 }
 
-int vam_add_event_queue(vam_envar_t *p_vam, 
-                             uint16_t msg_id, 
-                             uint16_t msg_len, 
-                             uint32_t msg_argc,
-                             void    *msg_argv)
+/* Send message queue to vam module. */
+osal_status_t vam_add_event_queue(vam_envar_t *p_vam, uint16_t msg_id, uint16_t msg_len, uint32_t msg_argc, void *msg_argv)
 {
-    int err = OSAL_STATUS_NOMEM;
-    sys_msg_t *p_msg = NULL;
+    osal_status_t err = OSAL_STATUS_NOMEM;
+    sys_msg_t     msg = { msg_id, msg_len, msg_argc, msg_argv };
 
-    uint32_t len = 0;
-    uint8_t buf[VAM_MQ_MSG_SIZE] = {0};
 
-    p_msg = (sys_msg_t *)buf;
-    len = sizeof(sys_msg_t);
-    if (p_msg) {
-        p_msg->id = msg_id;
-        p_msg->len = msg_len;
-        p_msg->argc = msg_argc;
-        p_msg->argv = msg_argv;
-        err = osal_queue_send(p_vam->queue_vam, buf, len, 0, OSAL_NO_WAIT);
-        
-    
-        if (err != OSAL_STATUS_SUCCESS) {
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: failed=[%d], msg=%04x\n",\
-                               __FUNCTION__, err, msg_id);
-        }
+    /* Send message queue to vam. */
+    err = osal_queue_send(p_vam->queue_vam, &msg, sizeof(msg), 0, OSAL_NO_WAIT);
+    if (err != OSAL_STATUS_SUCCESS) 
+    {
+        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: failed=[%d], msg=%04x\n", __FUNCTION__, err, msg_id);
     }
-
-    return err;
-}
-
-int vam_add_event_queue_2(vam_envar_t *p_vam, void *p_msg, uint32_t len)
-{
-    int err;
     
-    err = osal_queue_send(p_vam->queue_vam, p_msg, len, 0, OSAL_NO_WAIT);
-    if (err != OSAL_STATUS_SUCCESS){
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "%s: failed=[%d], msg=%04x\n",\
-                         __FUNCTION__, err, ((sys_msg_t *)p_msg)->id);
-    }
-
     return err;
 }
 
@@ -250,8 +226,7 @@ void vam_init(void)
     /* Stop the timer. */
     osal_timer_stop(p_vam->timer_gps_life);
 
-    p_vam->timer_neighbour_life = osal_timer_create("tm-nl",timer_neigh_time_callback,p_vam,\
-        NEIGHBOUR_LIFE_ACCUR, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
+    p_vam->timer_neighbour_life = osal_timer_create("tm-nl",timer_neigh_time_callback,p_vam, NEIGHBOUR_LIFE_ACCUR, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL); 					
     osal_assert(p_vam->timer_neighbour_life != NULL);
 
     p_vam->sem_sta = osal_sem_create("s-sta", 1);
