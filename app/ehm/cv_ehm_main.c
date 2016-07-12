@@ -101,7 +101,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
     nb_node_summary_infor_st_ptr node_summary_ptr = NULL;
 
     vam_sta_node_t *p_sta = NULL;
-    vsa_info_t vsa_position = { { 0 }, 0 };
+    vsa_node_st vsa_position = { { 0 }, 0 };
 
     vsa_crd_node_t *p_alert_node = NULL;
 
@@ -744,7 +744,7 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
     nb_node_summary_infor_st_ptr node_summary_ptr = NULL;
 
     vam_sta_node_t *p_sta = NULL;
-    vsa_info_t vsa_position = { { 0 }, 0 };
+    vsa_node_st vsa_position = { { 0 }, 0 };
     uint16_t nodenumber = 0;
 
 

@@ -236,63 +236,6 @@ int32_t vam_get_peer_relative_pos(uint8_t *pid, uint8_t flag)
     return (int32_t)vsm_get_relative_pos(&local, &sta);
 }
 
-
-#if 0
-int32_t vam_get_peer_relative_dir(uint8_t *pid)
-{
-    vam_envar_t *p_vam = p_vam_envar;
-    vam_sta_node_t *p_sta = NULL;
-    vam_stastatus_t sta;
-    int32_t delta, r;
-
-    osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
-
-	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
-        if (memcmp(p_sta->s.pid, pid, RCP_TEMP_ID_LEN)==0){
-            memcpy(&sta, &p_sta->s, sizeof(vam_stastatus_t));
-            break;
-        }
-	}
-    osal_sem_release(p_vam->sem_sta);
-
-    delta = (int32_t)vsm_get_relative_dir(&p_vam->local,&sta);
-
-    if ((delta <= 10)||(p_vam->local.speed < 1.0f)||(sta.speed < 1.0f)){
-        r = 1;
-    }
-    else{
-        r = -1;
-    }
-
-    return r;
-}
-#endif
-
-int32_t vam_get_peer_relative_dir(const vam_stastatus_t *local,const vam_stastatus_t *remote)
-{
-    int32_t delta, r;
-
-    delta = (int32_t)vsm_get_relative_dir(local,remote);
-
-    if ((delta <= 10)||(local->speed < 1.0f)||(remote->speed < 1.0f)){
-        r = 1;
-    }
-    else{
-        r = -1;
-    }
-
-    return r;
-}
-
-int32_t vam_get_peer_relative_speed(uint8_t *pid)
-{
-    if(!pid){
-        return -1;
-    }
-
-    return 0;
-}
-
 float vam_get_peer_absolute_speed(uint8_t *pid)
 {
     vam_envar_t *p_vam = p_vam_envar;
@@ -323,7 +266,7 @@ float vam_get_peer_absolute_speed(uint8_t *pid)
 }
 
 
-/* BEGIN: Added by wanglei, 2014/8/1 */
+
 /*****************************************************************************
    获取目前所有邻车告警状态, 只有每个邻车都取消告警, 应用层才停止预警
    alert_mask:  bit0-Vehicle Break Down(vbd)

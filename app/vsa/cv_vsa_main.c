@@ -27,8 +27,6 @@ OSAL_DEBUG_ENTRY_DEFINE(vsa)
 *****************************************************************************/
 
 
-static uint32_t peer_count = 0;
-
 float getDistanceVer2(float lat1, float lng1, float lat2, float lng2);
 static int vbd_judge(vsa_envar_t *p_vsa);
 static int ebd_judge(vsa_envar_t *p_vsa);
@@ -158,16 +156,18 @@ uint32_t vsa_safe_distance(int32_t position,vam_stastatus_t local,vam_stastatus_
 
 }
 
-int8_t vsa_position_get(uint8_t *pid,vsa_info_t *p_vsa_position)
+int8_t vsa_position_get(uint8_t *pid, vsa_node_st_ptr node_ptr)
 {
     int8_t i = 0;
     int8_t ret = -1;
-    vsa_position_node_t *p_pnt = NULL;
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-    for (i = 0;i < peer_count;i++) {
-        p_pnt = &p_vsa->position_node[i];
-        if (memcmp(p_pnt->vsa_position.pid, pid, RCP_TEMP_ID_LEN)==0) {
-            memcpy(p_vsa_position,&p_pnt->vsa_position,sizeof(vsa_info_t));
+
+    
+    for(i = 0; i < p_vsa->node_cnt; i++) 
+    {
+        if(memcmp(p_vsa->node_group[i].pid, pid, RCP_TEMP_ID_LEN)==0) 
+        {
+            memcpy(node_ptr, &(p_vsa->node_group[i]), sizeof(p_vsa->node_group[i]));
             ret = 0;
             break;
         }
@@ -188,64 +188,56 @@ int32_t  vsa_preprocess_pos(vsa_envar_t_ptr p_vsa)
 {
     vam_stastatus_t local_status;  
     vam_stastatus_t remote_status;
-    vsa_position_node_t *p_pnt = NULL;
+    vsa_node_st *p_pnt = NULL;
     vam_pos_data temp_data;
     int8_t i = 0;
     
     uint8_t peer_pid[VAM_NEIGHBOUR_MAXNUM][RCP_TEMP_ID_LEN];
-    //uint32_t peer_count = 0;
-
     float temp_delta = 0;
 
-    //uint32_t count_pos = 0;
     if (0x1 & g_dbg_print_type)
     {
         test_comm();
     }
     
-    vam_get_all_peer_pid(peer_pid, VAM_NEIGHBOUR_MAXNUM, &peer_count);
+    vam_get_all_peer_pid(peer_pid, VAM_NEIGHBOUR_MAXNUM, &(p_vsa->node_cnt));
 
     /* Return peer count when no pid. */
-    if(peer_count == 0) 
+    if(p_vsa->node_cnt == 0) 
     {
-        return peer_count;
+        return p_vsa->node_cnt;
     }
-
 
     vam_get_local_current_status(&local_status);
     
-    for(i = 0; i < peer_count; i++) 
+    for(i = 0; i < p_vsa->node_cnt; i++) 
     {
         vam_get_peer_status(peer_pid[i], &remote_status); /*!!查询不到的风险!!*/  
         
-        p_pnt = &p_vsa->position_node[i];
-        memcpy(p_pnt->vsa_position.pid, remote_status.pid, RCP_TEMP_ID_LEN);
-
+        p_pnt = &(p_vsa->node_group[i]);
+        memcpy(p_pnt->pid, remote_status.pid, RCP_TEMP_ID_LEN);
 
         temp_data = vsm_get_data(&local_status,&remote_status);
 
-        p_pnt->vsa_position.vsa_location = vsa_position_classify(&local_status,&remote_status,&temp_data,&temp_delta);
+        p_pnt->vsa_location = vsa_position_classify(&local_status,&remote_status,&temp_data,&temp_delta);
 
-        p_pnt->vsa_position.local_speed = local_status.speed;
+        p_pnt->local_speed = local_status.speed;
 
-        p_pnt->vsa_position.remote_speed = remote_status.speed;
+        p_pnt->remote_speed = remote_status.speed;
+        p_pnt->relative_speed = local_status.speed - remote_status.speed;                
 
-        p_pnt->vsa_position.relative_speed = local_status.speed - remote_status.speed;                
+        p_pnt->linear_distance = (int32_t)vsm_get_pos(&local_status,&remote_status,&temp_data);
 
-        p_pnt->vsa_position.linear_distance = (int32_t)vsm_get_pos(&local_status,&remote_status,&temp_data);//
+        p_pnt->v_offset = (uint32_t)(p_pnt->linear_distance*cos(temp_delta*PI/180.0f));
+        p_pnt->h_offset = (uint32_t)(p_pnt->linear_distance*sin(temp_delta*PI/180.0f));
 
-        p_pnt->vsa_position.v_offset = (uint32_t)(p_pnt->vsa_position.linear_distance*cos(temp_delta*PI/180.0f));
-
-        p_pnt->vsa_position.h_offset = (uint32_t)(p_pnt->vsa_position.linear_distance*sin(temp_delta*PI/180.0f));
-
-        p_pnt->vsa_position.safe_distance = vsa_safe_distance(p_pnt->vsa_position.linear_distance,local_status,remote_status);
-            
-        p_pnt->vsa_position.dir = remote_status.dir;
-        p_pnt->vsa_position.relative_dir = vsm_get_relative_dir(&local_status,&remote_status);
-        p_pnt->vsa_position.flag_dir = vam_get_peer_relative_dir(&local_status,&remote_status);
+        p_pnt->safe_distance = vsa_safe_distance(p_pnt->linear_distance,local_status,remote_status);
+        
+        p_pnt->dir = remote_status.dir;
+        p_pnt->relative_dir = vsm_get_relative_dir(&local_status,&remote_status);
     }				
     
-    return peer_count;
+    return p_vsa->node_cnt;
 }
 
 /*****************************************************************************
@@ -268,26 +260,28 @@ void  timer_preprocess_pos_callback( void *parameter )
  @param   : None
  @return  : 
 *****************************************************************************/
-vsa_position_node_t *vsa_find_pn(vsa_envar_t *p_vsa, uint8_t *temporary_id)
+vsa_node_st *vsa_find_pn(vsa_envar_t *p_vsa, uint8_t *temporary_id)
 {
-    vsa_position_node_t *p_pn = NULL, *pos;
+    vsa_node_st   *p_pn = NULL;
+  uint32_t node_index = 0;
+  
 
-
-    list_for_each_entry(pos, vsa_position_node_t, &p_vsa->position_list, list)
+    for(node_index = 0; node_index < p_vsa->node_cnt; node_index ++)
     {
-        if (memcmp(pos->vsa_position.pid, temporary_id, RCP_TEMP_ID_LEN) == 0)
+        if(memcmp(p_vsa->node_group[node_index].pid, temporary_id, RCP_TEMP_ID_LEN) == 0)
         {
-            p_pn = pos;
+            p_pn = &(p_vsa->node_group[node_index]);
             break;
         }
     }
     
     /* not found */
-    if (p_pn == NULL)
+    if(p_pn == NULL)
     {
         OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_WARN, "vsa position node need updating!\n\n");
                         
     }
+
     return p_pn;
 }
 
@@ -447,129 +441,6 @@ void vsa_cancel_ccw_warning(uint32_t warning_id)
 
 }
 
-/*****************************************************************************
- @funcname: ccw_add_list
- @brief   : judge  if add the node into ccwlist
- @param   : uint32_t warning_id  ,p_pnt: collection of node's  position infromation
- @return  : 
-*****************************************************************************/
-
-static int ccw_add_list(uint32_t warning_id,vsa_position_node_t *p_pnt)
-{
-    
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-    vsa_crd_node_t *p_crd = NULL,*pos = NULL;
-    bool_t  ccw_flag = FALSE;
-
-    if (warning_id == 0){
-        return warning_id;
-    }
-    
-    if (p_vsa->alert_mask & (1<<warning_id))
-    {
-        if (list_empty(&p_vsa->crd_list))
-        {
-            p_crd = (vsa_crd_node_t*)osal_malloc(sizeof(vsa_crd_node_t));
-            memcpy(p_crd->pid,p_pnt->vsa_position.pid,RCP_TEMP_ID_LEN);
-            OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,"list empty,create it \n");
-            p_crd->ccw_id = warning_id;
-            p_crd->ccw_cnt = 1;
-            list_add(&p_crd->list,&p_vsa->crd_list);
-            OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,\
-                                "pid(%02X %02X %02X %02X) create %lu list,dis=%d\n\n",p_crd->pid[0],p_crd->pid[1],p_crd->pid[2],\
-                                p_crd->pid[3],warning_id,p_pnt->vsa_position.linear_distance);
-        }
-        else
-        {
-            list_for_each_entry(pos,vsa_crd_node_t,&p_vsa->crd_list,list)
-            {
-                if (memcmp(p_pnt->vsa_position.pid,pos->pid,RCP_TEMP_ID_LEN) == 0)
-                {
-                    if(pos->ccw_id == warning_id)
-                    {//have this id and vsa warning do nor change
-                        if(pos->ccw_cnt >= CCW_DEBOUNCE)
-                        {                          
-                            OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,\
-                                                "pid(%02X %02X %02X %02X) warning id=%d  dis=%d\n\n",p_crd->pid[0],p_crd->pid[1],p_crd->pid[2],\
-                                                p_crd->pid[3],warning_id,p_pnt->vsa_position.linear_distance);
-                            vsa_send_ccw_warning(warning_id);
-                        }
-                        else
-                        {
-                            pos->ccw_cnt++;
-                        }
-                        OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,"ccw_cnt++ is %d\n",pos->ccw_cnt);
-                    }
-                    else
-                    {
-                        //this didn't happen,list have this id ,but warning changed,one id to another id
-                        //pos->ccw_id = warning_id;
-                        OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,"VSA error!!\n\n");
-                    }
-                    
-                    ccw_flag = FALSE;
-                    break;
-                }   
-                else
-                {
-                    ccw_flag = TRUE;
-                }
-            }
-        }
-        if(ccw_flag )
-        {
-            p_crd = (vsa_crd_node_t*)osal_malloc(sizeof(vsa_crd_node_t));
-            memcpy(p_crd->pid,p_pnt->vsa_position.pid,RCP_TEMP_ID_LEN);
-            p_crd->ccw_id = warning_id;                        
-            OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,"list exist,add it \n");
-            p_crd->ccw_cnt = 1;
-            list_add(&p_crd->list,&p_vsa->crd_list);
-            OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,\
-                                "pid(%02X %02X %02X %02X) join in %lu list,dis=%d\n\n",p_crd->pid[0],p_crd->pid[1],p_crd->pid[2],\
-                                p_crd->pid[3],warning_id,p_pnt->vsa_position.linear_distance);
-        }   
-
-    }
-    return 0;
-}
-
-
-static int ccw_del_list(uint32_t warning_id,vsa_position_node_t *p_pnt)
-{
-
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-    vsa_crd_node_t *pos = NULL;
-
-      
-    list_for_each_entry(pos,vsa_crd_node_t,&p_vsa->crd_list,list){
-        
-        if (memcmp(p_pnt->vsa_position.pid,pos->pid,RCP_TEMP_ID_LEN) == 0){
-            if (pos->ccw_cnt){
-                OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,"cnt--\n");
-                pos->ccw_cnt--;
-            }
-            else{
-                if (list_empty(&p_vsa->crd_list)){
-
-                    OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,"list empty error!\n");
-                    vsa_cancel_ccw_warning(pos->ccw_id);
-                }
-                OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,"list del beg!\n");
-                list_del(&pos->list);                    
-                OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_TRACE,"list del end!\n");
-                osal_free((vsa_crd_node_t*)list_entry(&pos->list,vsa_crd_node_t,list));                   
-                OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,\
-                                    "pid(%02X %02X %02X %02X) left \n\n",pos->pid[0],pos->pid[1],pos->pid[2],\
-                                    pos->pid[3]);
-                vsa_cancel_ccw_warning(pos->ccw_id);
-            }
-            break;
-        }   
-                
-    }                                 
-    return 0;
-}
-
 void timer_ebd_send_callback(void* parameter)
 {
     vam_cancel_alert(VAM_ALERT_MASK_EBD);
@@ -579,24 +450,27 @@ void timer_ebd_send_callback(void* parameter)
 static int ebd_judge(vsa_envar_t *p_vsa)
 {
     int32_t dis_actual;
-    vsa_position_node_t *p_node;
+    vsa_node_st *p_node = NULL;
+
+
     p_node = vsa_find_pn(p_vsa,p_vsa->remote.pid);
 
     /* put the beginning only in order to output debug infomations */
-    dis_actual = p_node->vsa_position.linear_distance;
+    dis_actual = p_node->linear_distance;
 
-    if (p_node->vsa_position.local_speed <= p_vsa->working_param.danger_detect_speed_threshold){
+    if (p_node->local_speed <= p_vsa->working_param.danger_detect_speed_threshold){
         
         return 0;
     }
 
-    if (p_node->vsa_position.remote_speed <= p_vsa->working_param.danger_detect_speed_threshold){
+    if (p_node->remote_speed <= p_vsa->working_param.danger_detect_speed_threshold){
         
         return 0;
     } 
 
-    if (p_node->vsa_position.flag_dir < 0){
-
+    /* Return no alert when relative direction out of range. */
+    if((10 < p_node->relative_dir) && (p_node->relative_dir < 350))
+    {
        return 0;
     }
 
@@ -610,14 +484,14 @@ static int ebd_judge(vsa_envar_t *p_vsa)
 
 static int vbd_judge(vsa_envar_t *p_vsa)
 {
-    vsa_position_node_t *p_node;    
+    vsa_node_st *p_node = NULL;    
     int32_t dis_actual;
     p_node = vsa_find_pn(p_vsa,p_vsa->remote.pid);
 
     /* put the beginning only in order to output debug infomations */
-    dis_actual = p_node->vsa_position.linear_distance;
+    dis_actual = p_node->linear_distance;
 
-    if (p_node->vsa_position.local_speed <= p_vsa->working_param.danger_detect_speed_threshold){
+    if (p_node->local_speed <= p_vsa->working_param.danger_detect_speed_threshold){
         
         return 0;
     }
@@ -628,16 +502,17 @@ static int vbd_judge(vsa_envar_t *p_vsa)
     } 
 */
     /**************horizontal distance compare with lane*******************/
-    if(p_node->vsa_position.h_offset > p_vsa->working_param.lane_dis){
+    if(p_node->h_offset > p_vsa->working_param.lane_dis){
 
         return 0;    
     }
 
-    if (p_node->vsa_position.flag_dir < 0){
-
-        return 0;
+    /* Return no alert when relative direction out of range. */
+    if((10 < p_node->relative_dir) && (p_node->relative_dir < 350))
+    {
+       return 0;
     }
-
+    
     /* remote is behind of local */
     if (dis_actual <= 0){
         return 0;
@@ -653,68 +528,44 @@ static int vbd_judge(vsa_envar_t *p_vsa)
             0 - no alert
             1 - alert
 *****************************************************************************/
-static int cfcw_judge(vsa_position_node_t *p_node)
+static int cfcw_judge(vsa_node_st *p_node)
 {
-    int32_t dis_actual, dis_alert;
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-    /* put the beginning only in order to output debug infomations */
-    dis_actual = p_node->vsa_position.linear_distance;
-    dis_alert = p_node->vsa_position.safe_distance;//(int32_t)((p_vsa->local.speed*2.0f - p_vsa->remote.speed)*p_vsa->working_param.crd_saftyfactor*1000.0f/3600.0f);
-    /* end */
 
-    if (p_node->vsa_position.local_speed <= p_vsa->working_param.danger_detect_speed_threshold){
-        
-        return 0;
+
+    if(p_node->local_speed <= p_vsa->working_param.danger_detect_speed_threshold)
+    {
+        return VSA_ID_NONE;
     }
-/*
-    if (p_node->vsa_position.remote_speed <= p_vsa->working_param.danger_detect_speed_threshold){
-        
-        return 0;
-    }   
- */   
-    if (p_node->vsa_position.flag_dir < 0){
-        
-        return 0;
+ 
+    /* Return no alert when relative direction out of range. */
+    if((10 < p_node->relative_dir) && (p_node->relative_dir < 350))
+    {
+       return VSA_ID_NONE;
     }
 
-    /**************horizontal distance compare with lane*******************/
-    if(p_node->vsa_position.h_offset > p_vsa->working_param.lane_dis){
-
-        return 0;    
+    /* horizontal distance compare with lane. */
+    if(p_vsa->working_param.lane_dis < p_node->h_offset)
+    {
+        return VSA_ID_NONE;    
     }
         
-    if (p_node->vsa_position.local_speed <= (p_node->vsa_position.remote_speed +\
-        p_vsa->working_param.crd_oppsite_speed)){       
-        return 0;
+    if(p_node->local_speed <= (p_node->remote_speed + p_vsa->working_param.crd_oppsite_speed))
+    {       
+        return VSA_ID_NONE;
     }
-
-
 
     /* remote is behind of local */
-    if (dis_actual <= 0){
-        
-        return 0;
+    if(p_node->linear_distance <= 0)
+    {
+        return VSA_ID_NONE;
     }
-#if 0
-    if (p_vsa->alert_pend & (1<<VSA_ID_CRD))
-        {
-            if (dis_actual < -10)
-                return 0;
-        }
-    else
-        {
-            if (dis_actual <0)        
-                return 0;
-        }
-#endif
     
-    if (dis_actual > dis_alert){ 
-        return 0;
+    if(p_node->safe_distance < p_node->linear_distance)
+    { 
+        return VSA_ID_NONE;
     }
-  /*  OSAL_MODULE_DBGPRT(MODULE_NAME,OSAL_DEBUG_INFO,\
-                        "pid(%02X %02X %02X %02X) dis=%d\n",p_node->vsa_position.pid[0],p_node->vsa_position.pid[1],\
-                        p_node->vsa_position.pid[2],p_node->vsa_position.pid[3],p_node->vsa_position.linear_distance);
-    */
+    
     return VSA_ID_CRD;
 
 }
@@ -731,35 +582,35 @@ static int cfcw_judge(vsa_position_node_t *p_node)
             0 - no alert
             1 - alert
 *****************************************************************************/
-static int crcw_judge(vsa_position_node_t *p_node)
+static int crcw_judge(vsa_node_st *p_node)
 {
     int32_t dis_actual, dis_alert;
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;
     /* put the beginning only in order to output debug infomations */
-    dis_actual = p_node->vsa_position.linear_distance;
+    dis_actual = p_node->linear_distance;
     dis_alert = p_vsa->working_param.crd_rear_distance;//p_node->vsa_position.safe_distance;//(int32_t)((p_vsa->local.speed*2.0f - p_vsa->remote.speed)*p_vsa->working_param.crd_saftyfactor*1000.0f/3600.0f);
     /* end */
 
-    if (p_node->vsa_position.local_speed <= p_vsa->working_param.danger_detect_speed_threshold){
+    if (p_node->local_speed <= p_vsa->working_param.danger_detect_speed_threshold){
         
         return 0;
     }
 
-    if (p_node->vsa_position.remote_speed <= p_vsa->working_param.danger_detect_speed_threshold){
+    if (p_node->remote_speed <= p_vsa->working_param.danger_detect_speed_threshold){
         
         return 0;
-    }   
+    } 
     
-    if (p_node->vsa_position.flag_dir < 0){
-        
-        return 0;
+    /* Return no alert when relative direction out of range. */
+    if((10 < p_node->relative_dir) && (p_node->relative_dir < 350))
+    {
+       return 0;
     }
+    
 #if 0
-    if((p_node->vsa_position.vsa_location >= AHEAD_LEFT)&&
-        (p_node->vsa_position.vsa_location <= AHEAD_RIGHT)){
+    if((p_node->vsa_location >= AHEAD_LEFT) && (p_node->vsa_location <= AHEAD_RIGHT)){
         
-    if (p_node->vsa_position.local_speed <= (p_node->vsa_position.remote_speed +\
-                                            p_vsa->working_param.crd_oppsite_speed)){
+    if (p_node->local_speed <= (p_node->remote_speed + p_vsa->working_param.crd_oppsite_speed)){
         
         return 0;
     }
@@ -767,24 +618,24 @@ static int crcw_judge(vsa_position_node_t *p_node)
 
 
     /* remote is behind of local */
-    if (dis_actual <= 0){
-        
+    if (dis_actual <= 0)
+    {
         return 0;
     }
 
-    if (dis_actual > dis_alert){
+    if (dis_actual > dis_alert)
+    {
         return 0;
     }
     return VSA_ID_CRD;
     }
-    else if((p_node->vsa_position.vsa_location >= BEHIND_LEFT)&&
-        (p_node->vsa_position.vsa_location <= BEHIND_RIGHT)){
-            
-
-    return VSA_ID_CRD_REAR;
+    else if((p_node->vsa_location >= BEHIND_LEFT) && (p_node->vsa_location <= BEHIND_RIGHT))
+    {
+        return VSA_ID_CRD_REAR;
     }    
 #endif
-    if ((p_node->vsa_position.local_speed + p_vsa->working_param.crd_oppsite_speed) >= p_node->vsa_position.remote_speed){
+    if ((p_node->local_speed + p_vsa->working_param.crd_oppsite_speed) >= p_node->remote_speed)
+    {
         
         return 0;
     }
@@ -810,18 +661,6 @@ static int crcw_judge(vsa_position_node_t *p_node)
         return 0;
     }
     return VSA_ID_CRD_REAR;
-}
-
-uint32_t vsa_get_alarm(uint32_t vsa_id)
-{
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-    if(vsa_id == VSA_ID_NONE){
-        return p_vsa->alert_pend;
-    }
-    else{
-        return p_vsa->alert_pend & (1<<vsa_id);
-    }
-
 }
 
 
@@ -866,12 +705,11 @@ static int vsa_auto_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
 
 static int vsa_cfcw_alarm_proc(vsa_envar_t *p_vsa, void *arg)
 {
-    int count_neighour;
     int vsa_id;
-    vsa_position_node_t *pos_pnt = NULL;
-    
-    count_neighour = *((int*)arg);
-    pos_pnt = &p_vsa->position_node[count_neighour];
+    vsa_node_st *pos_pnt = NULL;
+
+
+    pos_pnt = &p_vsa->node_group[*((int*)arg)];
     vsa_id = cfcw_judge(pos_pnt);
 
     return vsa_id;
@@ -879,13 +717,11 @@ static int vsa_cfcw_alarm_proc(vsa_envar_t *p_vsa, void *arg)
 
 static int vsa_crcw_alarm_proc(vsa_envar_t *p_vsa, void *arg)
 {
-    int count_neighour;
     int vsa_id;
-    vsa_position_node_t *pos_pnt = NULL;
+    vsa_node_st *pos_pnt = NULL;
     
-    count_neighour = *((int*)arg);
 
-    pos_pnt = &p_vsa->position_node[count_neighour];
+    pos_pnt = &p_vsa->node_group[*((int*)arg)];
     vsa_id = crcw_judge(pos_pnt);
 
     return vsa_id;
@@ -996,6 +832,10 @@ static int vsa_xxx_recieve_proc(vsa_envar_t *p_vsa, void *arg)
 
   return 0;
 }
+
+
+
+
 vsa_app_handler vsa_app_handler_tbl[] = 
 {
     vsa_manual_broadcast_proc,
@@ -1014,44 +854,27 @@ vsa_app_handler vsa_app_handler_tbl[] =
     vsa_xxx_recieve_proc,
 };
 
+
+
+
 void * vsa_base_proc(void *parameter)
 {
-    int count_neighour;
-    int i;
-    int vsa_id;
-    vsa_id = 0;
+    int              i = 0;
+    int         vsa_id = 0;
     vsa_envar_t *p_vsa = (vsa_envar_t *)parameter;
+
     
     while(1)
     {
         osal_sem_take(p_vsa->sem_vsa_proc, OSAL_WAITING_FOREVER);
 
-        count_neighour = vsa_preprocess_pos(&(p_cms_envar->vsa));
+        vsa_preprocess_pos(&(p_cms_envar->vsa));
 
-        if(( count_neighour < 0)||(count_neighour > VAM_NEIGHBOUR_MAXNUM))
-        {
-            continue;
-        }
-        
-        /*if bsm lost,after 15s,neighour list is empty,cancel all alert*/
-        if(count_neighour == 0)
-        {
-            if (p_vsa->alert_pend & (1<<VSA_ID_CRD))
-            {
-                p_vsa->alert_pend &= ~(1<<VSA_ID_CRD);
-            }
-            if (p_vsa->alert_pend & (1<<VSA_ID_CRD_REAR))
-            {
-                p_vsa->alert_pend &= ~(1<<VSA_ID_CRD_REAR);
-            }
-            continue;
-        }
-
-        for(i = 0; i < count_neighour; i++)
+        for(i = 0; i < p_vsa->node_cnt; i++)
         {
             
             if(vsa_app_handler_tbl[VSA_MSG_CFCW_ALARM-VSA_MSG_PROC]){    
-                vsa_id = vsa_app_handler_tbl[VSA_MSG_CFCW_ALARM-VSA_MSG_PROC](p_vsa,&i);
+                vsa_id = vsa_app_handler_tbl[VSA_MSG_CFCW_ALARM - VSA_MSG_PROC](p_vsa, &i);
             }
 
             if((!vsa_id)&&(vsa_app_handler_tbl[VSA_MSG_CRCW_ALARM-VSA_MSG_PROC])){    
@@ -1065,21 +888,8 @@ void * vsa_base_proc(void *parameter)
             if((!vsa_id)&&(vsa_app_handler_tbl[VSA_MSG_SIDE_ALARM-VSA_MSG_PROC])){    
                 vsa_id = vsa_app_handler_tbl[VSA_MSG_SIDE_ALARM-VSA_MSG_PROC](p_vsa,&i);
             }
-
-            if(vsa_id)
-            {
-                ccw_add_list(vsa_id,&p_vsa->position_node[i]);
-            }
-            else
-            { 
-                ccw_del_list(vsa_id,&p_vsa->position_node[i]);                 
-            }
-
         }
-            
-
     }
-
 }
 
 void * vsa_thread_entry(void *parameter)
@@ -1102,7 +912,7 @@ void * vsa_thread_entry(void *parameter)
         {
             if(vsa_app_handler_tbl[p_msg->id - VSA_MSG_PROC] != NULL)
             {
-                err = vsa_app_handler_tbl[p_msg->id - VSA_MSG_PROC](p_vsa,p_msg); 
+                err = vsa_app_handler_tbl[p_msg->id - VSA_MSG_PROC](p_vsa, p_msg); 
             }
         }
         else
@@ -1147,16 +957,10 @@ void vsa_init(void)
     
     memset(p_vsa, 0, sizeof(vsa_envar_t));
     memcpy(&p_vsa->working_param, &p_cms_param->vsa, sizeof(vsa_config_t));
+
     
     INIT_LIST_HEAD(&p_vsa->crd_list);    
-    INIT_LIST_HEAD(&p_vsa->position_list);    
 
-
-    for(i = 0; i< VAM_NEIGHBOUR_MAXNUM; i++)
-    {
-        list_add_tail(&p_vsa->position_node[i].list, &p_vsa->position_list);
-    }
-    
     for(i = 0; i < sizeof(vsa_app_handler_tbl)/sizeof(vsa_app_handler_tbl[0]); i++)
     {
         if(p_vsa->vsa_mode & (1<<i))
