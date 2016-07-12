@@ -10,3 +10,5 @@ dependence
 .project
 .cproject
 #bin
+rsu
+cli_agent
