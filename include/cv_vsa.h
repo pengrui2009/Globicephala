@@ -12,9 +12,6 @@
 #ifndef __CV_VSA_H__
 #define __CV_VSA_H__
 
-/*****************************************************************************
- * definition of micro                                                       *
-*****************************************************************************/
 
 #define VSA_TIMER_PERIOD         SECOND_TO_TICK(1)
 #define VSA_EBD_SEND_PERIOD      SECOND_TO_TICK(5)
@@ -23,7 +20,6 @@
 
 #define PI 3.1415926f
 
-#define VSA_MSG_PROC    (VSA_MSG_BASE+1)
 #define CCW_DEBOUNCE     5
 
 
@@ -37,11 +33,31 @@
 
 
 /*down to top*/
-#define  HIGHWAY_MODE   0x0F9F
+#define  HIGHWAY_MODE    0x0F9F
 #define  MOUNTAIN_MODE   0x0FBF
 #define  CITY_MODE       0x0FD7
 #define  CUSTOM_MODE     0x019F
 
+
+
+/* Vsa message type. */
+enum VSA_MSG_TYPE
+{
+    VSA_MSG_MANUAL_BC = 0,   
+    VSA_MSG_EEBL_BC,
+    VSA_MSG_AUTO_BC,
+    
+    VSA_MSG_CFCW_ALARM,
+    VSA_MSG_CRCW_ALARM,
+    VSA_MSG_OPPOSITE_ALARM,
+    VSA_MSG_SIDE_ALARM,
+
+    VSA_MSG_ACC_RC,
+    VSA_MSG_EEBL_RC,
+    VSA_MSG_X_RC,
+    VSA_MSG_XX_RC,
+    VSA_MSG_XXX_RC
+};
 
 
 enum VSA_APP_ID
@@ -135,8 +151,6 @@ typedef struct _vsa_node_st
     int32_t linear_distance;
     uint32_t  safe_distance;
 
-    float               dir;
-
 }vsa_node_st, * vsa_node_st_ptr;
 
 #define VSA_NODE_ST_LEN    (sizeof(vsa_node_st))
@@ -219,7 +233,8 @@ typedef struct _vsa_envar_t
 
 
 
-typedef struct _vsa_crd_node{
+typedef struct _vsa_crd_node
+{
     /* !!!DON'T modify it!!! */
     list_head_t list;
 
@@ -247,15 +262,13 @@ typedef struct _vsa_crd_node{
 
 
 typedef int (*vsa_app_handler)(vsa_envar_t *p_vsa, void *p_msg);
-
 extern int8_t vsa_position_get(uint8_t *pid, vsa_node_st_ptr node_ptr);
 
 
 void vsa_start(void);
-
 extern osal_status_t vsa_add_event_queue(vsa_envar_t *p_vsa, uint16_t msg_id, uint16_t msg_len, uint32_t msg_argc, void *msg_argv);
 
 
 
-#endif /* __CV_VSA_H__ */
+#endif
 
