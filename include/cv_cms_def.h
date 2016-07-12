@@ -21,7 +21,6 @@
  * declaration of variables and functions                                    *
 *****************************************************************************/
 
-//#define RSU_TEST
 
 /**
     prority of all the tasks in system 
@@ -80,72 +79,23 @@ enum SYSTEM_MSG_TYPE
     VAM_MSG_RCPRX,
     VAM_MSG_NEIGH_TIMEOUT,
 
-
-    VSA_MSG_BASE = 0x0300,
-    VSA_MSG_MANUAL_BC,   
-    VSA_MSG_EEBL_BC,
-    VSA_MSG_AUTO_BC,
-    
-    VSA_MSG_CFCW_ALARM,
-    VSA_MSG_CRCW_ALARM,
-    VSA_MSG_OPPOSITE_ALARM,
-    VSA_MSG_SIDE_ALARM,
-
-    VSA_MSG_ACC_RC,
-    VSA_MSG_EEBL_RC,
-    VSA_MSG_X_RC,
-    VSA_MSG_XX_RC,
-    VSA_MSG_XXX_RC,
-
     EHM_MSG_BASE = 0x0400,
     EHM_MSG_VSA_RECV_DONE,
     EHM_MSG_VSA_SEND_DATA,
     EHM_MSG_XXX
 };
 
-enum HI_OUT_TYPE{
-    HI_OUT_NONE = 0,
-    HI_OUT_SYS_INIT,
-    HI_OUT_BSM_UPDATE,
-    HI_OUT_BSM_NONE,
-    HI_OUT_GPS_CAPTURED,
-    HI_OUT_GPS_LOST,
-    HI_OUT_CRD_ALERT,
-    HI_OUT_CRD_CANCEL,
-    HI_OUT_CRD_REAR_ALERT,
-    HI_OUT_CRD_REAR_CANCEL,
-    HI_OUT_VBD_ALERT,
-    HI_OUT_VBD_CANCEL,
-    HI_OUT_VBD_STATUS,
-    HI_OUT_VBD_STOP,
-    HI_OUT_EBD_ALERT,
-    HI_OUT_EBD_CANCEL,
-    HI_OUT_EBD_STATUS,
-    HI_OUT_EBD_STOP,
-    HI_OUT_CANCEL_ALERT,
-};
 
-enum HI_IN_TYPE{
-    HI_IN_NONE = 0,
-    HI_IN_KEY_PRESSED,
-    HI_IN_KEY_RELEASE,
-};
-
-
-/**
-    misc definitions 
-*/
+/**misc definitions */
 #define OS_TICK_PER_SECOND  (100)
 #define MS_TO_TICK(n)     (n)
 #define SECOND_TO_TICK(n) ((n)*1000)
 
 
-/*****************************************************************************
- * declaration of structs                                                    *
-*****************************************************************************/
+
 
 /* structure of system global message. */
-typedef struct _sys_msg
+typedef struct _sys_msg_t
 {
     uint16_t   id;
     uint16_t  len;
@@ -154,75 +104,41 @@ typedef struct _sys_msg
     
 }sys_msg_t;
 
-/**
-    structure of system configure parameters 
-*/
-typedef struct _cfg_param{
 
-	/*********************ID******************/	
-    uint8_t pid[RCP_TEMP_ID_LEN];  // ID 
+/*Structure of system configure parameters. */
+typedef struct _cfg_param_t
+{
+    uint8_t pid[RCP_TEMP_ID_LEN];
 
-    /******************** VAM *********************/
-    vam_config_t vam;
-
-    /******************** VSA *********************/
-    vsa_config_t vsa;
+    vam_config_t   vam;
+    vsa_config_t   vsa;
     
-    /*********************WNET*************************/
     wnet_config_t wnet;
 	
-    /******************** DBG *********************/
-    uint8_t print_xxx;  /* 0 - disable, 1 - enable */
+    uint8_t  print_xxx;  /* 0 - disable, 1 - enable */
+            
+}cfg_param_t, *cfg_param_t_ptr;
 
-                 
-}cfg_param_t;
-
-/** 
-    structure of system manager module's environment variable 
-*/
-typedef struct _sys_envar{
-    /* working_param */
-    vsa_config_t working_param;
-
-    uint32_t status;
-    uint32_t hi_timer_cnt;
-
-    uint32_t led_priority;
-    uint16_t led_blink_duration;
-    uint16_t led_blink_period;
-    uint16_t led_blink_cnt;
-	uint8_t voc_flag;
-
-    /* os related */
-    osal_task_t *task_sys_mng;
-    osal_queue_t *queue_sys_mng;
-
-}sys_envar_t;
+#define CFG_PARAM_T_LEN    (sizeof(cfg_param_t))
 
 
-/**
-    structure of system global environment variable 
-*/
-typedef struct _cms_global{
-    vam_envar_t vam;
-    vsa_envar_t vsa;
+/* Structure of system global environment variable. */
+typedef struct _cms_global_t
+{
+    vam_envar_t   vam;
+    vsa_envar_t   vsa;
     wnet_envar_t wnet;
 
-    sys_envar_t sys;
-    mda_envar_t mda;
-}cms_global_t;
+    mda_envar_t   mda;
+    
+}cms_global_t, * cms_global_t_ptr;
 
-/*****************************************************************************
- * declare of global functions and variables                                 *
-*****************************************************************************/
+#define CMS_GLOBAL_T_LEN    (sizeof(cms_global_t))
+
+
+
 extern cms_global_t cms_envar, *p_cms_envar;
 extern cfg_param_t cms_param, *p_cms_param;
 
-osal_status_t sys_add_event_queue(sys_envar_t *p_sys, 
-                             uint16_t msg_id, 
-                             uint16_t msg_len, 
-                             uint32_t msg_argc,
-                             void    *msg_argv);
-
-#endif /* __CV_CMS_DEF_H__ */
+#endif
 

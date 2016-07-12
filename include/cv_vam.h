@@ -340,7 +340,7 @@ int32_t vam_start(void);
 int32_t vam_stop(void);
 int32_t vam_set_event_handler(uint32_t evt, vam_evt_handler callback);
 int32_t vam_get_peer_relative_pos(uint8_t *pid, uint8_t flag);
-int32_t vam_get_peer_relative_dir(const vam_stastatus_t *local,const vam_stastatus_t *remote);
+
 int32_t vam_get_peer_alert_status(uint16_t *alert_mask);
 int32_t vam_active_alert(uint16_t alert);
 int32_t vam_cancel_alert(uint16_t alert);

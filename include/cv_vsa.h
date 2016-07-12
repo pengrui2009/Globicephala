@@ -12,9 +12,6 @@
 #ifndef __CV_VSA_H__
 #define __CV_VSA_H__
 
-/*****************************************************************************
- * definition of micro                                                       *
-*****************************************************************************/
 
 #define VSA_TIMER_PERIOD         SECOND_TO_TICK(1)
 #define VSA_EBD_SEND_PERIOD      SECOND_TO_TICK(5)
@@ -23,28 +20,48 @@
 
 #define PI 3.1415926f
 
-#define VSA_MSG_PROC    (VSA_MSG_BASE+1)
 #define CCW_DEBOUNCE     5
 
 
 
 
 
-
+#define VSA_NODE_MAX  VAM_NEIGHBOUR_MAXNUM
 
 
 
 
 
 /*down to top*/
-#define  HIGHWAY_MODE   0x0F9F
+#define  HIGHWAY_MODE    0x0F9F
 #define  MOUNTAIN_MODE   0x0FBF
 #define  CITY_MODE       0x0FD7
 #define  CUSTOM_MODE     0x019F
 
 
 
-enum VSA_APP_ID{
+/* Vsa message type. */
+enum VSA_MSG_TYPE
+{
+    VSA_MSG_MANUAL_BC = 0,   
+    VSA_MSG_EEBL_BC,
+    VSA_MSG_AUTO_BC,
+    
+    VSA_MSG_CFCW_ALARM,
+    VSA_MSG_CRCW_ALARM,
+    VSA_MSG_OPPOSITE_ALARM,
+    VSA_MSG_SIDE_ALARM,
+
+    VSA_MSG_ACC_RC,
+    VSA_MSG_EEBL_RC,
+    VSA_MSG_X_RC,
+    VSA_MSG_XX_RC,
+    VSA_MSG_XXX_RC
+};
+
+
+enum VSA_APP_ID
+{
     VSA_ID_NONE = 0,
     VSA_ID_CRD,
     VSA_ID_CRD_REAR,
@@ -59,7 +76,8 @@ enum VSA_APP_ID{
 
 /* target classification locations */
 
-enum VSA_TARGET_LOCATION{
+enum VSA_TARGET_LOCATION
+{
     POSITION_ERROR = 0,
     AHEAD_LEFT,        
     AHEAD,
@@ -71,7 +89,8 @@ enum VSA_TARGET_LOCATION{
     LEFT
 };
 
-typedef struct _adpcm{
+typedef struct _adpcm
+{
 
     uint32_t addr;
     uint32_t size;
@@ -113,77 +132,50 @@ typedef enum _vehicle_heading_slice
 
 
 
-
-
-
-
-
-
-typedef struct _vsa_info
+/* Vsa node information structure. */
+typedef struct _vsa_node_st
 {
     uint8_t pid[RCP_TEMP_ID_LEN];
     
-    uint32_t vsa_location;
+    uint32_t   vsa_location;
 
-    float local_speed;
+    float       local_speed;
+    float      remote_speed;
 
-    float remote_speed;
-
-    float relative_speed;
-    float relative_dir;
-    
-    uint32_t v_offset;
-    uint32_t h_offset;
+    float    relative_speed;
+    float      relative_dir;
+      
+    uint32_t       v_offset;
+    uint32_t       h_offset;
 
     int32_t linear_distance;
     uint32_t  safe_distance;
 
-    float dir;
+}vsa_node_st, * vsa_node_st_ptr;
 
-    int8_t flag_dir;
-
-    uint8_t jump_count;
-
-    uint8_t vsa_id;
-
-    uint8_t period;
-
-}vsa_info_t;
-
-
-
-typedef struct _vsa_position_node{
-
-    list_head_t list;
-
-    vsa_info_t vsa_position;
-}vsa_position_node_t;
+#define VSA_NODE_ST_LEN    (sizeof(vsa_node_st))
 
 
 /*****************************************************************************
  * definition of struct                                                      *
 *****************************************************************************/
 
-typedef struct _vsa_config{
-    /*
-        General
-    */
-    
+typedef struct _vsa_config_t
+{
+    /* General */
     uint8_t danger_detect_speed_threshold;  /* unit: km/h */
-    uint16_t lane_dis;  /* unit:m, min accuracy :1m*/
-    /*
-        Close Range Danger function:
-    */
-    uint8_t crd_saftyfactor;  /* 1~10 */
-    uint8_t crd_oppsite_speed;/*<=255:30km/h*/
+    uint16_t                     lane_dis;  /* unit:m, min accuracy :1m*/
+
+    /* Close Range Danger function. */
+    uint8_t  crd_saftyfactor;      /* 1~10 */
+    uint8_t crd_oppsite_speed;     /*<=255:30km/h*/
     uint8_t crd_oppsite_rear_speed;/*<=255:30km/h*/
-    uint8_t crd_rear_distance;/*<=255:10m*/
-    /*
-        Emergency Braking Danger function:
-    */
-    uint8_t ebd_mode;  /* 0 - disable, 1 - enable */
+    uint8_t crd_rear_distance;     /*<=255:10m*/
+
+    /* Emergency Braking Danger function. */
+    uint8_t ebd_mode;                   /* 0 - disable, 1 - enable */
     uint8_t ebd_acceleration_threshold; /* unit:m/s2 */
-    uint8_t ebd_alert_hold_time;  /* unit:s */
+    uint8_t ebd_alert_hold_time;        /* unit:s */
 	
 }vsa_config_t;
 
@@ -214,9 +206,9 @@ typedef struct _vsa_envar_t
 
     /*List head*/
     list_head_t crd_list;
-    list_head_t position_list;
 
-    vsa_position_node_t position_node[VAM_NEIGHBOUR_MAXNUM];
+    uint32_t                    node_cnt;
+    vsa_node_st node_group[VSA_NODE_MAX];
 
 
     /* os related */
@@ -241,7 +233,8 @@ typedef struct _vsa_envar_t
 
 
 
-typedef struct _vsa_crd_node{
+typedef struct _vsa_crd_node
+{
     /* !!!DON'T modify it!!! */
     list_head_t list;
 
@@ -269,29 +262,13 @@ typedef struct _vsa_crd_node{
 
 
 typedef int (*vsa_app_handler)(vsa_envar_t *p_vsa, void *p_msg);
-
-
-/*****************************************************************************
- * declaration of global variables and functions                             *
-*****************************************************************************/
-
-
-
-extern int8_t vsa_position_get(uint8_t *pid,vsa_info_t *p_vsa_position);
-
-
-
-
+extern int8_t vsa_position_get(uint8_t *pid, vsa_node_st_ptr node_ptr);
 
 
 void vsa_start(void);
+extern osal_status_t vsa_add_event_queue(vsa_envar_t *p_vsa, uint16_t msg_id, uint16_t msg_len, uint32_t msg_argc, void *msg_argv);
 
-osal_status_t vsa_add_event_queue(vsa_envar_t *p_vsa, 
-                             uint16_t msg_id, 
-                             uint16_t msg_len, 
-                             uint32_t msg_argc,
-                             void    *msg_argv);
 
-uint32_t vsa_get_alarm(uint32_t vsa_id);
-#endif /* __CV_VSA_H__ */
+
+#endif
 

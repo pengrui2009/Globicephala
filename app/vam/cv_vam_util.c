@@ -336,21 +336,20 @@ float vsm_get_relative_pos(vam_stastatus_t *p_src, vam_stastatus_t *p_dest)
 
 float vsm_get_relative_dir(const vam_stastatus_t *p_src, const  vam_stastatus_t *p_dest)
 {
-    float delta;
+    float direction = 0;
 
-    /* calculate the angle detra between local front and remote position  */
-    if (p_dest->dir > p_src->dir){
-        delta = p_dest->dir - p_src->dir;
+
+    /* Calculate the angle between local and neighbour node.  */
+    if( p_src->dir <= p_dest->dir)
+    {
+        direction = p_dest->dir - p_src->dir;
     }
-    else{
-        delta = p_src->dir - p_dest->dir;
+    else
+    {
+        direction = 360 + p_dest->dir - p_src->dir;
     }
 
-//    if (delta > 180){
-//        delta = 360 - delta;
-//    }
-
-    return delta;
+    return direction;
 }
 
 int8_t vsm_get_rear_dir(vam_stastatus_t *p_dest)
