@@ -292,6 +292,9 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         node_detail_ptr->posaccu.semiminoraxisAccu = encode_semiminor_axis_accuracy(p_sta->s.pos_accuracy.semi_minor_accu);
         node_detail_ptr->posaccu.semimajorAxisOrien = encode_semimajor_axis_orientation(p_sta->s.pos_accuracy.semi_major_orientation);
 
+        /*transmission state*/
+        node_detail_ptr->tran_state = p_sta->s.transmission_state;
+
         /* velocity. */
         node_detail_ptr->velocity = encode_absolute_velocity(p_sta->s.speed);
 
@@ -320,17 +323,17 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
 		node_detail_ptr->brake.brakeboost = p_sta->s.brake_stat.brakeboost;
 		node_detail_ptr->brake.auxbrakes = p_sta->s.brake_stat.auxbrakes;
 
-        /* external light. */
-        node_detail_ptr->exterlight.exterior_lights_bit.lowbeamheadlight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.highbeamheadlight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.leftturnsignallight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.rightturnsignallight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.hazardsignallight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.automaticlight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.daytimerunninglight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.foglighton = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.parkinglight = 0;
-        node_detail_ptr->exterlight.exterior_lights_bit.reserved = 0;
+        /* external light.*/
+        node_detail_ptr->exterlight.exterior_lights_bit.lowbeamheadlight 	= p_sta->s.exterior_light.exterior_lights_bit.lowbeamheadlight;
+        node_detail_ptr->exterlight.exterior_lights_bit.highbeamheadlight 	= p_sta->s.exterior_light.exterior_lights_bit.highbeamheadlight;
+        node_detail_ptr->exterlight.exterior_lights_bit.leftturnsignallight = p_sta->s.exterior_light.exterior_lights_bit.leftturnsignallight;
+        node_detail_ptr->exterlight.exterior_lights_bit.rightturnsignallight= p_sta->s.exterior_light.exterior_lights_bit.rightturnsignallight;
+        node_detail_ptr->exterlight.exterior_lights_bit.hazardsignallight 	= p_sta->s.exterior_light.exterior_lights_bit.hazardsignallight;
+        node_detail_ptr->exterlight.exterior_lights_bit.automaticlight 		= p_sta->s.exterior_light.exterior_lights_bit.automaticlight;
+        node_detail_ptr->exterlight.exterior_lights_bit.daytimerunninglight = p_sta->s.exterior_light.exterior_lights_bit.daytimerunninglight;
+        node_detail_ptr->exterlight.exterior_lights_bit.foglighton 			= p_sta->s.exterior_light.exterior_lights_bit.foglighton;
+        node_detail_ptr->exterlight.exterior_lights_bit.parkinglight 		= p_sta->s.exterior_light.exterior_lights_bit.parkinglight;
+        node_detail_ptr->exterlight.exterior_lights_bit.reserved 			= p_sta->s.exterior_light.exterior_lights_bit.reserved;
 
         node_detail_ptr->exterlight.exterior_lights_word = cv_ntohs(node_detail_ptr->exterlight.exterior_lights_word);
         /* alert flag. */
