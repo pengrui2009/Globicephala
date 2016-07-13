@@ -222,18 +222,20 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
         /* Parsing event domain when has extra data. */
         if((sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)) < datalen)
         {
-            p_sta->s.alert_mask = decode_vehicle_alert(p_bsm->safetyExt.events);
-            
+            p_sta->s.alert_mask = decode_vehicle_alert(p_bsm->safetyExt.events); 
+
             /* inform the app layer once */
-            if (p_vam->evt_handler[VAM_EVT_PEER_ALARM])
+            if(p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE] != NULL)
             {
-                (p_vam->evt_handler[VAM_EVT_PEER_ALARM])(&p_sta->s);
-            }        
+                p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE](&p_sta->s);
+            } 
         }
         else
         {
             p_sta->s.alert_mask = 0;
         }
+
+  
     }
 
     return 0;
@@ -284,7 +286,8 @@ int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, 
         p_sta->s.alert_mask = alert_mask;
 
         /* inform the app layer once */
-        if (p_vam->evt_handler[VAM_EVT_EVA_UPDATE]){
+        if(p_vam->evt_handler[VAM_EVT_EVA_UPDATE] != NULL)
+        {
             (p_vam->evt_handler[VAM_EVT_EVA_UPDATE])(&p_sta->s);
         }
     }
@@ -307,7 +310,8 @@ int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
     param.pos.longitude = decode_longitude(p_rsa->position.lon);
     param.pos.latitude = decode_latitude(p_rsa->position.lat);
 
-    if (p_vam->evt_handler[VAM_EVT_RSA_UPDATE]){
+    if(p_vam->evt_handler[VAM_EVT_RSA_UPDATE] != NULL)
+    {
         (p_vam->evt_handler[VAM_EVT_RSA_UPDATE])(&param);
     }
 

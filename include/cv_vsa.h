@@ -47,22 +47,24 @@ enum VSA_MSG_TYPE
     VSA_MSG_EEBL_BC,
     VSA_MSG_AUTO_BC,
     
-    VSA_MSG_CFCW_ALARM,
-    VSA_MSG_CRCW_ALARM,
+    VSA_MSG_CFCW_ALARM,    /* Cfcw alert detect handler. */
+    VSA_MSG_CRCW_ALARM,    /* Crcw alert detect handler. */
     VSA_MSG_OPPOSITE_ALARM,
     VSA_MSG_SIDE_ALARM,
 
-    VSA_MSG_ACC_RC,
-    VSA_MSG_EEBL_RC,
-    VSA_MSG_X_RC,
-    VSA_MSG_XX_RC,
-    VSA_MSG_XXX_RC
+    VSA_MSG_VBD_RCV,       /* Vbd alert receive handler. */
+    VSA_MSG_EBD_RCV,       /* Ebd alert receive handler. */
+    
+    VSA_MSG_X_RCV,
+    VSA_MSG_XX_RCV,
+    VSA_MSG_XXX_RCV
 };
 
 
 enum VSA_APP_ID
 {
     VSA_ID_NONE = 0,
+        
     VSA_ID_CRD,
     VSA_ID_CRD_REAR,
     VSA_ID_OPS,
@@ -89,15 +91,6 @@ enum VSA_TARGET_LOCATION
     LEFT
 };
 
-typedef struct _adpcm
-{
-
-    uint32_t addr;
-    uint32_t size;
-    uint8_t  channel;
-    uint8_t  cmd;
-
-}adpcm_t;
 
 /* Vehicle heading slice definition. */
 typedef enum _vehicle_heading_slice
@@ -151,6 +144,9 @@ typedef struct _vsa_node_st
     int32_t linear_distance;
     uint32_t  safe_distance;
 
+    uint16_t      vam_alert;    /* Vam alert mark. */
+    uint32_t      vsa_alert;    /* Vsa alert mark. */
+    
 }vsa_node_st, * vsa_node_st_ptr;
 
 #define VSA_NODE_ST_LEN    (sizeof(vsa_node_st))
@@ -184,29 +180,13 @@ typedef struct _vsa_config_t
 /* Vsa environment structure. */
 typedef struct _vsa_envar_t
 {
-    uint32_t vsa_mode;
-    
-    /* working_param */
-    vsa_config_t working_param;
-
-    uint32_t gps_status;
-
-    /* Vsa functionality switch definition. */
-    uint32_t alert_mask;
-
-
-    uint32_t alert_pend;
-
-    /* add by wangliang */
-    uint32_t alert_num;
-
-    vam_stastatus_t remote;
-
-    adpcm_t adpcm_data;
+    uint32_t          vsa_mode;  /* Vsa detect mode.*/
+    vsa_config_t working_param;  /* Working parameter. */
 
     /*List head*/
     list_head_t crd_list;
 
+    /* Neighbour node's count and vsa data group. */
     uint32_t                    node_cnt;
     vsa_node_st node_group[VSA_NODE_MAX];
 
@@ -216,14 +196,10 @@ typedef struct _vsa_envar_t
     osal_task_t  *task_vsa_r;
 
     osal_sem_t * sem_vsa_proc;
-    osal_sem_t * sem_alert_list;
-    
+   
     osal_queue_t *queue_vsa;
 
-    osal_queue_t *queue_voc;
-
     osal_timer_t *timer_ebd_send;
-
     osal_timer_t *timer_position_prepro;
                  
 }vsa_envar_t, * vsa_envar_t_ptr;

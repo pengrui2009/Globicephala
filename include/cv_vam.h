@@ -87,18 +87,17 @@ typedef enum _VAM_RSA_TYPE
 
 enum VAM_EVT
 {
-    VAM_EVT_PEER_UPDATE = 0,
-    VAM_EVT_PEER_ALARM,
-    VAM_EVT_GSNR_EBD_DETECT, 
-
-    VAM_EVT_RSA_UPDATE, 
-    VAM_EVT_EVA_UPDATE, 
+    VAM_EVT_GSNR_EBD_DETECT = 0, 
+    
+    VAM_EVT_BSM_ALARM_UPDATE,    /* Received bsm alarm message. */
+    VAM_EVT_RSA_UPDATE,          /* Received rsa message. */    
+    VAM_EVT_EVA_UPDATE,          /* Received eva message. */
+    
     VAM_EVT_MAX
 };
 
-/*****************************************************************************
- * definition of struct                                                      *
-*****************************************************************************/
+
+
 /*
  * CAUTION:
  *    The sentence "declaration __attribute__ ((aligned(x)))" can not be working in this IDE.
@@ -262,18 +261,17 @@ typedef struct _vam_envar_t
     uint8_t tx_evam_msg_cnt;
     uint8_t tx_rsa_msg_cnt;
 
-    uint8_t neighbour_cnt;
-
-    vam_stastatus_t local;
+    vam_stastatus_t   local;
+    
+    list_head_t                   sta_free_list;
+    list_head_t                  neighbour_list;
+    uint8_t                       neighbour_cnt;
     vam_sta_node_t remote[VAM_NEIGHBOUR_MAXNUM];
-
-    list_head_t  sta_free_list;
-    list_head_t neighbour_list;
 
     vam_evt_handler evt_handler[VAM_EVT_MAX];
 
     /* os related */
-    osal_task_t *task_vam;
+    osal_task_t   *task_vam;
     osal_queue_t *queue_vam;
 
     osal_timer_t *timer_send_bsm;

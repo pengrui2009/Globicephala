@@ -66,7 +66,8 @@ int32_t vam_set_config(vam_config_t *config)
 
 int32_t vam_set_event_handler(uint32_t evt, vam_evt_handler callback)
 {
-    if ((evt >= VAM_EVT_MAX)||(!callback)){
+    if((evt >= VAM_EVT_MAX) || (!callback))
+    {
         return -1;
     }
 
@@ -277,16 +278,20 @@ int32_t vam_get_peer_alert_status(uint16_t *alert_mask)
     vam_envar_t *p_vam = p_vam_envar;
     vam_sta_node_t *p_sta = NULL;
     uint16_t mask = 0;
+
+
+    /* Get all the neighbour's alert status(they sended).  */
     osal_sem_take(p_vam->sem_sta, OSAL_WAITING_FOREVER);
 
-	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list){
+	list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list)
+    {
         mask |= p_sta->s.alert_mask;
 	}
+    
     osal_sem_release(p_vam->sem_sta);
-    if(p_sta == NULL){
-        mask = 0;
-    }
+    
     *alert_mask = mask;
+    
     return 0;
 }
 
