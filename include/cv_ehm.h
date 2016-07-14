@@ -185,9 +185,7 @@ typedef struct _ehm_envar_st
     ehm_buffer_st   buffer_rx;
 
     ehm_buffer_st   buffer_tx;
-//    list_head_t    txbuf_free_list;
-//    list_head_t 	txbuf_waiting_list;
-//    ehm_txbuf_t 	txbuf[EHM_BUF_NUM];
+
     /*ÐÄÌø¶¨Ê±Æ÷*/
     osal_timer_t *p_timer_heartbeat;
 

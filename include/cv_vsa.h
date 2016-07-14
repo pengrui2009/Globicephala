@@ -180,16 +180,11 @@ typedef struct _vsa_config_t
 /* Vsa environment structure. */
 typedef struct _vsa_envar_t
 {
-    uint32_t          vsa_mode;  /* Vsa detect mode.*/
-    vsa_config_t working_param;  /* Working parameter. */
+    uint32_t          vsa_mode;            /* Vsa detect mode.*/
+    vsa_config_t working_param;            /* Working parameter. */
 
-    /*List head*/
-    list_head_t crd_list;
-
-    /* Neighbour node's count and vsa data group. */
-    uint32_t                    node_cnt;
-    vsa_node_st node_group[VSA_NODE_MAX];
-
+    uint32_t                    node_cnt;  /* Neighbour node's count in node group. */
+    vsa_node_st node_group[VSA_NODE_MAX];  /* Neighbour group. */
 
     /* os related */
     osal_task_t  *task_vsa_l;
@@ -205,35 +200,6 @@ typedef struct _vsa_envar_t
 }vsa_envar_t, * vsa_envar_t_ptr;
 
 #define VSA_ENVAR_T_LEN    (sizeof(vsa_envar_t))
-
-
-
-
-typedef struct _vsa_crd_node
-{
-    /* !!!DON'T modify it!!! */
-    list_head_t list;
-
-    uint8_t pid[RCP_TEMP_ID_LEN];  //temporary ID
-
-    /*add by wangliang alarm node brief infor*/
-    int16_t v_offset;
-
-    int16_t h_offset;
-
-    uint32_t alert_flag;
-    /*add by wangliang*/
-    
-    /* ccw_id = 1(VSA_ID_CRD) is cfcw,ccw_id = 2(VSA_ID_CRD_REAR) is crcw.*/
-    uint8_t ccw_id;
-
-	uint8_t ccw_cnt;
-
-    /* private */
-    uint16_t life;
-    
-
-}vsa_crd_node_t;
 
 
 

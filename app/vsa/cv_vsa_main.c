@@ -319,35 +319,11 @@ void vsa_start(void)
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s: --->\n", __FUNCTION__);
 }
 
-/*****************************************************************************
- @funcname: vsa_search_warning
- @brief   : this fucntion can detect whether the warning exist
- @param   : uint32_t warning_id  
- @return  : 0-no warning 1-have this warning
-*****************************************************************************/
-uint32_t vsa_search_warning(uint32_t warning_id)
-{
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-    vsa_crd_node_t *pos = NULL;
-
-    if (list_empty(&p_vsa->crd_list)){
-        return 0;
-    }
-
-    list_for_each_entry(pos,vsa_crd_node_t,&p_vsa->crd_list,list){
-        if(pos->ccw_id == warning_id){
-            return 1;
-        }
-    }
-    return 0;
-}
-
 void timer_ebd_send_callback(void* parameter)
 {
     vam_cancel_alert(VAM_ALERT_MASK_EBD);
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "Cancel Emergency braking. \n\n");                                          
 }
-
 
 static int ebd_judge(vsa_node_st *p_node)
 {
@@ -792,19 +768,16 @@ osal_status_t vsa_add_event_queue(vsa_envar_t *p_vsa, uint16_t msg_id, uint16_t 
 *****************************************************************************/
 void vsa_init(void)
 {
-    int i;
-
+    int              i = 0;
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;
+
     
     p_vsa->vsa_mode = ~CUSTOM_MODE;
     
     memset(p_vsa, 0, sizeof(vsa_envar_t));
     memcpy(&p_vsa->working_param, &p_cms_param->vsa, sizeof(vsa_config_t));
 
-    
-    INIT_LIST_HEAD(&p_vsa->crd_list);    
-
-    
+    /* Initial vsa detect item based on vsa mode.  */
     for(i = 0; i < sizeof(vsa_app_handler_tbl)/sizeof(vsa_app_handler_tbl[0]); i++)
     {
         if(p_vsa->vsa_mode & (1 << i))

@@ -351,7 +351,7 @@ typedef union _alert_flag_st
     /* Alert bits. */
     struct _alert_bit
     {
-	#ifndef __LITTLE_ENDIAN
+	  #ifndef __LITTLE_ENDIAN
     	uint32_t reserved          :25;   /* 保留位 */
 		uint32_t rsd_tunnel        :1;    /* 隧道告警 */
 		uint32_t vec_danger_goods  :1;    /* 危险货物运输车告警 */
@@ -360,7 +360,7 @@ typedef union _alert_flag_st
 		uint32_t vec_breakdown     :1;    /* 车辆故障告警 */
 		uint32_t vec_neardis_rear  :1;    /* 后车近距离告警 */
 		uint32_t vec_neardis_front :1;    /* 前车近距离告警 */
-	#else
+	  #else
     	uint32_t vec_neardis_front :1;    /* 前车近距离告警 */
 		uint32_t vec_neardis_rear  :1;    /* 后车近距离告警 */
 		uint32_t vec_breakdown     :1;    /* 车辆故障告警 */
@@ -369,7 +369,7 @@ typedef union _alert_flag_st
 		uint32_t vec_danger_goods  :1;    /* 危险货物运输车告警 */
 		uint32_t rsd_tunnel        :1;    /* 隧道告警 */
 		uint32_t reserved          :25;   /* 保留位 */
-	#endif
+	  #endif
     } alert_bit;
     
 }alert_flag_st, *alert_flag_st_ptr;
@@ -696,7 +696,7 @@ typedef struct _msg_nb_vehicle_alert_st
     uint8_t                  msg_id;
 
 	/* Message system time. */
-	uint32_t            system_time;
+    uint32_t            system_time;
     
 	/*邻节点告警信息,可选数据*/
     //nb_node_summary_infor_st_ptr nb_node_ptr;

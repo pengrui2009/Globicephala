@@ -40,6 +40,26 @@ ehm_config_st ehm_config =
 
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
 
+
+
+
+/* Convert vsa alert to ehm alert flag. */
+alert_flag_st ehm_vsa_alert2alert_flag(uint32_t vsa_alert)
+{
+    alert_flag_st ehm_alert = { 0 };
+
+
+    ehm_alert.alert_bit.vec_neardis_front = vsa_alert & (1 << VSA_ID_CRD);
+    ehm_alert.alert_bit.vec_neardis_rear = vsa_alert & (1 << VSA_ID_CRD_REAR);
+    ehm_alert.alert_bit.vec_breakdown = vsa_alert & (1 << VSA_ID_VBD);
+    ehm_alert.alert_bit.vec_brake_hard = vsa_alert & (1 << VSA_ID_EBD);
+
+    return ehm_alert;
+}
+
+
+
+
 /*****************************************************************************
  @funcname: ehm_add_event_queue
  @brief   : ehm module main queue event add function
@@ -73,6 +93,8 @@ int ehm_add_event_queue(ehm_envar_st *p_ehm, uint16_t msg_id, uint16_t msg_len, 
 ehm_buffer_st * ehm_get_txbuf(ehm_envar_st * p_ehm)
 {
 	ehm_buffer_st *txbuf = &p_ehm->buffer_tx;
+
+    
 	memset(txbuf->buffer, 0x0, sizeof(txbuf->buffer));
 	txbuf->data_len = 0;
 	if(p_ehm->config_ptr->recv_type == UART_RECV_TYPE)
@@ -100,19 +122,17 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
     msg_vehicle_nb_status_st_ptr      nb_node_ptr = NULL;
     nb_node_summary_infor_st_ptr node_summary_ptr = NULL;
 
-    vam_sta_node_t *p_sta = NULL;
+    vam_sta_node_t    *p_sta = NULL;
     vsa_node_st vsa_position = { { 0 }, 0 };
-
-    vsa_crd_node_t *p_alert_node = NULL;
 
 
     /* Get tx buffer from ehm tx buffer list. */
     txbuf = ehm_get_txbuf(p_ehm);
-//    if (txbuf == NULL)
-//    {
-//        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
-//        return -1;
-//    }
+    if (txbuf == NULL)
+    {
+        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
+        return -1;
+    }
     
     /* Initial message header. */
     msg_head_ptr = (frame_msg_header_st_ptr)txbuf->data_ptr;
@@ -139,44 +159,42 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
 
     list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list)
     {
+        /* Find next node when no information in vsa module. */
+        if(vsa_position_get(p_sta->s.pid, &vsa_position) != 0)
+        {
+            continue;
+        }
+        
         /* pid */
         memcpy(node_summary_ptr->node_id, p_sta->s.pid, RCP_TEMP_ID_LEN);
 
         /* relative position data */
-        if (vsa_position_get(p_sta->s.pid, &vsa_position) == 0) 
+        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
+         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
+         || (vsa_position.vsa_location == SLICE12_270_0T292_5)|| (vsa_position.vsa_location == SLICE13_292_5T315_0) 
+         || (vsa_position.vsa_location == SLICE14_315_0T337_5)|| (vsa_position.vsa_location == SLICE15_337_5T360_0) )
         {
-            if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
-             || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
-             || (vsa_position.vsa_location == SLICE12_270_0T292_5)|| (vsa_position.vsa_location == SLICE13_292_5T315_0) 
-             || (vsa_position.vsa_location == SLICE14_315_0T337_5)|| (vsa_position.vsa_location == SLICE15_337_5T360_0) )
-            {
-                node_summary_ptr->longitudinal_dis = - vsa_position.v_offset;
-            }
-            else
-            {
-                node_summary_ptr->longitudinal_dis = vsa_position.v_offset;
-            }
+            node_summary_ptr->longitudinal_dis = - vsa_position.v_offset;
+        }
+        else
+        {
+            node_summary_ptr->longitudinal_dis = vsa_position.v_offset;
+        }
 
-            if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
-             || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
-             || (vsa_position.vsa_location == SLICE4_090_0T112_5)|| (vsa_position.vsa_location == SLICE5_112_5T135_0) 
-             || (vsa_position.vsa_location == SLICE6_135_0T157_5)|| (vsa_position.vsa_location == SLICE7_157_5T180_0) )
-            {
-                node_summary_ptr->lateral_dis = vsa_position.h_offset;
-            }
-            else
-            {
-                node_summary_ptr->lateral_dis = - vsa_position.h_offset;
-            }
-               
-            node_summary_ptr->longitudinal_dis = cv_ntohs(node_summary_ptr->longitudinal_dis);
-            node_summary_ptr->lateral_dis = cv_ntohs(node_summary_ptr->lateral_dis);
-        }
-        else 
+        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
+         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
+         || (vsa_position.vsa_location == SLICE4_090_0T112_5)|| (vsa_position.vsa_location == SLICE5_112_5T135_0) 
+         || (vsa_position.vsa_location == SLICE6_135_0T157_5)|| (vsa_position.vsa_location == SLICE7_157_5T180_0) )
         {
-            node_summary_ptr->lateral_dis = 0;
-            node_summary_ptr->longitudinal_dis = 0;
+            node_summary_ptr->lateral_dis = vsa_position.h_offset;
         }
+        else
+        {
+            node_summary_ptr->lateral_dis = - vsa_position.h_offset;
+        }
+           
+        node_summary_ptr->longitudinal_dis = cv_ntohs(node_summary_ptr->longitudinal_dis);
+        node_summary_ptr->lateral_dis = cv_ntohs(node_summary_ptr->lateral_dis);
 
         /* angle. */
         node_summary_ptr->angle = encode_angle(vsa_position.relative_dir);
@@ -184,30 +202,9 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
         node_summary_ptr->signalstrength = 0;
         node_summary_ptr->losstolerance = 0;
 
-        /* alert flag. */
-        if(list_empty(&p_vsa->crd_list))
-        {
-            /* Set alert flag to none when crd list empty. */
-            node_summary_ptr->alert_flag.alert_word = 0;
-        }
-        else
-        {
-            list_for_each_entry(p_alert_node, vsa_crd_node_t, &p_vsa->crd_list, list) 
-            {
-                if(memcmp(node_summary_ptr->node_id, p_alert_node->pid, RCP_TEMP_ID_LEN) == 0)
-                {   
-                    /* Set alert flag when find the specific node and cancel the loop.  */
-                	//待完善代码，告警标识不对
-                    node_summary_ptr->alert_flag.alert_word = cv_ntohl(p_alert_node->alert_flag);
-                    break;
-                }
-                else
-                {
-                    /* Set alert flag to none when no specific node. */
-                    node_summary_ptr->alert_flag.alert_word = 0;
-                }
-            }
-        }       
+        /* Set ehm alert flag. */
+        node_summary_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);  
+	node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);	
         
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_SUMMARY_INFOR_ST_LEN;
@@ -223,6 +220,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
     }  
     
     osal_sem_release(p_vam->sem_sta);
+    
     return 0;    
     
 }
@@ -243,8 +241,9 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
     msg_vehicle_nb_status_st_ptr      nb_node_ptr = NULL;
     nb_node_detail_infor_st_ptr   node_detail_ptr = NULL;
 
-    vam_sta_node_t *p_sta = NULL;
-    vsa_crd_node_t *p_alert_node = NULL;
+    vam_sta_node_t    *p_sta = NULL;
+    vsa_node_st vsa_position = { { 0 }, 0 };
+
 
     /* Get tx buffer from ehm tx buffer list. */
     txbuf = ehm_get_txbuf(p_ehm);
@@ -336,30 +335,18 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
         node_detail_ptr->exterlight.exterior_lights_bit.reserved 			= p_sta->s.exterior_light.exterior_lights_bit.reserved;
 
         node_detail_ptr->exterlight.exterior_lights_word = cv_ntohs(node_detail_ptr->exterlight.exterior_lights_word);
+
         /* alert flag. */
-	    if(list_empty(&p_vsa->crd_list))
-	    {
-		   /* Set alert flag to none when crd list empty. */
-	    	node_detail_ptr->alert_flag.alert_word = 0;
-	    }
-	    else
-	    {
-		   list_for_each_entry(p_alert_node, vsa_crd_node_t, &p_vsa->crd_list, list)
-		   {
-			   if(memcmp(node_detail_ptr->node_id, p_alert_node->pid, RCP_TEMP_ID_LEN) == 0)
-			   {
-				   /* Set alert flag when find the specific node and cancel the loop.  */
-				//待完善代码，告警标识不对
-				   node_detail_ptr->alert_flag.alert_word = cv_ntohl(p_alert_node->alert_flag);
-				   break;
-			   }
-			   else
-			   {
-				   /* Set alert flag to none when no specific node. */
-				   node_detail_ptr->alert_flag.alert_word = 0;
-			   }
-		   }
-	    }
+        if(vsa_position_get(p_sta->s.pid, &vsa_position) == 0)
+        {
+            node_detail_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);
+	    node_detail_ptr->alert_flag.alert_word = cv_ntohl(node_detail_ptr->alert_flag.alert_word);
+        }
+        else
+        {
+            node_detail_ptr->alert_flag.alert_word = cv_ntohl(0);
+        }
+        
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_DETAIL_INFOR_ST_LEN;
         nb_node_ptr->nodenumber ++;
@@ -639,98 +626,6 @@ int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
 }
 
 
-#if 0
-/*****************************************************************************
- @funcname: alert_node_report
- @brief   : report alert node information to host 
- @param   : None
- @return  : 
-*****************************************************************************/
-static int8_t encode_nb_vehicle_alert_OLD(ehm_envar_st * p_ehm)
-{
-
-    ehm_txbuf_t * txbuf;
-    vsa_envar_t * p_vsa = &p_cms_envar->vsa;
-    node_summary_infor_st * p_node_brief;
-    ehm_txinfo_t * p_node_info;
-    vsa_crd_node_t *p_alert_node;
-    uint32_t data_time;
-    list_head_t *p_txbuf_waiting_list = &p_ehm->txbuf_waiting_list;
-
-    list_head_t * vsa_crd_list = &p_vsa->crd_list;
-
-    osal_sem_take(p_vsa->sem_alert_list, OSAL_WAITING_FOREVER);
-
-    txbuf = ehm_get_txbuf();
-    if (txbuf == NULL) 
-    {
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
-        osal_sem_release(p_vsa->sem_alert_list);
-        return -1;
-    }
-
-    data_time = osal_get_systemtime();
-    p_node_brief = (node_summary_infor_st *)EHM_TXBUF_DATA_PTR(txbuf);
-    p_node_info = (ehm_txinfo_t *)EHM_TXBUF_INFO_PTR(txbuf);
-
-    /* fill node information */
-    list_for_each_entry(p_alert_node, vsa_crd_node_t, vsa_crd_list,list) {
-
-        /* 节点id */
-        memcpy(p_node_brief->node_id,p_alert_node->pid,RCP_TEMP_ID_LEN);
-
-        /*纬度latitudinal,纵向相对距离*/
-        p_node_brief->latitudinal_dis = cv_ntohs(p_alert_node->h_offset);  
-        
-        /*经度longitudinal,横向相对距离*/
-        p_node_brief->longitudinal_dis = cv_ntohs(p_alert_node->v_offset);
-
-        /* alert flag set */        
-        p_node_brief->alert_flag.alert_word =cv_ntohl(p_alert_node->alert_flag);
-
-        /* 1 */
-        p_node_brief ++;
-
-        txbuf->data_len += NODE_SUMMARY_INFOR_ST_LEN;
-
-        p_node_info->f_node_num++;
-        if (p_node_info->f_node_num >= EHM_BUF_SUMMARY_NODE_NUM ) {
-            /* this fram fill done */
-            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "this frame fill done,filled node num:%d",txbuf->info.f_node_num);
-
-            /* fill data information */
-            p_node_info->data_type = ALERL_NODE_SUMMARY;
-            p_node_info->data_systime =cv_ntohl(data_time);
-
-            /* mount buf to waiting list */
-            list_add_tail(&txbuf->list, p_txbuf_waiting_list);
-
-            txbuf = ehm_get_txbuf();
-            if (txbuf == NULL) {
-                OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "re request ehm tx buf failed in %s\n",__FUNCTION__);
-                /* jump out for loop */
-                break;
-            }
-        }
-    }  
-
-
-    p_node_info->data_type = ALERL_NODE_SUMMARY;
-    p_node_info->data_systime = cv_ntohl(data_time);
-    
-    /* mount buf to waiting list */
-    list_add_tail(&txbuf->list, p_txbuf_waiting_list);
-
-    osal_sem_release(p_vsa->sem_alert_list);
-
-    /* inform tx thread waiting list have data */
-    osal_sem_release(p_ehm->sem_ehm_tx);
-		
-    return 0;
-}
-#endif
-
-
 /*****************************************************************************
  @funcname: encode_nb_vehicle_alert
  @brief   : neighbour node vehicle alert message.
@@ -746,22 +641,18 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
     msg_nb_vehicle_alert_st_ptr       nb_node_ptr = NULL;
     nb_node_summary_infor_st_ptr node_summary_ptr = NULL;
 
-    vam_sta_node_t *p_sta = NULL;
+    vam_sta_node_t    *p_sta = NULL;
     vsa_node_st vsa_position = { { 0 }, 0 };
-    uint16_t nodenumber = 0;
-
-
-    vsa_crd_node_t *p_alert_node = NULL;
+    uint16_t        node_num = 0;
 
 
     /* Get tx buffer from ehm tx buffer list. */
     txbuf = ehm_get_txbuf(p_ehm);
-
-//    if (txbuf == NULL)
-//    {
-//        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
-//        return -1;
-//    }
+    if (txbuf == NULL)
+    {
+        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s can not get ehm tx buf",__FUNCTION__);
+       return -1;
+    }
     
     /* Initial message header. */
     msg_head_ptr = (frame_msg_header_st_ptr)txbuf->data_ptr;
@@ -786,44 +677,42 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
 
     list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list)
     {
+        /* Find next node when no information in vsa module or no alert in node. */
+        if((vsa_position_get(p_sta->s.pid, &vsa_position) != 0) || (vsa_position.vam_alert != VSA_ID_NONE))
+        {
+            continue;
+        }
+        
         /* pid */
         memcpy(node_summary_ptr->node_id, p_sta->s.pid, RCP_TEMP_ID_LEN);
 
         /* relative position data */
-        if (vsa_position_get(p_sta->s.pid, &vsa_position) == 0) 
+        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
+         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
+         || (vsa_position.vsa_location == SLICE12_270_0T292_5)|| (vsa_position.vsa_location == SLICE13_292_5T315_0) 
+         || (vsa_position.vsa_location == SLICE14_315_0T337_5)|| (vsa_position.vsa_location == SLICE15_337_5T360_0) )
         {
-            if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
-             || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
-             || (vsa_position.vsa_location == SLICE12_270_0T292_5)|| (vsa_position.vsa_location == SLICE13_292_5T315_0) 
-             || (vsa_position.vsa_location == SLICE14_315_0T337_5)|| (vsa_position.vsa_location == SLICE15_337_5T360_0) )
-            {
-                node_summary_ptr->longitudinal_dis = - vsa_position.v_offset;
-            }
-            else
-            {
-                node_summary_ptr->longitudinal_dis = vsa_position.v_offset;
-            }
+            node_summary_ptr->longitudinal_dis = - vsa_position.v_offset;
+        }
+        else
+        {
+            node_summary_ptr->longitudinal_dis = vsa_position.v_offset;
+        }
 
-            if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
-             || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
-             || (vsa_position.vsa_location == SLICE4_090_0T112_5)|| (vsa_position.vsa_location == SLICE5_112_5T135_0) 
-             || (vsa_position.vsa_location == SLICE6_135_0T157_5)|| (vsa_position.vsa_location == SLICE7_157_5T180_0) )
-            {
-                node_summary_ptr->lateral_dis = vsa_position.h_offset;
-            }
-            else
-            {
-                node_summary_ptr->lateral_dis = - vsa_position.h_offset;
-            }
-               
-            node_summary_ptr->longitudinal_dis = cv_ntohs(node_summary_ptr->longitudinal_dis);
-            node_summary_ptr->lateral_dis = cv_ntohs(node_summary_ptr->lateral_dis);
-        }
-        else 
+        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
+         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
+         || (vsa_position.vsa_location == SLICE4_090_0T112_5)|| (vsa_position.vsa_location == SLICE5_112_5T135_0) 
+         || (vsa_position.vsa_location == SLICE6_135_0T157_5)|| (vsa_position.vsa_location == SLICE7_157_5T180_0) )
         {
-            node_summary_ptr->lateral_dis = 0;
-            node_summary_ptr->longitudinal_dis = 0;
+            node_summary_ptr->lateral_dis = vsa_position.h_offset;
         }
+        else
+        {
+            node_summary_ptr->lateral_dis = - vsa_position.h_offset;
+        }
+           
+        node_summary_ptr->longitudinal_dis = cv_ntohs(node_summary_ptr->longitudinal_dis);
+        node_summary_ptr->lateral_dis = cv_ntohs(node_summary_ptr->lateral_dis);
 
         /* angle. */
         node_summary_ptr->angle = encode_angle(vsa_position.relative_dir);
@@ -831,37 +720,17 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
         node_summary_ptr->signalstrength = 0;
         node_summary_ptr->losstolerance = 0;
 
-        /* alert flag. */
-        if(list_empty(&p_vsa->crd_list))
-        {
-            /* Set alert flag to none when crd list empty. */
-            node_summary_ptr->alert_flag.alert_word = 0;
-        }
-        else
-        {
-            list_for_each_entry(p_alert_node, vsa_crd_node_t, &p_vsa->crd_list, list) 
-            {
-                if(memcmp(node_summary_ptr->node_id, p_alert_node->pid, RCP_TEMP_ID_LEN) == 0)
-                {   
-                    /* Set alert flag when find the specific node and cancel the loop.  */
-                    node_summary_ptr->alert_flag.alert_word = cv_ntohl(p_alert_node->alert_flag);
-                    break;
-                }
-                else
-                {
-                    /* Set alert flag to none when no specific node. */
-                    node_summary_ptr->alert_flag.alert_word = 0;
-                }
-            }
-        }       
-        
+        /* Set ehm alert flag. */
+        node_summary_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);  
+	node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);	
+
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_SUMMARY_INFOR_ST_LEN;
         
         node_summary_ptr ++;
 
         /* Stop the loop when no enough room for node infor. */
-        if((EHM_BUF_VALID_DATA_LEN / NB_NODE_SUMMARY_INFOR_ST_LEN) <= nodenumber)
+        if((EHM_BUF_VALID_DATA_LEN / NB_NODE_SUMMARY_INFOR_ST_LEN) <= node_num)
         {
             break;
         }
