@@ -48,11 +48,10 @@ alert_flag_st ehm_vsa_alert2alert_flag(uint32_t vsa_alert)
 {
     alert_flag_st ehm_alert = { 0 };
 
-
-    ehm_alert.alert_bit.vec_neardis_front = vsa_alert & (1 << VSA_ID_CRD);
-    ehm_alert.alert_bit.vec_neardis_rear = vsa_alert & (1 << VSA_ID_CRD_REAR);
-    ehm_alert.alert_bit.vec_breakdown = vsa_alert & (1 << VSA_ID_VBD);
-    ehm_alert.alert_bit.vec_brake_hard = vsa_alert & (1 << VSA_ID_EBD);
+    ehm_alert.alert_bit.vec_neardis_front = !!(vsa_alert & (1 << VSA_ID_CRD));
+    ehm_alert.alert_bit.vec_neardis_rear = !!(vsa_alert & (1 << VSA_ID_CRD_REAR));
+    ehm_alert.alert_bit.vec_breakdown = !!(vsa_alert & (1 << VSA_ID_VBD));
+    ehm_alert.alert_bit.vec_brake_hard = !!(vsa_alert & (1 << VSA_ID_EBD));
 
     return ehm_alert;
 }
@@ -203,9 +202,9 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
         node_summary_ptr->losstolerance = 0;
 
         /* Set ehm alert flag. */
-        node_summary_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);  
-	node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);	
-        
+
+        node_summary_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);
+        node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_SUMMARY_INFOR_ST_LEN;
         nb_node_ptr->nodenumber ++;
