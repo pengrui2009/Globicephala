@@ -86,8 +86,8 @@ int fp_send(wnet_envar_t *p_wnet, wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_
 		return ret;
 	}
 #endif
-    wnet_release_txbuf(WNET_TXBUF_PTR(txinfo));
-    return 0;
+    
+	return 0;
 }
 
 
