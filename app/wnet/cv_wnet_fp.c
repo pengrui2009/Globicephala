@@ -73,9 +73,9 @@ int fp_send(wnet_envar_t *p_wnet, wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_
 {
     int ret = 0;
     ret = drv_vnet_send(txinfo, pdata, length);
-    if (ret < 0) {
+    if (ret < 0) 
+    {
         osal_printf("drv send failed\r\n");
-        wnet_release_txbuf(WNET_TXBUF_PTR(txinfo));
         return -1;
     }
 #ifdef VNET_SIMU_OPEN

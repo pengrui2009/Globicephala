@@ -20,13 +20,14 @@
 
 #define PI 3.1415926f
 
-#define CCW_DEBOUNCE     5
+
+/* Local vehicle's ebd detect factor. */
+#define EBD_ACCELERATION_THRESHOLD     -3.0
+#define EBD_ACCELERATION_CNT           4
 
 
 
-
-
-#define VSA_NODE_MAX  VAM_NEIGHBOUR_MAXNUM
+#define VSA_NODE_MAX  VAM_NEIGHBOUR_MAXNUM
 
 
 
@@ -43,8 +44,8 @@
 /* Vsa message type. */
 enum VSA_MSG_TYPE
 {
-    VSA_MSG_MANUAL_BC = 0,   
-    VSA_MSG_EEBL_BC,
+    VSA_MSG_VBD_SEND = 0,  /* Local vehicle's vbd alert detect handler. */
+    VSA_MSG_EBD_SEND,      /* Local vehicle's ebd alert detect handler. */
     VSA_MSG_AUTO_BC,
     
     VSA_MSG_CFCW_ALARM,    /* Cfcw alert detect handler. */

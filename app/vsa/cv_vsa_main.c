@@ -295,21 +295,12 @@ void vsa_rsa_alarm_update(void *parameter)
 
     if(param->rsa_mask)
         vsa_add_event_queue(p_vsa, VSA_MSG_XXX_RCV, 0,0,NULL);
-
-}
-
-void vsa_eebl_broadcast_update(void *parameter)
-{
-    vsa_envar_t *p_vsa = &p_cms_envar->vsa;
-    vsa_add_event_queue(p_vsa, VSA_MSG_EEBL_BC, 0,0,NULL);
 }
 
 void vsa_start(void)
 {
     vsa_envar_t *p_vsa = &p_cms_envar->vsa;    
 
-    
-    vam_set_event_handler(VAM_EVT_GSNR_EBD_DETECT, vsa_eebl_broadcast_update);
 
     vam_set_event_handler(VAM_EVT_BSM_ALARM_UPDATE, vsa_bsm_alarm_update);
     vam_set_event_handler(VAM_EVT_RSA_UPDATE, vsa_rsa_alarm_update);
@@ -496,8 +487,9 @@ static int crcw_judge(vsa_node_st *p_node)
 }
 
 
-static int vsa_manual_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
+static int vsa_vbd_send_proc(vsa_envar_t *p_vsa, void *arg)
 {
+#if 0
   int err = 1;  /* '1' represent is not handled. */ 
   sys_msg_t *p_msg = (sys_msg_t *)arg;
 
@@ -512,22 +504,40 @@ static int vsa_manual_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
       vam_cancel_alert(VAM_ALERT_MASK_VBD);
       OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "Cancel Vihicle Break Down Alert\n");
   }
+#endif  
   
-  
-  return err;
+  return 0;
 }
 
 
-static int vsa_eebl_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
+static int vsa_ebd_send_proc(vsa_envar_t *p_vsa, void *arg)
 {
-    OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "Detect Emergency braking \n\n");
+    vam_stastatus_t_ptr local_vam_ptr = &(p_cms_envar->vam.local);
+    static uint8_t              count = 0;
 
-    
-    vam_active_alert(VAM_ALERT_MASK_EBD);
 
-    osal_timer_stop(p_vsa->timer_ebd_send);
-    osal_timer_start(p_vsa->timer_ebd_send);
-    
+    /* Detect local vehicle's edb condition. */
+    if(local_vam_ptr->acce_set.longitudinal < EBD_ACCELERATION_THRESHOLD)
+    {
+        count ++;
+        
+        if(EBD_ACCELERATION_CNT < count)
+        {
+            count = 0;
+            
+            OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "Detect local vehicle's EBD. \n\n");
+
+            /* Active ebd alert and start the close alert timer. */
+            vam_active_alert(VAM_ALERT_MASK_EBD);
+            osal_timer_stop(p_vsa->timer_ebd_send);
+            osal_timer_start(p_vsa->timer_ebd_send); 
+        }
+    }
+    else
+    {
+        count = 0;
+    }
+
     return 0;
 }
 static int vsa_auto_broadcast_proc(vsa_envar_t *p_vsa, void *arg)
@@ -622,8 +632,8 @@ static int vsa_xxx_recieve_proc(vsa_envar_t *p_vsa, void *arg)
 /*  */
 vsa_app_handler vsa_app_handler_tbl[] = 
 {
-    vsa_manual_broadcast_proc,
-    vsa_eebl_broadcast_proc,
+    vsa_vbd_send_proc,
+    vsa_ebd_send_proc,
     vsa_auto_broadcast_proc,
 
     vsa_cfcw_alarm_proc,
@@ -706,6 +716,12 @@ void * vsa_base_proc(void *parameter)
                 {
                     p_vsa->node_group[i].vsa_alert &= ~(1 << VSA_ID_EBD);
                 }
+            }
+
+            /* Local vehicle's ebd detect. */
+            if(vsa_app_handler_tbl[VSA_MSG_EBD_SEND] != NULL)
+            {
+                vsa_app_handler_tbl[VSA_MSG_EBD_SEND](p_vsa, &i);
             }
         }
     }

@@ -678,7 +678,7 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
     list_for_each_entry(p_sta, vam_sta_node_t, &p_vam->neighbour_list, list)
     {
         /* Find next node when no information in vsa module or no alert in node. */
-        if((vsa_position_get(p_sta->s.pid, &vsa_position) != 0) || (vsa_position.vam_alert != VSA_ID_NONE))
+        if((vsa_position_get(p_sta->s.pid, &vsa_position) != 0) || (vsa_position.vsa_alert == VSA_ID_NONE))
         {
             continue;
         }
@@ -722,7 +722,7 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
 
         /* Set ehm alert flag. */
         node_summary_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);  
-	node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);	
+        node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);	
 
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_SUMMARY_INFOR_ST_LEN;
