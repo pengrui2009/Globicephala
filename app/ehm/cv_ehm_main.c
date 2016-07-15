@@ -681,14 +681,14 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
         {
             continue;
         }
-
+        
         /* pid */
         memcpy(node_summary_ptr->node_id, p_sta->s.pid, RCP_TEMP_ID_LEN);
 
         /* relative position data */
-        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0)
-         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0)
-         || (vsa_position.vsa_location == SLICE12_270_0T292_5)|| (vsa_position.vsa_location == SLICE13_292_5T315_0)
+        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
+         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
+         || (vsa_position.vsa_location == SLICE12_270_0T292_5)|| (vsa_position.vsa_location == SLICE13_292_5T315_0) 
          || (vsa_position.vsa_location == SLICE14_315_0T337_5)|| (vsa_position.vsa_location == SLICE15_337_5T360_0) )
         {
             node_summary_ptr->longitudinal_dis = - vsa_position.v_offset;
@@ -698,9 +698,9 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
             node_summary_ptr->longitudinal_dis = vsa_position.v_offset;
         }
 
-        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0)
-         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0)
-         || (vsa_position.vsa_location == SLICE4_090_0T112_5)|| (vsa_position.vsa_location == SLICE5_112_5T135_0)
+        if( (vsa_position.vsa_location == SLICE0_000_0T022_5) || (vsa_position.vsa_location == SLICE1_022_5T045_0) 
+         || (vsa_position.vsa_location == SLICE2_045_0T067_5) || (vsa_position.vsa_location == SLICE3_067_5T090_0) 
+         || (vsa_position.vsa_location == SLICE4_090_0T112_5)|| (vsa_position.vsa_location == SLICE5_112_5T135_0) 
          || (vsa_position.vsa_location == SLICE6_135_0T157_5)|| (vsa_position.vsa_location == SLICE7_157_5T180_0) )
         {
             node_summary_ptr->lateral_dis = vsa_position.h_offset;
@@ -709,7 +709,7 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
         {
             node_summary_ptr->lateral_dis = - vsa_position.h_offset;
         }
-
+           
         node_summary_ptr->longitudinal_dis = cv_ntohs(node_summary_ptr->longitudinal_dis);
         node_summary_ptr->lateral_dis = cv_ntohs(node_summary_ptr->lateral_dis);
 
@@ -720,12 +720,12 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
         node_summary_ptr->losstolerance = 0;
 
         /* Set ehm alert flag. */
-        node_summary_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);
-        node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);
+        node_summary_ptr->alert_flag = ehm_vsa_alert2alert_flag(vsa_position.vsa_alert);  
+        node_summary_ptr->alert_flag.alert_word = cv_ntohl(node_summary_ptr->alert_flag.alert_word);	
 
         /* Update data length and node number. */
         txbuf->data_len += NB_NODE_SUMMARY_INFOR_ST_LEN;
-
+        
         node_summary_ptr ++;
 
         /* Stop the loop when no enough room for node infor. */

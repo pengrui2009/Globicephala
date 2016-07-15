@@ -87,11 +87,9 @@ typedef enum _VAM_RSA_TYPE
 
 enum VAM_EVT
 {
-    VAM_EVT_GSNR_EBD_DETECT = 0, 
-    
-    VAM_EVT_BSM_ALARM_UPDATE,    /* Received bsm alarm message. */
-    VAM_EVT_RSA_UPDATE,          /* Received rsa message. */    
-    VAM_EVT_EVA_UPDATE,          /* Received eva message. */
+    VAM_EVT_BSM_ALARM_UPDATE = 0,    /* Received bsm alarm message. */
+    VAM_EVT_RSA_UPDATE,              /* Received rsa message. */    
+    VAM_EVT_EVA_UPDATE,              /* Received eva message. */
     
     VAM_EVT_MAX
 };

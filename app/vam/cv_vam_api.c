@@ -356,14 +356,6 @@ int32_t vam_cancel_rsa(E_VAM_RSA_TYPE rsaType)
 }
 
 
-void vam_gsnr_ebd_detected(uint8_t status)
-{
-    vam_envar_t *p_vam = p_vam_envar;
-    if(p_vam->evt_handler[VAM_EVT_GSNR_EBD_DETECT]){
-        (p_vam->evt_handler[VAM_EVT_GSNR_EBD_DETECT])(&p_vam->local);
-    }
-}
-
 /* 暂留, 调试EVAM用, 发送不同告警 */
 void vam_alert(int mode, int type)
 {

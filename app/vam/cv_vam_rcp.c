@@ -370,6 +370,7 @@ int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 
 int rcp_send_bsm(vam_envar_t *p_vam)
 {
+    int result = 0;
     rcp_msg_basic_safty_t *p_bsm;
     vam_stastatus_t *p_local = &p_vam->local;
     wnet_txbuf_t *txbuf;
@@ -438,11 +439,17 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     txinfo->prority = WNET_TRANS_RRORITY_NORMAL;
     txinfo->timestamp = osal_get_systemtime();
 
-    return  wnet_send(txinfo, (uint8_t *)p_bsm, len);
+    result = wnet_send(txinfo, (uint8_t *)p_bsm, len);
+    
+    wnet_release_txbuf(txbuf);
+
+    return result;
+    
 }
 
 int rcp_send_evam(vam_envar_t *p_vam)
 {
+    int result = 0;
     rcp_msg_emergency_vehicle_alert_t *p_evam;
     vam_stastatus_t *p_local = &p_vam->local;
     wnet_txbuf_t *txbuf;
@@ -488,14 +495,18 @@ int rcp_send_evam(vam_envar_t *p_vam)
     txinfo->prority = WNET_TRANS_RRORITY_EMERGENCY;
     txinfo->timestamp = osal_get_systemtime();
 
-    return wnet_send(txinfo, (uint8_t *)p_evam, sizeof(rcp_msg_emergency_vehicle_alert_t));
+    result = wnet_send(txinfo, (uint8_t *)p_evam, sizeof(rcp_msg_emergency_vehicle_alert_t));
+
+    wnet_release_txbuf(txbuf);
+
+    return result;
 }
 
 
 
 int rcp_send_rsa(vam_envar_t *p_vam)
 {
-    int ret = 0;
+    int result = 0;
     rcp_msg_roadside_alert_t *p_rsa;
     vam_stastatus_t *p_local = &p_vam->local;
     
@@ -543,11 +554,14 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     txinfo->prority = WNET_TRANS_RRORITY_EMERGENCY;
     txinfo->timestamp = osal_get_systemtime();
 
-    ret = wnet_send(txinfo, (uint8_t *)p_rsa, sizeof(rcp_msg_roadside_alert_t));
-    if (ret) {
+    result = wnet_send(txinfo, (uint8_t *)p_rsa, sizeof(rcp_msg_roadside_alert_t));
+    if (result) 
+    {
         osal_printf("wnet_send failed line%d", __LINE__);
     }
-    return ret;
+    wnet_release_txbuf(txbuf);
+    
+    return result;
 }
 
 
