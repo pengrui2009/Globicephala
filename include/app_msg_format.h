@@ -179,7 +179,7 @@ typedef struct  _position_3d_st
 {
 	/* 纬度: unit 0.1 micro degree, (-900000000 - +900000001), 900000001 means invalid. */
     int32_t  latitude;                      /* 纬度 */
-    /* 经度: unit 0.1 micro degree, (1799999999 - 1800000001), 1800000001 means invalid. */
+    /* 经度: unit 0.1 micro degree, (-1799999999 - 1800000001), 1800000001 means invalid. */
     int32_t longitude;                      /* 经度 */
     /* 海拔: unit 0.1 meter, (-4096 - +61439), -4096 means invalid. */
     int32_t elevation;                      /* 海拔 */
