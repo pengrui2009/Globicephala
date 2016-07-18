@@ -410,7 +410,6 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
 
     /* position. */
     status_ptr->position.latitude = encode_latitude(local_status.pos.latitude);
-    osal_printf("encode lat=%f\n",local_status.pos.latitude);
     status_ptr->position.longitude = encode_longitude(local_status.pos.longitude);
     status_ptr->position.elevation = encode_elevation(local_status.pos.elevation);
 
@@ -447,14 +446,10 @@ static int8_t encode_basic_vehicle_status(ehm_envar_st * p_ehm)
 *****************************************************************************/
 int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 {
-	int 	i = 0;
 	int                                 result = 0;
 	vam_stastatus_t                      local = { 0, { 0 }, 0 };
 	msg_vehicle_basic_status_st_ptr status_ptr = (msg_vehicle_basic_status_st_ptr)pdata;
 
-	for(i=0;i<20;i++)
-		printf("%02X ",pdata[i]);
-	printf("\n");
     /* Get local valid data. */
     vam_get_local_current_status(&local);
 
@@ -464,7 +459,6 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 
     /* position. */
 	local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
-	osal_printf("decode lat=%f\n",local.pos.latitude);
 	local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
 	local.pos.elevation = decode_elevation(status_ptr->position.elevation);
 

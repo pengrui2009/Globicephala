@@ -188,7 +188,7 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
     if(p_sta != NULL)
     {
         p_sta->s.dsecond = p_bsm->dsecond;
-        p_sta->s.time = osal_get_systemtime();
+        p_sta->s.time = osal_get_systime();
 
         p_sta->s.pos.longitude = decode_longitude(p_bsm->position.lon);
         p_sta->s.pos.latitude = decode_latitude(p_bsm->position.lat);
@@ -269,7 +269,7 @@ int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, 
     p_sta = vam_find_sta(p_vam, p_evam->temporary_id);
     if(p_sta != NULL)
     {
-        p_sta->s.time = osal_get_systemtime();
+        p_sta->s.time = osal_get_systime();
 
         p_sta->s.pos.longitude = decode_longitude(p_evam->rsa.position.lon);
         p_sta->s.pos.latitude = decode_latitude(p_evam->rsa.position.lat);
@@ -437,7 +437,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_NORMAL;
-    txinfo->timestamp = osal_get_systemtime();
+    txinfo->timestamp = osal_get_systime();
 
     result = wnet_send(txinfo, (uint8_t *)p_bsm, len);
     
@@ -493,7 +493,7 @@ int rcp_send_evam(vam_envar_t *p_vam)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_EMERGENCY;
-    txinfo->timestamp = osal_get_systemtime();
+    txinfo->timestamp = osal_get_systime();
 
     result = wnet_send(txinfo, (uint8_t *)p_evam, sizeof(rcp_msg_emergency_vehicle_alert_t));
 
@@ -534,7 +534,7 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     p_rsa->msg_count = p_vam->tx_rsa_msg_cnt++;
     vam_active_rsa(RSA_TYPE_CURVE);
     p_rsa->typeEvent = encode_itiscode(p_local->alert_mask, p_rsa->description);
-    p_rsa->time_stamp = cv_ntohl(osal_get_systemtime());
+    p_rsa->time_stamp = cv_ntohl(osal_get_systime());
 #if 0
     p_local->pos.lon = 132.327144*3.1415926/180.0;
     p_local->pos.lat = 40.0*3.1415926/180.0;
@@ -552,7 +552,7 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_EMERGENCY;
-    txinfo->timestamp = osal_get_systemtime();
+    txinfo->timestamp = osal_get_systime();
 
     result = wnet_send(txinfo, (uint8_t *)p_rsa, sizeof(rcp_msg_roadside_alert_t));
     if (result) 
@@ -581,7 +581,7 @@ int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_NORMAL;//WNET_TRANS_RRORITY_EMERGENCY;
-    txinfo->timestamp = osal_get_systemtime();
+    txinfo->timestamp = osal_get_systime();
 
     /* modify the forward_id of msgdata */
     p_msgid = (rcp_msgid_t *)(WNET_TXBUF_DATA_PTR(txbuf));
