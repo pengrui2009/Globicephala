@@ -608,15 +608,15 @@ int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
     }    
 
     /* Update vehicle brake hard alert. */
-    if(status_ptr->vehicle_alert_set.vehicle_alert_words == VEHICLE_ALERT_ON)
+    if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_ON)
     {
         vam_active_alert(VAM_ALERT_MASK_EBD);
     }
-    else if(status_ptr->vehicle_alert_set.vehicle_alert_words == VEHICLE_ALERT_OFF)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_OFF)
     {
         vam_cancel_alert(VAM_ALERT_MASK_EBD);
     }
-    else if(status_ptr->vehicle_alert_set.vehicle_alert_words == VEHICLE_ALERT_INVALID)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_INVALID)
     {
         vam_cancel_alert(VAM_ALERT_MASK_EBD);
     }    
