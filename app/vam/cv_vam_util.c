@@ -368,21 +368,18 @@ int32_t vsm_get_dr_current(vam_stastatus_t *last, vam_stastatus_t *current)
     double v, s, dR;
     double dir; /* Radians */
     double lon1,lat1,lon2,lat2;
-  	uint32_t t = osal_get_systime();
+  	uint32_t t = osal_get_systemtime();
     
 	if(!last || !current)
     {
         return -1;
     }
 
-/*    deltaT = ((t>=last->time) ? (t-last->time) : \
-            (t+0xFFFFFFFF - last->time)) / 1000.0f;*/
-
-	deltaT = ((t>=last->time) ? (t-last->time) : \
-			 (t+0xFFFFFFFF - last->time));
+    deltaT = ((t>=last->time) ? (t-last->time) : \
+            (t+0xFFFFFFFF - last->time)) / 1000.0f;
 
     memcpy(current, last, sizeof(vam_stastatus_t));
-    if(deltaT <= 20 || (last->speed < 10))
+    if((deltaT <= 20) || (last->speed < 10))
     {
         return 0;
     }

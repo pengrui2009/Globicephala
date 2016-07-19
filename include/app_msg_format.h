@@ -575,7 +575,7 @@ typedef struct  _msg_vehicle_nb_status_st
     uint8_t                  msg_id;
     
     /* Message system time. */
-    uint32_t            system_time;
+    uint16_t            system_time;
     /*Node Number*/
     uint8_t				nodenumber;
     /* Set the neigbour's node information type. */
@@ -696,7 +696,7 @@ typedef struct _msg_nb_vehicle_alert_st
     uint8_t                  msg_id;
 
 	/* Message system time. */
-    uint32_t            system_time;
+    uint16_t            system_time;
     
 	/*邻节点告警信息,可选数据*/
     //nb_node_summary_infor_st_ptr nb_node_ptr;

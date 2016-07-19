@@ -42,11 +42,14 @@ int drv_vnet_send(wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_t length)
 {
     struct ieee80211_hdr *p_hdr_80211;
     uint8_t *pPayload;
+    uint64_t timestamp;
     drv_wifi_envar_t *p_wifi = &g_wifi_envar;
 
     pPayload = pdata - MAC_BEACON_FIX_LENGTH;
     
     /* fill the beacon fixed element */
+    timestamp = cv_ntohll(txinfo->timestamp);
+    memcpy(BeaconFixedElement, &timestamp, sizeof(txinfo->timestamp));
     memcpy(pPayload, BeaconFixedElement, MAC_BEACON_FIX_LENGTH);
 
     /* fill the 802.11 header */

@@ -65,13 +65,44 @@ static inline uint32_t osal_get_systemtime(void)
     	return 0;
     }
 }
-
-static inline uint32_t osal_get_systime(void)
+/******************************************************************************
+*	函数:	osal_get_systimestamp
+*	功能:	将系统时间转换为毫秒数据
+*	参数:	无
+*	返回:	毫秒数
+*	说明:	>0			- 毫秒数
+ ******************************************************************************/
+static inline uint64_t osal_get_systimestamp(void)
 {
-	time_t ts;
-	time(&ts);
+	uint64_t val;
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	val = tv.tv_sec ;
+	return val;
+}
+/******************************************************************************
+*	函数:	osal_get_systime
+*	功能:	将系统时间转换为分钟内毫秒数时间数据
+*	参数:	无
+*	返回:	分钟内毫秒数
+*	说明:
+*			0 - 60000			- 表示正常数据
+*			60000 - 60999		- 表示闰秒
+*			61000 - 65534		- 预留数据
+*			65535				- 无效数据
+ ******************************************************************************/
+static inline uint16_t osal_get_systime(void)
+{
+	uint16_t val;
+	struct tm *t;
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
 
-	return (uint32_t)ts;
+	t = gmtime(&tv.tv_sec);
+	//闰秒
+	val = t->tm_sec * 1000 + (tv.tv_usec / 1000);
+
+	return val;
 }
 /**
  * Notice: The follow IRQ functions are not able to be nested.

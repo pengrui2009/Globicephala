@@ -187,8 +187,8 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 
     if(p_sta != NULL)
     {
-        p_sta->s.dsecond = p_bsm->dsecond;
-        p_sta->s.time = osal_get_systime();
+        p_sta->s.dsecond = cv_ntohs(p_bsm->dsecond);
+        p_sta->s.time = osal_get_systemtime();
 
         p_sta->s.pos.longitude = decode_longitude(p_bsm->position.lon);
         p_sta->s.pos.latitude = decode_latitude(p_bsm->position.lat);
@@ -269,7 +269,8 @@ int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, 
     p_sta = vam_find_sta(p_vam, p_evam->temporary_id);
     if(p_sta != NULL)
     {
-        p_sta->s.time = osal_get_systime();
+    	p_sta->s.dsecond = cv_ntohs(p_evam->rsa.time_stamp);
+        p_sta->s.time = osal_get_systemtime();
 
         p_sta->s.pos.longitude = decode_longitude(p_evam->rsa.position.lon);
         p_sta->s.pos.latitude = decode_latitude(p_evam->rsa.position.lat);
@@ -306,6 +307,7 @@ int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 
     p_rsa = (rcp_msg_roadside_alert_t *)databuf;
 
+    param.dsecond  = cv_ntohs(p_rsa->time_stamp);
     param.rsa_mask = decode_itiscode(p_rsa->typeEvent, p_rsa->description);
     param.pos.longitude = decode_longitude(p_rsa->position.lon);
     param.pos.latitude = decode_latitude(p_rsa->position.lat);
@@ -396,7 +398,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     if (p_vam->working_param.bsm_hops > 1){
         memcpy(p_bsm->forward_id, p_local->pid, RCP_TEMP_ID_LEN);
     }
-    p_bsm->dsecond = osal_get_systemtime();
+    p_bsm->dsecond = cv_ntohs(osal_get_systime());
 
     p_bsm->position.lon = encode_longitude(p_local->pos.longitude);
     p_bsm->position.lat = encode_latitude(p_local->pos.latitude);
@@ -437,7 +439,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_NORMAL;
-    txinfo->timestamp = osal_get_systime();
+    txinfo->timestamp = osal_get_systimestamp();
 
     result = wnet_send(txinfo, (uint8_t *)p_bsm, len);
     
@@ -474,7 +476,7 @@ int rcp_send_evam(vam_envar_t *p_vam)
         memcpy(p_evam->forward_id, p_local->pid, RCP_TEMP_ID_LEN);
     }
 
-    p_evam->time_stamp = cv_ntohs(osal_get_systemtime());
+    p_evam->time_stamp = cv_ntohs(osal_get_systime());
     p_evam->rsa.msg_count = p_vam->tx_evam_msg_cnt++;
     p_evam->rsa.position.lon = encode_longitude(p_local->pos.longitude);
     p_evam->rsa.position.lat = encode_latitude(p_local->pos.latitude);
@@ -493,7 +495,7 @@ int rcp_send_evam(vam_envar_t *p_vam)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_EMERGENCY;
-    txinfo->timestamp = osal_get_systime();
+    txinfo->timestamp = osal_get_systimestamp();
 
     result = wnet_send(txinfo, (uint8_t *)p_evam, sizeof(rcp_msg_emergency_vehicle_alert_t));
 
@@ -534,7 +536,7 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     p_rsa->msg_count = p_vam->tx_rsa_msg_cnt++;
     vam_active_rsa(RSA_TYPE_CURVE);
     p_rsa->typeEvent = encode_itiscode(p_local->alert_mask, p_rsa->description);
-    p_rsa->time_stamp = cv_ntohl(osal_get_systime());
+    p_rsa->time_stamp = cv_ntohs(osal_get_systime());
 #if 0
     p_local->pos.lon = 132.327144*3.1415926/180.0;
     p_local->pos.lat = 40.0*3.1415926/180.0;
@@ -552,7 +554,7 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_EMERGENCY;
-    txinfo->timestamp = osal_get_systime();
+    txinfo->timestamp = osal_get_systimestamp();
 
     result = wnet_send(txinfo, (uint8_t *)p_rsa, sizeof(rcp_msg_roadside_alert_t));
     if (result) 
@@ -581,7 +583,7 @@ int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
     txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
     txinfo->prority = WNET_TRANS_RRORITY_NORMAL;//WNET_TRANS_RRORITY_EMERGENCY;
-    txinfo->timestamp = osal_get_systime();
+    txinfo->timestamp = osal_get_systimestamp();
 
     /* modify the forward_id of msgdata */
     p_msgid = (rcp_msgid_t *)(WNET_TXBUF_DATA_PTR(txbuf));

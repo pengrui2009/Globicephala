@@ -70,7 +70,7 @@ typedef struct _wnet_txinfo {
     uint8_t protocol; /* 0 - DSMP, 1 - UDP */
     uint8_t encryption; /* 0 - none, 1 - encpypted */
     uint8_t prority;  /* 0 - NORMAL, 1 - EMERGENCY */
-    uint32_t timestamp; /* time of generated message */
+    uint64_t timestamp; /* time of generated message */
 
     void *extension; /* reserved for future */
 } wnet_txinfo_t;
@@ -85,7 +85,7 @@ typedef struct _wnet_rxinfo {
     uint8_t protocol; /* 0 - DSMP, 1 - UDP */
     uint8_t encryption; /* 0 - none, 1 - encpypted */
     uint8_t rssi;  
-    uint32_t timestamp; /* time of received message */
+    uint64_t timestamp; /* time of received message */
 
     void *extension; /* reserved for future */
 } wnet_rxinfo_t;

@@ -399,12 +399,15 @@ int drv_simu_send(wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_t length)
     uint8_t *pPayload;
     uint8_t ipaddr[4];
     uint16_t port;
+    uint64_t timestamp;
     drv_simu_envar_t *p_simu = &g_simu_envar;
     port = htons(p_simu->local_port);
     memcpy(ipaddr, p_simu->local_ipaddr, IPADDR_LENGTH);
     ipaddr[3] = 0xFF;
     pPayload = pdata - MAC_BEACON_FIX_LENGTH;
     /* fill the beacon fixed element */
+    timestamp = cv_ntohll(txinfo->timestamp);
+    memcpy(BeaconFixedElement, &timestamp, sizeof(txinfo->timestamp));
     memcpy(pPayload, BeaconFixedElement, MAC_BEACON_FIX_LENGTH);
 
     /* fill the 802.11 header */
