@@ -26,7 +26,6 @@
 *****************************************************************************/
 
 
-float getDistanceVer2(float lat1, float lng1, float lat2, float lng2);
 static int vbd_judge(vsa_node_st *p_node);
 static int ebd_judge(vsa_node_st *p_node);
 
@@ -37,13 +36,92 @@ extern void param_get(void);
  * implementation of functions                                               *
 *****************************************************************************/
 
+
+
+
+
+
+/* Convert vehicle angle to heading slice. */
+static vehicle_heading_slice vsa_angle_to_heading_slice(float angle)
+{
+    if((0 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 1 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE0_000_0T022_5;
+    }
+    else if((1 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 2 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE1_022_5T045_0;
+    }
+    else if((2 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 3 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE2_045_0T067_5;
+    }    
+    else if((3 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 4 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE3_067_5T090_0;
+    }
+    else if((4 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 5 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE4_090_0T112_5;
+    }
+    else if((5 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 6 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE5_112_5T135_0;
+    }
+    else if((6 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 7 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE6_135_0T157_5;
+    }
+    else if((7 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 8 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE7_157_5T180_0;
+    }    
+    else if((8 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 9 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE8_180_0T202_5;
+    }
+    else if((9 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 10 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE9_202_5T225_0;
+    }
+    else if((10 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 11 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE10_225_0T247_5;
+    }
+    else if((11 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 12 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE11_247_5T270_0;
+    }
+    else if((12 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 13 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE12_270_0T292_5;
+    }
+    else if((13 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 14 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE13_292_5T315_0;
+    }
+    else if((14 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 15 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE14_315_0T337_5;
+    }
+    else if((15 * DEGREE_PER_HEADING_SLICE <= angle) && (angle < 16 * DEGREE_PER_HEADING_SLICE))
+    {
+        return SLICE15_337_5T360_0;
+    }
+    else
+    {
+        return SLICEx_NO_HEADING;
+    }
+}
+
+
 /*****************************************************************************
  @funcname: vsa_position_classify
  @brief   : describe target's postion
  @param   : None
  @return  : 
 *****************************************************************************/
-uint32_t vsa_position_classify(const vam_stastatus_t *local, const vam_stastatus_t *remote, vam_pos_data *pos_data, float *delta_offset)
+uint32_t  vsa_position_classify(const vam_stastatus_t *local, const vam_stastatus_t *remote, vam_pos_data *pos_data, float *delta_offset)
 {
     double lat1, lng1, lat2, lng2;
     float angle, delta;
@@ -82,53 +160,19 @@ uint32_t vsa_position_classify(const vam_stastatus_t *local, const vam_stastatus
     }
 
     /* calculate the angle detra between local front and remote position  */
-    if (angle > local->dir){
+    if (angle >= local->dir){
         delta = angle - local->dir;
     }
     else {
         delta = 360.0f-(local->dir - angle);
     }
-
-    if ((delta >360.0f)||(delta <0.0f)){
-        return POSITION_ERROR;
-    }
-/****************
-    if (delta > 180){
-        delta = 360 - delta;
-    }
-**********************/
     
     *delta_offset = delta;  
-    
-		/*divide posiotion to 8 pieces*/
-    if((delta > 15*DIRECTION_DIVIDE)||(delta <= DIRECTION_DIVIDE)){
-       return AHEAD;
-    }
-    else if ((delta > DIRECTION_DIVIDE)&&(delta <= 3*DIRECTION_DIVIDE)){
-       return AHEAD_RIGHT;
-    }
-    else if ((delta > 3*DIRECTION_DIVIDE)&&(delta <= 5*DIRECTION_DIVIDE)){
-       return RIGHT;
-    }
-    else if ((delta > 5*DIRECTION_DIVIDE)&&(delta <= 7*DIRECTION_DIVIDE)){
-       return BEHIND_RIGHT;
-    }
-    else if ((delta > 7*DIRECTION_DIVIDE)&&(delta <= 9*DIRECTION_DIVIDE)){
-       return BEHIND;
-    }
-    else if ((delta > 9*DIRECTION_DIVIDE)&&(delta <= 11*DIRECTION_DIVIDE)){
-       return BEHIND_LEFT;
-    }
-    else if ((delta > 11*DIRECTION_DIVIDE)&&(delta <= 13*DIRECTION_DIVIDE)){
-       return LEFT;
-    }
-    else if ((delta > 13*DIRECTION_DIVIDE)&&(delta <= 15*DIRECTION_DIVIDE)){
-       return AHEAD_LEFT;
-    }
-    else {
-        return POSITION_ERROR;
-    }
+
+    return vsa_angle_to_heading_slice(delta);
+
 }
+
 
 /*****************************************************************************
  @funcname: vsa_safe_distance
@@ -151,8 +195,6 @@ uint32_t vsa_safe_distance(int32_t position,vam_stastatus_t local,vam_stastatus_
     else{
        return 0; 
     }
-
-
 }
 
 int8_t vsa_position_get(uint8_t *pid, vsa_node_st_ptr node_ptr)
