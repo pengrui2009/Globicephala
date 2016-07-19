@@ -77,22 +77,6 @@ enum VSA_APP_ID
 };
 
 
-/* target classification locations */
-
-enum VSA_TARGET_LOCATION
-{
-    POSITION_ERROR = 0,
-    AHEAD_LEFT,        
-    AHEAD,
-    AHEAD_RIGHT,   
-    RIGHT,
-    BEHIND_RIGHT,
-    BEHIND,
-    BEHIND_LEFT,   
-    LEFT
-};
-
-
 /* Vehicle heading slice definition. */
 typedef enum _vehicle_heading_slice
 {
