@@ -401,38 +401,38 @@ static int vbd_judge(vsa_node_st *p_node)
     
     if((p_node->vam_alert & VAM_ALERT_MASK_VBD) == 0)
     {
-    	//osal_printf("p_node->vam_alert:%04x\n",p_node->vam_alert);
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->vam_alert:%04x\n", p_node->vam_alert);
         return VSA_ID_NONE;
     }
     
     if (p_node->local_speed <= p_vsa->working_param.danger_detect_speed_threshold)
     {
-    	//osal_printf("p_node->local_speed:%.lf p_vsa->working_param.danger_detect_speed_threshold=%.lf\n",p_node->local_speed,p_node->local_speed);
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->local_speed:%.lf p_vsa->working_param.danger_detect_speed_threshold=%.lf\n", p_node->local_speed, p_node->local_speed);
         return VSA_ID_NONE;
     }
 
     /* Horizontal distance compare with lane.*/
     if(p_node->h_offset > p_vsa->working_param.lane_dis)
     {
-    	//osal_printf("p_node->h_offset: p_vsa->working_param.lane_dis:%d\n",p_node->h_offset,p_vsa->working_param.lane_dis);
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->h_offset: p_vsa->working_param.lane_dis:%d\n", p_node->h_offset, p_vsa->working_param.lane_dis);
         return VSA_ID_NONE;    
     }
 
     /* Return no alert when relative direction out of range. */
     if((10 < p_node->relative_dir) && (p_node->relative_dir < 350))
     {
-       //osal_printf("p_node->relative_dir:%.lf p_node->relative_dir:%.lf%\n",p_node->relative_dir,p_node->relative_dir);
+       OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->relative_dir:%.lf p_node->relative_dir:%.lf%\n", p_node->relative_dir, p_node->relative_dir);
        return VSA_ID_NONE;
     }
     
     /* remote is behind of local. */
     if (p_node->linear_distance <= 0)
     {
-    	//osal_printf("p_node->linear_distance:%d\n",p_node->linear_distance);
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->linear_distance:%d\n", p_node->linear_distance);
         return VSA_ID_NONE;
     }
     
-    //osal_printf("alert value:%d\n",VSA_ID_VBD);
+    OSAL_DBGPRT(OSAL_DEBUG_TRACE, "alert value:%d\n", VSA_ID_VBD);
     return VSA_ID_VBD;
 
 }
@@ -452,37 +452,43 @@ static int cfcw_judge(vsa_node_st *p_node)
 
     if(p_node->local_speed <= p_vsa->working_param.danger_detect_speed_threshold)
     {
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->local_speed:%f p_vsa->working_param.danger_detect_speed_threshold=%d\n", p_node->local_speed, p_vsa->working_param.danger_detect_speed_threshold);
         return VSA_ID_NONE;
     }
  
     /* Return no alert when relative direction out of range. */
     if((10 < p_node->relative_dir) && (p_node->relative_dir < 350))
     {
-       return VSA_ID_NONE;
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->relative_dir:%f\n", p_node->relative_dir);
+        return VSA_ID_NONE;
     }
 
     /* horizontal distance compare with lane. */
     if(p_vsa->working_param.lane_dis < p_node->h_offset)
     {
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_vsa->working_param.lane_dis:%d p_node->h_offset:%d\n",p_vsa->working_param.lane_dis, p_node->h_offset);
         return VSA_ID_NONE;    
     }
         
     if(p_node->local_speed <= (p_node->remote_speed + p_vsa->working_param.crd_oppsite_speed))
-    {       
+    {
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->local_speed:%f p_node->remote_speed + p_vsa->working_param.crd_oppsite_speed:%f\n", p_node->local_speed, (p_node->remote_speed + p_vsa->working_param.crd_oppsite_speed));
         return VSA_ID_NONE;
     }
 
     /* remote is behind of local */
     if(p_node->linear_distance <= 0)
     {
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->linear_distance:%d\n", p_node->linear_distance);
         return VSA_ID_NONE;
     }
     
     if(p_node->safe_distance < p_node->linear_distance)
-    { 
+    {
+    	OSAL_DBGPRT(OSAL_DEBUG_TRACE, "p_node->safe_distance:%d p_node->linear_distance:%d\n", p_node->safe_distance, p_node->linear_distance);
         return VSA_ID_NONE;
     }
-    
+    OSAL_DBGPRT(OSAL_DEBUG_INFO, "front vehicle alert:%0x\n", VSA_ID_CRD);
     return VSA_ID_CRD;
 
 }

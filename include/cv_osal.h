@@ -66,6 +66,13 @@ static inline uint32_t osal_get_systemtime(void)
     }
 }
 
+static inline uint32_t osal_get_systime(void)
+{
+	time_t ts;
+	time(&ts);
+
+	return (uint32_t)ts;
+}
 /**
  * Notice: The follow IRQ functions are not able to be nested.
  */

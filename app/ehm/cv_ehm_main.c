@@ -144,7 +144,7 @@ static int8_t encode_nb_node_summary_infor(ehm_envar_st * p_ehm, vam_envar_t *p_
     /* Initial message body 1. */
     nb_node_ptr = (msg_vehicle_nb_status_st_ptr)(txbuf->data_ptr + FRAME_MSG_HEADER_ST_LEN);
     nb_node_ptr->msg_id = MSGID_NBNODE_INFO;
-    nb_node_ptr->system_time = cv_ntohl(osal_get_systemtime());
+    nb_node_ptr->system_time = cv_ntohl(osal_get_systime());
     nb_node_ptr->nodenumber = 0;
     nb_node_ptr->node_infor_type = NODE_INFOR_TYPE_SUMMARY;
 
@@ -263,7 +263,7 @@ static int8_t encode_nb_node_detail_infor(ehm_envar_st * p_ehm, vam_envar_t *p_v
     /* Initial message body 1. */
     nb_node_ptr = (msg_vehicle_nb_status_st_ptr)(txbuf->data_ptr + FRAME_MSG_HEADER_ST_LEN);
     nb_node_ptr->msg_id = MSGID_NBNODE_INFO;
-    nb_node_ptr->system_time = cv_ntohl(osal_get_systemtime());
+    nb_node_ptr->system_time = cv_ntohl(osal_get_systime());
     nb_node_ptr->nodenumber = 0;
     nb_node_ptr->node_infor_type = NODE_INFOR_TYPE_DETAIL;
 
@@ -450,7 +450,6 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 	vam_stastatus_t                      local = { 0, { 0 }, 0 };
 	msg_vehicle_basic_status_st_ptr status_ptr = (msg_vehicle_basic_status_st_ptr)pdata;
 
-
     /* Get local valid data. */
     vam_get_local_current_status(&local);
 
@@ -608,15 +607,15 @@ int decode_local_vehicle_alert_set(uint8_t *pdata, uint16_t len)
     }    
 
     /* Update vehicle brake hard alert. */
-    if(status_ptr->vehicle_alert_set.vehicle_alert_words == VEHICLE_ALERT_ON)
+    if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_ON)
     {
         vam_active_alert(VAM_ALERT_MASK_EBD);
     }
-    else if(status_ptr->vehicle_alert_set.vehicle_alert_words == VEHICLE_ALERT_OFF)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_OFF)
     {
         vam_cancel_alert(VAM_ALERT_MASK_EBD);
     }
-    else if(status_ptr->vehicle_alert_set.vehicle_alert_words == VEHICLE_ALERT_INVALID)
+    else if(status_ptr->vehicle_alert_set.vehicle_alert_bit.vecbrakehardalert == VEHICLE_ALERT_INVALID)
     {
         vam_cancel_alert(VAM_ALERT_MASK_EBD);
     }    
@@ -664,7 +663,7 @@ static int8_t encode_nb_vehicle_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, 
     /* Initial message body 1. */
     nb_node_ptr = (msg_nb_vehicle_alert_st_ptr)(txbuf->data_ptr + FRAME_MSG_HEADER_ST_LEN);
     nb_node_ptr->msg_id = MSGID_NBVEHICLE_ALERT;
-    nb_node_ptr->system_time = cv_ntohl(osal_get_systemtime());
+    nb_node_ptr->system_time = cv_ntohl(osal_get_systime());
 
     /* Set data length. */
     txbuf->data_len += FRAME_MSG_HEADER_ST_LEN + MSG_NB_VEHICLE_ALERT_LEN;
@@ -829,7 +828,7 @@ void ehm_receive_msg
             {
                 buff_ptr->data_ptr = buff_ptr->buffer;
                 buff_ptr->data_len = result;
-                buff_ptr->time = osal_get_systemtime();
+                buff_ptr->time = osal_get_systime();
             }
             else
             {

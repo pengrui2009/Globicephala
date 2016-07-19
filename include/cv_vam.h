@@ -46,7 +46,7 @@
 #define VAM_FLAG_TX_RSA       (0x0100)
 
 #define VAM_NEIGHBOUR_MAXNUM   (80)
-#define VAM_NEIGHBOUR_MAXLIFE  (5000)  /* unit: ms. */
+#define VAM_NEIGHBOUR_MAXLIFE  (5)  /* unit: s. */
 
 #define VAM_NO_ALERT_EVAM_TX_TIMES (5) //取消所有警告的evam消息发送次数
 

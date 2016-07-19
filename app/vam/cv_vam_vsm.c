@@ -266,7 +266,7 @@ void vam_update_sta(vam_envar_t *p_vam)
         p_sta_node = (vam_sta_node_t *)pos;
         pos = pos->next;
 
-        if(VAM_NEIGHBOUR_MAXLIFE <= (osal_get_systemtime() - p_sta_node->s.time))
+        if(VAM_NEIGHBOUR_MAXLIFE <= (osal_get_systime() - p_sta_node->s.time))
         {
             OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "One neighbour is kick out.\n");
 
