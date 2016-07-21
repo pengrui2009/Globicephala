@@ -53,7 +53,13 @@ static inline void osal_delay(int usec)
 {
     os_delay(usec);
 }
-
+/******************************************************************************
+*	函数:	osal_get_systemtime
+*	功能:	获取系统开启时间
+*	参数:	无
+*	返回:	毫秒数
+*	说明:	>0			- 毫秒数
+ ******************************************************************************/
 static inline uint32_t osal_get_systemtime(void)
 {
 	int ret;
@@ -67,18 +73,20 @@ static inline uint32_t osal_get_systemtime(void)
 }
 /******************************************************************************
 *	函数:	osal_get_systimestamp
-*	功能:	将系统时间转换为毫秒数据
+*	功能:	将系统时间转换为秒数据
 *	参数:	无
-*	返回:	毫秒数
-*	说明:	>0			- 毫秒数
+*	返回:	秒数
+*	说明:	>0			- 秒数
  ******************************************************************************/
 static inline uint64_t osal_get_systimestamp(void)
 {
-	uint64_t val;
-	struct timeval tv;
-	gettimeofday(&tv, NULL);
-	val = tv.tv_sec ;
-	return val;
+	int ret;
+	time_t ts;
+	ret = time(&ts);
+	if(ret)
+		return ts;
+	else
+		return -1;
 }
 /******************************************************************************
 *	函数:	osal_get_systime

@@ -455,31 +455,33 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 
     //待完善，处理node_id关系
     /* node id. */
-    memcpy(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id));
+    if(memcmp(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id)) == 0)
+    {
+    	/* position. */
+		local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
+		local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
+		local.pos.elevation = decode_elevation(status_ptr->position.elevation);
 
-    /* position. */
-	local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
-	local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
-	local.pos.elevation = decode_elevation(status_ptr->position.elevation);
+		/* position accuracy. */
+		local.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
+		local.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
+		local.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
 
-    /* position accuracy. */
-    local.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
-    local.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
-    local.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
+		/* velocity. */
+		local.speed = decode_absolute_velocity(status_ptr->velocity);
 
-    /* velocity. */
-    local.speed = decode_absolute_velocity(status_ptr->velocity);
+		/* angle. */
+		local.dir = decode_angle(status_ptr->angle);
 
-    /* angle. */
-    local.dir = decode_angle(status_ptr->angle);
+		local.time = time;
+		/* Set new local status. */
+		result = vam_set_local_status(&local);
+		if(result < 0)
+		{
+			osal_printf("%s: vam_set_local_status err ret = %d. \n",__FUNCTION__, result);
+		}
+    }
 
-    local.time = time;
-    /* Set new local status. */
-	result = vam_set_local_status(&local);
-	if(result < 0)
-	{
-		osal_printf("%s: vam_set_local_status err ret = %d. \n",__FUNCTION__, result);
-	}
 	return result;
 }
 
@@ -755,9 +757,11 @@ static int8_t encode_roadsze_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa
 
 	frame_msg_header_st_ptr          msg_head_ptr = NULL;
 
+	msg_roadsize_alert_info_st_ptr p_roadsize_alert = NULL;
 	/* Get tx buffer from ehm tx buffer list. */
 	txbuf = ehm_get_txbuf(p_ehm);
 
+	txbuf->data_len = 0x0;
 	/* Initial message header. */
 	msg_head_ptr = (frame_msg_header_st_ptr)txbuf->data_ptr;
 	msg_head_ptr->mark = 0x0E;
@@ -765,10 +769,38 @@ static int8_t encode_roadsze_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa
 	msg_head_ptr->reserved1 = 0;
 	msg_head_ptr->reserved2 = 0;
 	msg_head_ptr->type = MSGTYPE_V2X_APPLY;
+	txbuf->data_len += FRAME_MSG_HEADER_ST_LEN;
 
+	p_roadsize_alert = (msg_roadsize_alert_info_st_ptr)(txbuf->data_ptr + FRAME_MSG_HEADER_ST_LEN);
+	p_roadsize_alert->msg_id = 0x07;
+	p_roadsize_alert->reserved = 0x0;
+
+	txbuf->data_len += MSG_ROADSIZE_ALERT_INFO_ST_LEN;
 	return 0;
 }
 
+/*****************************************************************************
+ @funcname: msg_cal_chksum
+ @brief   : caluate the chksum of receive msg
+ @param   :
+			buf			- msg data
+			len			- frame data len,without uart header ,length ,chk
+ @return  :
+			0			- success
+			others		- error
+*****************************************************************************/
+static uint16_t msg_cal_chksum(uint8_t *buf, uint16_t len)
+{
+	uint16_t chksum = 0x0;
+
+	while(len--)
+	{
+		chksum += *buf;
+		buf++;
+	}
+
+	return chksum;
+}
 
 /*****************************************************************************
  @funcname: msg_check_sum
@@ -1062,6 +1094,7 @@ void * ehm_main_thread_entry(void *param)
 static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint8_t *pdata, uint32_t length)
 {
 	uint8_t *pdata;
+	uint16_t *chksum;
 	uint32_t length;
 	int result = 0;
     uart_msg_header_st_ptr uart_ptr;
@@ -1076,6 +1109,9 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
     uart_ptr->length = cv_ntohs(length + SIZEOF_MSG_CHK_DOMAIN);
 
     //待完善功能-增加CHK,CHK长度数据已经计算
+    chksum = (uint16_t *)(pdata + UART_MSG_HEADER_ST_LEN + length);
+    *chksum = cv_ntohs(msg_cal_chksum((pdata + UART_MSG_HEADER_ST_LEN), length));
+
     /*uart send data to periph */
     result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
     if(result < 0)
@@ -1084,7 +1120,6 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
     }
     //待完善功能-增加网络发送
     /* eth send data to periph*/
-    
     return result;
     
 }

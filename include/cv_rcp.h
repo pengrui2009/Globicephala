@@ -261,17 +261,13 @@ typedef uint16_t heading_slice_t;
 typedef struct _rcp_msgid 
 {
 #ifndef __LITTLE_ENDIAN
-  
     uint16_t     hops: 3;
     uint16_t       id: 5;
     uint16_t reserved: 8;
-    
 #else
-
-    uint16_t reserved :8;
     uint16_t       id: 5;
     uint16_t     hops: 3;
-    
+    uint16_t reserved :8;
 #endif
 }rcp_msgid_t;
 
