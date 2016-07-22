@@ -508,52 +508,53 @@ int decode_full_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
     vam_get_local_current_status(&local);
 
     /* node id. */
-    memcpy(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id));
+    if(memcmp(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id)) == 0)
+    {
+    	/* position. */
+		local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
+		local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
+		local.pos.elevation = decode_elevation(status_ptr->position.elevation);
 
-    /* position. */
-	local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
-	local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
-	local.pos.elevation = decode_elevation(status_ptr->position.elevation);
+		/* position accuracy. */
+		local.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
+		local.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
+		local.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
 
-    /* position accuracy. */
-    local.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(status_ptr->posaccu.semimajoraxisAccu);
-    local.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(status_ptr->posaccu.semiminoraxisAccu);
-    local.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(status_ptr->posaccu.semimajorAxisOrien);
+		/* transmission state. */
+		local.transmission_state = status_ptr->tran_state;
 
-    /* transmission state. */
-    local.transmission_state = status_ptr->tran_state;
+		/* velocity. */
+		local.speed = decode_absolute_velocity(status_ptr->velocity);
 
-    /* velocity. */
-    local.speed = decode_absolute_velocity(status_ptr->velocity);
+		/* angle. */
+		local.dir = decode_angle(status_ptr->angle);
 
-    /* angle. */
-    local.dir = decode_angle(status_ptr->angle);
+		/* steer wheel angle. */
+		local.steer_wheel_angle = status_ptr->steerwa;
 
-    /* steer wheel angle. */
-    local.steer_wheel_angle = status_ptr->steerwa;
+		/* acceleration set4way. */
+		local.acce_set.lateral = decode_acceleration(status_ptr->acce4way.latacce);
+		local.acce_set.longitudinal = decode_acceleration(status_ptr->acce4way.lonacce);
+		local.acce_set.vertical = decode_vertical_acceleration(status_ptr->acce4way.veracce);
+		local.acce_set.yaw_rate = decode_yawrate(status_ptr->acce4way.yawrate);
 
-    /* acceleration set4way. */
-    local.acce_set.lateral = decode_acceleration(status_ptr->acce4way.latacce);
-    local.acce_set.longitudinal = decode_acceleration(status_ptr->acce4way.lonacce);
-    local.acce_set.vertical = decode_vertical_acceleration(status_ptr->acce4way.veracce);
-    local.acce_set.yaw_rate = decode_yawrate(status_ptr->acce4way.yawrate);
+		/* brake system status. */
+		local.brake_stat = status_ptr->braksta;
 
-    /* brake system status. */
-    local.brake_stat = status_ptr->braksta;
+		/* exterior light. */
+		local.exterior_light = status_ptr->exterlight;
 
-    /* exterior light. */
-    local.exterior_light = status_ptr->exterlight;
+		/*recv msg time*/
+		local.time = time;
 
-    /*recv msg time*/
-    local.time = time;
-    
-    /* Set new local status. */
-	result = vam_set_local_status(&local);
-	if(result < 0)
-	{
-		osal_printf("%s: vam_set_local_status err ret = %d. \n", __FUNCTION__, result);
-	}
-    
+		/* Set new local status. */
+		result = vam_set_local_status(&local);
+		if(result < 0)
+		{
+			osal_printf("%s: vam_set_local_status err ret = %d. \n", __FUNCTION__, result);
+		}
+    }
+
 	return result;
 }
 
