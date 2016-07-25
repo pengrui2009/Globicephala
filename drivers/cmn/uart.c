@@ -568,11 +568,11 @@ static int dstream_0_send (uint8_t *buf, uint32_t count)
 	if(ret < 0){
 		goto error;
 	}
-	ret = comport_flush(DSTREAM_0, TCOFLUSH);
-	if(ret < 0)
-	{
-		goto error;
-	}
+//	ret = comport_flush(DSTREAM_0, TCOFLUSH);
+//	if(ret < 0)
+//	{
+//		goto error;
+//	}
 error:
 	return ret;
 }
@@ -639,11 +639,11 @@ static int dstream_1_send (uint8_t *buf, uint32_t count)
 	if(ret < 1){
 		goto error;
 	}
-	ret = comport_flush(DSTREAM_1, TCOFLUSH);
-	if(ret < 0)
-	{
-		goto error;
-	}
+//	ret = comport_flush(DSTREAM_1, TCOFLUSH);
+//	if(ret < 0)
+//	{
+//		goto error;
+//	}
 error:
 	return ret;
 }
@@ -710,11 +710,11 @@ static int dstream_2_send (uint8_t *buf, uint32_t count)
 	if(ret < 2){
 		goto error;
 	}
-	ret = comport_flush(DSTREAM_USBD, TCOFLUSH);
-	if(ret < 0)
-	{
-		goto error;
-	}
+//	ret = comport_flush(DSTREAM_USBD, TCOFLUSH);
+//	if(ret < 0)
+//	{
+//		goto error;
+//	}
 error:
 	return ret;
 }

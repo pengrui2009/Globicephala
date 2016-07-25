@@ -49,7 +49,7 @@ int drv_fls_write(uint32_t flash_address, uint8_t *p_databuf, uint32_t length)
 /*****************************************************************************
  * declaration of variables and functions                                    *
 *****************************************************************************/
-
+#define NODE_ID_BASE_ETH	"eth0"
 cfg_param_t cms_param, *p_cms_param;
 
 uint8_t param_init_words[] = "Vanet-param1";
@@ -199,13 +199,19 @@ void load_default_param_city(cfg_param_t *param)
 
 void load_default_param(cfg_param_t *param)
 {
+	int ret;
+	uint8_t mac[6] = {0};
     memset(param, 0 , sizeof(cfg_param_t));
-
+    ret = net_mac_get(NODE_ID_BASE_ETH, mac);
+    if(ret < 0)
+    {
+    	osal_printf("net_mac_get error ret= %d",ret);
+    }
     /******************ID************************/
-    param->pid[0] = 0xaa;
-    param->pid[1] = 0xaa;    
-    param->pid[2] = 0xaa;
-    param->pid[3] = 0xaa;
+    param->pid[0] = mac[2];
+    param->pid[1] = mac[3];
+    param->pid[2] = mac[4];
+    param->pid[3] = mac[5];
     /******************** VAM *********************/
     param->vam.bsm_hops = 1; 
     param->vam.bsm_boardcast_mode = 2;  /* 0 - disable, 1 - auto, 2 - fixed period */

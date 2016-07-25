@@ -33,7 +33,7 @@ ehm_config_st ehm_config =
 { 
     UART_RECV_TYPE,
         
-    { COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE },
+    { COMPORT_VERIFY_NO, 8, 1, 0, 1152000, COMPORT_RTSCTS_DISABLE },
     
     V2X_NB_NODE_SUMMRAY_INFO|V2X_NB_NODE_DETAIL_INFO|V2X_BASIC_VEHICLE_STATUS|V2X_NB_VEHICLE_ALERT|V2X_ROADSIZE_ALERT
 };
@@ -781,7 +781,7 @@ static int8_t encode_roadsze_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa
 }
 
 /*****************************************************************************
- @funcname: msg_cal_chksum
+ @funcname: ehm_msg_cal_frame
  @brief   : caluate the chksum of receive msg
  @param   :
 			buf			- msg data
@@ -790,21 +790,17 @@ static int8_t encode_roadsze_alert(ehm_envar_st * p_ehm, vam_envar_t *p_vam, vsa
 			0			- success
 			others		- error
 *****************************************************************************/
-static uint16_t msg_cal_chksum(uint8_t *buf, uint16_t len)
+static uint16_t ehm_msg_cal_frame(uint8_t *buf, uint16_t len)
 {
 	uint16_t chksum = 0x0;
 
-	while(len--)
-	{
-		chksum += *buf;
-		buf++;
-	}
+	chksum = CRC16(buf, len);
 
 	return chksum;
 }
 
 /*****************************************************************************
- @funcname: msg_check_sum
+ @funcname: ehm_msg_check_frame
  @brief   : check the chk of receive msg
  @param   :
 			buf			- msg data
@@ -813,18 +809,13 @@ static uint16_t msg_cal_chksum(uint8_t *buf, uint16_t len)
 			0			- success
 			others		- error
 *****************************************************************************/
-static int ehm_msg_check_sum(uint8_t *buf, uint16_t len)
+static int ehm_msg_check_frame(uint8_t *buf, uint16_t len)
 {
 	uint16_t chksum = 0x0;
 	uint16_t chk = 0x00;
-	len = len -2;
-    
-	while(len--)
-	{
-		chksum += *buf;
-		buf++;
-	}
-	chk = *(uint16_t *)buf;
+	chksum = CRC16(buf, len);
+	chk = *(uint16_t *)(buf + len);
+
 	if(cv_ntohs(chk) == chksum)
 		return 0;
 	else
@@ -1094,6 +1085,7 @@ void * ehm_main_thread_entry(void *param)
 *****************************************************************************/
 static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint8_t *pdata, uint32_t length)
 {
+
 	uint8_t *pdata;
 	uint16_t *chksum;
 	uint32_t length;
@@ -1111,28 +1103,28 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
 
     //待完善功能-增加CHK,CHK长度数据已经计算
     chksum = (uint16_t *)(pdata + UART_MSG_HEADER_ST_LEN + length);
-    *chksum = cv_ntohs(msg_cal_chksum((pdata + UART_MSG_HEADER_ST_LEN), length));
+    *chksum = cv_ntohs(ehm_msg_cal_frame((pdata + UART_MSG_HEADER_ST_LEN), length));
 
     /*uart send data to periph */
+
     result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
     if(result < 0)
     {
     	osal_printf("comport_send error ret=%d\n", result);
     }
+
     //待完善功能-增加网络发送
     /* eth send data to periph*/
+
     return result;
     
 }
-
-
 
 
 void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 {
     int		             ret = 0;
 
-    
     /* neighour node summary information. */
 	if(send_info & V2X_NB_NODE_SUMMRAY_INFO)
 	{
@@ -1147,7 +1139,7 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 			osal_printf("ehm_package_send error ret=%d. \n", ret);
 		}
 	}
-
+	usleep(100000);
     /* Neighbour node detail information. */
 	if(send_info & V2X_NB_NODE_DETAIL_INFO)
 	{
@@ -1162,11 +1154,11 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 			osal_printf("ehm_package_send error ret=%d\n",ret);
 		}
 	}
-
-    /* Local node basic status. */
-	if(send_info & V2X_BASIC_VEHICLE_STATUS)
+	usleep(100000);
+    /* Neighour node alert. */
+	if(send_info & V2X_NB_VEHICLE_ALERT)
 	{
-		ret = encode_basic_vehicle_status(p_ehm);
+		ret = encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
 		if(ret < 0)
 		{
 			osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
@@ -1177,11 +1169,11 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 			osal_printf("ehm_package_send error ret=%d\n",ret);
 		}
 	}
-
-    /* Neighour node alert. */
-	if(send_info & V2X_NB_VEHICLE_ALERT)
+	usleep(100000);
+    /* Local node basic status. */
+	if(send_info & V2X_BASIC_VEHICLE_STATUS)
 	{
-		ret = encode_nb_vehicle_alert(p_ehm, p_vam_envar, &p_cms_envar->vsa);
+		ret = encode_basic_vehicle_status(p_ehm);
 		if(ret < 0)
 		{
 			osal_printf("encode_nb_node_summary_infor error ret=%d\n",ret);
@@ -1208,6 +1200,7 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 			osal_printf("ehm_package_send error ret=%d\n",ret);
 		}
 	}
+
 }
 
 
@@ -1296,7 +1289,7 @@ START_ROUTINE:
     }
 
     /* Check message.  */
-    result = ehm_msg_check_sum(ehm_ptr->buffer_rx.data_ptr, ehm_ptr->buffer_rx.data_len);
+    result = ehm_msg_check_frame(ehm_ptr->buffer_rx.data_ptr, (ehm_ptr->buffer_rx.data_len - 2));
     if(result != 0)
     {   
         osal_printf("ehm msg check sum error. \n");
@@ -1380,7 +1373,7 @@ void ehm_init(void)
     osal_assert(p_ehm->task_rx != NULL);
 
 
-    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
+    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 500, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
     osal_assert(p_ehm->p_timer_heartbeat != NULL);
 
 
