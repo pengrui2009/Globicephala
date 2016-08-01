@@ -712,7 +712,7 @@ typedef struct _msg_roadsize_alert_info_st
     /* Message id. */
     uint8_t                  msg_id;
 
-	uint8_t reserved;
+	uint8_t 				reserved;
 }msg_roadsize_alert_info_st,*msg_roadsize_alert_info_st_ptr;
 
 #define MSG_ROADSIZE_ALERT_INFO_ST_LEN	sizeof(msg_roadsize_alert_info_st)

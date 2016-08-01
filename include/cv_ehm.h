@@ -117,7 +117,8 @@ typedef struct _ehm_txinfo {
 
 
 /* ehm module txbuf strtct follow by wnet module */
-typedef struct _ehm_txbuf 
+typedef struct
+
 {
     /* Caution: Do not modify it.*/
     list_head_t list;
@@ -138,7 +139,7 @@ typedef struct _ehm_txbuf
 typedef struct _ehm_buffer_st 
 {
     /* Data buffer. */
-    uint8_t  buffer[1024];
+    uint8_t  buffer[2048];
 
     /* Current effective data address and length. */
     uint8_t    * data_ptr;
@@ -186,8 +187,15 @@ typedef struct _ehm_envar_st
 
     ehm_buffer_st   buffer_tx;
 
+//    list_head_t idel_list;
+//    list_head_t busy_list;
+//    uint8_t databuf[6][2048];
+
     /*心跳定时器*/
     osal_timer_t *p_timer_heartbeat;
+
+    /*周期发送消息定时器*/
+//    osal_timer_t *p_timer_send;
 
 }ehm_envar_st, * ehm_envar_st_ptr;
 

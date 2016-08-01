@@ -433,7 +433,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
 
 
     txinfo = WNET_TXBUF_INFO_PTR(txbuf);
-    memset(txinfo, 0, sizeof(wnet_txinfo_t));
+//    memset(txinfo, 0, sizeof(wnet_txinfo_t));
     memcpy(txinfo->dest.dsmp.addr, "\xFF\xFF\xFF\xFF\xFF\xFF", MACADDR_LENGTH);
     txinfo->dest.dsmp.aid = 0x00000020;
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
@@ -489,7 +489,7 @@ int rcp_send_evam(vam_envar_t *p_vam)
     
 
     txinfo = WNET_TXBUF_INFO_PTR(txbuf);
-    memset(txinfo, 0, sizeof(wnet_txinfo_t));
+//    memset(txinfo, 0, sizeof(wnet_txinfo_t));
     memcpy(txinfo->dest.dsmp.addr, "\xFF\xFF\xFF\xFF\xFF\xFF", MACADDR_LENGTH);
     txinfo->dest.dsmp.aid = 0x00000020;
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
@@ -548,7 +548,7 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     p_rsa->position.speed.speed = encode_absolute_velocity(p_local->speed);
 
     txinfo = WNET_TXBUF_INFO_PTR(txbuf);
-    memset(txinfo, 0, sizeof(wnet_txinfo_t));
+//    memset(txinfo, 0, sizeof(wnet_txinfo_t));
     memcpy(txinfo->dest.dsmp.addr, "\xFF\xFF\xFF\xFF\xFF\xFF", MACADDR_LENGTH);
     txinfo->dest.dsmp.aid = 0x00000020;
     txinfo->protocol = WNET_TRANS_PROT_DSMP;

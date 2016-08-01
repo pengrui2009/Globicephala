@@ -53,6 +53,7 @@ static inline void osal_delay(int usec)
 {
     os_delay(usec);
 }
+
 /******************************************************************************
 *	函数:	osal_get_systemtime
 *	功能:	获取系统开机启动时间
@@ -73,20 +74,23 @@ static inline uint32_t osal_get_systemtime(void)
 }
 /******************************************************************************
 *	函数:	osal_get_systimestamp
-*	功能:	将系统时间转换为秒数据
+*	功能:	将系统时间转换为当前年分钟数
 *	参数:	无
 *	返回:	秒数
-*	说明:	>0			- 秒数
+*	说明:	>0			- 分钟数
  ******************************************************************************/
-static inline uint64_t osal_get_systimestamp(void)
+static inline uint32_t osal_get_systimestamp(void)
 {
-	int ret;
 	time_t ts;
-	ret = time(&ts);
-	if(ret)
-		return ts;
-	else
-		return -1;
+	struct tm *t;
+	uint32_t minutes;
+
+	time(&ts);
+	t = gmtime(&ts);
+
+	minutes = t->tm_yday * 60 * 24 + t->tm_hour * 60 + t->tm_min;
+
+	return minutes;
 }
 /******************************************************************************
 *	函数:	osal_get_systime
@@ -107,6 +111,7 @@ static inline uint16_t osal_get_systime(void)
 	gettimeofday(&tv, NULL);
 
 	t = gmtime(&tv.tv_sec);
+
 	//闰秒
 	val = t->tm_sec * 1000 + (tv.tv_usec / 1000);
 

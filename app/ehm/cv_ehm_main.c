@@ -35,12 +35,12 @@ ehm_config_st ehm_config =
         
     { COMPORT_VERIFY_NO, 8, 1, 0, 1152000, COMPORT_RTSCTS_DISABLE },
     
-    V2X_NB_NODE_SUMMRAY_INFO|V2X_NB_NODE_DETAIL_INFO|V2X_BASIC_VEHICLE_STATUS|V2X_NB_VEHICLE_ALERT|V2X_ROADSIZE_ALERT
+    V2X_NB_VEHICLE_ALERT|V2X_ROADSIZE_ALERT
 };
 
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
 
-
+//static uint32_t v2x_reported_info;
 
 
 /* Convert vsa alert to ehm alert flag. */
@@ -811,11 +811,14 @@ static uint16_t ehm_msg_cal_frame(uint8_t *buf, uint16_t len)
 *****************************************************************************/
 static int ehm_msg_check_frame(uint8_t *buf, uint16_t len)
 {
+//	int i;
 	uint16_t chksum = 0x0;
 	uint16_t chk = 0x00;
 	chksum = CRC16(buf, len);
 	chk = *(uint16_t *)(buf + len);
-
+//	for(i=0;i<len;i++)
+//		osal_printf("%02x ",buf[i]);
+//	osal_printf("\nchk:%04x chksum:%04x\n",chk,chksum);
 	if(cv_ntohs(chk) == chksum)
 		return 0;
 	else
@@ -838,6 +841,7 @@ void ehm_receive_msg
     ehm_buffer_st_ptr buff_ptr
 )
 { 
+//	int i;
     int result = 0;
 
     
@@ -853,6 +857,10 @@ void ehm_receive_msg
                 buff_ptr->data_ptr = buff_ptr->buffer;
                 buff_ptr->data_len = result;
                 buff_ptr->time = osal_get_systemtime();
+                osal_printf("recv_len:%d\n",result);
+//                for(i=0; i<result ;i++)
+//                	osal_printf("%02X ",buff_ptr->buffer[i]);
+//                osal_printf("\n");
             }
             else
             {
@@ -885,7 +893,9 @@ int ehm_parse_msg_header
     EHM_RECV_TYPE_E recv_type, 
 
     /* Pointer to receive buffer structure. */
-    ehm_buffer_st_ptr buff_ptr
+    ehm_buffer_st_ptr buff_ptr,
+
+    uint16_t *msg_len
 )
 {
 	uart_msg_header_st_ptr uart_ptr = (uart_msg_header_st_ptr)buff_ptr->data_ptr;
@@ -911,7 +921,8 @@ int ehm_parse_msg_header
                 /* Detect uart message header length. */
                 if(cv_ntohs(uart_ptr->length) <= buff_ptr->data_len)
                 {
-                    buff_ptr->data_len = cv_ntohs(uart_ptr->length);
+                    //buff_ptr->data_len = cv_ntohs(uart_ptr->length);
+                	*msg_len = cv_ntohs(uart_ptr->length);
                 }
                 else
                 {   
@@ -1069,7 +1080,16 @@ void * ehm_main_thread_entry(void *param)
 
     return NULL;
 }
-
+//static int ehm_send_package(ehm_envar_st * p_ehm)
+//{
+//	int result = 0;
+//
+//	result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
+//	if(result < 0)
+//	{
+//		osal_printf("comport_send error ret=%d\n", result);
+//	}
+//}
 
 /*****************************************************************************
  @funcname: ehm_package_send
@@ -1105,6 +1125,7 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
     chksum = (uint16_t *)(pdata + UART_MSG_HEADER_ST_LEN + length);
     *chksum = cv_ntohs(ehm_msg_cal_frame((pdata + UART_MSG_HEADER_ST_LEN), length));
 
+    p_ehm->buffer_tx.data_len = UART_MSG_HEADER_ST_LEN + length + SIZEOF_MSG_CHK_DOMAIN;
     /*uart send data to periph */
 
     result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
@@ -1121,10 +1142,10 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
 }
 
 
-void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
+void ehm_send_msg_group(ehm_envar_st_ptr p_ehm)
 {
     int		             ret = 0;
-
+    uint32_t send_info = p_ehm->config_ptr->v2x_report_info;
     /* neighour node summary information. */
 	if(send_info & V2X_NB_NODE_SUMMRAY_INFO)
 	{
@@ -1133,13 +1154,23 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 		{
 			osal_printf("encode_nb_node_summary_infor error ret=%d. \n", ret);
 		}
+
 		ret = ehm_package_send(p_ehm);
 		if(ret < 0)
 		{
 			osal_printf("ehm_package_send error ret=%d. \n", ret);
 		}
+		//usleep(100000);
+//		if((p_ehm->buffer_tx.data_len + *len) > 2048)
+//		{
+//			return v2x_reported_info;
+//		}else{
+//			memcpy(pdata + *len , p_ehm->buffer_tx.buffer,p_ehm->buffer_tx.data_len);
+//			v2x_reported_info &= ~(V2X_NB_NODE_SUMMRAY_INFO);
+//			*len += p_ehm->buffer_tx.data_len;
+//		}
 	}
-	usleep(100000);
+
     /* Neighbour node detail information. */
 	if(send_info & V2X_NB_NODE_DETAIL_INFO)
 	{
@@ -1153,8 +1184,17 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 		{
 			osal_printf("ehm_package_send error ret=%d\n",ret);
 		}
+		//usleep(100000);
+//		if((p_ehm->buffer_tx.data_len + *len) > 2048)
+//		{
+//			return v2x_reported_info;
+//		}else{
+//			memcpy(pdata + *len , p_ehm->buffer_tx.buffer,p_ehm->buffer_tx.data_len);
+//			v2x_reported_info &= ~(V2X_NB_NODE_DETAIL_INFO);
+//			*len += p_ehm->buffer_tx.data_len;
+//		}
 	}
-	usleep(100000);
+
     /* Neighour node alert. */
 	if(send_info & V2X_NB_VEHICLE_ALERT)
 	{
@@ -1168,8 +1208,17 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 		{
 			osal_printf("ehm_package_send error ret=%d\n",ret);
 		}
+//		if((p_ehm->buffer_tx.data_len + *len) > 2048)
+//		{
+//			return v2x_reported_info;
+//		}else{
+//			memcpy(pdata + *len , p_ehm->buffer_tx.buffer,p_ehm->buffer_tx.data_len);
+//			v2x_reported_info &= ~(V2X_NB_VEHICLE_ALERT);
+//			*len += p_ehm->buffer_tx.data_len;
+//		}
+		//usleep(100000);
 	}
-	usleep(100000);
+
     /* Local node basic status. */
 	if(send_info & V2X_BASIC_VEHICLE_STATUS)
 	{
@@ -1183,6 +1232,14 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 		{
 			osal_printf("ehm_package_send error ret=%d\n",ret);
 		}
+//		if((p_ehm->buffer_tx.data_len + *len) > 2048)
+//		{
+//			return v2x_reported_info;
+//		}else{
+//			memcpy(pdata + *len , p_ehm->buffer_tx.buffer,p_ehm->buffer_tx.data_len);
+//			v2x_reported_info &= ~(V2X_BASIC_VEHICLE_STATUS);
+//			*len += p_ehm->buffer_tx.data_len;
+//		}
 	}
 
     /* Roadside alert. */
@@ -1199,8 +1256,16 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm, uint32_t send_info)
 		{
 			osal_printf("ehm_package_send error ret=%d\n",ret);
 		}
+//		if((p_ehm->buffer_tx.data_len + *len) > 2048)
+//		{
+//			return v2x_reported_info;
+//		}else{
+//			memcpy(pdata + *len , p_ehm->buffer_tx.buffer,p_ehm->buffer_tx.data_len);
+//			v2x_reported_info &= ~(V2X_ROADSIZE_ALERT);
+//			*len += p_ehm->buffer_tx.data_len;
+//		}
 	}
-
+//	return v2x_reported_info;
 }
 
 
@@ -1225,13 +1290,13 @@ void * ehm_tx_thread_entry(void *arg)
     
     uint8_t buf[EHM_MQ_MSG_SIZE] = { 0 };
     uint32_t 	             len = 0;
-
-    
+    //uint8_t databuf[2048] = {0};
+    //uint32_t datalen = 0;
     /* Print thread trace. */
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_TRACE, "Thread %s: ----> \n", __FUNCTION__);
 
 RCV_MSGQ:
-
+    //datalen = 0;
     /* Waiting for msg queue forever. */
     ret = osal_queue_recv(p_ehm->queue_tx, buf, &len, OSAL_WAITING_FOREVER);
     if (ret != OSAL_STATUS_SUCCESS)
@@ -1241,14 +1306,22 @@ RCV_MSGQ:
     }
 
     /* Start next receive when msg not for tx thread.  */
-    if(((sys_msg_t *)buf)->id != EHM_MSG_VSA_SEND_DATA)
+    if(((sys_msg_t *)buf)->id == EHM_MSG_VSA_SEND_DATA)
     {
-        OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: Msg not for this thread. [%d]. \n", __FUNCTION__);
-        goto RCV_MSGQ;
-    }
+    	/* Send message group based on information. */
+//    	if(!v2x_reported_info)
+//    		v2x_reported_info = p_ehm->config_ptr->v2x_report_info;
+    	ehm_send_msg_group(p_ehm);
 
-    /* Send message group based on information. */
-    ehm_send_msg_group(p_ehm, p_ehm->config_ptr->v2x_report_info);
+//		ret = dstream_device[DSTREAM_USBD].send(databuf, datalen);
+//		if(ret < 0)
+//		{
+//			osal_printf("comport_send error ret=%d\n", ret);
+//		}
+    }else{
+    	OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_ERROR, "%s: Msg not for this thread. [%d]. \n", __FUNCTION__);
+    	goto RCV_MSGQ;
+    }
 
     goto RCV_MSGQ;
     
@@ -1266,42 +1339,50 @@ void * ehm_rx_thread_entry(void *param_ptr)
 {
     ehm_envar_st_ptr ehm_ptr = (ehm_envar_st_ptr)param_ptr;
     int               result = 0;
-
+    uint16_t msg_len;
 
 START_ROUTINE:
     
     /* Receive message from the specific pipeline. */
     ehm_receive_msg(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx));
-
-    /* Start the next read process when data length error. */
-	if(ehm_ptr->buffer_rx.data_len == 0)
-	{
-	    osal_printf("ehm receive data error. \n");
-        goto START_ROUTINE;	  
-	}
-    
-    /* Parse message header according to data type. */
-    result = ehm_parse_msg_header(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx));
-    if(result != 0)
-    {   
-        osal_printf("ehm parse msg header error. \n");
-        goto START_ROUTINE;
-    }
-
-    /* Check message.  */
-    result = ehm_msg_check_frame(ehm_ptr->buffer_rx.data_ptr, (ehm_ptr->buffer_rx.data_len - 2));
-    if(result != 0)
-    {   
-        osal_printf("ehm msg check sum error. \n");
-   //     goto START_ROUTINE;     
-    }
-    
-    /* Parse message body. */
-    result = ehm_parse_msg_body(&(ehm_ptr->buffer_rx));
-    if(result != 0)
+    while(ehm_ptr->buffer_rx.data_len)
     {
-        osal_printf("ehm parse msg body error. \n");
+
+    	/* Start the next read process when data length error. */
+		if(ehm_ptr->buffer_rx.data_len == 0)
+		{
+			osal_printf("ehm receive data error. \n");
+			goto START_ROUTINE;
+		}
+
+		/* Parse message header according to data type. */
+		result = ehm_parse_msg_header(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx), &msg_len);
+		if(result != 0)
+		{
+			osal_printf("ehm parse msg header error. \n");
+			goto START_ROUTINE;
+		}
+
+		/* Check message.  */
+		result = ehm_msg_check_frame(ehm_ptr->buffer_rx.data_ptr, (msg_len - 2));
+		if(result != 0)
+		{
+			osal_printf("ehm msg check sum error. \n");
+	   //     goto START_ROUTINE;
+		}
+
+		/* Parse message body. */
+		result = ehm_parse_msg_body(&(ehm_ptr->buffer_rx));
+		ehm_ptr->buffer_rx.data_ptr += (msg_len - FRAME_MSG_HEADER_ST_LEN);
+		ehm_ptr->buffer_rx.data_len -= msg_len;
+
+		if(result != 0)
+		{
+			osal_printf("ehm parse msg body error. \n");
+		}
+
     }
+    
 
     
     goto START_ROUTINE;
@@ -1321,6 +1402,16 @@ void timer_heartbeat_callback(void *arg)
 	}
 }
 
+//void timer_send_start_callback(void *arg)
+//{
+//	ehm_envar_st *p_ehm = (ehm_envar_st *)arg;
+//
+//
+//	if (p_ehm->queue_tx)
+//	{
+//		ehm_add_event_queue(p_ehm, EHM_MSG_VSA_SEND_DATA, 0, 0, NULL);
+//	}
+//}
 /*****************************************************************************
  @funcname: ehm_init
  @brief   : ehm module init 
@@ -1372,12 +1463,15 @@ void ehm_init(void)
     p_ehm->task_rx = osal_task_create("task-ehmrx", ehm_rx_thread_entry, p_ehm, EHM_RX_THREAD_STACK_SIZE, EHM_RX_THREAD_PRIORITY);
     osal_assert(p_ehm->task_rx != NULL);
 
+//    p_ehm->p_timer_send = osal_timer_create("tm-nb", timer_send_start_callback, p_ehm, 100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
+//        osal_assert(p_ehm->p_timer_heartbeat != NULL);
 
     p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 500, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
     osal_assert(p_ehm->p_timer_heartbeat != NULL);
 
 
     osal_timer_start(p_ehm->p_timer_heartbeat);
+//    osal_timer_start(p_ehm->p_timer_send);
 }
 
 

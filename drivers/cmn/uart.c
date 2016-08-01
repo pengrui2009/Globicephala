@@ -608,7 +608,7 @@ static int dstream_1_open (void)
 	int ret;
 
 	ret = comport_init(DSTREAM_1);
-	if(ret < 1)
+	if(ret < 0)
 	{
 		goto err;
 	}
@@ -623,7 +623,7 @@ static int dstream_1_cfg (comport_config_t *cfg)
 	int ret;
 
 	ret = comport_setconfig(DSTREAM_1, cfg);
-	if(ret < 1){
+	if(ret < 0){
 		goto error;
 	}
 	ret = 0;
@@ -636,7 +636,7 @@ static int dstream_1_send (uint8_t *buf, uint32_t count)
 	int ret;
 
 	ret = comport_send(DSTREAM_1, buf, count);
-	if(ret < 1){
+	if(ret < 0){
 		goto error;
 	}
 //	ret = comport_flush(DSTREAM_1, TCOFLUSH);
@@ -653,7 +653,7 @@ static int dstream_1_recv (uint8_t *buf, uint32_t count)
 	int ret;
 
 	ret = comport_recv(DSTREAM_1, buf, count);
-	if(ret < 1){
+	if(ret < 0){
 		goto error;
 	}
 error:
@@ -665,7 +665,7 @@ static int dstream_1_close (void)
 	int ret;
 
 	ret = comport_close(DSTREAM_1);
-	if(ret < 1){
+	if(ret < 0){
 		goto error;
 	}
 	ret = 0;
@@ -679,7 +679,7 @@ static int dstream_2_open (void)
 	int ret;
 
 	ret = comport_init(DSTREAM_USBD);
-	if(ret < 2)
+	if(ret < 0)
 	{
 		goto err;
 	}
@@ -694,7 +694,7 @@ static int dstream_2_cfg (comport_config_t *cfg)
 	int ret;
 
 	ret = comport_setconfig(DSTREAM_USBD, cfg);
-	if(ret < 2){
+	if(ret < 0){
 		goto error;
 	}
 	ret = 0;
@@ -707,7 +707,7 @@ static int dstream_2_send (uint8_t *buf, uint32_t count)
 	int ret;
 
 	ret = comport_send(DSTREAM_USBD, buf, count);
-	if(ret < 2){
+	if(ret < 0){
 		goto error;
 	}
 //	ret = comport_flush(DSTREAM_USBD, TCOFLUSH);
@@ -724,7 +724,7 @@ static int dstream_2_recv (uint8_t *buf, uint32_t count)
 	int ret;
 
 	ret = comport_recv(DSTREAM_USBD, buf, count);
-	if(ret < 2){
+	if(ret < 0){
 		goto error;
 	}
 error:
@@ -736,7 +736,7 @@ static int dstream_2_close (void)
 	int ret;
 
 	ret = comport_close(DSTREAM_USBD);
-	if(ret < 2){
+	if(ret < 0){
 		goto error;
 	}
 	ret = 0;
