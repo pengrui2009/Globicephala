@@ -42,7 +42,8 @@ INCLUDEFLAGS += -I$(TOPDIR)/include \
 		-I$(TOPDIR)/app/oam/external \
 		-I$(TOPDIR)/app/oam/internal \
 		-I$(TOPDIR)/app/oam/test \
-		
+		-I$(TOPDIR)/app/J2735
+
 WARNING = -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common
 #-Werror-implicit-function-declaration
 CFLAGS = -g3 -O2 -Werror $(OSFLAG) $(WARNING) $(INCLUDEFLAGS)

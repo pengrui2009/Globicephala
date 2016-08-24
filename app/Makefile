@@ -25,6 +25,7 @@ SUBDIRS += $(TOPDIR)/app/sys \
     $(TOPDIR)/app/oam/internal \
     $(TOPDIR)/app/oam/test \
     $(TOPDIR)/app/oam/test/internal \
+    $(TOPDIR)/app/J2735
 
 OBJ_FILES=$(SUBDIRS:%=%/*.o)
 LDFLAGS = -lm -lrt -pthread -L$(LIBDIR)/libnl/lib -lnl-3 -lnl-genl-3

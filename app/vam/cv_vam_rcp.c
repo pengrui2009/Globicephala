@@ -370,6 +370,226 @@ int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 }
 
 
+
+
+
+#if 0
+
+uint8_t bsm_buffer[500] = { 0 };
+uint8_t rxbsm_buffer[500] = { 0 };
+
+int main(int ac, char **av)
+{
+   BasicSafetyMessage_t bsm_msg = { 0 };
+   BSMpartIIExtension_t   *partii_ptr = NULL;
+
+   asn_enc_rval_t    encode_rval = { 0 };
+
+   BasicSafetyMessage_t *rxbsm_ptr = NULL;
+   asn_dec_rval_t      decode_rval = { 0 };
+   asn_codec_ctx_t      decode_ctx = { 0 };
+
+
+   bsm_msg->coreData.msgCnt = 127;
+
+   bsm_msg.coreData.id.size = 4;
+   bsm_msg.coreData.id.buf = calloc(1, bsm_ptr->coreData.id.size);
+   if(bsm_msg->coreData.id.buf == NULL)
+   {
+      printf("bsm_ptr->coreData.id.buf is NULL. \n");
+      exit(1);
+   }
+   else
+   {
+      bsm_msg->coreData.id.buf[0] = 0x01;
+      bsm_msg->coreData.id.buf[1] = 0x02;
+      bsm_msg->coreData.id.buf[2] = 0x03;
+      bsm_msg->coreData.id.buf[3] = 0x04;
+   }
+
+   bsm_msg->coreData.secMark = 0xffff;
+   bsm_msg->coreData.lat = 900000001;
+   bsm_msg->coreData.Long = 1800000001;
+   bsm_msg->coreData.elev = 61439;
+
+   bsm_msg->coreData.accuracy.semiMajor = 100;
+   bsm_msg->coreData.accuracy.semiMinor = 5;
+   bsm_msg->coreData.accuracy.orientation = 1000;
+
+   bsm_msg->coreData.transmission = TransmissionState_park;
+   bsm_msg->coreData.speed = 250;
+   bsm_msg->coreData.heading = 125;
+   bsm_msg->coreData.angle = 127;
+
+   bsm_msg->coreData.accelSet.Long = 11;
+   bsm_msg->coreData.accelSet.lat = 10;
+   bsm_msg->coreData.accelSet.vert = 12;
+   bsm_msg->coreData.accelSet.yaw = 13;
+
+   bsm_msg->coreData.brakes.wheelBrakes.size = 1;
+   bsm_msg->coreData.brakes.wheelBrakes.bits_unused = 3;
+   bsm_msg->coreData.brakes.wheelBrakes.buf = calloc(1, bsm_ptr->coreData.
+brakes.wheelBrakes.size);
+   if(bsm_msg->coreData.brakes.wheelBrakes.buf == NULL)
+   {
+      printf("bsm_ptr->coreData.brakes.wheelBrakes.buf is Null. \n");
+      exit(1);
+   }
+
+   bsm_ptr->coreData.brakes.traction = TractionControlStatus_off;
+   bsm_ptr->coreData.brakes.abs = AntiLockBrakeStatus_on;
+   bsm_ptr->coreData.brakes.scs = StabilityControlStatus_engaged;
+   bsm_ptr->coreData.brakes.brakeBoost = BrakeBoostApplied_unavailable;
+   bsm_ptr->coreData.brakes.auxBrakes = AuxiliaryBrakeStatus_reserved;
+
+   bsm_ptr->coreData.size.width = 8;
+   bsm_ptr->coreData.size.length = 4095;
+
+
+   /* Part II content.------------------------------------------ */
+
+
+#if 1
+
+
+   bsm_ptr->partII = calloc(1, sizeof(*(bsm_ptr->partII)));
+   if(bsm_ptr->partII == NULL)
+   {
+      printf("bsm_ptr->partII is NULL. \n");
+      exit(1);
+   }
+
+   partii_ptr = calloc(1, sizeof(BSMpartIIExtension_t));
+   if(partii_ptr == NULL)
+   {
+      printf("partii_ptr is NULL. \n");
+      exit(1);
+   }
+
+   partii_ptr->present = BSMpartIIExtension_PR_vehicleSafetyExt;
+
+   partii_ptr->choice.vehicleSafetyExt.events = calloc(1, sizeof(
+VehicleEventFlags_t));
+   if(partii_ptr->choice.vehicleSafetyExt.events == NULL)
+   {
+      printf("partii_ptr->choice.vehicleSafetyExt.events is NULL. \n");
+      exit(1);
+   }
+
+   partii_ptr->choice.vehicleSafetyExt.events->size = 2;
+   partii_ptr->choice.vehicleSafetyExt.events->bits_unused = 3;
+   partii_ptr->choice.vehicleSafetyExt.events->buf = calloc(1, partii_ptr->
+choice.vehicleSafetyExt.events->size);
+   if(partii_ptr->choice.vehicleSafetyExt.events->buf == NULL)
+   {
+      printf("partii_ptr->choice.vehicleSafetyExt.events->buf is NULL. \n");
+      exit(1);
+   }
+
+   partii_ptr->choice.vehicleSafetyExt.events->buf[0] = 0x55;
+   partii_ptr->choice.vehicleSafetyExt.events->buf[1] = 0xAA;
+
+   partii_ptr->choice.vehicleSafetyExt.pathHistory = NULL;
+   partii_ptr->choice.vehicleSafetyExt.pathPrediction = NULL;
+   partii_ptr->choice.vehicleSafetyExt.lights = NULL;
+
+
+   if(-1 == asn_sequence_add(&(bsm_ptr->partII->list), partii_ptr))
+   {
+      printf("asn_sequence_add() return error. \n");
+      exit(1);
+   }
+
+#else
+
+   bsm_ptr->partII = NULL;
+
+#endif
+
+
+   /* Encode to UPER.------------------------------------------ */
+   encode_rval = uper_encode_to_buffer(&asn_DEF_BasicSafetyMessage, bsm_ptr, 
+bsm_buffer, sizeof(bsm_buffer));
+   if(encode_rval.encoded == -1)
+   {
+      printf(" uper_encode_to_buffer() is faild. \n ");
+      exit(1);
+   }
+   else
+   {
+      int i = 0;
+      printf("%d ->>\n",encode_rval.encoded);
+
+      for(i = 0; i < encode_rval.encoded; i++)
+      {
+         printf("%x ", bsm_buffer[i]);
+      }
+      printf(" uper_encode_to_buffer() is succeed. \n ");
+   }
+
+
+
+
+
+   decode_rval = uper_decode(&decode_ctx, &asn_DEF_BasicSafetyMessage,(void **)&rxbsm_ptr, bsm_buffer, sizeof(bsm_buffer), 0, 0);
+   if(decode_rval.code == RC_FAIL)
+   {
+      printf(" uper_decode() is faild. \n ");
+   }
+   else
+   {
+      printf(" uper_decode() is ok. \n ");
+
+
+
+      if(rxbsm_ptr->coreData.Long != bsm_ptr->coreData.Long)
+      {
+          printf("Do not match. \n");
+      }
+      else
+      {
+          printf("Match.\n");
+      }
+
+
+      encode_rval = uper_encode_to_buffer(&asn_DEF_BasicSafetyMessage, rxbsm_ptr, rxbsm_buffer, sizeof(rxbsm_buffer));
+       if(encode_rval.encoded == -1)
+       {
+          printf(" uper_encode_to_buffer() is faild. \n ");
+          exit(1);
+       }
+       else
+       {
+          printf("Just test code!!! ");
+          int i = 0;
+          for(i = 0; i < sizeof(rxbsm_buffer); i++)
+          {
+             printf("%x ", rxbsm_buffer[i]);
+          }
+          printf(" uper_encode_to_buffer() is succeed. \n ");
+       }
+   }
+
+
+    while(1);
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+#endif
+
+
+
+
+
 int rcp_send_bsm(vam_envar_t *p_vam)
 {
     int result = 0;
