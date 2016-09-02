@@ -1,5 +1,7 @@
 ASN_MODULE_SOURCES=	\
+	MessageModuleSet.c	\
 	BasicSafetyMessage.c	\
+	BsmBody.c	\
 	PartIIid.c	\
 	BSMpartIIExtension.c	\
 	BSMcoreData.c	\
@@ -69,7 +71,9 @@ ASN_MODULE_SOURCES=	\
 	YawRate.c
 
 ASN_MODULE_HEADERS=	\
+	MessageModuleSet.h	\
 	BasicSafetyMessage.h	\
+	BsmBody.h	\
 	PartIIid.h	\
 	BSMpartIIExtension.h	\
 	BSMcoreData.h	\

@@ -49,7 +49,6 @@ inline int16_t encode_acceleration(float acceleration)
         result = (2000 < result)? 2000 : result;
         result = (result < -2000)? -2000 : result;
     }
-    result = cv_ntohs(result);
 
 	return result;
 }
@@ -97,7 +96,6 @@ inline uint16_t encode_angle(float angle)
     {
         result = 28800;
     }
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -146,7 +144,6 @@ inline int32_t encode_elevation(float elevation)
         result = (61439 < result)? 61439 : result;
         result = (result < -4095)? -4095 : result;
     }
-    result = cv_ntohl(result);
 
 	return result;
 }
@@ -196,7 +193,6 @@ inline int32_t encode_latitude(double latitude)
         result = (900000000 < result)? 900000000 : result;
         result = (result < -900000000)? -900000000 : result;
     }
-    result = cv_ntohl(result);
 
 	return result;
 }
@@ -244,7 +240,6 @@ inline int32_t encode_longitude(double longitude)
         result = (1800000000 < result)? 1800000000 : result;
         result = (result < -1799999999)? -1799999999 : result;
     }
-    result = cv_ntohl(result);
 
 	return result;
 }
@@ -321,7 +316,6 @@ inline uint16_t encode_semimajor_axis_orientation(float orientation)
     	result = 0xFFFF;
     else
     	result = ((uint16_t)(orientation / 0.0054932479));
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -421,7 +415,6 @@ inline uint16_t encode_vehicle_width(float width)
 
 
 	result = (uint16_t)(width * 100);
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -456,8 +449,7 @@ inline uint16_t encode_vehicle_length(float length)
     uint16_t result = 0;
 
 
-	result = (uint16_t)(length * 100);
-    result = cv_ntohs(result);
+    result = (uint16_t)(length * 100);
 
     return result;
 }
@@ -495,8 +487,6 @@ inline uint16_t encode_absolute_velocity(float velocity)
     result = (uint16_t)(velocity * 50000.0f / 3600);
 
     result = (8190 < result)? 8190 : result;
-
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -619,7 +609,6 @@ inline int16_t encode_yawrate(float yawrate)
 
     /* Unit 0.01 degree/s. */
     result = (int16_t)(yawrate / 0.01);
-    result = cv_ntohs(result);
 
     return result;
 }

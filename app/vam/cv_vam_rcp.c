@@ -23,6 +23,11 @@
 #include "app_msg_format.h"
 
 
+#include "MessageModuleSet.h"
+#include "BasicSafetyMessage.h"
+
+
+
 /*****************************************************************************
  * declaration of variables and functions                                    *
 *****************************************************************************/
@@ -34,6 +39,73 @@ itis_codes_t itiscode[RSA_TYPE_MAX+1] =
 };
 
 float rcp_dbg_distance = 0;
+
+
+/* Key for bsm tx message structure and UPER data printf. */
+static uint8_t KeyPrintfBsmTxStruct = 1;
+static uint8_t KeyPrintfBsmTxData = 1;
+
+/* Key for bsm rx message structure and UPER data printf. */
+static uint8_t KeyPrintfBsmRxStruct = 1;
+static uint8_t KeyPrintfBsmRxData = 1;
+
+
+
+/* Printf bsm message structure data. */
+static void bsm_printf_msgstruct(const char *str, BasicSafetyMessage_t *bsm_ptr);
+
+/* Printf bsm message PER data. */
+static void bsm_printf_msgdata(const char *str, uint8_t *buffer_ptr, uint16_t valid_bit);
+
+/* Parse bsm message from the specific buffer. */
+static int bsm_parse_msg(BasicSafetyMessage_t **bsm_ptr_ptr, uint8_t *buffer_ptr, uint16_t buffer_size);
+
+/* Build bsm message into the specific buffer. */
+static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr);
+
+/* Allocate bsm message. */
+static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam); 
+
+/* Free bsm message. */
+static int bsm_free_msg(BasicSafetyMessage_t *bsm_ptr);
+
+/* Add bsm parti BSMcoreData into message. */
+static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_envar_t *p_vam);
+
+/* Free bsm parti BSMcoreData from message. */
+static int bsm_free_parti_BSMcoreData(BSMcoreData_t *coredata_ptr);
+
+/* Allocate bsm partii structure. */
+static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_optional_st_ptr optional_ptr);
+
+/* Free bsm partii structure. */
+static int bsm_free_partii_structure(BasicSafetyMessage_t *bsm_ptr);
+
+/* Allocate bsm partii element vehicleSafetyExt. */
+static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr);
+
+/* Free bsm partii element vehicleSafetyExt. */
+static int bsm_free_partii_vehicleSafetyExt(BSMpartIIExtension_t *element_ptr);
+
+/* Allocate partii element specialVehicleExt. */
+static int bsm_allocate_partii_specialVehicleExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr);
+
+/* Free partii element specialVehicleExt. */
+static int bsm_free_partii_specialVehicleExt(BSMpartIIExtension_t *element_ptr);
+
+/* Allocate partii element supplementalVehicleExt. */
+static int bsm_allocate_partii_supplementalVehicleExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr);
+
+/* Free partii element supplementalVehicleExt. */
+static int bsm_free_partii_supplementalVehicleExt(BSMpartIIExtension_t *element_ptr);
+
+/* Free bsm partii element main routine. */
+static void bsm_free_partii_element(BSMpartIIExtension_t *element_ptr);
+
+
+
+
+
 
 /*****************************************************************************
  * implementation of functions                                               *
@@ -161,85 +233,6 @@ int rcp_mda_process(uint8_t msg_hops,
 }
 
 
-int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
-{
-    vam_sta_node_t        *p_sta = NULL;
-    rcp_msg_basic_safty_t *p_bsm = (rcp_msg_basic_safty_t *)databuf;;
-
-
-    /* Return error when data length less then bsm minimum length. */
-    if(datalen < (sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)))
-    {
-        return -1;
-    }
-
-    /* Return out when receive my own's bsm message. */
-    if(0 == memcmp(p_bsm->header.temporary_id, p_vam->local.pid, RCP_TEMP_ID_LEN))
-    {
-        return 0;
-    }
-    
-    rcp_mda_process(p_bsm->header.msg_id.hops, p_bsm->header.msg_count, 
-                     p_bsm->header.temporary_id, p_bsm->forward_id, databuf, datalen);
-
-    /* Find the current sta node id structure from neighbour list.*/
-    p_sta = vam_find_sta(p_vam, p_bsm->header.temporary_id);
-
-    if(p_sta != NULL)
-    {
-        p_sta->s.dsecond = cv_ntohs(p_bsm->dsecond);
-        p_sta->s.time = osal_get_systemtime();
-
-        p_sta->s.pos.longitude = decode_longitude(p_bsm->position.lon);
-        p_sta->s.pos.latitude = decode_latitude(p_bsm->position.lat);
-        p_sta->s.pos.elevation = decode_elevation(p_bsm->position.elev);
-        p_sta->s.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(p_bsm->position.accu.semi_major);
-        p_sta->s.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(p_bsm->position.accu.semi_major_orientation);
-        p_sta->s.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(p_bsm->position.accu.semi_minor);
-
-        p_sta->s.transmission_state = p_bsm->motion.transmission_state;
-        p_sta->s.speed = decode_absolute_velocity(p_bsm->motion.speed);
-        p_sta->s.dir = decode_angle(p_bsm->motion.heading);
-        
-        p_sta->s.steer_wheel_angle = decode_steer_wheel_angle(p_bsm->motion.steering_wheel_angle);
-        
-        p_sta->s.acce_set.longitudinal = decode_acceleration(p_bsm->motion.acce.lon);
-        p_sta->s.acce_set.lateral = decode_acceleration(p_bsm->motion.acce.lat);
-        p_sta->s.acce_set.vertical = decode_vertical_acceleration(p_bsm->motion.acce.vert);
-        p_sta->s.acce_set.yaw_rate = decode_yawrate(p_bsm->motion.acce.yaw);
-
-        decode_brake_sytem_status(&p_bsm->brakes, &p_sta->s.brake_stat);
-
-        p_sta->s.vec_size.vec_length = decode_vehicle_length(p_bsm->size.length);
-        p_sta->s.vec_size.vec_width = decode_vehicle_width(p_bsm->size.width);
-
-        /* for test  */
-        if (1 == g_dbg_print_type)
-        {
-            rcp_dbg_distance = vsm_get_distance(&p_vam->local.pos, &p_sta->s.pos); 
-        }
-
-        /* Parsing event domain when has extra data. */
-        if((sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)) < datalen)
-        {
-            p_sta->s.alert_mask = decode_vehicle_alert(p_bsm->safetyExt.events); 
-
-            /* inform the app layer once */
-            if(p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE] != NULL)
-            {
-                p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE](&p_sta->s);
-            } 
-        }
-        else
-        {
-            p_sta->s.alert_mask = 0;
-        }
-
-  
-    }
-
-    return 0;
-}
 
 
 int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
@@ -321,35 +314,6 @@ int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 }
 
 
-int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
-{
-    rcp_msgid_t *p_msgid = (rcp_msgid_t *)databuf;
-
-
-    /* Error detection. */
-    if (datalen < sizeof(rcp_msg_head_t))
-    {
-        return -1;
-    }
-
-    switch(p_msgid->id)
-    {
-        case RCP_MSG_ID_BSM:  {
-            rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);    break;
-        } 
-        case RCP_MSG_ID_EVAM: {
-            rcp_parse_evam(p_vam, rxinfo, databuf, datalen);   break;
-        } 
-        case RCP_MSG_ID_RSA:  {
-            rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);    break;   
-        }
-        default:              {
-                                                               break; 
-        }   
-    }
-
-    return p_msgid->id;
-}
 
 
 /*****************************************************************************
@@ -370,304 +334,805 @@ int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 }
 
 
-
-
-
-#if 0
-
-uint8_t bsm_buffer[500] = { 0 };
-uint8_t rxbsm_buffer[500] = { 0 };
-
-int main(int ac, char **av)
+/* Printf bsm message structure data. */
+static void bsm_printf_msgstruct(const char *str, BasicSafetyMessage_t *bsm_ptr)
 {
-   BasicSafetyMessage_t bsm_msg = { 0 };
-   BSMpartIIExtension_t   *partii_ptr = NULL;
-
-   asn_enc_rval_t    encode_rval = { 0 };
-
-   BasicSafetyMessage_t *rxbsm_ptr = NULL;
-   asn_dec_rval_t      decode_rval = { 0 };
-   asn_codec_ctx_t      decode_ctx = { 0 };
+    BSMcoreData_t *coredata_ptr = &(bsm_ptr->bsmBody.coreData);
 
 
-   bsm_msg->coreData.msgCnt = 127;
+    /* User specific strings. */
+    printf(str);
+    
+    /* Message tag. */
+    printf("\nBSM message structure------------------->\n");
+        
+    /* Msg id. */
+    printf("bsm_ptr->dsrcMsgId = %lx. \n", bsm_ptr->dsrcMsgId);
+    
+    /* Message count. */
+    printf("coredata_ptr->msgCnt = %lx. \n", coredata_ptr->msgCnt);
 
-   bsm_msg.coreData.id.size = 4;
-   bsm_msg.coreData.id.buf = calloc(1, bsm_ptr->coreData.id.size);
-   if(bsm_msg->coreData.id.buf == NULL)
-   {
-      printf("bsm_ptr->coreData.id.buf is NULL. \n");
-      exit(1);
-   }
-   else
-   {
-      bsm_msg->coreData.id.buf[0] = 0x01;
-      bsm_msg->coreData.id.buf[1] = 0x02;
-      bsm_msg->coreData.id.buf[2] = 0x03;
-      bsm_msg->coreData.id.buf[3] = 0x04;
-   }
+    /* Id. */
+    printf("coredata_ptr->id.buf = %x,%x,%x,%x. \n", coredata_ptr->id.buf[0],coredata_ptr->id.buf[1],coredata_ptr->id.buf[2],coredata_ptr->id.buf[3]);
 
-   bsm_msg->coreData.secMark = 0xffff;
-   bsm_msg->coreData.lat = 900000001;
-   bsm_msg->coreData.Long = 1800000001;
-   bsm_msg->coreData.elev = 61439;
+    /* Dsecond. */
+    printf("coredata_ptr->secMark = %lx. \n", coredata_ptr->secMark);
 
-   bsm_msg->coreData.accuracy.semiMajor = 100;
-   bsm_msg->coreData.accuracy.semiMinor = 5;
-   bsm_msg->coreData.accuracy.orientation = 1000;
+    /* Postion. */
+    printf("coredata_ptr->lat,Long,elev = %lx,%lx,%lx. \n", coredata_ptr->lat,coredata_ptr->Long,coredata_ptr->elev);
 
-   bsm_msg->coreData.transmission = TransmissionState_park;
-   bsm_msg->coreData.speed = 250;
-   bsm_msg->coreData.heading = 125;
-   bsm_msg->coreData.angle = 127;
+    /* Position accuracy. */
+    printf("coredata_ptr->accuracy.semiMajor,semiMinor,orientation = %lx,%lx,%lx. \n", coredata_ptr->accuracy.semiMajor,coredata_ptr->accuracy.semiMinor,coredata_ptr->accuracy.orientation);
 
-   bsm_msg->coreData.accelSet.Long = 11;
-   bsm_msg->coreData.accelSet.lat = 10;
-   bsm_msg->coreData.accelSet.vert = 12;
-   bsm_msg->coreData.accelSet.yaw = 13;
+    /* Speed angle. */
+    printf("coredata_ptr->transmission,speed,heading,angle = %lx,%lx,%lx,%lx. \n", coredata_ptr->transmission,coredata_ptr->speed,coredata_ptr->heading,coredata_ptr->angle);
 
-   bsm_msg->coreData.brakes.wheelBrakes.size = 1;
-   bsm_msg->coreData.brakes.wheelBrakes.bits_unused = 3;
-   bsm_msg->coreData.brakes.wheelBrakes.buf = calloc(1, bsm_ptr->coreData.
-brakes.wheelBrakes.size);
-   if(bsm_msg->coreData.brakes.wheelBrakes.buf == NULL)
-   {
-      printf("bsm_ptr->coreData.brakes.wheelBrakes.buf is Null. \n");
-      exit(1);
-   }
+    /* Acceleration set. */
+    printf("coredata_ptr->accelSet.Long,lat,vert,yaw = %lx,%lx,%lx,%lx. \n", coredata_ptr->accelSet.Long,coredata_ptr->accelSet.lat,coredata_ptr->accelSet.vert,coredata_ptr->accelSet.yaw);
 
-   bsm_ptr->coreData.brakes.traction = TractionControlStatus_off;
-   bsm_ptr->coreData.brakes.abs = AntiLockBrakeStatus_on;
-   bsm_ptr->coreData.brakes.scs = StabilityControlStatus_engaged;
-   bsm_ptr->coreData.brakes.brakeBoost = BrakeBoostApplied_unavailable;
-   bsm_ptr->coreData.brakes.auxBrakes = AuxiliaryBrakeStatus_reserved;
+    /* Brakes status. */
+    printf("coredata_ptr->brakes.wheelBrakes.buf = %x. \n", coredata_ptr->brakes.wheelBrakes.buf[0]);
+    printf("coredata_ptr->brakes.traction = %lx. \n", coredata_ptr->brakes.traction);
+    printf("coredata_ptr->brakes.abs = %lx. \n", coredata_ptr->brakes.abs);
+    printf("coredata_ptr->brakes.scs = %lx. \n", coredata_ptr->brakes.scs);
+    printf("coredata_ptr->brakes.brakeBoost = %lx. \n", coredata_ptr->brakes.brakeBoost);
+    printf("coredata_ptr->brakes.auxBrakes = %lx. \n", coredata_ptr->brakes.auxBrakes);
 
-   bsm_ptr->coreData.size.width = 8;
-   bsm_ptr->coreData.size.length = 4095;
+    /* Vehicle size. */
+    printf("coredata_ptr->size.width,length = %lx,%lx. \n", coredata_ptr->size.width,coredata_ptr->size.length);
+}
 
 
-   /* Part II content.------------------------------------------ */
+/* Printf bsm message PER data. */
+static void bsm_printf_msgdata(const char *str, uint8_t *buffer_ptr, uint16_t valid_bit)
+{
+    uint16_t index = 0;
 
 
-#if 1
+    /* User specific strings. */
+    printf(str);
+    
+    printf("\nBSM message PER data %d bit------------->\n", valid_bit);
+    
+    for(index = 0; index < (valid_bit+7)/8; index++)
+    {
+        printf("0x%02x ", buffer_ptr[index]);
+        if((index+1) % 10 == 0)
+        {
+            printf("\n");
+        }
+    }
+}
 
 
-   bsm_ptr->partII = calloc(1, sizeof(*(bsm_ptr->partII)));
-   if(bsm_ptr->partII == NULL)
-   {
-      printf("bsm_ptr->partII is NULL. \n");
-      exit(1);
-   }
-
-   partii_ptr = calloc(1, sizeof(BSMpartIIExtension_t));
-   if(partii_ptr == NULL)
-   {
-      printf("partii_ptr is NULL. \n");
-      exit(1);
-   }
-
-   partii_ptr->present = BSMpartIIExtension_PR_vehicleSafetyExt;
-
-   partii_ptr->choice.vehicleSafetyExt.events = calloc(1, sizeof(
-VehicleEventFlags_t));
-   if(partii_ptr->choice.vehicleSafetyExt.events == NULL)
-   {
-      printf("partii_ptr->choice.vehicleSafetyExt.events is NULL. \n");
-      exit(1);
-   }
-
-   partii_ptr->choice.vehicleSafetyExt.events->size = 2;
-   partii_ptr->choice.vehicleSafetyExt.events->bits_unused = 3;
-   partii_ptr->choice.vehicleSafetyExt.events->buf = calloc(1, partii_ptr->
-choice.vehicleSafetyExt.events->size);
-   if(partii_ptr->choice.vehicleSafetyExt.events->buf == NULL)
-   {
-      printf("partii_ptr->choice.vehicleSafetyExt.events->buf is NULL. \n");
-      exit(1);
-   }
-
-   partii_ptr->choice.vehicleSafetyExt.events->buf[0] = 0x55;
-   partii_ptr->choice.vehicleSafetyExt.events->buf[1] = 0xAA;
-
-   partii_ptr->choice.vehicleSafetyExt.pathHistory = NULL;
-   partii_ptr->choice.vehicleSafetyExt.pathPrediction = NULL;
-   partii_ptr->choice.vehicleSafetyExt.lights = NULL;
+/* Parse bsm message from the specific buffer. */
+static int bsm_parse_msg(BasicSafetyMessage_t **bsm_ptr_ptr, uint8_t *buffer_ptr, uint16_t buffer_size)
+{
+    int                  result = 0;
+    asn_dec_rval_t  decode_rval = { 0 };
+    asn_codec_ctx_t  decode_ctx = { 0 };
 
 
-   if(-1 == asn_sequence_add(&(bsm_ptr->partII->list), partii_ptr))
-   {
-      printf("asn_sequence_add() return error. \n");
-      exit(1);
-   }
+    /* Error detection. */
+    if((bsm_ptr_ptr == NULL) || (buffer_ptr == NULL) || (buffer_size == 0))
+    {
+        printf(" bsm_parse_msg() check error. \n ");
+        result = -1;
+    }
+    else
+    {
+        decode_rval = uper_decode(&decode_ctx, &asn_DEF_BasicSafetyMessage,(void **)bsm_ptr_ptr, buffer_ptr, buffer_size, 0, 0);
+        if(decode_rval.code != RC_OK)
+        {
+            printf(" uper_decode() is faild. \n ");
+            result = -1;
+        }
+        else
+        {
+            result = 0;
+        }
 
-#else
+        /* Printf the bsm message structure when key on. */
+        if(KeyPrintfBsmRxStruct != 0)
+        {
+            bsm_printf_msgstruct("\nBSM Rx-------------------->", *bsm_ptr_ptr);
+        }       
 
-   bsm_ptr->partII = NULL;
+        /* Printf bsm messge UPER data when key on. */
+        if(KeyPrintfBsmRxData != 0)
+        {
+            bsm_printf_msgdata("\nBSM Rx-------------------->", buffer_ptr, buffer_size * 8);
+        }
+    }
 
-#endif
-
-
-   /* Encode to UPER.------------------------------------------ */
-   encode_rval = uper_encode_to_buffer(&asn_DEF_BasicSafetyMessage, bsm_ptr, 
-bsm_buffer, sizeof(bsm_buffer));
-   if(encode_rval.encoded == -1)
-   {
-      printf(" uper_encode_to_buffer() is faild. \n ");
-      exit(1);
-   }
-   else
-   {
-      int i = 0;
-      printf("%d ->>\n",encode_rval.encoded);
-
-      for(i = 0; i < encode_rval.encoded; i++)
-      {
-         printf("%x ", bsm_buffer[i]);
-      }
-      printf(" uper_encode_to_buffer() is succeed. \n ");
-   }
-
-
-
-
-
-   decode_rval = uper_decode(&decode_ctx, &asn_DEF_BasicSafetyMessage,(void **)&rxbsm_ptr, bsm_buffer, sizeof(bsm_buffer), 0, 0);
-   if(decode_rval.code == RC_FAIL)
-   {
-      printf(" uper_decode() is faild. \n ");
-   }
-   else
-   {
-      printf(" uper_decode() is ok. \n ");
+    return result; 
+}
 
 
-
-      if(rxbsm_ptr->coreData.Long != bsm_ptr->coreData.Long)
-      {
-          printf("Do not match. \n");
-      }
-      else
-      {
-          printf("Match.\n");
-      }
+/* Build bsm message into the specific buffer. */
+static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr)
+{
+    int                       result = 0;
+    BasicSafetyMessage_t    *bsm_ptr = NULL;
+    asn_enc_rval_t       encode_rval = { 0 };
 
 
-      encode_rval = uper_encode_to_buffer(&asn_DEF_BasicSafetyMessage, rxbsm_ptr, rxbsm_buffer, sizeof(rxbsm_buffer));
-       if(encode_rval.encoded == -1)
-       {
-          printf(" uper_encode_to_buffer() is faild. \n ");
-          exit(1);
-       }
-       else
-       {
-          printf("Just test code!!! ");
-          int i = 0;
-          for(i = 0; i < sizeof(rxbsm_buffer); i++)
-          {
-             printf("%x ", rxbsm_buffer[i]);
-          }
-          printf(" uper_encode_to_buffer() is succeed. \n ");
-       }
-   }
+    /* Error detection. */
+    if( (optional_ptr == NULL) || (p_vam == NULL) || (buffer_ptr == NULL) 
+     || (buffer_size == 0) || (valid_bit_ptr == NULL) )
+    {
+        printf(" bsm_build_msg() check error. \n ");
+        result = -1;
+    }
+    else
+    {
+        /* Allocate bsm message. */
+        result = bsm_allocate_msg(&bsm_ptr, optional_ptr, p_vam);
+        if(result != 0)
+        {
+            printf(" bsm_allocate_msg() is faild. \n ");
+            result = -1;
+        }
+        else
+        {
+            /* Encode message to UPER format. */
+            encode_rval = uper_encode_to_buffer(&asn_DEF_BasicSafetyMessage, bsm_ptr, buffer_ptr, buffer_size);
+            if(encode_rval.encoded == -1)
+            {
+                printf(" uper_encode_to_buffer() is faild. \n ");
+
+                * valid_bit_ptr = 0;
+                result = -1;
+            }
+            else
+            {
+                * valid_bit_ptr = encode_rval.encoded;
+                result = 0;
+            }
+
+            /* Printf the bsm message structure when key on. */
+            if(KeyPrintfBsmTxStruct != 0)
+            {
+                bsm_printf_msgstruct("\nBSM Tx-------------------->", bsm_ptr);
+            }       
+            
+            /* Printf bsm messge UPER data when key on. */
+            if(KeyPrintfBsmTxData != 0)
+            {
+                bsm_printf_msgdata("\nBSM Tx-------------------->", buffer_ptr, *valid_bit_ptr);
+            } 
+
+            /* Free message. */
+            bsm_free_msg(bsm_ptr);
+        }
+    }
+  
+    return result; 
+}
 
 
-    while(1);
+/* Allocate bsm message. */
+static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam) 
+{
+    BasicSafetyMessage_t *bsm_ptr = NULL;
+
+    
+    /* Allocate the bsm message. */
+    bsm_ptr = calloc(1, sizeof(BasicSafetyMessage_t));
+    if(bsm_ptr == NULL)
+    {
+        goto ERR_MSG_EXIT;
+    }
+
+    /* Mesage id. */
+    bsm_ptr->dsrcMsgId = RCP_MSG_ID_BSM;
+
+    /* Allocate message parti. */
+    if(bsm_allocate_parti_BSMcoreData(&(bsm_ptr->bsmBody.coreData), p_vam) != 0)
+    {
+        goto ERR_PARTI_EXIT;
+    }
+
+    /* Allocate message partii. */
+    if(optional_ptr->msg_partii == MSG_OPTIONAL_YES)
+    {
+        if(bsm_allocate_partii_structure(bsm_ptr, optional_ptr) != 0)
+        {
+            goto ERR_PARTII_EXIT;
+        }
+    }
+    else
+    {
+        bsm_ptr->bsmBody.partII = NULL;
+    }
+    
+    /* Set bsm pointer. */
+    *bsm_ptr_ptr = bsm_ptr;
+    
+    return 0;
+
+
+ERR_PARTII_EXIT:
+
+    bsm_free_parti_BSMcoreData(&(bsm_ptr->bsmBody.coreData));
+
+ERR_PARTI_EXIT:
+
+    /* Free message itself domain. */
+    free(bsm_ptr);
+    
+ERR_MSG_EXIT:
+
+    /* Reset bsm pointer. */
+    *bsm_ptr_ptr = NULL;
+    
+    return -1;    
+}
+
+
+/* Free bsm message. */
+static int bsm_free_msg(BasicSafetyMessage_t *bsm_ptr)
+{
+    if(bsm_ptr != NULL)
+    {
+        /* Free parti. */
+        bsm_free_parti_BSMcoreData(&(bsm_ptr->bsmBody.coreData));
+
+        /* Free partii. */
+        bsm_free_partii_structure(bsm_ptr);
+        
+        /* Message itself domain. */
+        free(bsm_ptr);
+        
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+
+/* Add bsm parti BSMcoreData into message. */
+static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_envar_t *p_vam)
+{
+    vam_stastatus_t vam_local = { 0 };
+
+
+    /* Get local current vam status. */
+    vam_get_local_current_status(&vam_local);
+    
+    /* Message count. */
+    coredata_ptr->msgCnt = p_vam->tx_bsm_msg_cnt;;
+
+    /* Id. */
+    coredata_ptr->id.size = RCP_TEMP_ID_LEN;
+    coredata_ptr->id.buf = calloc(1, coredata_ptr->id.size);
+    if(coredata_ptr->id.buf == NULL)
+    {
+        goto ERR_EXIT;                  
+    }
+    memcpy(coredata_ptr->id.buf, vam_local.pid, RCP_TEMP_ID_LEN);
+
+    /* Dsecond. */
+    coredata_ptr->secMark = osal_get_systime();
+
+    /* Postion. */
+    coredata_ptr->lat = encode_latitude(vam_local.pos.latitude);
+    coredata_ptr->Long = encode_longitude(vam_local.pos.longitude);
+    coredata_ptr->elev = encode_elevation(vam_local.pos.elevation);
+
+    /* Position accuracy. */
+    coredata_ptr->accuracy.semiMajor = encode_semimajor_axis_accuracy(vam_local.pos_accuracy.semi_major_accu);
+    coredata_ptr->accuracy.semiMinor = encode_semiminor_axis_accuracy(vam_local.pos_accuracy.semi_minor_accu);
+    coredata_ptr->accuracy.orientation = encode_semimajor_axis_orientation(vam_local.pos_accuracy.semi_major_orientation);
+
+    /* Speed angle. */
+    coredata_ptr->transmission = vam_local.transmission_state;
+    coredata_ptr->speed = encode_absolute_velocity(vam_local.speed);;
+    coredata_ptr->heading = encode_angle(vam_local.dir);
+    coredata_ptr->angle = encode_steer_wheel_angle(vam_local.steer_wheel_angle);
+
+    /* Acceleration set. */
+    coredata_ptr->accelSet.Long = encode_acceleration(vam_local.acce_set.longitudinal);;
+    coredata_ptr->accelSet.lat = encode_acceleration(vam_local.acce_set.lateral);;
+    coredata_ptr->accelSet.vert = encode_vertical_acceleration(vam_local.acce_set.vertical);;
+    coredata_ptr->accelSet.yaw = encode_yawrate(vam_local.acce_set.yaw_rate);;
+
+    /* Brakes status. */
+    coredata_ptr->brakes.wheelBrakes.size = 1;
+    coredata_ptr->brakes.wheelBrakes.bits_unused = 3;
+    coredata_ptr->brakes.wheelBrakes.buf = calloc(1, coredata_ptr->brakes.wheelBrakes.size);
+    if(coredata_ptr->brakes.wheelBrakes.buf == NULL)
+    {
+        goto ERR_EXIT;
+    }
+    (*coredata_ptr->brakes.wheelBrakes.buf) = (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.unavailable << 7) 
+                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.leftfront << 6) 
+                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.leftrear << 5)
+                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.rightfront << 4) 
+                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.rightrear << 3);
+    
+    coredata_ptr->brakes.traction = vam_local.brake_stat.traction;
+    coredata_ptr->brakes.abs = vam_local.brake_stat.abs;
+    coredata_ptr->brakes.scs = vam_local.brake_stat.scs;
+    coredata_ptr->brakes.brakeBoost = vam_local.brake_stat.brakeboost;
+    coredata_ptr->brakes.auxBrakes = vam_local.brake_stat.auxbrakes;
+
+    /* Vehicle size. */
+    coredata_ptr->size.width = encode_vehicle_width(vam_local.vec_size.vec_width);
+    coredata_ptr->size.length = encode_vehicle_length(vam_local.vec_size.vec_length);
+
+    return 0;
+    
+
+ERR_EXIT:
+
+    bsm_free_parti_BSMcoreData(coredata_ptr);
+
+    return -1;
+}
+
+
+/* Free bsm parti BSMcoreData from message. */
+static int bsm_free_parti_BSMcoreData(BSMcoreData_t *coredata_ptr)
+{
+    if(coredata_ptr != NULL)
+    {
+        /* Id domain. */
+        if(coredata_ptr->id.buf != NULL)
+        {
+            free(coredata_ptr->id.buf);
+        }
+
+        /* Brakes domain. */
+        if(coredata_ptr->brakes.wheelBrakes.buf != NULL)
+        {
+            free(coredata_ptr->brakes.wheelBrakes.buf);
+        }
+
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }    
+}
+
+
+/* Allocate bsm partii structure. */
+static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_optional_st_ptr optional_ptr) 
+{
+    BSMpartIIExtension_t *element_ptr = NULL;
+
+    
+    /* Allocate partii structure pointer. */
+    bsm_ptr->bsmBody.partII = calloc(1, sizeof(*(bsm_ptr->bsmBody.partII)));
+    if(bsm_ptr->bsmBody.partII == NULL)
+    {
+        return -1;
+    }
+    
+    /* Set partii element free routine. */
+    bsm_ptr->bsmBody.partII->list.free = bsm_free_partii_element;
+
+    /* Allocate partii element vehicleSafetyExt structure. */
+    if(optional_ptr->partii_vehicle_safety_ext == MSG_OPTIONAL_YES)
+    {
+        if(bsm_allocate_partii_vehicleSafetyExt(&element_ptr, optional_ptr) == 0)
+        {
+            /* Add partii element to partii structure pointer. */
+            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) == 0)
+            {
+                goto ERR_EXIT;
+            }   
+        }
+        else
+        {
+            goto ERR_EXIT;
+        }
+    }
+
+    /* Allocate partii element specialVehicleExt structure. */
+    if(optional_ptr->partii_special_vehicle_ext == MSG_OPTIONAL_YES)
+    {
+        if(bsm_allocate_partii_specialVehicleExt(&element_ptr, optional_ptr) == 0)
+        {
+            /* Add partii element to partii structure pointer. */
+            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) == 0)
+            {
+                goto ERR_EXIT;
+            }   
+        }
+        else
+        {
+            goto ERR_EXIT;
+        }
+    }
+
+    /* Allocate partii element supplementalVehicleExt structure. */
+    if(optional_ptr->partii_supplemental_vehicle_ext == MSG_OPTIONAL_YES)
+    {
+        if(bsm_allocate_partii_supplementalVehicleExt(&element_ptr, optional_ptr) == 0)
+        {
+            /* Add partii element to partii structure pointer. */
+            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) == 0)
+            {
+                goto ERR_EXIT;
+            }   
+        }
+        else
+        {
+            goto ERR_EXIT;
+        }
+    }
+
+    return 0;
+
+
+ERR_EXIT:
+    
+   bsm_free_partii_structure(bsm_ptr);
+    
+   return -1;
+}
+
+
+/* Free bsm partii structure. */
+static int bsm_free_partii_structure(BasicSafetyMessage_t *bsm_ptr)
+{
+    if(bsm_ptr != NULL)
+    {
+        /* Partii structure domain. */
+        if(bsm_ptr->bsmBody.partII != NULL)
+        {
+            /* Free the contents of the sequence,do not free the sequence itself. */
+            asn_sequence_empty(&(bsm_ptr->bsmBody.partII->list));
+            
+            free(bsm_ptr->bsmBody.partII);
+        }
+        
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+
+/* Allocate bsm partii element vehicleSafetyExt. */
+static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr)
+{
+    BSMpartIIExtension_t *element_ptr = NULL;
+
+    
+    /* Allocate partii element structure. */
+    element_ptr = calloc(1, sizeof(BSMpartIIExtension_t));
+    if(element_ptr == NULL)
+    {
+        goto ERR_EXIT;
+    }
+
+    /* Set partii code. */
+    element_ptr->present = BSMpartIIExtension_PR_vehicleSafetyExt;
+
+    /* Set events. */
+    if(optional_ptr->vse_vehicle_event_flags == BSM_PARTII_OPTIONAL_YES)
+    {
+        element_ptr->choice.vehicleSafetyExt.events = calloc(1, sizeof(VehicleEventFlags_t));
+        if(element_ptr->choice.vehicleSafetyExt.events == NULL)
+        {
+            goto ERR_EXIT;
+        }
+        element_ptr->choice.vehicleSafetyExt.events->size = 2;
+        element_ptr->choice.vehicleSafetyExt.events->bits_unused = 3;
+        element_ptr->choice.vehicleSafetyExt.events->buf = calloc(1, element_ptr->choice.vehicleSafetyExt.events->size);
+        if(element_ptr->choice.vehicleSafetyExt.events->buf == NULL)
+        {
+            goto ERR_EXIT;
+        }
+        element_ptr->choice.vehicleSafetyExt.events->buf[0] = 0x12;
+        element_ptr->choice.vehicleSafetyExt.events->buf[1] = 0x34;
+    }
+    else
+    {
+        element_ptr->choice.vehicleSafetyExt.events = NULL;
+    }
+
+    /* Set path history. */
+    if(optional_ptr->vse_path_history == BSM_PARTII_OPTIONAL_YES)
+    {
+        element_ptr->choice.vehicleSafetyExt.pathHistory = NULL;
+    }
+    else
+    {
+        element_ptr->choice.vehicleSafetyExt.pathHistory = NULL;
+    }
+
+    /* Set path prediction. */
+    if(optional_ptr->vse_path_prediction == BSM_PARTII_OPTIONAL_YES)
+    {
+        element_ptr->choice.vehicleSafetyExt.pathPrediction = NULL;
+    }
+    else
+    {
+        element_ptr->choice.vehicleSafetyExt.pathPrediction = NULL;
+    }
+
+    /* set lights. */
+    if(optional_ptr->vse_exterior_lights == BSM_PARTII_OPTIONAL_YES)
+    {
+        element_ptr->choice.vehicleSafetyExt.lights = NULL;
+    }
+    else
+    {
+        element_ptr->choice.vehicleSafetyExt.lights = NULL;
+    }
+
+    /* Set element pointer. */
+    *ext_ptr_ptr = element_ptr;
+
+    return 0;
+
+    
+ERR_EXIT:
+
+    /* Set element pointer. */
+    *ext_ptr_ptr = NULL;
+    bsm_free_partii_vehicleSafetyExt(element_ptr);
+    
+    return -1;
+}
+
+
+/* Free bsm partii element vehicleSafetyExt. */
+static int bsm_free_partii_vehicleSafetyExt(BSMpartIIExtension_t *element_ptr)
+{
+    if(element_ptr != NULL)
+    {
+        /* Lig`hts domain. */
+        if(element_ptr->choice.vehicleSafetyExt.lights != NULL)
+        {
+            free(element_ptr->choice.vehicleSafetyExt.lights);
+        }
+
+        /* Path prediction domain. */
+        if(element_ptr->choice.vehicleSafetyExt.pathPrediction != NULL)
+        {
+            free(element_ptr->choice.vehicleSafetyExt.pathPrediction);
+        }
+
+        /* Path history domain. */
+        if(element_ptr->choice.vehicleSafetyExt.pathHistory != NULL)
+        {
+            free(element_ptr->choice.vehicleSafetyExt.pathHistory);
+        }
+
+        /* Events domain. */
+        if(element_ptr->choice.vehicleSafetyExt.events != NULL)
+        {
+            if(element_ptr->choice.vehicleSafetyExt.events->buf != NULL)
+            {
+                free(element_ptr->choice.vehicleSafetyExt.events->buf);
+            }
+            
+            free(element_ptr->choice.vehicleSafetyExt.events);
+        }
+        
+        /* Element itself domain. */
+        free(element_ptr);
+
+        return 0;
+    }  
+    else
+    {
+        return -1;
+    }
+}
+
+
+
+/* Allocate partii element specialVehicleExt. */
+static int bsm_allocate_partii_specialVehicleExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr)
+{
+    return -1;
+}
+
+
+/* Free partii element specialVehicleExt. */
+static int bsm_free_partii_specialVehicleExt(BSMpartIIExtension_t *element_ptr)
+{
+    return -1;    
+}
+
+
+/* Allocate partii element supplementalVehicleExt. */
+static int bsm_allocate_partii_supplementalVehicleExt(BSMpartIIExtension_t ** ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr)
+{
+    return -1;
+}
+
+
+/* Free partii element supplementalVehicleExt. */
+static int bsm_free_partii_supplementalVehicleExt(BSMpartIIExtension_t *element_ptr)
+{
+    return -1;
+}
+
+
+/* Free bsm partii element main routine. */
+static void bsm_free_partii_element(BSMpartIIExtension_t *element_ptr)
+{
+    switch(element_ptr->present)
+    {
+        case BSMpartIIExtension_PR_vehicleSafetyExt:
+        {
+            bsm_free_partii_vehicleSafetyExt(element_ptr);        break;
+        }
+        case BSMpartIIExtension_PR_specialVehicleExt:
+        {
+            bsm_free_partii_specialVehicleExt(element_ptr);       break;
+        }
+        case BSMpartIIExtension_PR_vehicleDummySt1:
+        {
+            bsm_free_partii_supplementalVehicleExt(element_ptr);  break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+}
+
+
+
+
+/* Parse bsm message from others. */
+int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{
+    vam_sta_node_t         *p_sta = NULL;
+    BasicSafetyMessage_t *bsm_ptr = NULL;
+
+
+    /* Parse bsm message. */
+    if(bsm_parse_msg(&bsm_ptr, databuf, datalen) != 0)
+    {
+        printf("bsm_parse_msg() is failed. \n");
+        return -1;
+    }
+
+    /* Return out when receive my own's bsm message. */
+    if(0 == memcmp(bsm_ptr->bsmBody.coreData.id.buf, p_vam->local.pid, RCP_TEMP_ID_LEN))
+    {
+        return 0;
+    }
+
+    /* Find the current sta node id structure from neighbour list.*/
+    if((p_sta = vam_find_sta(p_vam, bsm_ptr->bsmBody.coreData.id.buf)) == NULL)
+    {
+        return -1;
+    }
+
+        
+    p_sta->s.dsecond = bsm_ptr->bsmBody.coreData.secMark;
+    p_sta->s.time = osal_get_systemtime();
+
+    p_sta->s.pos.latitude = decode_latitude(bsm_ptr->bsmBody.coreData.lat);
+    p_sta->s.pos.longitude = decode_longitude(bsm_ptr->bsmBody.coreData.Long);
+    p_sta->s.pos.elevation = decode_elevation(bsm_ptr->bsmBody.coreData.elev);
+    
+    p_sta->s.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(bsm_ptr->bsmBody.coreData.accuracy.semiMajor);
+    p_sta->s.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(bsm_ptr->bsmBody.coreData.accuracy.semiMinor);
+    p_sta->s.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(bsm_ptr->bsmBody.coreData.accuracy.orientation);
+ 
+    p_sta->s.transmission_state = bsm_ptr->bsmBody.coreData.transmission;
+    p_sta->s.speed = decode_absolute_velocity(bsm_ptr->bsmBody.coreData.speed);
+    p_sta->s.dir = decode_angle(bsm_ptr->bsmBody.coreData.heading);
+    p_sta->s.steer_wheel_angle = decode_steer_wheel_angle(bsm_ptr->bsmBody.coreData.angle);
+    
+    p_sta->s.acce_set.longitudinal = decode_acceleration(bsm_ptr->bsmBody.coreData.accelSet.Long);
+    p_sta->s.acce_set.lateral = decode_acceleration(bsm_ptr->bsmBody.coreData.accelSet.lat);
+    p_sta->s.acce_set.vertical = decode_vertical_acceleration(bsm_ptr->bsmBody.coreData.accelSet.vert);
+    p_sta->s.acce_set.yaw_rate = decode_yawrate(bsm_ptr->bsmBody.coreData.accelSet.yaw);
+
+    //decode_brake_sytem_status(&bsm_ptr->brakes, &p_sta->s.brake_stat);
+
+    p_sta->s.vec_size.vec_length = decode_vehicle_length(bsm_ptr->bsmBody.coreData.size.length);
+    p_sta->s.vec_size.vec_width = decode_vehicle_width(bsm_ptr->bsmBody.coreData.size.width);
+
+    /* Parsing event domain when has extra data. */
+    if(bsm_ptr->bsmBody.partII != NULL)
+    {
+       // if(bsm_ptr->partII->list.present == BSMpartIIExtension_PR_vehicleSafetyExt)
+        {
+            
+        }
+    }
+
+    #if 0
+    {
+        p_sta->s.alert_mask = decode_vehicle_alert(0); 
+
+        /* inform the app layer once */
+        if(p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE] != NULL)
+        {
+            p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE](&p_sta->s);
+        } 
+    }
+    else
+    {
+        p_sta->s.alert_mask = 0;
+    }
+    #endif
+    
     return 0;
 }
 
 
-
-
-
-
-
-
-
-
-#endif
-
-
-
-
-
+/* Send bsm message to others. */
 int rcp_send_bsm(vam_envar_t *p_vam)
 {
-    int result = 0;
-    rcp_msg_basic_safty_t *p_bsm;
-    vam_stastatus_t *p_local = &p_vam->local;
-    wnet_txbuf_t *txbuf;
-    wnet_txinfo_t *txinfo;
-    vam_stastatus_t current;
-    int len = sizeof(rcp_msg_basic_safty_t);
-	
-    txbuf = wnet_get_txbuf();
-    if (txbuf == NULL) {
+    int                       result = 0;
+    wnet_txbuf_t              *txbuf = NULL;
+    bsm_msg_optional_st bsm_optional = { 0 };
+    uint16_t               valid_bit = 0;
+
+
+    /* Get tx buffer from memory. */
+    if((txbuf = wnet_get_txbuf()) == NULL) 
+    {
         return -1;
     }
 
-    vam_get_local_current_status(&current);
-    p_local = &current;
-
-    p_bsm = (rcp_msg_basic_safty_t *)WNET_TXBUF_DATA_PTR(txbuf);
-
-    p_bsm->header.msg_id.hops = 1;
-    p_bsm->header.msg_id.id = RCP_MSG_ID_BSM;
-
-    p_bsm->header.msg_count = p_vam->tx_bsm_msg_cnt++;
-    memcpy(p_bsm->header.temporary_id, p_local->pid, RCP_TEMP_ID_LEN);
-    if (p_vam->working_param.bsm_hops > 1){
-        memcpy(p_bsm->forward_id, p_local->pid, RCP_TEMP_ID_LEN);
-    }
-    p_bsm->dsecond = cv_ntohs(osal_get_systime());
-
-    p_bsm->position.lon = encode_longitude(p_local->pos.longitude);
-    p_bsm->position.lat = encode_latitude(p_local->pos.latitude);
-    p_bsm->position.elev = encode_elevation(p_local->pos.elevation);
-    p_bsm->position.accu.semi_major = encode_semimajor_axis_accuracy(p_local->pos_accuracy.semi_major_accu);
-    p_bsm->position.accu.semi_major_orientation = encode_semimajor_axis_orientation(p_local->pos_accuracy.semi_major_orientation);
-    p_bsm->position.accu.semi_minor = encode_semiminor_axis_accuracy(p_local->pos_accuracy.semi_minor_accu);
-
-    p_bsm->motion.transmission_state = p_local->transmission_state;
-    p_bsm->motion.heading = encode_angle(p_local->dir);
-    p_bsm->motion.speed = encode_absolute_velocity(p_local->speed);
-    p_bsm->motion.steering_wheel_angle = encode_steer_wheel_angle(p_local->steer_wheel_angle);
-    p_bsm->motion.acce.lon = encode_acceleration(p_local->acce_set.longitudinal);
-    p_bsm->motion.acce.lat = encode_acceleration(p_local->acce_set.lateral);
-    p_bsm->motion.acce.vert = encode_vertical_acceleration(p_local->acce_set.vertical);
-    p_bsm->motion.acce.yaw = encode_yawrate(p_local->acce_set.yaw_rate);
-
-    encode_brake_sytem_status(&p_local->brake_stat, &p_bsm->brakes);
-
-    p_bsm->size.length = encode_vehicle_length(p_local->vec_size.vec_length);
-    p_bsm->size.width = encode_vehicle_width(p_local->vec_size.vec_width);
-
+    /* Set bsm optional setting. */
     if(p_vam->flag & VAM_FLAG_TX_BSM_ALERT)
     {
-        p_bsm->header.msg_id.hops = p_vam->working_param.bsm_hops;
-        p_bsm->safetyExt.events = encode_vehicle_alert(p_vam->local.alert_mask);
+        bsm_optional.msg_partii = MSG_OPTIONAL_YES;
+        bsm_optional.partii_vehicle_safety_ext = MSG_OPTIONAL_YES;
+
+        bsm_optional.vse_vehicle_event_flags = MSG_OPTIONAL_YES;
     }
     else
     {
-        len -= sizeof(vehicle_safety_ext_t);
+        bsm_optional.msg_partii = MSG_OPTIONAL_NO;
     }
 
+    /* Build bsm message. */
+    result = bsm_build_msg(&bsm_optional, p_vam, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
+    if(result != 0)
+    {
+        goto EXIT;
+    }
+    else
+    {
+ 
+    }
+    
+    /* Set tx information structure. */
+    memcpy(txbuf->info.dest.dsmp.addr, "\xFF\xFF\xFF\xFF\xFF\xFF", MACADDR_LENGTH);
+    txbuf->info.dest.dsmp.aid = 0x00000020;
+    txbuf->info.protocol = WNET_TRANS_PROT_DSMP;
+    txbuf->info.encryption = WNET_TRANS_ENCRYPT_NONE;
+    txbuf->info.prority = WNET_TRANS_RRORITY_NORMAL;
+    txbuf->info.timestamp = osal_get_systimestamp();
 
-    txinfo = WNET_TXBUF_INFO_PTR(txbuf);
-//    memset(txinfo, 0, sizeof(wnet_txinfo_t));
-    memcpy(txinfo->dest.dsmp.addr, "\xFF\xFF\xFF\xFF\xFF\xFF", MACADDR_LENGTH);
-    txinfo->dest.dsmp.aid = 0x00000020;
-    txinfo->protocol = WNET_TRANS_PROT_DSMP;
-    txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
-    txinfo->prority = WNET_TRANS_RRORITY_NORMAL;
-    txinfo->timestamp = osal_get_systimestamp();
+    /* Send bsm message. */
+    result = wnet_send(&(txbuf->info), (uint8_t *)txbuf->data_ptr, (valid_bit+7)/8);
 
-    result = wnet_send(txinfo, (uint8_t *)p_bsm, len);
+    
+EXIT:
     
     wnet_release_txbuf(txbuf);
 
     return result;
-    
 }
+
+
+
+
+
+
 
 int rcp_send_evam(vam_envar_t *p_vam)
 {
@@ -785,6 +1250,54 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     
     return result;
 }
+
+
+int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{    
+    MessageModuleSet_t  *mms_ptr = NULL;
+    asn_dec_rval_t   decode_rval = { 0 };
+    asn_codec_ctx_t   decode_ctx = { 0 };
+
+
+    /* Error detection. */
+    if (datalen < sizeof(rcp_msg_head_t))
+    {
+        return -1;
+    }
+
+    /* Decode into message module set for message parse. */
+    decode_rval = uper_decode(&decode_ctx, &asn_DEF_MessageModuleSet,(void **)&mms_ptr, databuf, datalen, 0, 0);
+    if(decode_rval.code != RC_OK)
+    {
+        printf("\nuper_decode() for MessageModuleSet_t is faild. \n ");
+        return -1;
+    }
+    else
+    {
+        switch(mms_ptr->dsrcMsgId)
+        {
+            case RCP_MSG_ID_BSM:  {
+                rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);    break;
+            } 
+            case RCP_MSG_ID_EVAM: {
+                rcp_parse_evam(p_vam, rxinfo, databuf, datalen);   break;
+            } 
+            case RCP_MSG_ID_RSA:  {
+                rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);    break;   
+            }
+            default:              {
+                                                                   break; 
+            }   
+        }
+        
+        return 0;
+    }
+}
+
+
+
+
+
 
 
 int rcp_send_forward_msg(wnet_txbuf_t *txbuf)

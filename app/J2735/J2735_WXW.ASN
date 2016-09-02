@@ -8,10 +8,20 @@
 DSRC DEFINITIONS AUTOMATIC TAGS::= BEGIN 
 
 
+
+-- MSG_MessageModuleSet (MMS) Only for message parse.
+MessageModuleSet ::= SEQUENCE {
+   dsrcMsgId DSRCmsgID
+}
+
 -- MSG_BasicSafetyMessage  (BSM) (Desc Name)
 BasicSafetyMessage ::= SEQUENCE {
    dsrcMsgId DSRCmsgID,
+   bsmBody BsmBody
+}
 
+-- DE_BsmBody Only for bsm message.
+BsmBody ::= SEQUENCE {
    -- Part I, Sent at all times with each message
    coreData BSMcoreData,
 
@@ -23,6 +33,9 @@ BasicSafetyMessage ::= SEQUENCE {
 
    ...
 }
+
+
+
 
 -- DE_PartIIId (Useless and only for DF_BSMpartIIExtension mark.)
 PartIIid ::= INTEGER (0..63)

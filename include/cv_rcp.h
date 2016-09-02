@@ -347,16 +347,6 @@ typedef struct _rcp_msg_head
 }rcp_msg_head_t;
 
 
-/* DDateTime */
-typedef struct DDateTime {
-	uint16_t year;	    /* OPTIONAL */
-	uint8_t	 month;     /* OPTIONAL */
-	uint8_t	 day;	    /* OPTIONAL */
-	uint8_t	 hour;	    /* OPTIONAL */
-	uint8_t	 minute;	/* OPTIONAL */
-	uint16_t second;	/* OPTIONAL */
-}  DDateTime_t;
-
 typedef struct _ransmission_speed 
 {
 #ifndef __LITTLE_ENDIAN	

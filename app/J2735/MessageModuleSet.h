@@ -4,36 +4,34 @@
  * 	found in "J2735_WXW.ASN"
  */
 
-#ifndef	_BasicSafetyMessage_H_
-#define	_BasicSafetyMessage_H_
+#ifndef	_MessageModuleSet_H_
+#define	_MessageModuleSet_H_
 
 
 #include <asn_application.h>
 
 /* Including external dependencies */
 #include "DSRCmsgID.h"
-#include "BsmBody.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* BasicSafetyMessage */
-typedef struct BasicSafetyMessage {
+/* MessageModuleSet */
+typedef struct MessageModuleSet {
 	DSRCmsgID_t	 dsrcMsgId;
-	BsmBody_t	 bsmBody;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;
-} BasicSafetyMessage_t;
+} MessageModuleSet_t;
 
 /* Implementation */
-extern asn_TYPE_descriptor_t asn_DEF_BasicSafetyMessage;
+extern asn_TYPE_descriptor_t asn_DEF_MessageModuleSet;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* _BasicSafetyMessage_H_ */
+#endif	/* _MessageModuleSet_H_ */
 #include <asn_internal.h>
