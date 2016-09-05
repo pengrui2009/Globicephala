@@ -52,7 +52,7 @@ int comport_init (uint8_t port)
 	int ret;
 	struct termios opt;
 	//ttyUSB0为usb虚拟串口设备
-	char *dev[]={"/dev/ttyS0","/dev/ttyS1","/dev/ttyUSB0"};
+	char *dev[]={"/dev/ttyS0","/dev/ttyATH0","/dev/ttyUSB0"};
 
 	//已初始化
 	if(comport[port].count == 1){

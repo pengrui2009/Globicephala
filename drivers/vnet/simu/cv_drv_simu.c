@@ -361,17 +361,17 @@ int drv_simu_init(void)
 	uint16_t timeout;
 	drv_simu_envar_t *p_simu = &g_simu_envar;
 	memset(p_simu,0,sizeof(drv_simu_envar_t));
-	ret = net_ip_get("br-lan", p_simu->local_ipaddr);
+	ret = net_ip_get("eth0", p_simu->local_ipaddr);
 	if(ret < 0)
 	{
-		osal_printf("%s net_ip_get error ret=%d\n",ret);
+		osal_printf("%s net_ip_get error ret=%d\n", __FUNCTION__, ret);
 		goto err;
 	}
 	p_simu->local_port = SIMU_PORT;
 	timeout =0xFFFF;//ÓÀ¾Ã×èÈû
 	ret = net_udp_init(p_simu->local_port, p_simu->local_ipaddr, timeout);
 	if(ret < 0){
-		osal_printf("%s net_udp_init error ret=%d\n",ret);
+		osal_printf("%s net_udp_init error ret=%d\n", __FUNCTION__, ret);
 		goto err;
 	}else{
 		p_simu->monitor_sock = ret;

@@ -33,9 +33,9 @@ ehm_config_st ehm_config =
 { 
     UART_RECV_TYPE,
         
-    { COMPORT_VERIFY_NO, 8, 1, 0, 1152000, COMPORT_RTSCTS_DISABLE },
+    { COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE },
     
-    V2X_NB_VEHICLE_ALERT|V2X_ROADSIZE_ALERT
+    V2X_BASIC_VEHICLE_STATUS|V2X_NB_VEHICLE_ALERT|V2X_ROADSIZE_ALERT
 };
 
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
@@ -851,7 +851,7 @@ void ehm_receive_msg
         case UART_RECV_TYPE:
         {
             /* Receive data from uart pipeline. */
-            result = dstream_device[DSTREAM_USBD].recv(buff_ptr->buffer, sizeof(buff_ptr->buffer));
+            result = dstream_device[DSTREAM_1].recv(buff_ptr->buffer, sizeof(buff_ptr->buffer));
             if(0 < result)
             {
                 buff_ptr->data_ptr = buff_ptr->buffer;
@@ -1084,7 +1084,7 @@ void * ehm_main_thread_entry(void *param)
 //{
 //	int result = 0;
 //
-//	result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
+//	result = dstream_device[DSTREAM_1].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
 //	if(result < 0)
 //	{
 //		osal_printf("comport_send error ret=%d\n", result);
@@ -1128,7 +1128,7 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
     p_ehm->buffer_tx.data_len = UART_MSG_HEADER_ST_LEN + length + SIZEOF_MSG_CHK_DOMAIN;
     /*uart send data to periph */
 
-    result = dstream_device[DSTREAM_USBD].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
+    result = dstream_device[DSTREAM_1].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
     if(result < 0)
     {
     	osal_printf("comport_send error ret=%d\n", result);
@@ -1313,7 +1313,7 @@ RCV_MSGQ:
 //    		v2x_reported_info = p_ehm->config_ptr->v2x_report_info;
     	ehm_send_msg_group(p_ehm);
 
-//		ret = dstream_device[DSTREAM_USBD].send(databuf, datalen);
+//		ret = dstream_device[DSTREAM_1].send(databuf, datalen);
 //		if(ret < 0)
 //		{
 //			osal_printf("comport_send error ret=%d\n", ret);
@@ -1433,12 +1433,12 @@ void ehm_init(void)
 //    }
 
     /* Open uart module. */
-    result = dstream_device[DSTREAM_USBD].open();
+    result = dstream_device[DSTREAM_1].open();
     if(result < 0)
     {
     	osal_printf("comport open error\n");
     }
-    result = dstream_device[DSTREAM_USBD].config(&p_ehm->config_ptr->comport_config);
+    result = dstream_device[DSTREAM_1].config(&p_ehm->config_ptr->comport_config);
 	if(result < 0)
 	{
 		osal_printf("comport config error ret=%d \n", result);
