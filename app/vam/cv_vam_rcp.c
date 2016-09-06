@@ -41,6 +41,11 @@ itis_codes_t itiscode[RSA_TYPE_MAX+1] =
 float rcp_dbg_distance = 0;
 
 
+
+
+/*---------------------------------------MSG_BasicSafetyMessage(BSM)---------------------------------------*/
+
+
 /* Key for bsm tx message structure and UPER data printf. */
 static uint8_t KeyPrintfBsmTxStruct = 1;
 static uint8_t KeyPrintfBsmTxData = 1;
@@ -57,32 +62,38 @@ static void bsm_printf_msgstruct(const char *str, BasicSafetyMessage_t *bsm_ptr)
 /* Printf bsm message PER data. */
 static void bsm_printf_msgdata(const char *str, uint8_t *buffer_ptr, uint16_t valid_bit);
 
-/* Parse bsm message from the specific buffer. */
-static int bsm_parse_msg(BasicSafetyMessage_t **bsm_ptr_ptr, uint8_t *buffer_ptr, uint16_t buffer_size);
-
 /* Build bsm message into the specific buffer. */
-static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr);
+static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr);
+
+/* Parse bsm message from the specific buffer. */
+static int bsm_analyse_msg(vam_envar_t *vam_ptr, uint8_t *buffer_ptr, uint16_t buffer_size);
 
 /* Allocate bsm message. */
-static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam); 
+static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr); 
 
 /* Free bsm message. */
 static int bsm_free_msg(BasicSafetyMessage_t *bsm_ptr);
 
+/* Parse bsm message into vam status structure. */
+static int bsm_parse_msg(BasicSafetyMessage_t *bsm_ptr, vam_stastatus_t *vamstatus_ptr);
+
 /* Add bsm parti BSMcoreData into message. */
-static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_envar_t *p_vam);
+static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_stastatus_t *vamstatus_ptr);
 
 /* Free bsm parti BSMcoreData from message. */
 static int bsm_free_parti_BSMcoreData(BSMcoreData_t *coredata_ptr);
 
+/* Parse bsm parti BSMcoreData from message. */
+static int bsm_parse_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_stastatus_t *vamstatus_ptr);
+
 /* Allocate bsm partii structure. */
-static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_optional_st_ptr optional_ptr);
+static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_stastatus_t *vamstatus_ptr);
 
 /* Free bsm partii structure. */
 static int bsm_free_partii_structure(BasicSafetyMessage_t *bsm_ptr);
 
 /* Allocate bsm partii element vehicleSafetyExt. */
-static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr);
+static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_stastatus_t *vamstatus_ptr);
 
 /* Free bsm partii element vehicleSafetyExt. */
 static int bsm_free_partii_vehicleSafetyExt(BSMpartIIExtension_t *element_ptr);
@@ -102,236 +113,9 @@ static int bsm_free_partii_supplementalVehicleExt(BSMpartIIExtension_t *element_
 /* Free bsm partii element main routine. */
 static void bsm_free_partii_element(BSMpartIIExtension_t *element_ptr);
 
+/* Parse bsm partii element main routine. */
+static void bsm_parse_partii_element(BSMpartIIExtension_t *element_ptr, vam_stastatus_t *vamstatus_ptr);
 
-
-
-
-
-/*****************************************************************************
- * implementation of functions                                               *
-*****************************************************************************/
-__COMPILE_INLINE__ uint16_t encode_vehicle_alert(uint16_t x)
-{
-    uint16_t r = 0;
-
-
-    /* Vehicle break down. */
-    if (x & VAM_ALERT_MASK_VBD){
-        r |= EventHazardLights;        
-    }
-    else {
-        r &= ~EventHazardLights;
-    }
-
-    /* Vehicle emergency brake down. */
-    if (x & VAM_ALERT_MASK_EBD){
-        r |= EventHardBraking;        
-    }
-    else {
-        r &= ~EventHardBraking;
-    }
-
-    /* Vehicle overturned. */
-    if (x & VAM_ALERT_MASK_VOT){
-        r |= EventDisabledVehicle;
-    }
-    else {
-        r &= ~EventDisabledVehicle;
-    }
-
-    return cv_ntohs(r);
-}
-
-__COMPILE_INLINE__ uint16_t decode_vehicle_alert(uint16_t x)
-{
-    uint16_t r = 0;
-
-    
-    x = cv_ntohs(x);
-    if (x & EventHazardLights) {
-        r |= VAM_ALERT_MASK_VBD;        
-    }
-   
-    if (x & EventHardBraking){
-        r |= VAM_ALERT_MASK_EBD;        
-    }
-
-    if (x & EventDisabledVehicle){
-        r |= VAM_ALERT_MASK_VOT;        
-    }
-    
-    return r;
-}
-
-/* BEGIN: Added by wanglei, 2015/1/4. for rsa test */
-__COMPILE_INLINE__ uint16_t encode_itiscode(uint16_t rsa_mask, itis_codes_t *p_des)
-{
-    uint16_t r = 0;
-    int bit;
-
-    for(bit=0; bit<9; bit++)
-    {
-        if(rsa_mask & (1<<bit)){
-            if (0 == bit){
-                r = cv_ntohs(itiscode[bit]);
-            }
-            else{
-                p_des[bit-1] = cv_ntohs(itiscode[bit]);
-            }
-        }
-    }
-    
-    return r;
-}
-
-static void itiscode_2_rsa_mask(itis_codes_t type, uint16_t *rsa_mask)
-{
-    int i = 0;
-    for (i=0; i<RSA_TYPE_MAX; i++)
-    {
-        if (itiscode[i] == type){
-           *rsa_mask |= 1<<i;
-           break;
-        }
-    }
-}
-__COMPILE_INLINE__ uint16_t decode_itiscode(itis_codes_t typeEvent, itis_codes_t *p_des)
-{
-    uint16_t k = 0;
-	uint16_t rsa_mask = 0;
-	uint16_t r;
-    r = cv_ntohs(typeEvent);
-    itiscode_2_rsa_mask(r, &rsa_mask);    
-    for(k=0; k<8; k++)
-    {
-        r = cv_ntohs(p_des[k]);
-        itiscode_2_rsa_mask(r, &rsa_mask);    
-    }
-    return rsa_mask;
-
-}
-
-int rcp_mda_process(uint8_t msg_hops, 
-                      uint8_t msg_count,
-                      uint8_t *p_temp_id, 
-                      uint8_t *p_forward_id,
-                      uint8_t * data,
-                      uint32_t datalen)
-{
-    mda_msg_info_t src;
-    mda_envar_t * p_mda;
-    int ret;
-
-    p_mda = &p_cms_envar->mda;
-    src.left_hops = msg_hops;
-    src.msg_count = msg_count;
-    memcpy(src.temorary_id, p_temp_id, RCP_TEMP_ID_LEN);
-    memcpy(src.forward_id, p_forward_id, RCP_TEMP_ID_LEN);
-    
-    ret = mda_handle(p_mda, &src, NULL, data, datalen);
-    return ret;
-}
-
-
-
-
-int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
-{
-    vam_sta_node_t *p_sta;
-    rcp_msg_emergency_vehicle_alert_t *p_evam;
-    uint16_t alert_mask;
-
-    if (datalen < sizeof(rcp_msg_emergency_vehicle_alert_t)){
-        return -1;
-    }
-
-    p_evam = (rcp_msg_emergency_vehicle_alert_t *)databuf;
-
-    if (0 == memcmp(p_evam->temporary_id, p_vam->local.pid, RCP_TEMP_ID_LEN)){
-        return 0;
-    }
-    
-    rcp_mda_process(p_evam->msg_id.hops, p_evam->rsa.msg_count, 
-                     p_evam->temporary_id, p_evam->forward_id, databuf, datalen);
-
-
-    //TBD
-    alert_mask = decode_itiscode(p_evam->rsa.typeEvent, p_evam->rsa.description);
-    //rt_kprintf("recv evam: alert_mask = 0x%04x\r\n", alert_mask);
-
-    p_sta = vam_find_sta(p_vam, p_evam->temporary_id);
-    if(p_sta != NULL)
-    {
-    	p_sta->s.dsecond = cv_ntohs(p_evam->rsa.time_stamp);
-        p_sta->s.time = osal_get_systemtime();
-
-        p_sta->s.pos.longitude = decode_longitude(p_evam->rsa.position.lon);
-        p_sta->s.pos.latitude = decode_latitude(p_evam->rsa.position.lat);
-        p_sta->s.pos.elevation = decode_elevation(p_evam->rsa.position.elev);
-
-        p_sta->s.dir = decode_angle(p_evam->rsa.position.heading);
-        p_sta->s.speed = decode_absolute_velocity(p_evam->rsa.position.speed.speed);
-#if 0
-        p_sta->s.acce_set.longitudinal = decode_acceleration(p_evam->motion.acce.lon);
-        p_sta->s.acce_set.lateral = decode_acceleration(p_evam->motion.acce.lat);
-        p_sta->s.acce_set.vertical = decode_vertical_acceleration(p_evam->motion.acce.vert);
-        p_sta->s.acce_set.yaw_rate = decode_yawrate(p_evam->motion.acce.yaw);
-#endif
-        p_sta->s.alert_mask = alert_mask;
-
-        /* inform the app layer once */
-        if(p_vam->evt_handler[VAM_EVT_EVA_UPDATE] != NULL)
-        {
-            (p_vam->evt_handler[VAM_EVT_EVA_UPDATE])(&p_sta->s);
-        }
-    }
-    return 0;
-}
-
-
-int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
-{
-    rcp_msg_roadside_alert_t *p_rsa;
-    vam_rsa_evt_info_t param;
-        
-    if (datalen < sizeof(rcp_msg_roadside_alert_t)){
-        return -1;
-    }
-
-    p_rsa = (rcp_msg_roadside_alert_t *)databuf;
-
-    param.dsecond  = cv_ntohs(p_rsa->time_stamp);
-    param.rsa_mask = decode_itiscode(p_rsa->typeEvent, p_rsa->description);
-    param.pos.longitude = decode_longitude(p_rsa->position.lon);
-    param.pos.latitude = decode_latitude(p_rsa->position.lat);
-
-    if(p_vam->evt_handler[VAM_EVT_RSA_UPDATE] != NULL)
-    {
-        (p_vam->evt_handler[VAM_EVT_RSA_UPDATE])(&param);
-    }
-
-    return 0;
-}
-
-
-
-
-/*****************************************************************************
- @funcname: vam_rcp_recv
- @brief   : RCP receive data frame from network layer
- @param   : wnet_rxinfo_t *rxinfo  
- @param   : uint8_t *databuf      
- @param   : uint32_t datalen      
- @return  : 
-*****************************************************************************/
-int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
-{
-    vam_envar_t *p_vam = &p_cms_envar->vam;
-    //osal_printf("vam_rcp_recv...\r\n");
-    //vam_add_event_queue(p_vam, VAM_MSG_RCPRX, datalen, (uint32_t)databuf, rxinfo);
-    rcp_parse_msg(p_vam, rxinfo, databuf, datalen);
-    return 0;
-}
 
 
 /* Printf bsm message structure data. */
@@ -347,39 +131,39 @@ static void bsm_printf_msgstruct(const char *str, BasicSafetyMessage_t *bsm_ptr)
     printf("\nBSM message structure------------------->\n");
         
     /* Msg id. */
-    printf("bsm_ptr->dsrcMsgId = %lx. \n", bsm_ptr->dsrcMsgId);
+    printf("bsm_ptr->dsrcMsgId = 0x%lx. \n", bsm_ptr->dsrcMsgId);
     
     /* Message count. */
-    printf("coredata_ptr->msgCnt = %lx. \n", coredata_ptr->msgCnt);
+    printf("coredata_ptr->msgCnt = 0x%lx. \n", coredata_ptr->msgCnt);
 
     /* Id. */
-    printf("coredata_ptr->id.buf = %x,%x,%x,%x. \n", coredata_ptr->id.buf[0],coredata_ptr->id.buf[1],coredata_ptr->id.buf[2],coredata_ptr->id.buf[3]);
+    printf("coredata_ptr->id.buf = 0x%x,0x%x,0x%x,0x%x. \n", coredata_ptr->id.buf[0],coredata_ptr->id.buf[1],coredata_ptr->id.buf[2],coredata_ptr->id.buf[3]);
 
     /* Dsecond. */
-    printf("coredata_ptr->secMark = %lx. \n", coredata_ptr->secMark);
+    printf("coredata_ptr->secMark = 0x%lx. \n", coredata_ptr->secMark);
 
     /* Postion. */
-    printf("coredata_ptr->lat,Long,elev = %lx,%lx,%lx. \n", coredata_ptr->lat,coredata_ptr->Long,coredata_ptr->elev);
+    printf("coredata_ptr->lat,Long,elev = 0x%lx,0x%lx,0x%lx. \n", coredata_ptr->lat,coredata_ptr->Long,coredata_ptr->elev);
 
     /* Position accuracy. */
-    printf("coredata_ptr->accuracy.semiMajor,semiMinor,orientation = %lx,%lx,%lx. \n", coredata_ptr->accuracy.semiMajor,coredata_ptr->accuracy.semiMinor,coredata_ptr->accuracy.orientation);
+    printf("coredata_ptr->accuracy.semiMajor,semiMinor,orientation = 0x%lx,0x%lx,0x%lx. \n", coredata_ptr->accuracy.semiMajor,coredata_ptr->accuracy.semiMinor,coredata_ptr->accuracy.orientation);
 
     /* Speed angle. */
-    printf("coredata_ptr->transmission,speed,heading,angle = %lx,%lx,%lx,%lx. \n", coredata_ptr->transmission,coredata_ptr->speed,coredata_ptr->heading,coredata_ptr->angle);
+    printf("coredata_ptr->transmission,speed,heading,angle = 0x%lx,0x%lx,0x%lx,0x%lx. \n", coredata_ptr->transmission,coredata_ptr->speed,coredata_ptr->heading,coredata_ptr->angle);
 
     /* Acceleration set. */
-    printf("coredata_ptr->accelSet.Long,lat,vert,yaw = %lx,%lx,%lx,%lx. \n", coredata_ptr->accelSet.Long,coredata_ptr->accelSet.lat,coredata_ptr->accelSet.vert,coredata_ptr->accelSet.yaw);
+    printf("coredata_ptr->accelSet.Long,lat,vert,yaw = 0x%lx,0x%lx,0x%lx,0x%lx. \n", coredata_ptr->accelSet.Long,coredata_ptr->accelSet.lat,coredata_ptr->accelSet.vert,coredata_ptr->accelSet.yaw);
 
     /* Brakes status. */
-    printf("coredata_ptr->brakes.wheelBrakes.buf = %x. \n", coredata_ptr->brakes.wheelBrakes.buf[0]);
-    printf("coredata_ptr->brakes.traction = %lx. \n", coredata_ptr->brakes.traction);
-    printf("coredata_ptr->brakes.abs = %lx. \n", coredata_ptr->brakes.abs);
-    printf("coredata_ptr->brakes.scs = %lx. \n", coredata_ptr->brakes.scs);
-    printf("coredata_ptr->brakes.brakeBoost = %lx. \n", coredata_ptr->brakes.brakeBoost);
-    printf("coredata_ptr->brakes.auxBrakes = %lx. \n", coredata_ptr->brakes.auxBrakes);
+    printf("coredata_ptr->brakes.wheelBrakes.buf = 0x%x. \n", coredata_ptr->brakes.wheelBrakes.buf[0]);
+    printf("coredata_ptr->brakes.traction = 0x%lx. \n", coredata_ptr->brakes.traction);
+    printf("coredata_ptr->brakes.abs = 0x%lx. \n", coredata_ptr->brakes.abs);
+    printf("coredata_ptr->brakes.scs = 0x%lx. \n", coredata_ptr->brakes.scs);
+    printf("coredata_ptr->brakes.brakeBoost = 0x%lx. \n", coredata_ptr->brakes.brakeBoost);
+    printf("coredata_ptr->brakes.auxBrakes = 0x%lx. \n", coredata_ptr->brakes.auxBrakes);
 
     /* Vehicle size. */
-    printf("coredata_ptr->size.width,length = %lx,%lx. \n", coredata_ptr->size.width,coredata_ptr->size.length);
+    printf("coredata_ptr->size.width,length = 0x%lx,0x%lx. \n", coredata_ptr->size.width,coredata_ptr->size.length);
 }
 
 
@@ -405,52 +189,8 @@ static void bsm_printf_msgdata(const char *str, uint8_t *buffer_ptr, uint16_t va
 }
 
 
-/* Parse bsm message from the specific buffer. */
-static int bsm_parse_msg(BasicSafetyMessage_t **bsm_ptr_ptr, uint8_t *buffer_ptr, uint16_t buffer_size)
-{
-    int                  result = 0;
-    asn_dec_rval_t  decode_rval = { 0 };
-    asn_codec_ctx_t  decode_ctx = { 0 };
-
-
-    /* Error detection. */
-    if((bsm_ptr_ptr == NULL) || (buffer_ptr == NULL) || (buffer_size == 0))
-    {
-        printf(" bsm_parse_msg() check error. \n ");
-        result = -1;
-    }
-    else
-    {
-        decode_rval = uper_decode(&decode_ctx, &asn_DEF_BasicSafetyMessage,(void **)bsm_ptr_ptr, buffer_ptr, buffer_size, 0, 0);
-        if(decode_rval.code != RC_OK)
-        {
-            printf(" uper_decode() is faild. \n ");
-            result = -1;
-        }
-        else
-        {
-            result = 0;
-        }
-
-        /* Printf the bsm message structure when key on. */
-        if(KeyPrintfBsmRxStruct != 0)
-        {
-            bsm_printf_msgstruct("\nBSM Rx-------------------->", *bsm_ptr_ptr);
-        }       
-
-        /* Printf bsm messge UPER data when key on. */
-        if(KeyPrintfBsmRxData != 0)
-        {
-            bsm_printf_msgdata("\nBSM Rx-------------------->", buffer_ptr, buffer_size * 8);
-        }
-    }
-
-    return result; 
-}
-
-
 /* Build bsm message into the specific buffer. */
-static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr)
+static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr)
 {
     int                       result = 0;
     BasicSafetyMessage_t    *bsm_ptr = NULL;
@@ -458,8 +198,7 @@ static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_va
 
 
     /* Error detection. */
-    if( (optional_ptr == NULL) || (p_vam == NULL) || (buffer_ptr == NULL) 
-     || (buffer_size == 0) || (valid_bit_ptr == NULL) )
+    if( (optional_ptr == NULL) || (buffer_ptr == NULL) || (buffer_size == 0) || (valid_bit_ptr == NULL) )
     {
         printf(" bsm_build_msg() check error. \n ");
         result = -1;
@@ -467,7 +206,7 @@ static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_va
     else
     {
         /* Allocate bsm message. */
-        result = bsm_allocate_msg(&bsm_ptr, optional_ptr, p_vam);
+        result = bsm_allocate_msg(&bsm_ptr, optional_ptr);
         if(result != 0)
         {
             printf(" bsm_allocate_msg() is faild. \n ");
@@ -511,10 +250,70 @@ static int bsm_build_msg(bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_va
 }
 
 
+/* Parse bsm message from the specific buffer. */
+static int bsm_analyse_msg(vam_envar_t *vam_ptr, uint8_t *buffer_ptr, uint16_t buffer_size)
+{
+    int                    result = 0;
+    BasicSafetyMessage_t *bsm_ptr = NULL;
+    
+    asn_dec_rval_t    decode_rval = { 0 };
+    asn_codec_ctx_t    decode_ctx = { 0 };
+
+    vam_sta_node_t  *vam_node_ptr = NULL;
+
+
+    /* Error detection. */
+    if((buffer_ptr == NULL) || (buffer_size == 0))
+    {
+        printf(" bsm_analyse_msg() check error. \n ");
+        result = -1;
+    }
+    else
+    {
+        /* Dncode message from UPER format. */
+        decode_rval = uper_decode(&decode_ctx, &asn_DEF_BasicSafetyMessage,(void **)&bsm_ptr, buffer_ptr, buffer_size, 0, 0);
+        if(decode_rval.code != RC_OK)
+        {
+            printf(" uper_decode() is faild. \n ");
+            result = -1;
+        }
+        else
+        {
+            /* Only when not my own's bsm message and find the specific vam node. */
+            if( (0 == memcmp(bsm_ptr->bsmBody.coreData.id.buf, vam_ptr->local.pid, RCP_TEMP_ID_LEN))
+              && ((vam_node_ptr = vam_find_sta(vam_ptr, bsm_ptr->bsmBody.coreData.id.buf)) != NULL) )
+            {
+                /* Parse the bsm message. */
+                result = bsm_parse_msg(bsm_ptr, &(vam_node_ptr->s)); 
+            }
+            else
+            {
+                result = -1;
+            }
+        }
+
+        /* Printf the bsm message structure when key on. */
+        if(KeyPrintfBsmRxStruct != 0)
+        {
+            bsm_printf_msgstruct("\nBSM Rx-------------------->", bsm_ptr);
+        }       
+
+        /* Printf bsm messge UPER data when key on. */
+        if(KeyPrintfBsmRxData != 0)
+        {
+            bsm_printf_msgdata("\nBSM Rx-------------------->", buffer_ptr, buffer_size * 8);
+        }
+    }
+
+    return result; 
+}
+
+
 /* Allocate bsm message. */
-static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_envar_t *p_vam) 
+static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr) 
 {
     BasicSafetyMessage_t *bsm_ptr = NULL;
+    vam_stastatus_t     vam_local = { 0 };
 
     
     /* Allocate the bsm message. */
@@ -527,8 +326,11 @@ static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional
     /* Mesage id. */
     bsm_ptr->dsrcMsgId = RCP_MSG_ID_BSM;
 
+    /* Get local current vam status. */
+    vam_get_local_current_status(&vam_local);
+
     /* Allocate message parti. */
-    if(bsm_allocate_parti_BSMcoreData(&(bsm_ptr->bsmBody.coreData), p_vam) != 0)
+    if(bsm_allocate_parti_BSMcoreData(&(bsm_ptr->bsmBody.coreData), &vam_local) != 0)
     {
         goto ERR_PARTI_EXIT;
     }
@@ -536,7 +338,7 @@ static int bsm_allocate_msg(BasicSafetyMessage_t **bsm_ptr_ptr, bsm_msg_optional
     /* Allocate message partii. */
     if(optional_ptr->msg_partii == MSG_OPTIONAL_YES)
     {
-        if(bsm_allocate_partii_structure(bsm_ptr, optional_ptr) != 0)
+        if(bsm_allocate_partii_structure(bsm_ptr, optional_ptr, &vam_local) != 0)
         {
             goto ERR_PARTII_EXIT;
         }
@@ -593,17 +395,41 @@ static int bsm_free_msg(BasicSafetyMessage_t *bsm_ptr)
 }
 
 
-/* Add bsm parti BSMcoreData into message. */
-static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_envar_t *p_vam)
+/* Parse bsm message into vam status structure. */
+static int bsm_parse_msg(BasicSafetyMessage_t *bsm_ptr, vam_stastatus_t *vamstatus_ptr)
 {
-    vam_stastatus_t vam_local = { 0 };
+    uint8_t          ele_index = 0;
 
 
-    /* Get local current vam status. */
-    vam_get_local_current_status(&vam_local);
-    
+    /* Parse parti bsmcoredata. */
+    bsm_parse_parti_BSMcoreData(&(bsm_ptr->bsmBody.coreData), vamstatus_ptr);
+
+    /* Parse partii when exist. */
+    if(bsm_ptr->bsmBody.partII != NULL)
+    {
+        /* Parse every element in array. */
+        for(ele_index = 0; ele_index < bsm_ptr->bsmBody.partII->list.count; ele_index ++)
+        {
+            bsm_parse_partii_element(bsm_ptr->bsmBody.partII->list.array[ele_index], vamstatus_ptr);
+        }
+    }
+
+    return 0; 
+}
+
+
+/* Add bsm parti BSMcoreData into message. */
+static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_stastatus_t *vamstatus_ptr)
+{
+    static uint8_t  msg_count = 0;
+
+
     /* Message count. */
-    coredata_ptr->msgCnt = p_vam->tx_bsm_msg_cnt;;
+    coredata_ptr->msgCnt = msg_count ++;
+    if(127 < msg_count)
+    {
+        msg_count = 0;
+    }
 
     /* Id. */
     coredata_ptr->id.size = RCP_TEMP_ID_LEN;
@@ -612,32 +438,32 @@ static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_envar
     {
         goto ERR_EXIT;                  
     }
-    memcpy(coredata_ptr->id.buf, vam_local.pid, RCP_TEMP_ID_LEN);
+    memcpy(coredata_ptr->id.buf, vamstatus_ptr->pid, RCP_TEMP_ID_LEN);
 
     /* Dsecond. */
     coredata_ptr->secMark = osal_get_systime();
 
     /* Postion. */
-    coredata_ptr->lat = encode_latitude(vam_local.pos.latitude);
-    coredata_ptr->Long = encode_longitude(vam_local.pos.longitude);
-    coredata_ptr->elev = encode_elevation(vam_local.pos.elevation);
+    coredata_ptr->lat = encode_latitude(vamstatus_ptr->pos.latitude);
+    coredata_ptr->Long = encode_longitude(vamstatus_ptr->pos.longitude);
+    coredata_ptr->elev = encode_elevation(vamstatus_ptr->pos.elevation);
 
     /* Position accuracy. */
-    coredata_ptr->accuracy.semiMajor = encode_semimajor_axis_accuracy(vam_local.pos_accuracy.semi_major_accu);
-    coredata_ptr->accuracy.semiMinor = encode_semiminor_axis_accuracy(vam_local.pos_accuracy.semi_minor_accu);
-    coredata_ptr->accuracy.orientation = encode_semimajor_axis_orientation(vam_local.pos_accuracy.semi_major_orientation);
+    coredata_ptr->accuracy.semiMajor = encode_semimajor_axis_accuracy(vamstatus_ptr->pos_accuracy.semi_major_accu);
+    coredata_ptr->accuracy.semiMinor = encode_semiminor_axis_accuracy(vamstatus_ptr->pos_accuracy.semi_minor_accu);
+    coredata_ptr->accuracy.orientation = encode_semimajor_axis_orientation(vamstatus_ptr->pos_accuracy.semi_major_orientation);
 
     /* Speed angle. */
-    coredata_ptr->transmission = vam_local.transmission_state;
-    coredata_ptr->speed = encode_absolute_velocity(vam_local.speed);;
-    coredata_ptr->heading = encode_angle(vam_local.dir);
-    coredata_ptr->angle = encode_steer_wheel_angle(vam_local.steer_wheel_angle);
+    coredata_ptr->transmission = vamstatus_ptr->transmission_state;
+    coredata_ptr->speed = encode_absolute_velocity(vamstatus_ptr->speed);;
+    coredata_ptr->heading = encode_angle(vamstatus_ptr->dir);
+    coredata_ptr->angle = encode_steer_wheel_angle(vamstatus_ptr->steer_wheel_angle);
 
     /* Acceleration set. */
-    coredata_ptr->accelSet.Long = encode_acceleration(vam_local.acce_set.longitudinal);;
-    coredata_ptr->accelSet.lat = encode_acceleration(vam_local.acce_set.lateral);;
-    coredata_ptr->accelSet.vert = encode_vertical_acceleration(vam_local.acce_set.vertical);;
-    coredata_ptr->accelSet.yaw = encode_yawrate(vam_local.acce_set.yaw_rate);;
+    coredata_ptr->accelSet.Long = encode_acceleration(vamstatus_ptr->acce_set.longitudinal);;
+    coredata_ptr->accelSet.lat = encode_acceleration(vamstatus_ptr->acce_set.lateral);;
+    coredata_ptr->accelSet.vert = encode_vertical_acceleration(vamstatus_ptr->acce_set.vertical);;
+    coredata_ptr->accelSet.yaw = encode_yawrate(vamstatus_ptr->acce_set.yaw_rate);;
 
     /* Brakes status. */
     coredata_ptr->brakes.wheelBrakes.size = 1;
@@ -647,21 +473,21 @@ static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_envar
     {
         goto ERR_EXIT;
     }
-    (*coredata_ptr->brakes.wheelBrakes.buf) = (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.unavailable << 7) 
-                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.leftfront << 6) 
-                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.leftrear << 5)
-                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.rightfront << 4) 
-                                                 | (vam_local.brake_stat.wheel_brakes.wheel_brake_bit.rightrear << 3);
+    (*coredata_ptr->brakes.wheelBrakes.buf) = (vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.unavailable << 7) 
+                                                 | (vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftfront << 6) 
+                                                 | (vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftrear << 5)
+                                                 | (vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightfront << 4) 
+                                                 | (vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightrear << 3);
     
-    coredata_ptr->brakes.traction = vam_local.brake_stat.traction;
-    coredata_ptr->brakes.abs = vam_local.brake_stat.abs;
-    coredata_ptr->brakes.scs = vam_local.brake_stat.scs;
-    coredata_ptr->brakes.brakeBoost = vam_local.brake_stat.brakeboost;
-    coredata_ptr->brakes.auxBrakes = vam_local.brake_stat.auxbrakes;
+    coredata_ptr->brakes.traction = vamstatus_ptr->brake_stat.traction;
+    coredata_ptr->brakes.abs = vamstatus_ptr->brake_stat.abs;
+    coredata_ptr->brakes.scs = vamstatus_ptr->brake_stat.scs;
+    coredata_ptr->brakes.brakeBoost = vamstatus_ptr->brake_stat.brakeboost;
+    coredata_ptr->brakes.auxBrakes = vamstatus_ptr->brake_stat.auxbrakes;
 
     /* Vehicle size. */
-    coredata_ptr->size.width = encode_vehicle_width(vam_local.vec_size.vec_width);
-    coredata_ptr->size.length = encode_vehicle_length(vam_local.vec_size.vec_length);
+    coredata_ptr->size.width = encode_vehicle_width(vamstatus_ptr->vec_size.vec_width);
+    coredata_ptr->size.length = encode_vehicle_length(vamstatus_ptr->vec_size.vec_length);
 
     return 0;
     
@@ -700,8 +526,58 @@ static int bsm_free_parti_BSMcoreData(BSMcoreData_t *coredata_ptr)
 }
 
 
+/* Parse bsm parti BSMcoreData from message. */
+static int bsm_parse_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, vam_stastatus_t *vamstatus_ptr)
+{
+    /* Dsecond. */    
+    vamstatus_ptr->dsecond = coredata_ptr->secMark;
+    vamstatus_ptr->time = osal_get_systemtime();
+
+    /* Positon. */
+    vamstatus_ptr->pos.latitude = decode_latitude(coredata_ptr->lat);
+    vamstatus_ptr->pos.longitude = decode_longitude(coredata_ptr->Long);
+    vamstatus_ptr->pos.elevation = decode_elevation(coredata_ptr->elev);
+
+    /* Position accuracy. */
+    vamstatus_ptr->pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(coredata_ptr->accuracy.semiMajor);
+    vamstatus_ptr->pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(coredata_ptr->accuracy.semiMinor);
+    vamstatus_ptr->pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(coredata_ptr->accuracy.orientation);
+
+    /* Speed angle. */
+    vamstatus_ptr->transmission_state = coredata_ptr->transmission;
+    vamstatus_ptr->speed = decode_absolute_velocity(coredata_ptr->speed);
+    vamstatus_ptr->dir = decode_angle(coredata_ptr->heading);
+    vamstatus_ptr->steer_wheel_angle = decode_steer_wheel_angle(coredata_ptr->angle);
+
+    /* Acceleration set. */
+    vamstatus_ptr->acce_set.longitudinal = decode_acceleration(coredata_ptr->accelSet.Long);
+    vamstatus_ptr->acce_set.lateral = decode_acceleration(coredata_ptr->accelSet.lat);
+    vamstatus_ptr->acce_set.vertical = decode_vertical_acceleration(coredata_ptr->accelSet.vert);
+    vamstatus_ptr->acce_set.yaw_rate = decode_yawrate(coredata_ptr->accelSet.yaw);
+
+    /* Brakes status. */
+    vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.unavailable = (*coredata_ptr->brakes.wheelBrakes.buf) & 0x80; 
+    vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftfront =  (*coredata_ptr->brakes.wheelBrakes.buf) & 0x40; 
+    vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftrear = (*coredata_ptr->brakes.wheelBrakes.buf) & 0x20; 
+    vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightfront = (*coredata_ptr->brakes.wheelBrakes.buf) & 0x10; 
+    vamstatus_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightrear = (*coredata_ptr->brakes.wheelBrakes.buf) & 0x08; 
+    
+    vamstatus_ptr->brake_stat.traction = coredata_ptr->brakes.traction;
+    vamstatus_ptr->brake_stat.abs = coredata_ptr->brakes.abs;
+    vamstatus_ptr->brake_stat.scs = coredata_ptr->brakes.scs;
+    vamstatus_ptr->brake_stat.brakeboost = coredata_ptr->brakes.brakeBoost;
+    vamstatus_ptr->brake_stat.auxbrakes = coredata_ptr->brakes.auxBrakes;
+
+    /* Vehicle size. */
+    vamstatus_ptr->vec_size.vec_length = decode_vehicle_length(coredata_ptr->size.length);
+    vamstatus_ptr->vec_size.vec_width = decode_vehicle_width(coredata_ptr->size.width);
+    
+    return 0;
+}
+
+
 /* Allocate bsm partii structure. */
-static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_optional_st_ptr optional_ptr) 
+static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_stastatus_t *vamstatus_ptr) 
 {
     BSMpartIIExtension_t *element_ptr = NULL;
 
@@ -719,10 +595,10 @@ static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_
     /* Allocate partii element vehicleSafetyExt structure. */
     if(optional_ptr->partii_vehicle_safety_ext == MSG_OPTIONAL_YES)
     {
-        if(bsm_allocate_partii_vehicleSafetyExt(&element_ptr, optional_ptr) == 0)
+        if(bsm_allocate_partii_vehicleSafetyExt(&element_ptr, optional_ptr, vamstatus_ptr) == 0)
         {
             /* Add partii element to partii structure pointer. */
-            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) == 0)
+            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) != 0)
             {
                 goto ERR_EXIT;
             }   
@@ -739,7 +615,7 @@ static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_
         if(bsm_allocate_partii_specialVehicleExt(&element_ptr, optional_ptr) == 0)
         {
             /* Add partii element to partii structure pointer. */
-            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) == 0)
+            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) != 0)
             {
                 goto ERR_EXIT;
             }   
@@ -756,7 +632,7 @@ static int bsm_allocate_partii_structure(BasicSafetyMessage_t *bsm_ptr, bsm_msg_
         if(bsm_allocate_partii_supplementalVehicleExt(&element_ptr, optional_ptr) == 0)
         {
             /* Add partii element to partii structure pointer. */
-            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) == 0)
+            if(asn_sequence_add(&(bsm_ptr->bsmBody.partII->list), element_ptr) != 0)
             {
                 goto ERR_EXIT;
             }   
@@ -802,7 +678,7 @@ static int bsm_free_partii_structure(BasicSafetyMessage_t *bsm_ptr)
 
 
 /* Allocate bsm partii element vehicleSafetyExt. */
-static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr)
+static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr, vam_stastatus_t *vamstatus_ptr)
 {
     BSMpartIIExtension_t *element_ptr = NULL;
 
@@ -820,6 +696,8 @@ static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_p
     /* Set events. */
     if(optional_ptr->vse_vehicle_event_flags == BSM_PARTII_OPTIONAL_YES)
     {
+        uint16_t event_mask = 0;
+    
         element_ptr->choice.vehicleSafetyExt.events = calloc(1, sizeof(VehicleEventFlags_t));
         if(element_ptr->choice.vehicleSafetyExt.events == NULL)
         {
@@ -832,8 +710,25 @@ static int bsm_allocate_partii_vehicleSafetyExt(BSMpartIIExtension_t **ext_ptr_p
         {
             goto ERR_EXIT;
         }
-        element_ptr->choice.vehicleSafetyExt.events->buf[0] = 0x12;
-        element_ptr->choice.vehicleSafetyExt.events->buf[1] = 0x34;
+
+        /* Encode alert mask to event data. */
+        if(vamstatus_ptr->alert_mask & VAM_ALERT_MASK_VBD) 
+        {
+            event_mask |= (0x0001 << (15 - VehicleEventFlags_eventHazardLights));
+        }
+
+        if(vamstatus_ptr->alert_mask & VAM_ALERT_MASK_EBD) 
+        {
+            event_mask |= (0x0001 << (15 - VehicleEventFlags_eventHardBraking));
+        }
+
+        if(vamstatus_ptr->alert_mask & VAM_ALERT_MASK_VOT) 
+        {
+            event_mask |= (0x0001 << (15 - VehicleEventFlags_eventDisabledVehicle));
+        }
+        
+        element_ptr->choice.vehicleSafetyExt.events->buf[0] = (event_mask >> 8) & 0x00FF;
+        element_ptr->choice.vehicleSafetyExt.events->buf[1] = event_mask & 0x00FF;
     }
     else
     {
@@ -932,6 +827,75 @@ static int bsm_free_partii_vehicleSafetyExt(BSMpartIIExtension_t *element_ptr)
 }
 
 
+/* Parse bsm partii element vehicleSafetyExt. */
+static int bsm_parse_partii_vehicleSafetyExt(BSMpartIIExtension_t *element_ptr, vam_stastatus_t *vamstatus_ptr)
+{  
+    /* Get events. */
+    if(element_ptr->choice.vehicleSafetyExt.events != NULL)
+    {
+        if(element_ptr->choice.vehicleSafetyExt.events->buf != NULL)
+        {
+            uint16_t event_mask = 0;
+
+            event_mask = element_ptr->choice.vehicleSafetyExt.events->buf[0];
+            event_mask = (event_mask << 8) | element_ptr->choice.vehicleSafetyExt.events->buf[1]; 
+
+            /* Decode event data to alert mask. */
+            if(event_mask & (0x0001 << (15 - VehicleEventFlags_eventHazardLights))) 
+            {
+                vamstatus_ptr->alert_mask |= VAM_ALERT_MASK_VBD;        
+            }
+
+            if(event_mask & (0x0001 << (15 - VehicleEventFlags_eventHardBraking))) 
+            {
+                vamstatus_ptr->alert_mask |= VAM_ALERT_MASK_EBD;        
+            }
+
+            if(event_mask & (0x0001 << (15 - VehicleEventFlags_eventDisabledVehicle))) 
+            {
+                vamstatus_ptr->alert_mask |= VAM_ALERT_MASK_VOT;        
+            }
+        }
+    }
+    else
+    {
+        vamstatus_ptr->alert_mask = 0;
+    }
+
+    /* Get path history. */
+    if(element_ptr->choice.vehicleSafetyExt.pathHistory != NULL)
+    {
+        ;
+    }
+    else
+    {
+        ;
+    }
+
+    /* Get path prediction. */
+    if(element_ptr->choice.vehicleSafetyExt.pathPrediction != NULL)
+    {
+        ;
+    }
+    else
+    {
+        ;
+    }
+
+    /* Get lights. */
+    if(element_ptr->choice.vehicleSafetyExt.lights != NULL)
+    {
+        ;
+    }
+    else
+    {
+        ;
+    }
+
+
+    return 0;
+}
+
 
 /* Allocate partii element specialVehicleExt. */
 static int bsm_allocate_partii_specialVehicleExt(BSMpartIIExtension_t **ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr)
@@ -947,6 +911,13 @@ static int bsm_free_partii_specialVehicleExt(BSMpartIIExtension_t *element_ptr)
 }
 
 
+/* Parse bsm partii element specialVehicleExt. */
+static int bsm_parse_partii_specialVehicleExt(BSMpartIIExtension_t *element_ptr, vam_stastatus_t *vamstatus_ptr)
+{  
+    return -1;
+}
+
+
 /* Allocate partii element supplementalVehicleExt. */
 static int bsm_allocate_partii_supplementalVehicleExt(BSMpartIIExtension_t ** ext_ptr_ptr, bsm_msg_optional_st_ptr optional_ptr)
 {
@@ -957,6 +928,13 @@ static int bsm_allocate_partii_supplementalVehicleExt(BSMpartIIExtension_t ** ex
 /* Free partii element supplementalVehicleExt. */
 static int bsm_free_partii_supplementalVehicleExt(BSMpartIIExtension_t *element_ptr)
 {
+    return -1;
+}
+
+
+/* Parse bsm partii element specialVehicleExt. */
+static int bsm_parse_partii_supplementalVehicleExt(BSMpartIIExtension_t *element_ptr, vam_stastatus_t *vamstatus_ptr)
+{  
     return -1;
 }
 
@@ -986,86 +964,215 @@ static void bsm_free_partii_element(BSMpartIIExtension_t *element_ptr)
 }
 
 
+/* Parse bsm partii element main routine. */
+static void bsm_parse_partii_element(BSMpartIIExtension_t *element_ptr, vam_stastatus_t *vamstatus_ptr)
+{
+    switch(element_ptr->present)
+    {
+        case BSMpartIIExtension_PR_vehicleSafetyExt:
+        {
+            bsm_parse_partii_vehicleSafetyExt(element_ptr, vamstatus_ptr);        break;
+        }
+        case BSMpartIIExtension_PR_specialVehicleExt:
+        {
+            bsm_parse_partii_specialVehicleExt(element_ptr, vamstatus_ptr);       break;
+        }
+        case BSMpartIIExtension_PR_vehicleDummySt1:
+        {
+            bsm_parse_partii_supplementalVehicleExt(element_ptr, vamstatus_ptr);  break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+}
+
+
+
+
+/*---------------------------------------MSG_RoadSideAlert(RSA)---------------------------------------*/
+
+
+
+/*---------------------------------------Remote Communicate Protocol----------------------------------*/
+
+
+/*****************************************************************************
+ * implementation of functions                                               *
+*****************************************************************************/
+
+/* BEGIN: Added by wanglei, 2015/1/4. for rsa test */
+__COMPILE_INLINE__ uint16_t encode_itiscode(uint16_t rsa_mask, itis_codes_t *p_des)
+{
+    uint16_t r = 0;
+    int bit;
+
+    for(bit=0; bit<9; bit++)
+    {
+        if(rsa_mask & (1<<bit)){
+            if (0 == bit){
+                r = cv_ntohs(itiscode[bit]);
+            }
+            else{
+                p_des[bit-1] = cv_ntohs(itiscode[bit]);
+            }
+        }
+    }
+    
+    return r;
+}
+
+static void itiscode_2_rsa_mask(itis_codes_t type, uint16_t *rsa_mask)
+{
+    int i = 0;
+    for (i=0; i<RSA_TYPE_MAX; i++)
+    {
+        if (itiscode[i] == type){
+           *rsa_mask |= 1<<i;
+           break;
+        }
+    }
+}
+__COMPILE_INLINE__ uint16_t decode_itiscode(itis_codes_t typeEvent, itis_codes_t *p_des)
+{
+    uint16_t k = 0;
+	uint16_t rsa_mask = 0;
+	uint16_t r;
+    r = cv_ntohs(typeEvent);
+    itiscode_2_rsa_mask(r, &rsa_mask);    
+    for(k=0; k<8; k++)
+    {
+        r = cv_ntohs(p_des[k]);
+        itiscode_2_rsa_mask(r, &rsa_mask);    
+    }
+    return rsa_mask;
+
+}
+
+
+int rcp_mda_process(uint8_t msg_hops, 
+                      uint8_t msg_count,
+                      uint8_t *p_temp_id, 
+                      uint8_t *p_forward_id,
+                      uint8_t * data,
+                      uint32_t datalen)
+{
+    mda_msg_info_t src;
+    mda_envar_t * p_mda;
+    int ret;
+
+    p_mda = &p_cms_envar->mda;
+    src.left_hops = msg_hops;
+    src.msg_count = msg_count;
+    memcpy(src.temorary_id, p_temp_id, RCP_TEMP_ID_LEN);
+    memcpy(src.forward_id, p_forward_id, RCP_TEMP_ID_LEN);
+    
+    ret = mda_handle(p_mda, &src, NULL, data, datalen);
+    return ret;
+}
 
 
 /* Parse bsm message from others. */
 int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 {
-    vam_sta_node_t         *p_sta = NULL;
-    BasicSafetyMessage_t *bsm_ptr = NULL;
+    return bsm_analyse_msg(p_vam, databuf, datalen);
+}
 
 
-    /* Parse bsm message. */
-    if(bsm_parse_msg(&bsm_ptr, databuf, datalen) != 0)
-    {
-        printf("bsm_parse_msg() is failed. \n");
+int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{
+    vam_sta_node_t *p_sta;
+    rcp_msg_emergency_vehicle_alert_t *p_evam;
+    uint16_t alert_mask;
+
+    if (datalen < sizeof(rcp_msg_emergency_vehicle_alert_t)){
         return -1;
     }
 
-    /* Return out when receive my own's bsm message. */
-    if(0 == memcmp(bsm_ptr->bsmBody.coreData.id.buf, p_vam->local.pid, RCP_TEMP_ID_LEN))
-    {
+    p_evam = (rcp_msg_emergency_vehicle_alert_t *)databuf;
+
+    if (0 == memcmp(p_evam->temporary_id, p_vam->local.pid, RCP_TEMP_ID_LEN)){
         return 0;
     }
+    
+    rcp_mda_process(p_evam->msg_id.hops, p_evam->rsa.msg_count, 
+                     p_evam->temporary_id, p_evam->forward_id, databuf, datalen);
 
-    /* Find the current sta node id structure from neighbour list.*/
-    if((p_sta = vam_find_sta(p_vam, bsm_ptr->bsmBody.coreData.id.buf)) == NULL)
+
+    //TBD
+    alert_mask = decode_itiscode(p_evam->rsa.typeEvent, p_evam->rsa.description);
+    //rt_kprintf("recv evam: alert_mask = 0x%04x\r\n", alert_mask);
+
+    p_sta = vam_find_sta(p_vam, p_evam->temporary_id);
+    if(p_sta != NULL)
     {
+    	p_sta->s.dsecond = cv_ntohs(p_evam->rsa.time_stamp);
+        p_sta->s.time = osal_get_systemtime();
+
+        p_sta->s.pos.longitude = decode_longitude(p_evam->rsa.position.lon);
+        p_sta->s.pos.latitude = decode_latitude(p_evam->rsa.position.lat);
+        p_sta->s.pos.elevation = decode_elevation(p_evam->rsa.position.elev);
+
+        p_sta->s.dir = decode_angle(p_evam->rsa.position.heading);
+        p_sta->s.speed = decode_absolute_velocity(p_evam->rsa.position.speed.speed);
+#if 0
+        p_sta->s.acce_set.longitudinal = decode_acceleration(p_evam->motion.acce.lon);
+        p_sta->s.acce_set.lateral = decode_acceleration(p_evam->motion.acce.lat);
+        p_sta->s.acce_set.vertical = decode_vertical_acceleration(p_evam->motion.acce.vert);
+        p_sta->s.acce_set.yaw_rate = decode_yawrate(p_evam->motion.acce.yaw);
+#endif
+        p_sta->s.alert_mask = alert_mask;
+
+        /* inform the app layer once */
+        if(p_vam->evt_handler[VAM_EVT_EVA_UPDATE] != NULL)
+        {
+            (p_vam->evt_handler[VAM_EVT_EVA_UPDATE])(&p_sta->s);
+        }
+    }
+    return 0;
+}
+
+
+int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{
+    rcp_msg_roadside_alert_t *p_rsa;
+    vam_rsa_evt_info_t param;
+        
+    if (datalen < sizeof(rcp_msg_roadside_alert_t)){
         return -1;
     }
 
-        
-    p_sta->s.dsecond = bsm_ptr->bsmBody.coreData.secMark;
-    p_sta->s.time = osal_get_systemtime();
+    p_rsa = (rcp_msg_roadside_alert_t *)databuf;
 
-    p_sta->s.pos.latitude = decode_latitude(bsm_ptr->bsmBody.coreData.lat);
-    p_sta->s.pos.longitude = decode_longitude(bsm_ptr->bsmBody.coreData.Long);
-    p_sta->s.pos.elevation = decode_elevation(bsm_ptr->bsmBody.coreData.elev);
-    
-    p_sta->s.pos_accuracy.semi_major_accu = decode_semimajor_axis_accuracy(bsm_ptr->bsmBody.coreData.accuracy.semiMajor);
-    p_sta->s.pos_accuracy.semi_minor_accu = decode_semiminor_axis_accuracy(bsm_ptr->bsmBody.coreData.accuracy.semiMinor);
-    p_sta->s.pos_accuracy.semi_major_orientation = decode_semimajor_axis_orientation(bsm_ptr->bsmBody.coreData.accuracy.orientation);
- 
-    p_sta->s.transmission_state = bsm_ptr->bsmBody.coreData.transmission;
-    p_sta->s.speed = decode_absolute_velocity(bsm_ptr->bsmBody.coreData.speed);
-    p_sta->s.dir = decode_angle(bsm_ptr->bsmBody.coreData.heading);
-    p_sta->s.steer_wheel_angle = decode_steer_wheel_angle(bsm_ptr->bsmBody.coreData.angle);
-    
-    p_sta->s.acce_set.longitudinal = decode_acceleration(bsm_ptr->bsmBody.coreData.accelSet.Long);
-    p_sta->s.acce_set.lateral = decode_acceleration(bsm_ptr->bsmBody.coreData.accelSet.lat);
-    p_sta->s.acce_set.vertical = decode_vertical_acceleration(bsm_ptr->bsmBody.coreData.accelSet.vert);
-    p_sta->s.acce_set.yaw_rate = decode_yawrate(bsm_ptr->bsmBody.coreData.accelSet.yaw);
+    param.dsecond  = cv_ntohs(p_rsa->time_stamp);
+    param.rsa_mask = decode_itiscode(p_rsa->typeEvent, p_rsa->description);
+    param.pos.longitude = decode_longitude(p_rsa->position.lon);
+    param.pos.latitude = decode_latitude(p_rsa->position.lat);
 
-    //decode_brake_sytem_status(&bsm_ptr->brakes, &p_sta->s.brake_stat);
-
-    p_sta->s.vec_size.vec_length = decode_vehicle_length(bsm_ptr->bsmBody.coreData.size.length);
-    p_sta->s.vec_size.vec_width = decode_vehicle_width(bsm_ptr->bsmBody.coreData.size.width);
-
-    /* Parsing event domain when has extra data. */
-    if(bsm_ptr->bsmBody.partII != NULL)
+    if(p_vam->evt_handler[VAM_EVT_RSA_UPDATE] != NULL)
     {
-       // if(bsm_ptr->partII->list.present == BSMpartIIExtension_PR_vehicleSafetyExt)
-        {
-            
-        }
+        (p_vam->evt_handler[VAM_EVT_RSA_UPDATE])(&param);
     }
 
-    #if 0
-    {
-        p_sta->s.alert_mask = decode_vehicle_alert(0); 
+    return 0;
+}
 
-        /* inform the app layer once */
-        if(p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE] != NULL)
-        {
-            p_vam->evt_handler[VAM_EVT_BSM_ALARM_UPDATE](&p_sta->s);
-        } 
-    }
-    else
-    {
-        p_sta->s.alert_mask = 0;
-    }
-    #endif
-    
+
+/*****************************************************************************
+ @funcname: vam_rcp_recv
+ @brief   : RCP receive data frame from network layer
+ @param   : wnet_rxinfo_t *rxinfo  
+ @param   : uint8_t *databuf      
+ @param   : uint32_t datalen      
+ @return  : 
+*****************************************************************************/
+int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{
+    vam_envar_t *p_vam = &p_cms_envar->vam;
+    //osal_printf("vam_rcp_recv...\r\n");
+    //vam_add_event_queue(p_vam, VAM_MSG_RCPRX, datalen, (uint32_t)databuf, rxinfo);
+    rcp_parse_msg(p_vam, rxinfo, databuf, datalen);
     return 0;
 }
 
@@ -1099,7 +1206,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     }
 
     /* Build bsm message. */
-    result = bsm_build_msg(&bsm_optional, p_vam, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
+    result = bsm_build_msg(&bsm_optional, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
     if(result != 0)
     {
         goto EXIT;
@@ -1127,11 +1234,6 @@ EXIT:
 
     return result;
 }
-
-
-
-
-
 
 
 int rcp_send_evam(vam_envar_t *p_vam)
