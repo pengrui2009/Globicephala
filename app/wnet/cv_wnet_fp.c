@@ -79,12 +79,12 @@ int fp_send(wnet_envar_t *p_wnet, wnet_txinfo_t *txinfo, uint8_t *pdata, uint32_
         return -1;
     }
 #ifdef VNET_SIMU_OPEN
-    ret = drv_simu_send(txinfo, pdata ,length);
-	if(ret < 0)
-	{
-		osal_printf("%s drv_simu_send error ret=%d\n",__FUNCTION__,ret);
-		return ret;
-	}
+    //ret = drv_simu_send(txinfo, pdata ,length);
+	//if(ret < 0)
+	//{
+	//	osal_printf("%s drv_simu_send error ret=%d\n",__FUNCTION__,ret);
+	//	return ret;
+	//}
 #endif
     
 	return 0;

@@ -857,7 +857,7 @@ void ehm_receive_msg
                 buff_ptr->data_ptr = buff_ptr->buffer;
                 buff_ptr->data_len = result;
                 buff_ptr->time = osal_get_systemtime();
-                osal_printf("recv_len:%d\n",result);
+                osal_printf("simu recv_len:%d\n",result);
 //                for(i=0; i<result ;i++)
 //                	osal_printf("%02X ",buff_ptr->buffer[i]);
 //                osal_printf("\n");

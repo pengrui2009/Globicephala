@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     vam_start();
     vsa_start();
 
-//    ehm_init();
+    ehm_init();
 
     cv_oam_init();
     

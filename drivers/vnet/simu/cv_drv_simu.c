@@ -187,8 +187,8 @@ int net_udp_init(uint16_t port, uint8_t *localip,uint16_t timeout)
 	{
 		sockaddr_udp.sin_family = AF_INET;
 		sockaddr_udp.sin_port = htons(port);
-		//sockaddr_udp.sin_addr.s_addr = INADDR_ANY;                         //INADDR_ANY 表示所有计算机都能连过来
-		memcpy(&sockaddr_udp.sin_addr.s_addr, localip, IPADDR_LENGTH);
+		sockaddr_udp.sin_addr.s_addr = htonl(INADDR_ANY);                         //INADDR_ANY 表示所有计算机都能连过来
+		//memcpy(&sockaddr_udp.sin_addr.s_addr, localip, IPADDR_LENGTH);
 		memset(&(sockaddr_udp.sin_zero), 0, 8);
 
 		//设置超时
