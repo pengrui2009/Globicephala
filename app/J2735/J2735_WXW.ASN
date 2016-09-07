@@ -14,10 +14,11 @@ MessageModuleSet ::= SEQUENCE {
    dsrcMsgId DSRCmsgID
 }
 
--- MSG_BasicSafetyMessage  (BSM) (Desc Name)
+
+-- MSG_BasicSafetyMessage (BSM)
 BasicSafetyMessage ::= SEQUENCE {
    dsrcMsgId DSRCmsgID,
-   bsmBody BsmBody
+   bsmBody   BsmBody
 }
 
 -- DE_BsmBody Only for bsm message.
@@ -28,12 +29,56 @@ BsmBody ::= SEQUENCE {
    -- Part II Content
    partII SEQUENCE (SIZE(1..8)) OF BSMpartIIExtension OPTIONAL,
    
-   -- regional SEQUENCE (SIZE(1..4)) OF
-   -- RegionalExtension {{REGION.Reg-BasicSafetyMessage}} OPTIONAL,
-
+   -- regional SEQUENCE (SIZE(1..4)) OF RegionalExtension {{REGION.Reg-BasicSafetyMessage}} OPTIONAL,
    ...
 }
 
+
+-- MSG_RoadSideAlert (RSA)
+RoadSideAlert ::= SEQUENCE {
+   dsrcMsgId DSRCmsgID,
+   rsaBody   RsaBody
+}
+
+-- DE_RsaBody Only for rsa message.
+RsaBody ::= SEQUENCE {
+   msgCnt    MsgCount,
+   timeStamp MinuteOfTheYear OPTIONAL,
+   typeEvent ITIScodes,
+      -- a category and an item from that category
+      -- all ITS stds use the same types here
+      -- to explain the type of the
+      -- alert / danger / hazard involved
+   description SEQUENCE (SIZE(1..8)) OF ITIScodes OPTIONAL,
+      -- up to eight ITIS code set entries to further
+      -- describe the event, give advice, or any
+      -- other ITIS codes
+   priority Priority OPTIONAL,
+      -- the urgency of this message, a relative
+      -- degree of merit compared with other
+      -- similar messages for this type (not other
+      -- messages being sent by the device), nor a
+      -- priority of display urgency
+   heading HeadingSlice OPTIONAL,
+      -- Applicable headings/direction
+   extent Extent OPTIONAL,
+      -- the spatial distance over which this
+      -- message applies and should be presented
+      -- to the driver
+   position FullPositionVector OPTIONAL,
+      -- a compact summary of the position,
+      -- heading, speed, etc. of the
+      -- event in question. Including stationary
+      -- and wide area events.
+   furtherInfoID FurtherInfoID OPTIONAL,
+      -- an index link to any other incident
+      -- information data that may be available
+      -- in the normal ATIS incident description
+      -- or other messages
+      -- 1~2 octets in length
+   -- regional SEQUENCE (SIZE(1..4)) OF RegionalExtension {{REGION.Reg-RoadSideAlert}} OPTIONAL,
+   ...
+}
 
 
 
@@ -239,7 +284,7 @@ VehicleDummyStruct ::= SEQUENCE {
 
 
 
-
+-- Data Element
 
 -- DE_Acceleration
 Acceleration ::= INTEGER (-2000..2001)
@@ -283,7 +328,7 @@ BrakeAppliedStatus ::= BIT STRING {
    rightRear   (4)  -- Right Rear Active
    } (SIZE (5))
 
--- BrakeBoostApplied
+-- DE_BrakeBoostApplied
 BrakeBoostApplied ::= ENUMERATED {
    unavailable (0), -- Vehicle not equipped with brake boost
                     -- or brake boost data is unavailable
@@ -428,6 +473,26 @@ ElevationConfidence ::= ENUMERATED {
    elev-000-01 (15) -- B'1111 (1 cm)
    } -- Encoded as a 4 bit value
 
+-- DE_Extent
+Extent ::= ENUMERATED {
+   useInstantlyOnly      (0),
+   useFor3meters         (1),
+   useFor10meters        (2),
+   useFor50meters        (3),
+   useFor100meters       (4),
+   useFor500meters       (5),
+   useFor1000meters      (6),
+   useFor5000meters      (7),
+   useFor10000meters     (8),
+   useFor50000meters     (9),
+   useFor100000meters   (10),
+   useFor500000meters   (11),
+   useFor1000000meters  (12),
+   useFor5000000meters  (13),
+   useFor10000000meters (14),
+   forever              (15) -- very wide area
+   } -- Encoded as a 4 bit value
+
 -- DE_ExteriorLights
 ExteriorLights ::= BIT STRING {
    -- All lights off is indicated by no bits set
@@ -441,6 +506,13 @@ ExteriorLights ::= BIT STRING {
    fogLightOn              (7),
    parkingLightsOn         (8)
    } (SIZE (9, ...))
+
+--DE_FurtherInfoID
+FurtherInfoID ::= OCTET STRING (SIZE(2))
+   -- a link to any other incident
+   -- information data that may be available
+   -- in the normal ATIS incident description
+   -- or other messages
 
 -- DE_GNSSstatus
 GNSSstatus ::= BIT STRING {
@@ -473,6 +545,31 @@ HeadingConfidence ::= ENUMERATED {
    prec0-0125deg (7) -- B'111 0.0125 degrees, aligned with heading LSB
    } -- Encoded as a 3 bit value
 
+-- DE_HeadingSlice
+HeadingSlice ::= BIT STRING {
+   -- Each bit 22.5 degree starting from
+   -- North and moving Eastward (clockwise) as one bit
+   -- a value of noHeading means no bits set, while a
+   -- value of allHeadings means all bits would be set
+
+   from000-0to022-5degrees (0),
+   from022-5to045-0degrees (1),
+   from045-0to067-5degrees (2),
+   from067-5to090-0degrees (3),
+   from090-0to112-5degrees (4),
+   from112-5to135-0degrees (5),
+   from135-0to157-5degrees (6),
+   from157-5to180-0degrees (7),
+   from180-0to202-5degrees (8),
+   from202-5to225-0degrees (9),
+   from225-0to247-5degrees (10),
+   from247-5to270-0degrees (11),
+   from270-0to292-5degrees (12),
+   from292-5to315-0degrees (13),
+   from315-0to337-5degrees (14),
+   from337-5to360-0degrees (15)
+   } (SIZE (16))
+
 -- DE_Latitude
 Latitude ::= INTEGER (-900000000..900000001)
    -- LSB = 1/10 micro degree
@@ -483,8 +580,20 @@ Longitude ::= INTEGER (-1799999999..1800000001)
    -- LSB = 1/10 micro degree
    -- Providing a range of plus-minus 180 degrees
 
+-- DE_MinuteOfTheYear
+MinuteOfTheYear ::= INTEGER (0..527040)
+   -- the value 527040 shall be used for invalid
+
 -- DE_MsgCount
 MsgCount ::= INTEGER (0..127)
+
+-- DE_OffsetLL-B18
+OffsetLL-B18 ::= INTEGER (-131072..131071)
+   -- A range of +- 0.0131071 degrees
+   -- The value +131071 shall be used for values >= than +0.0131071 degrees
+   -- The value -131071 shall be used for values <= than -0.0131071 degrees
+   -- The value -131072 shall be used unknown
+   -- In LSB units of 0.1 microdegrees (unless a zoom is employed)
 
 -- DE_PositionAccuracy
 PositionalAccuracy ::= SEQUENCE {
@@ -514,15 +623,11 @@ PositionConfidence ::= ENUMERATED {
    a1cm       (15)  -- B'1111 0.01m or about 1 * 10 ^ -7 decimal degrees
    }
    -- Encoded as a 4 bit value
-   
--- DE_OffsetLL-B18
-OffsetLL-B18 ::= INTEGER (-131072..131071)
-   -- A range of +- 0.0131071 degrees
-   -- The value +131071 shall be used for values >= than +0.0131071 degrees
-   -- The value -131071 shall be used for values <= than -0.0131071 degrees
-   -- The value -131072 shall be used unknown
-   -- In LSB units of 0.1 microdegrees (unless a zoom is employed)
 
+-- DE_Priority
+Priority ::= OCTET STRING (SIZE(1))
+   -- Follow definition notes on setting these bits
+   
 -- DE_RadiusOfCurvature
 RadiusOfCurvature ::= INTEGER (-32767..32767)
    -- LSB units of 10cm
@@ -734,6 +839,30 @@ VertOffset-B12 ::= INTEGER (-2048..2047)
 -- DE_YawRate
 YawRate ::= INTEGER (-32767..32767)
    -- LSB units of 0.01 degrees per second (signed)
+
+
+
+-- Extra Data Element
+
+-- EXT_ITIS_Codes[ITIS]
+ITIScodes ::= INTEGER (0..65535)
+   -- The defined list of ITIS codes is too long to list here
+   -- Many smaller lists use a sub-set of these codes as defined elements
+   -- Also enumerated values expressed as text constant are very common,
+   -- and in many deployments the list codes are used as a shorthand for
+   -- this text. Also the XML expressions commonly use a union of the
+   -- code values and the textual expressions.
+   -- Consult SAE J2540 for further details.
+
+
+
+
+
+
+
+
+
+
 
 
 END

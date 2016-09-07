@@ -995,6 +995,28 @@ static void bsm_parse_partii_element(BSMpartIIExtension_t *element_ptr, vam_stas
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*---------------------------------------Remote Communicate Protocol----------------------------------*/
 
 
@@ -1304,17 +1326,13 @@ int rcp_send_rsa(vam_envar_t *p_vam)
 
     txbuf = wnet_get_txbuf();
     
-    if (txbuf == NULL) {
+    if (txbuf == NULL) 
+    {
         osal_printf("get txbuf failed line%d", __LINE__);
         return -1;
     }
 
     /* The RSU position is fixed */
-#if 0
-    vam_stastatus_t current;
-    vam_get_local_current_status(&current);
-    p_local = &current;
-#endif
 
     p_rsa = (rcp_msg_roadside_alert_t *)WNET_TXBUF_DATA_PTR(txbuf);
 
@@ -1324,10 +1342,7 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     vam_active_rsa(RSA_TYPE_CURVE);
     p_rsa->typeEvent = encode_itiscode(p_local->alert_mask, p_rsa->description);
     p_rsa->time_stamp = cv_ntohs(osal_get_systime());
-#if 0
-    p_local->pos.lon = 132.327144*3.1415926/180.0;
-    p_local->pos.lat = 40.0*3.1415926/180.0;
-#endif
+
     p_rsa->position.lon = encode_longitude(p_local->pos.longitude);
     p_rsa->position.lat = encode_latitude(p_local->pos.latitude);
     p_rsa->position.elev = encode_elevation(p_local->pos.elevation);
@@ -1335,7 +1350,6 @@ int rcp_send_rsa(vam_envar_t *p_vam)
     p_rsa->position.speed.speed = encode_absolute_velocity(p_local->speed);
 
     txinfo = WNET_TXBUF_INFO_PTR(txbuf);
-//    memset(txinfo, 0, sizeof(wnet_txinfo_t));
     memcpy(txinfo->dest.dsmp.addr, "\xFF\xFF\xFF\xFF\xFF\xFF", MACADDR_LENGTH);
     txinfo->dest.dsmp.aid = 0x00000020;
     txinfo->protocol = WNET_TRANS_PROT_DSMP;
@@ -1406,7 +1420,7 @@ int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
 {
     wnet_txinfo_t *txinfo;
     rcp_msgid_t *p_msgid;
-    rcp_msg_basic_safty_t *p_bsm;
+  //  rcp_msg_basic_safty_t *p_bsm;
     rcp_msg_emergency_vehicle_alert_t *p_evam;
 
     vam_envar_t *p_vam = &p_cms_envar->vam;
@@ -1423,8 +1437,8 @@ int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
     /* modify the forward_id of msgdata */
     p_msgid = (rcp_msgid_t *)(WNET_TXBUF_DATA_PTR(txbuf));
     if (RCP_MSG_ID_BSM == p_msgid->id){
-        p_bsm = (rcp_msg_basic_safty_t *)WNET_TXBUF_DATA_PTR(txbuf);
-        memcpy(p_bsm->forward_id, p_vam->local.pid, RCP_TEMP_ID_LEN);
+ //       p_bsm = (rcp_msg_basic_safty_t *)WNET_TXBUF_DATA_PTR(txbuf);
+ //       memcpy(p_bsm->forward_id, p_vam->local.pid, RCP_TEMP_ID_LEN);
     }
     else if(RCP_MSG_ID_EVAM == p_msgid->id){
         p_evam = (rcp_msg_emergency_vehicle_alert_t *)WNET_TXBUF_DATA_PTR(txbuf);
@@ -1488,76 +1502,3 @@ void test_rsa(int flag)
     }   
 }
 
-
-osal_timer_t *timer_test_bsm_rx;
-void timer_test_bsm_rx_callback(void* parameter)
-{
-    vam_stastatus_t sta;
-    vam_stastatus_t *p_local;
-
-    rcp_msg_basic_safty_t test_bsm_rx;
-    rcp_msg_basic_safty_t *p_bsm;
-
-    vam_envar_t *p_vam = &p_cms_envar->vam;
-
-    p_local = &sta;
-    p_local->pos.latitude = 40.0; //39.5427f;
-    p_local->pos.longitude = 120.0;//116.2317f;
-    p_local->dir = 90.0;//
-    p_local->pid[0] = 0x02;
-    p_local->pid[1] = 0x04;
-    p_local->pid[2] = 0x06;
-    p_local->pid[3] = 0x08;
-
-
-    p_bsm = (rcp_msg_basic_safty_t *)&test_bsm_rx;   
-    /* construct a fake message */
-    p_bsm->header.msg_id.hops = 1;
-    p_bsm->header.msg_id.id = RCP_MSG_ID_BSM;
-    p_bsm->header.msg_count = 0;
-    memcpy(p_bsm->header.temporary_id, p_local->pid, RCP_TEMP_ID_LEN);
-    p_bsm->dsecond = osal_get_systemtime();
-
-    p_bsm->position.lon = encode_longitude(p_local->pos.longitude);
-    p_bsm->position.lat = encode_latitude(p_local->pos.latitude);
-    p_bsm->position.elev = encode_elevation(p_local->pos.elevation);
-    p_bsm->position.accu.semi_major = encode_semimajor_axis_accuracy(p_local->pos_accuracy.semi_major_accu);
-    p_bsm->position.accu.semi_major_orientation = encode_semimajor_axis_orientation(p_local->pos_accuracy.semi_major_orientation);
-    p_bsm->position.accu.semi_minor = encode_semiminor_axis_accuracy(p_local->pos_accuracy.semi_minor_accu);
-
-    p_bsm->motion.transmission_state = p_local->transmission_state;
-    p_bsm->motion.heading = encode_angle(p_local->dir);
-    p_bsm->motion.speed = encode_absolute_velocity(p_local->speed);
-    p_bsm->motion.steering_wheel_angle = encode_steer_wheel_angle(p_local->steer_wheel_angle);
-    p_bsm->motion.acce.lon = encode_acceleration(p_local->acce_set.longitudinal);
-    p_bsm->motion.acce.lat = encode_acceleration(p_local->acce_set.lateral);
-    p_bsm->motion.acce.vert = encode_vertical_acceleration(p_local->acce_set.vertical);
-    p_bsm->motion.acce.yaw = encode_yawrate(p_local->acce_set.yaw_rate);
-    
-    encode_brake_sytem_status(&p_local->brake_stat, &p_bsm->brakes);
-
-    p_bsm->size.length = encode_vehicle_length(p_local->vec_size.vec_length);
-    p_bsm->size.width = encode_vehicle_width(p_local->vec_size.vec_width);
-
-    rcp_parse_bsm(p_vam, NULL, (uint8_t *)p_bsm, (sizeof(rcp_msg_basic_safty_t) - sizeof(vehicle_safety_ext_t)));
-}
-
-void tb1(void)
-{
-    timer_test_bsm_rx = osal_timer_create("tm-tb",timer_test_bsm_rx_callback,NULL,\
-        2400, TIMER_INTERVAL|TIMER_STOPPED, TIMER_PRIO_NORMAL);
-
-    osal_timer_start(timer_test_bsm_rx);
-}
-
-void stop_tb1(void)
-{
-	osal_timer_stop(timer_test_bsm_rx);
-}
-
-#ifdef RT_USING_FINSH
-#include <finsh.h>
-FINSH_FUNCTION_EXPORT(test_rsa, test sending rsa);
-FINSH_FUNCTION_EXPORT(tb1, test bsm receiving);
-FINSH_FUNCTION_EXPORT(stop_tb1, stop test bsm receiving);
-#endif

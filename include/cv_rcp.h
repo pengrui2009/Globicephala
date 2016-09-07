@@ -473,43 +473,6 @@ typedef struct _vehicle_safety_ext
 }  vehicle_safety_ext_t;
 
 
-
-
-
-/* Message: MSG_BasicSafetyMessage(BSM). */
-typedef struct _rcp_msg_basic_safty
-{
-
-/* -----Part 1, Sent at all times with each message.----- */
-
-    rcp_msg_head_t         header;
-
-    /* Forward pid, not in J2735. */
-    uint8_t         forward_id[4];  
-    
-    uint16_t              dsecond;
-    rcp_position_t       position;
-    
-    rcp_motion_t           motion;
-
-    /* Brake system status. */
-    brake_system_status_t  brakes;
-
-    /* Vehicle size. */
-	vehicle_size_t	         size;
-
-
-/* -----Part 2 Content. Optianal data for message.------ */
-
-    /* Part 2 id for content. */
-    uint8_t               part2_id;  
-
-    /* Vehicle safety extensions. */
-	vehicle_safety_ext_t safetyExt;
-    
-}rcp_msg_basic_safty_t;
-
-
 /* MSG_RoadSideAlert(RSA)  */
 typedef struct _msg_roadside_alert
 {
