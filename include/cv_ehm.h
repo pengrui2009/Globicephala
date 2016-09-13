@@ -139,7 +139,7 @@ typedef struct
 typedef struct _ehm_buffer_st 
 {
     /* Data buffer. */
-    uint8_t  buffer[2048];
+    uint8_t  buffer[EHM_RX_LEN];
 
     /* Current effective data address and length. */
     uint8_t    * data_ptr;
