@@ -184,21 +184,6 @@ typedef enum _ResponderGroupAffected {
 } E_ResponderGroupAffected;
 
 
-typedef enum _Extent {
-	Extent_useInstantlyOnly	= 0,
-	Extent_useFor3meters	= 1,
-	Extent_useFor10meters	= 2,
-	Extent_useFor50meters	= 3,
-	Extent_useFor100meters	= 4,
-	Extent_useFor500meters	= 5,
-	Extent_useFor1000meters	= 6,
-	Extent_useFor5000meters	= 7,
-	Extent_useFor10000meters	= 8,
-	Extent_useFor50000meters	= 9,
-	Extent_useFor100000meters	= 10,
-	Extent_forever	= 127
-} E_Extent;
-
 /* vehicle event flags. */
 typedef enum _VehicleEventFlags 
 {
@@ -242,7 +227,7 @@ typedef enum _STATUS_WORD
     
 } E_STATUS_WORD;
 
-typedef uint16_t itis_codes_t;
+
 typedef uint16_t heading_slice_t;
 
 /*
@@ -473,24 +458,6 @@ typedef struct _vehicle_safety_ext
 }  vehicle_safety_ext_t;
 
 
-/* MSG_RoadSideAlert(RSA)  */
-typedef struct _msg_roadside_alert
-{
-    rcp_msgid_t   msg_id;
-    uint8_t   msg_count;
-
-    uint16_t	time_stamp;
-    itis_codes_t typeEvent;
-    itis_codes_t description[8];
-    
-	uint8_t	priority;
-	heading_slice_t	heading;
-	uint8_t	extent;
-	full_position_vector_t	position;
-	itis_codes_t	furtherInfoID;
-    uint16_t  crc;
-}rcp_msg_roadside_alert_t;
-
 /* MSG_EmergencyVehicleAlert(EVA) */
 typedef struct _msg_emergency_vehicle_alert
 {
@@ -499,7 +466,6 @@ typedef struct _msg_emergency_vehicle_alert
     
     uint8_t   temporary_id[4];
     uint8_t   forward_id[4];   /* 转发节点pid */
-    rcp_msg_roadside_alert_t rsa;
     uint8_t	  responseType;   /* OPTIONAL */
     uint8_t	  details;        /* OPTIONAL */
     uint8_t   mass;           /* OPTIONAL */

@@ -163,7 +163,6 @@ inline float decode_elevation(int32_t elevation)
 
 
     /* unit 10 cm. */
-    elevation = cv_ntohl(elevation);
     result = (float)((float)elevation / (float)10);
     if(result != -409.6)
     {
@@ -210,7 +209,6 @@ inline double decode_latitude(int32_t latitude)
 
 
     /* unit 0.1 micro degree. */
-    latitude = cv_ntohl(latitude);
     result = (double)(latitude / 10000000.0);
     if(result != 90.0000001)
     {
@@ -256,7 +254,6 @@ inline double decode_longitude(int32_t longitude)
     double result = 0;
 
     /* unit 0.1 micro degree. */
-    longitude = cv_ntohl(longitude);
     result = (double)(longitude / 10000000.0);
     if(result != 180.0000001)
     {
@@ -680,7 +677,8 @@ inline uint32_t encode_vehicle_alert_flag(uint16_t warning_id)
 inline uint16_t decode_vehicle_alert_flag(uint32_t x)
 {
     uint16_t r = 0;
-    x = cv_ntohl(x);
+
+    
     if (x & EventHazardLights) {
         r |= VAM_ALERT_MASK_VBD;
     }
