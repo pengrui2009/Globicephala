@@ -27,7 +27,7 @@
 /*****************************************************************************
  * declaration of variables and functions                                    *
 *****************************************************************************/
-
+#define CFG_DSTREAM_BUF_SIZE	2048
 /* need add to global param  later*/
 ehm_config_st ehm_config = 
 { 
@@ -41,8 +41,8 @@ ehm_config_st ehm_config =
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
 
 //static uint32_t v2x_reported_info;
-
-
+static uint8_t databuf[CFG_DSTREAM_BUF_SIZE];//串口缓冲区
+static uint32_t len = 0x0;//串口缓冲区接收到字节长度
 /* Convert vsa alert to ehm alert flag. */
 alert_flag_st ehm_vsa_alert2alert_flag(uint32_t vsa_alert)
 {
@@ -844,29 +844,61 @@ void ehm_receive_msg
 //	int i;
     int result = 0;
 
-    
     /* Receive data from the specific pipeline. */
     switch(recv_type)
     {
         case UART_RECV_TYPE:
         {
-            /* Receive data from uart pipeline. */
-            result = dstream_device[DSTREAM_1].recv(buff_ptr->buffer, sizeof(buff_ptr->buffer));
-            if(0 < result)
-            {
-                buff_ptr->data_ptr = buff_ptr->buffer;
-                buff_ptr->data_len = result;
-                buff_ptr->time = osal_get_systemtime();
-                osal_printf("simu recv_len:%d\n",result);
-//                for(i=0; i<result ;i++)
-//                	osal_printf("%02X ",buff_ptr->buffer[i]);
-//                osal_printf("\n");
-            }
-            else
-            {
-                buff_ptr->data_ptr = buff_ptr->buffer;
-                buff_ptr->data_len = 0;
-            }
+			while(1)
+			{
+				result = dstream_device[DSTREAM_1].recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
+				//printf("ret= %d buf[len]=%02x \n",result, databuf[len -1]);
+				if(result)
+				{
+					len += result;
+					if((len > 3) && (databuf[0] == 0x55) && (databuf[1] == 0xAA))
+					{
+						int framelen = (databuf[2] << 8) + databuf[3];
+						int msg_len = framelen + 0x4;
+						//printf("ret=%d [0]=%02x [1]=%02x [2]=%02x [3]=%02x\n",msg_len,databuf[0],databuf[1],databuf[2],databuf[3]);
+						while(framelen)
+						{
+							result = dstream_device[DSTREAM_1].recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
+
+							if(result)
+							{
+								framelen -= result;
+								len += result;
+							}
+						}
+						result = ehm_msg_check_frame((databuf + 0x4), (msg_len - 6));
+						if(result != 0)
+						{
+							osal_printf("ehm msg check sum error. \n");
+						//     goto START_ROUTINE;
+						}
+						memcpy(buff_ptr->buffer, databuf, len + framelen);
+		                buff_ptr->data_ptr = buff_ptr->buffer + 0x4;//指向帧数据起始位置
+		                buff_ptr->data_len = len + framelen;
+		                buff_ptr->time = osal_get_systemtime();
+						//printf("recv frame: len=%d buf[0]=%02x buf[len-2] = %02x buf[len -1] = %02x\n", len, databuf[0], databuf[len -2], databuf[len -1]);
+//						for(i=0; i<len; i++)
+//							printf("%02x ",databuf[i]);
+//						printf("ok\n");
+						len = 0x0;
+//						if(len > msg_len)
+//						{
+//							memcpy(databuf,databuf + len - msg_len,len - msg_len);
+//							len = len - msg_len;
+//						}else{
+//							len = 0x0;
+//						}
+						break;
+					}else if(len > 3){
+						len = 0x0;
+					}
+				}
+			}
             break;
         }	
         case ETH_RECV_TYPE:
@@ -1339,52 +1371,23 @@ void * ehm_rx_thread_entry(void *param_ptr)
 {
     ehm_envar_st_ptr ehm_ptr = (ehm_envar_st_ptr)param_ptr;
     int               result = 0;
-    uint16_t msg_len;
+
 
 START_ROUTINE:
     
     /* Receive message from the specific pipeline. */
     ehm_receive_msg(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx));
-    while(ehm_ptr->buffer_rx.data_len)
-    {
 
-    	/* Start the next read process when data length error. */
-		if(ehm_ptr->buffer_rx.data_len == 0)
-		{
-			osal_printf("ehm receive data error. \n");
-			goto START_ROUTINE;
-		}
+	/* Parse message body. */
+	result = ehm_parse_msg_body(&(ehm_ptr->buffer_rx));
+//	ehm_ptr->buffer_rx.data_ptr += (msg_len - FRAME_MSG_HEADER_ST_LEN);
+//	ehm_ptr->buffer_rx.data_len -= msg_len;
 
-		/* Parse message header according to data type. */
-		result = ehm_parse_msg_header(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx), &msg_len);
-		if(result != 0)
-		{
-			osal_printf("ehm parse msg header error. \n");
-			goto START_ROUTINE;
-		}
+	if(result != 0)
+	{
+		osal_printf("ehm parse msg body error. \n");
+	}
 
-		/* Check message.  */
-		result = ehm_msg_check_frame(ehm_ptr->buffer_rx.data_ptr, (msg_len - 2));
-		if(result != 0)
-		{
-			osal_printf("ehm msg check sum error. \n");
-	   //     goto START_ROUTINE;
-		}
-
-		/* Parse message body. */
-		result = ehm_parse_msg_body(&(ehm_ptr->buffer_rx));
-		ehm_ptr->buffer_rx.data_ptr += (msg_len - FRAME_MSG_HEADER_ST_LEN);
-		ehm_ptr->buffer_rx.data_len -= msg_len;
-
-		if(result != 0)
-		{
-			osal_printf("ehm parse msg body error. \n");
-		}
-
-    }
-    
-
-    
     goto START_ROUTINE;
 
     /* Only for format matching. */
