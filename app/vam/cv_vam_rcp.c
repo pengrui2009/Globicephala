@@ -23,10 +23,10 @@
 
 
 #include "MessageModuleSet.h"
-#include "cv_vam_bsm.h"
-#include "cv_vam_rsa.h"
+#include "cv_msg_bsm.h"
+#include "cv_msg_rsa.h"
 
-
+#include "DSRCmsgIDEnum.h"
 
 
 float rcp_dbg_distance = 0;
@@ -64,7 +64,17 @@ int rcp_mda_process(uint8_t msg_hops,
 /* Parse bsm message from others. */
 int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 {
-    return bsm_analyse_msg(p_vam, databuf, datalen);
+    bsm_msg_st_ptr msg_ptr = NULL;
+    int             result = -1;
+
+
+    if((msg_ptr = calloc(1, sizeof(*msg_ptr))) != NULL)
+    {
+        result = bsm_analyse_msg(msg_ptr, databuf, datalen);
+        free(msg_ptr);    
+    }
+    
+    return result;
 }
 
 
@@ -160,7 +170,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
 {
     int                       result = 0;
     wnet_txbuf_t              *txbuf = NULL;
-    bsm_msg_optional_st bsm_optional = { 0 };
+    bsm_msg_st_ptr           msg_ptr = NULL;
     uint16_t               valid_bit = 0;
 
 
@@ -170,21 +180,22 @@ int rcp_send_bsm(vam_envar_t *p_vam)
         return -1;
     }
 
+
+    if((msg_ptr = calloc(1, sizeof(*msg_ptr))) == NULL)
+    {
+        return -1;
+    }
+
+
     /* Set bsm optional setting. */
     if(p_vam->flag & VAM_FLAG_TX_BSM_ALERT)
     {
-        bsm_optional.msg_partii = MSG_OPTIONAL_YES;
-        bsm_optional.partii_vehicle_safety_ext = MSG_OPTIONAL_YES;
-
-        bsm_optional.vse_vehicle_event_flags = MSG_OPTIONAL_YES;
-    }
-    else
-    {
-        bsm_optional.msg_partii = MSG_OPTIONAL_NO;
+        msg_ptr->partIIExt.opt.vecSafetyExt = MSG_OPTIONAL_YES;
+        msg_ptr->partIIExt.vecSafetyExt.opt.events = MSG_OPTIONAL_YES;
     }
 
     /* Build bsm message. */
-    result = bsm_build_msg(&bsm_optional, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
+    result = bsm_build_msg(msg_ptr, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
     if(result == 0)
     {
         txbuf->data_len = (valid_bit+7)/8;
@@ -200,6 +211,8 @@ int rcp_send_bsm(vam_envar_t *p_vam)
         /* Send bsm message. */
         result = wnet_send(&(txbuf->info), (uint8_t *)txbuf->data_ptr, txbuf->data_len);
     }
+
+    free(msg_ptr);
     
     wnet_release_txbuf(txbuf);
 
@@ -272,7 +285,7 @@ int rcp_send_evam(vam_envar_t *p_vam)
     p_evam = (rcp_msg_emergency_vehicle_alert_t *)WNET_TXBUF_DATA_PTR(txbuf);
 
     p_evam->msg_id.hops = p_vam->working_param.evam_hops;
-    p_evam->msg_id.id = RCP_MSG_ID_EVAM;
+    p_evam->msg_id.id = DSRCmsgIDEnum_emergencyVehicleAlert;
     memcpy(p_evam->temporary_id, p_local->pid, RCP_TEMP_ID_LEN);
 
     if (p_vam->working_param.evam_hops > 1){
@@ -323,13 +336,13 @@ int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
     {
         switch(mms_ptr->dsrcMsgId)
         {
-            case RCP_MSG_ID_BSM:  {
+            case DSRCmsgIDEnum_basicSafetyMessage:  {
                 rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);    break;  } 
                 
-            case RCP_MSG_ID_EVAM: {
+            case DSRCmsgIDEnum_emergencyVehicleAlert: {
                 rcp_parse_evam(p_vam, rxinfo, databuf, datalen);   break;  } 
                 
-            case RCP_MSG_ID_RSA:  {
+            case DSRCmsgIDEnum_roadSideAlert:  {
                 rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);    break;  }
                 
             default:              {
@@ -366,11 +379,11 @@ int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
 
     /* modify the forward_id of msgdata */
     p_msgid = (rcp_msgid_t *)(WNET_TXBUF_DATA_PTR(txbuf));
-    if (RCP_MSG_ID_BSM == p_msgid->id){
+    if (DSRCmsgIDEnum_basicSafetyMessage == p_msgid->id){
  //       p_bsm = (rcp_msg_basic_safty_t *)WNET_TXBUF_DATA_PTR(txbuf);
  //       memcpy(p_bsm->forward_id, p_vam->local.pid, RCP_TEMP_ID_LEN);
     }
-    else if(RCP_MSG_ID_EVAM == p_msgid->id){
+    else if(DSRCmsgIDEnum_emergencyVehicleAlert == p_msgid->id){
         p_evam = (rcp_msg_emergency_vehicle_alert_t *)WNET_TXBUF_DATA_PTR(txbuf);
         memcpy(p_evam->forward_id, p_vam->local.pid, RCP_TEMP_ID_LEN);    
     }

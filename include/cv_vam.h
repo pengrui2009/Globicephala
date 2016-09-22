@@ -26,10 +26,6 @@
 #define RCP_TEMP_ID_LEN 4
 #define RCP_MACADR_LEN 8
 
-#define RCP_MSG_ID_BSM   DSRCmsgID_basicSafetyMessage
-#define RCP_MSG_ID_EVAM  DSRCmsgID_emergencyVehicleAlert
-#define RCP_MSG_ID_RSA   DSRCmsgID_roadSideAlert
-
 
 #define BSM_BC_MODE_AUTO    1
 #define BSM_BC_MODE_FIXED   2

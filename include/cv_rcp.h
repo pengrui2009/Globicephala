@@ -23,50 +23,6 @@
 /*****************************************************************************
  * definition of structs                                                     *
 *****************************************************************************/
-/* Data Element: DE_DSRC_MessageID. */
-typedef enum _DSRC_MSG_ID 
-{
-    /* All DER forms are now retired and not to be used. */
-	DSRCmsgID_reservedMessageId_D	                  = 0,
-	DSRCmsgID_alaCarteMessage_D	          	= 1, /* ACM */
-	DSRCmsgID_basicSafetyMessage_D	      	= 2, /* BSM, heartbeat msg */
-	DSRCmsgID_basicSafetyMessageVerbose_D   = 3, /* used for testing only */
-	DSRCmsgID_commonSafetyRequest_D	      	= 4,
-	DSRCmsgID_emergencyVehicleAlert_D	    = 5,
-	DSRCmsgID_intersectionCollision_D       = 6,
-	DSRCmsgID_mapData_D	                  	= 7, /* MAP, GID, intersections */
-	DSRCmsgID_nmeaCorrections_D	          	= 8,
-	DSRCmsgID_probeDataManagement_D	      	= 9,
-	DSRCmsgID_probeVehicleData_D	        = 10,
-	DSRCmsgID_roadSideAlert_D	            = 11,
-	DSRCmsgID_rtcmCorrections_D             = 12,
-	DSRCmsgID_signalPhaseAndTimingMessage_D = 13,
-	DSRCmsgID_signalRequestMessage_D	    = 14,
-	DSRCmsgID_signalStatusMessage_D	      	= 15,
-	DSRCmsgID_travelerInformation_D	      	= 16,
-	DSRCmsgID_uperFrame_D                   = 17,
-
-    /* UPER forms. */
-    DSRCmsgID_mapData	                  = 18, /* MAP, intersections */
-    DSRCmsgID_signalPhaseAndTimingMessage = 19, /* SPAT */
-	DSRCmsgID_basicSafetyMessage	      = 20, /* BSM, heartbeat msg */
-	DSRCmsgID_commonSafetyRequest	      = 21, /* CSR */
-	DSRCmsgID_emergencyVehicleAlert	      = 22, /* EVA */
-	DSRCmsgID_intersectionCollision       = 23, /* ICA */
-	DSRCmsgID_nmeaCorrections	          = 24, /* NMEA */
-	DSRCmsgID_probeDataManagement	      = 25, /* PDM */
-	DSRCmsgID_probeVehicleData	          = 26, /* PVD */
-	DSRCmsgID_roadSideAlert	              = 27, /* RSA */
-	DSRCmsgID_rtcmCorrections             = 28, /* TRCM */
-	DSRCmsgID_signalRequestMessage	      = 29, /* SRM */
-	DSRCmsgID_signalStatusMessage	      = 30, /* SSM */
-	DSRCmsgID_travelerInformation	      = 31, /* TIM */
-    DSRCmsgID_personalSafetyMessage       = 32  /* PSM */
-
-    /* Enumeration is extensible. */
-    
-} E_DSRC_MSG_ID;
-
 
 /* Part 2 id for message. */
 typedef enum _MSG_PART2_ID 

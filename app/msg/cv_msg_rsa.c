@@ -2,14 +2,16 @@
  Copyright(C) Beijing Carsmart Technology Co., Ltd.
  All rights reserved.
  
- @file   : cv_vam_rsa.c
+ @file   : cv_msg_rsa.c
  @brief  : MSG_RoadSideAlert(RSA) routine set.
  @author : wangxianwen
  @history:
            2016-09-12    wangxianwen    Created file
            ...
 ******************************************************************************/
-#include "cv_vam_rsa.h"
+#include "cv_msg_rsa.h"
+
+#include "DSRCmsgIDEnum.h"
 #include "RoadSideAlert.h"
 #include "J2735.h"
 #include "cv_vam.h"
@@ -459,7 +461,7 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     }
 
     /* Mesage id. */
-    rsa_ptr->dsrcMsgId = RCP_MSG_ID_RSA;
+    rsa_ptr->dsrcMsgId = DSRCmsgIDEnum_roadSideAlert;
 
     /* Message count. */
     rsa_ptr->rsaBody.msgCnt = msg_count ++;

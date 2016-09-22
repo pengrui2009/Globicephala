@@ -20,6 +20,10 @@
 #include "cv_cms_def.h"
 
 
+#include "DSRCmsgIDEnum.h"
+
+
+
 void vam_list_sta(void);
 /*****************************************************************************
  * declaration of variables and functions                                    *
@@ -117,9 +121,9 @@ void timer_send_bsm_callback(void* parameter)
     }
 
   #ifdef RSU_TEST
-    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_RSA, NULL);
+    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, DSRCmsgIDEnum_roadSideAlert, NULL);
   #else
-    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_BSM, NULL);
+    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, DSRCmsgIDEnum_basicSafetyMessage, NULL);
   #endif    
 }
 
@@ -185,7 +189,7 @@ void timer_send_evam_callback(void* parameter)
     static uint8_t count = VAM_NO_ALERT_EVAM_TX_TIMES;
 
 
-    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, RCP_MSG_ID_EVAM, NULL);
+    vam_add_event_queue(p_vam, VAM_MSG_RCPTX, 0, DSRCmsgIDEnum_emergencyVehicleAlert, NULL);
     
     /* 所有alter已取消 */
     if(p_vam->local.alert_mask == 0)

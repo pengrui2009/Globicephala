@@ -2,17 +2,17 @@
  Copyright(C) Beijing Carsmart Technology Co., Ltd.
  All rights reserved.
  
- @file   : cv_vam_rsa.h
+ @file   : cv_msg_rsa.h
  @brief  : MSG_RoadSideAlert(RSA) routine set.
  @author : wangxianwen
  @history:
            2016-09-12    wangxianwen    Created file
            ...
 ******************************************************************************/
-#ifndef __CV_VAM_RSA_H__
-#define __CV_VAM_RSA_H__
+#ifndef __CV_MSG_RSA_H__
+#define __CV_MSG_RSA_H__
 
-#include "cv_vam_df.h"
+#include "cv_data_frame.h"
 #include "cv_vam.h"
 
 
@@ -68,5 +68,5 @@ extern int rsa_build_msg(rsa_msg_opt_st_ptr opt_ptr, uint8_t *buffer_ptr, uint16
 extern int rsa_analyse_msg(vam_rsa_evt_info_t *evt_ptr, uint8_t *buffer_ptr, uint16_t buffer_size);
 
 
-#endif /* __CV_VAM_RSA_H__ */
+#endif
 

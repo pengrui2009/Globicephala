@@ -362,71 +362,75 @@ DSecond ::= INTEGER (0..65535) -- units of milliseconds
 
 -- DE_DSRC_MessageID
 DSRCmsgID ::= INTEGER (0..32767)
+
+DSRCmsgIDEnum ::= ENUMERATED {
+
    --
    -- DER forms,
    -- All DER forms are now retired and not to be used
    --
-   reservedMessageId-D           DSRCmsgID ::= 0 --'00'H
-   alaCarteMessage-D             DSRCmsgID ::= 1 --'01'H ACM
+   reservedMessageId-D           (0), --'00'H
+   alaCarteMessage-D             (1), --'01'H ACM
    -- alaCarteMessage-D is Retired, not to be used
-   basicSafetyMessage-D          DSRCmsgID ::= 2 --'02'H BSM, heartbeat msg
-   basicSafetyMessageVerbose-D   DSRCmsgID ::= 3 --'03'H For testing onlySAE 
-   commonSafetyRequest-D         DSRCmsgID ::= 4 --'04'H CSR
-   emergencyVehicleAlert-D       DSRCmsgID ::= 5 --'05'H EVA
-   intersectionCollision-D       DSRCmsgID ::= 6 --'06'H ICA
-   mapData-D                     DSRCmsgID ::= 7 --'07'H MAP, intersections
-   nmeaCorrections-D             DSRCmsgID ::= 8 --'08'H NMEA
-   probeDataManagement-D         DSRCmsgID ::= 9 --'09'H PDM
-   probeVehicleData-D            DSRCmsgID ::= 10 --'0A'H PVD
-   roadSideAlert-D               DSRCmsgID ::= 11 --'0B'H RSA
-   rtcmCorrections-D             DSRCmsgID ::= 12 --'0C'H RTCM
-   signalPhaseAndTimingMessage-D DSRCmsgID ::= 13 --'0D'H SPAT
-   signalRequestMessage-D        DSRCmsgID ::= 14 --'0E'H SRM
-   signalStatusMessage-D         DSRCmsgID ::= 15 --'0F'H SSM
-   travelerInformation-D         DSRCmsgID ::= 16 --'10'H TIM
-   uperFrame-D                   DSRCmsgID ::= 17 --'11'H UPER frame
+   basicSafetyMessage-D          (2), --'02'H BSM, heartbeat msg
+   basicSafetyMessageVerbose-D   (3), --'03'H For testing onlySAE 
+   commonSafetyRequest-D         (4), --'04'H CSR
+   emergencyVehicleAlert-D       (5), --'05'H EVA
+   intersectionCollision-D       (6), --'06'H ICA
+   mapData-D                     (7), --'07'H MAP, intersections
+   nmeaCorrections-D             (8), --'08'H NMEA
+   probeDataManagement-D         (9), --'09'H PDM
+   probeVehicleData-D            (10), --'0A'H PVD
+   roadSideAlert-D               (11), --'0B'H RSA
+   rtcmCorrections-D             (12), --'0C'H RTCM
+   signalPhaseAndTimingMessage-D (13), --'0D'H SPAT
+   signalRequestMessage-D        (14), --'0E'H SRM
+   signalStatusMessage-D         (15), --'0F'H SSM
+   travelerInformation-D         (16), --'10'H TIM
+   uperFrame-D                   (17), --'11'H UPER frame
    --
    -- UPER forms
    --
-   mapData                       DSRCmsgID ::= 18 -- MAP, intersections
-   signalPhaseAndTimingMessage   DSRCmsgID ::= 19 -- SPAT
+   mapData                       (18), -- MAP, intersections
+   signalPhaseAndTimingMessage   (19), -- SPAT
    -- Above two entries were adopted in the 2015-04 edition
    -- Message assignments added in 2015 follow below
-   basicSafetyMessage            DSRCmsgID ::= 20 -- BSM, heartbeat msg
-   commonSafetyRequest           DSRCmsgID ::= 21 -- CSR
-   emergencyVehicleAlert         DSRCmsgID ::= 22 -- EVA
-   intersectionCollision         DSRCmsgID ::= 23 -- ICA
-   nmeaCorrections               DSRCmsgID ::= 24 -- NMEA
-   probeDataManagement           DSRCmsgID ::= 25 -- PDM
-   probeVehicleData              DSRCmsgID ::= 26 -- PVD
-   roadSideAlert                 DSRCmsgID ::= 27 -- RSA
-   rtcmCorrections               DSRCmsgID ::= 28 -- RTCM
-   signalRequestMessage          DSRCmsgID ::= 29 -- SRM
-   signalStatusMessage           DSRCmsgID ::= 30 -- SSM
-   travelerInformation           DSRCmsgID ::= 31 -- TIM
-   personalSafetyMessage         DSRCmsgID ::= 32 -- PSM
+   basicSafetyMessage            (20), -- BSM, heartbeat msg
+   commonSafetyRequest           (21), -- CSR
+   emergencyVehicleAlert         (22), -- EVA
+   intersectionCollision         (23), -- ICA
+   nmeaCorrections               (24), -- NMEA
+   probeDataManagement           (25), -- PDM
+   probeVehicleData              (26), -- PVD
+   roadSideAlert                 (27), -- RSA
+   rtcmCorrections               (28), -- RTCM
+   signalRequestMessage          (29), -- SRM
+   signalStatusMessage           (30), -- SSM
+   travelerInformation           (31), -- TIM
+   personalSafetyMessage         (32), -- PSM
    
    --
    -- The Below values are reserved for local message testing use
    --
-   testMessage00 DSRCmsgID ::= 240 -- Hex 0xF0
-   testMessage01 DSRCmsgID ::= 241
-   testMessage02 DSRCmsgID ::= 242
-   testMessage03 DSRCmsgID ::= 243
-   testMessage04 DSRCmsgID ::= 244
-   testMessage05 DSRCmsgID ::= 245
-   testMessage06 DSRCmsgID ::= 246
-   testMessage07 DSRCmsgID ::= 247
-   testMessage08 DSRCmsgID ::= 248
-   testMessage09 DSRCmsgID ::= 249
-   testMessage10 DSRCmsgID ::= 250
-   testMessage11 DSRCmsgID ::= 251
-   testMessage12 DSRCmsgID ::= 252
-   testMessage13 DSRCmsgID ::= 253
-   testMessage14 DSRCmsgID ::= 254
-   testMessage15 DSRCmsgID ::= 255-- Hex 0xFF
+   testMessage00                (240), -- Hex 0xF0
+   testMessage01                (241),
+   testMessage02                (242),
+   testMessage03                (243),
+   testMessage04                (244),
+   testMessage05                (245),
+   testMessage06                (246),
+   testMessage07                (247),
+   testMessage08                (248),
+   testMessage09                (249),
+   testMessage10                (250),
+   testMessage11                (251),
+   testMessage12                (252),
+   testMessage13                (253),
+   testMessage14                (254),
+   testMessage15                (255)-- Hex 0xFF
    --
    -- All other values are reserved for std use
+}
 
 -- DE_DDay
 DDay ::= INTEGER (0..31) -- units of days
