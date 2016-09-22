@@ -14,14 +14,9 @@
 
 #include "cv_data_element.h"
 
-
-
 #include "DDateTime.h"
 #include "FullPositionVector.h"
 
-
-
-#include "cv_vam.h"
 
 
 
@@ -403,7 +398,7 @@ typedef struct _DF_VehicleSafetyExtensions_st
 /* DF_BSMcoreData. */
 typedef struct _DF_BSMcoreData_st
 {
-    uint8_t                  MsgCount;
+    uint8_t                    msgCnt;
     uint8_t                     id[4];  /* Product id. */
     uint16_t                  secMark;  /* DSRC second. */
 
@@ -460,13 +455,13 @@ typedef struct _DF_BSMpartIIExtension_st
 
 
 /* Allocate routine for DF_DDateTime. */
-extern int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr opt_ptr);
+extern int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_st_ptr DDate_ptr);
 
 /* Free routine for DF_DDateTime. */
 extern int DF_DDateTime_free(DDateTime_t *time_ptr);
 
 /* Allocate routine for DF_FullPositionVector. */
-extern int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPositionVector_opt_st_ptr opt_ptr, vam_stastatus_t *vamstatus_ptr);
+extern int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPositionVector_st_ptr fullPos_ptr);
 
 /* Free routine for FullPositionVector. */
 extern int DF_FullPositionVector_free(FullPositionVector_t *pos_ptr);

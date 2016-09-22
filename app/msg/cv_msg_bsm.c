@@ -126,11 +126,11 @@ static int bsm_free_parti_BSMcoreData(BSMcoreData_t *coredata_ptr)
 static int bsm_allocate_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, DF_BSMcoreData_st_ptr coreData_ptr)
 {
     /* Message count. */
-    if(127 < coreData_ptr->MsgCount)
+    if(127 < coreData_ptr->msgCnt)
     {
         goto ERR_EXIT;
     }
-    coredata_ptr->msgCnt = coreData_ptr->MsgCount;
+    coredata_ptr->msgCnt = coreData_ptr->msgCnt;
 
     /* Id. */
     coredata_ptr->id.size = sizeof(coreData_ptr->id);
@@ -205,7 +205,7 @@ ERR_EXIT:
 static int bsm_parse_parti_BSMcoreData(BSMcoreData_t *coredata_ptr, DF_BSMcoreData_st_ptr coreData_ptr)
 {
     /* MsgCount. */
-    coreData_ptr->MsgCount = coredata_ptr->msgCnt;
+    coreData_ptr->msgCnt = coredata_ptr->msgCnt;
 
     /* id. */
     memcpy(coreData_ptr->id, coredata_ptr->id.buf, sizeof(coreData_ptr->id));

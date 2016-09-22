@@ -15,7 +15,7 @@
 
 
 /* Allocate routine for DF_DDateTime. */
-int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr opt_ptr)
+int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_st_ptr DDate_ptr)
 {
     DDateTime_t *time_ptr = NULL;
     
@@ -28,12 +28,12 @@ int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr op
     }
 
     /* DYear. */
-    if(opt_ptr->DYear == MSG_OPTIONAL_YES)
+    if(DDate_ptr->opt.DYear == MSG_OPTIONAL_YES)
     {
         time_ptr->year = calloc(1, sizeof(*time_ptr->year));
         if(time_ptr->year != NULL)
         {
-            * time_ptr->year = 2016;
+            * time_ptr->year = DDate_ptr->year;
         }
         else
         {
@@ -46,12 +46,12 @@ int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr op
     }
 
     /* DMonth. */
-    if(opt_ptr->DMonth == MSG_OPTIONAL_YES)
+    if(DDate_ptr->opt.DMonth == MSG_OPTIONAL_YES)
     {
         time_ptr->month = calloc(1, sizeof(*time_ptr->month));
         if(time_ptr->month != NULL)
         {
-            * time_ptr->month = 9;
+            * time_ptr->month = DDate_ptr->month;
         }
         else
         {
@@ -64,12 +64,12 @@ int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr op
     }
     
     /* DDay. */
-    if(opt_ptr->DDay == MSG_OPTIONAL_YES)
+    if(DDate_ptr->opt.DDay == MSG_OPTIONAL_YES)
     {
         time_ptr->day = calloc(1, sizeof(*time_ptr->day));
         if(time_ptr->day != NULL)
         {
-            * time_ptr->day = 21;
+            * time_ptr->day = DDate_ptr->day;
         }
         else
         {
@@ -82,12 +82,12 @@ int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr op
     }
 
     /* DHour. */
-    if(opt_ptr->DHour == MSG_OPTIONAL_YES)
+    if(DDate_ptr->opt.DHour == MSG_OPTIONAL_YES)
     {
         time_ptr->hour = calloc(1, sizeof(*time_ptr->hour));
         if(time_ptr->hour != NULL)
         {
-            * time_ptr->hour = 8;
+            * time_ptr->hour = DDate_ptr->hour;
         }
         else
         {
@@ -100,12 +100,12 @@ int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr op
     }
     
     /* DMinute. */
-    if(opt_ptr->DMinute == MSG_OPTIONAL_YES)
+    if(DDate_ptr->opt.DMinute == MSG_OPTIONAL_YES)
     {
         time_ptr->minute = calloc(1, sizeof(*time_ptr->minute));
         if(time_ptr->minute != NULL)
         {
-            * time_ptr->minute = 30;
+            * time_ptr->minute = DDate_ptr->minute;
         }
         else
         {
@@ -118,12 +118,12 @@ int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr op
     }
 
     /* DSecond. */
-    if(opt_ptr->DSecond == MSG_OPTIONAL_YES)
+    if(DDate_ptr->opt.DSecond == MSG_OPTIONAL_YES)
     {
         time_ptr->second = calloc(1, sizeof(*time_ptr->second));
         if(time_ptr->second != NULL)
         {
-            * time_ptr->second = 47;
+            * time_ptr->second = DDate_ptr->second;
         }
         else
         {
@@ -136,12 +136,12 @@ int DF_DDateTime_allocate(DDateTime_t **time_ptr_ptr, DF_DDateTime_opt_st_ptr op
     }
 
     /* DOffset. */
-    if(opt_ptr->DOffset == MSG_OPTIONAL_YES)
+    if(DDate_ptr->opt.DOffset == MSG_OPTIONAL_YES)
     {
         time_ptr->offset = calloc(1, sizeof(*time_ptr->offset));
         if(time_ptr->offset != NULL)
         {
-            * time_ptr->offset = 30;
+            * time_ptr->offset = DDate_ptr->offset;
         }
         else
         {
@@ -216,7 +216,7 @@ int DF_DDateTime_free(DDateTime_t *time_ptr)
 
 
 /* Allocate routine for DF_FullPositionVector. */
-int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPositionVector_opt_st_ptr opt_ptr, vam_stastatus_t *vamstatus_ptr)
+int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPositionVector_st_ptr fullPos_ptr)
 {
     FullPositionVector_t  *pos_ptr = NULL;
 
@@ -229,9 +229,9 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
 
     /* DDateTime. */
-    if(opt_ptr->DDateTime == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.DDateTime == MSG_OPTIONAL_YES)
     {
-        if(DF_DDateTime_allocate(&(pos_ptr->utcTime), &(opt_ptr->DDataTime_opt)) != 0)
+        if(DF_DDateTime_allocate(&(pos_ptr->utcTime), &(fullPos_ptr->utcTime)) != 0)
         {
             goto ERR_EXIT;
         }
@@ -242,18 +242,18 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
 
     /* Longitude. */
-    pos_ptr->Long = encode_longitude(vamstatus_ptr->pos.longitude);
+    pos_ptr->Long = encode_longitude(fullPos_ptr->longitude);
 
     /* Latitude. */
-    pos_ptr->lat = encode_latitude(vamstatus_ptr->pos.latitude);
+    pos_ptr->lat = encode_latitude(fullPos_ptr->latitude);
 
     /* Elevation. */
-    if(opt_ptr->Elevation == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.Elevation == MSG_OPTIONAL_YES)
     {
         pos_ptr->elevation = calloc(1, sizeof(*pos_ptr->elevation));
         if(pos_ptr->elevation != NULL)
         {
-            * pos_ptr->elevation = encode_elevation(vamstatus_ptr->pos.elevation);
+            * pos_ptr->elevation = encode_elevation(fullPos_ptr->elevation);
         }
         else
         {
@@ -266,12 +266,12 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
 
     /* Heading. */
-    if(opt_ptr->Heading == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.Heading == MSG_OPTIONAL_YES)
     {
         pos_ptr->heading = calloc(1, sizeof(*pos_ptr->heading));
         if(pos_ptr->heading != NULL)
         {
-            * pos_ptr->heading = encode_angle(vamstatus_ptr->dir);;
+            * pos_ptr->heading = encode_angle(fullPos_ptr->heading);;
         }
         else
         {
@@ -284,13 +284,13 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
 
     /* TransmissionAndSpeed. */
-    if(opt_ptr->TransmissionAndSpeed == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.TransmissionAndSpeed == MSG_OPTIONAL_YES)
     {
         pos_ptr->speed = calloc(1, sizeof(*pos_ptr->speed));
         if(pos_ptr->speed != NULL)
         {
-            pos_ptr->speed->transmisson = vamstatus_ptr->transmission_state;;
-            pos_ptr->speed->speed = encode_absolute_velocity(vamstatus_ptr->speed);
+            pos_ptr->speed->transmisson = fullPos_ptr->speed.transmission;
+            pos_ptr->speed->speed = encode_absolute_velocity(fullPos_ptr->speed.speed);
         }
         else
         {
@@ -303,14 +303,14 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
     
     /* PositionAccuracy. */
-    if(opt_ptr->PositionAccuracy == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.PositionAccuracy == MSG_OPTIONAL_YES)
     {
         pos_ptr->posAccuracy = calloc(1, sizeof(*pos_ptr->posAccuracy));
         if(pos_ptr->posAccuracy != NULL)
         {
-            pos_ptr->posAccuracy->semiMajor = encode_semimajor_axis_accuracy(vamstatus_ptr->pos_accuracy.semi_major_accu);
-            pos_ptr->posAccuracy->semiMinor = encode_semiminor_axis_accuracy(vamstatus_ptr->pos_accuracy.semi_minor_accu);
-            pos_ptr->posAccuracy->orientation = encode_semimajor_axis_orientation(vamstatus_ptr->pos_accuracy.semi_major_orientation);
+            pos_ptr->posAccuracy->semiMajor = encode_semimajor_axis_accuracy(fullPos_ptr->posAccuracy.semi_major_accu);
+            pos_ptr->posAccuracy->semiMinor = encode_semiminor_axis_accuracy(fullPos_ptr->posAccuracy.semi_minor_accu);
+            pos_ptr->posAccuracy->orientation = encode_semimajor_axis_orientation(fullPos_ptr->posAccuracy.semi_major_orientation);
         }
         else
         {
@@ -323,7 +323,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
 
     /* TimeConfidence. */
-    if(opt_ptr->TimeConfidence == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.TimeConfidence == MSG_OPTIONAL_YES)
     {
         pos_ptr->timeConfidence = calloc(1, sizeof(*pos_ptr->timeConfidence));
         if(pos_ptr->timeConfidence != NULL)
@@ -341,7 +341,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
 
     /* PositionConfidenceSet. */
-    if(opt_ptr->PositionConfidenceSet == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.PositionConfidenceSet == MSG_OPTIONAL_YES)
     {
         pos_ptr->posConfidence = calloc(1, sizeof(*pos_ptr->posConfidence));
         if(pos_ptr->posConfidence != NULL)
@@ -360,7 +360,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t **pos_ptr_ptr, DF_FullPo
     }
 
     /* SpeedandHeadingandThrottleConfidence. */
-    if(opt_ptr->SpeedHeadingThrottle == MSG_OPTIONAL_YES)
+    if(fullPos_ptr->opt.SpeedHeadingThrottle == MSG_OPTIONAL_YES)
     {
         pos_ptr->speedConfidence = calloc(1, sizeof(*pos_ptr->posConfidence));
         if(pos_ptr->speedConfidence != NULL)

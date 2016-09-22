@@ -101,6 +101,32 @@ typedef enum _DE_ElevationConfidence_en
 #define DE_ElevationConfidence_en_len    (sizeof(DE_ElevationConfidence_en))
 
 
+
+/* DE_Extent. */
+typedef enum _DE_Extent_en 
+{
+	Ext_useInstantlyOnly	= 0,
+	Ext_useFor3meters	    = 1,
+	Ext_useFor10meters	    = 2,
+	Ext_useFor50meters	    = 3,
+	Ext_useFor100meters	    = 4,
+	Ext_useFor500meters	    = 5,
+	Ext_useFor1000meters	= 6,
+	Ext_useFor5000meters	= 7,
+	Ext_useFor10000meters	= 8,
+	Ext_useFor50000meters	= 9,
+	Ext_useFor100000meters	= 10,
+	Ext_useFor500000meters	= 11,
+	Ext_useFor1000000meters	= 12,
+	Ext_useFor5000000meters	= 13,
+	Ext_useFor10000000meters= 14,
+	Ext_forever	            = 15
+	
+}DE_Extent_en, * DE_Extent_en_ptr;
+
+#define DE_Extent_en_len    (sizeof(DE_Extent_en))
+
+
 /* DE_ExteriorLights. */
 typedef struct _DE_ExteriorLights_st
 {
@@ -156,6 +182,37 @@ typedef enum _DE_HeadingConfidence_en
 }DE_HeadingConfidence_en, * DE_HeadingConfidence_en_ptr;
 
 #define DE_HeadingConfidence_en_len    (sizeof(DE_HeadingConfidence_en))
+
+
+/* DE_HeadingSlice. */
+typedef struct _DE_HeadingSlice_st
+{
+    uint16_t HeadingSlice_from000_0to022_5degrees	:1;
+	uint16_t HeadingSlice_from022_5to045_0degrees	:1;
+	uint16_t HeadingSlice_from045_0to067_5degrees	:1;
+	uint16_t HeadingSlice_from067_5to090_0degrees	:1;
+	uint16_t HeadingSlice_from090_0to112_5degrees	:1;
+	uint16_t HeadingSlice_from112_5to135_0degrees	:1;
+	uint16_t HeadingSlice_from135_0to157_5degrees	:1;
+	uint16_t HeadingSlice_from157_5to180_0degrees	:1;
+	uint16_t HeadingSlice_from180_0to202_5degrees	:1;
+	uint16_t HeadingSlice_from202_5to225_0degrees	:1;
+	uint16_t HeadingSlice_from225_0to247_5degrees	:1;
+	uint16_t HeadingSlice_from247_5to270_0degrees	:1;
+	uint16_t HeadingSlice_from270_0to292_5degrees	:1;
+	uint16_t HeadingSlice_from292_5to315_0degrees	:1;
+	uint16_t HeadingSlice_from315_0to337_5degrees	:1;
+	uint16_t HeadingSlice_from337_5to360_0degrees	:1;
+
+}DE_HeadingSlice_st, * DE_HeadingSlice_st_ptr;
+
+#define DE_HeadingSlice_st_len    (sizeof(DE_HeadingSlice_st))
+
+
+
+
+
+
 
 
 /* DE_PositionConfidence. */

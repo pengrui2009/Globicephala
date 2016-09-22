@@ -14,11 +14,10 @@
 #include "DSRCmsgIDEnum.h"
 #include "RoadSideAlert.h"
 #include "J2735.h"
-#include "cv_vam.h"
 
 
 
-itis_codes_t itiscode[RSA_TYPE_MAX+1] = 
+uint16_t itiscode[RSA_TYPE_MAX+1] = 
 {
 #undef xx
 #define xx(SEQ, TYPE, ITISCODE) (ITISCODE),
@@ -57,7 +56,7 @@ static uint16_t encode_itiscode(uint16_t rsa_mask, itis_codes_t *p_des)
 
 #endif
 
-static void itiscode_2_rsa_mask(itis_codes_t type, uint16_t *rsa_mask)
+static void itiscode_2_rsa_mask(uint16_t type, uint16_t *rsa_mask)
 {
     int i = 0;
     for (i=0; i<RSA_TYPE_MAX; i++)
@@ -70,7 +69,7 @@ static void itiscode_2_rsa_mask(itis_codes_t type, uint16_t *rsa_mask)
 }
 
 
-uint16_t decode_itiscode(itis_codes_t typeEvent, itis_codes_t *p_des)
+uint16_t decode_itiscode(uint16_t typeEvent, uint16_t *p_des)
 {
     uint16_t k = 0;
 	uint16_t rsa_mask = 0;
@@ -174,9 +173,10 @@ static int rsa_free_decription_structure(RoadSideAlert_t *rsa_ptr)
 
 
 /* Allocate rsa description structure. */
-static int rsa_allocate_description_structure(RoadSideAlert_t *rsa_ptr, rsa_msg_opt_st_ptr opt_ptr, vam_stastatus_t *vamstatus_ptr) 
+static int rsa_allocate_description_structure(RoadSideAlert_t *rsa_ptr, rsa_msg_st_ptr msg_ptr) 
 {
     ITIScodes_t *element_ptr = NULL;
+    uint8_t            index = 0;
 
     
     /* Allocate decription structure pointer. */
@@ -189,168 +189,34 @@ static int rsa_allocate_description_structure(RoadSideAlert_t *rsa_ptr, rsa_msg_
     /* Set description element free routine. */
     rsa_ptr->rsaBody.description->list.free = rsa_free_description_element;
 
-    /* Allocate description element 1. */
-    if(opt_ptr->description_ele1 == MSG_OPTIONAL_YES)
+    /* Allocate description element. */
+    if(msg_ptr->decription_num <= (sizeof(msg_ptr->description_ele) / sizeof(msg_ptr->description_ele[0])))
     {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
+        for(index = 0; index < msg_ptr->decription_num; index ++)
         {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
+            element_ptr = calloc(1, sizeof(*element_ptr));
+            if(element_ptr != NULL)
+            {
+                *element_ptr = msg_ptr->description_ele[index];
+                
+                /* Add description element to structure pointer. */
+                if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
+                {
+                    goto ERR_EXIT;
+                } 
+            }
+            else
             {
                 goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
+            }
         }
     }
-
-    /* Allocate description element 2. */
-    if(opt_ptr->description_ele2 == MSG_OPTIONAL_YES)
+    else
     {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
-        {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
-            {
-                goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
-        }
-    }
-
-    /* Allocate description element 3. */
-    if(opt_ptr->description_ele3 == MSG_OPTIONAL_YES)
-    {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
-        {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
-            {
-                goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
-        }
-    }
-
-    /* Allocate description element 4. */
-    if(opt_ptr->description_ele4 == MSG_OPTIONAL_YES)
-    {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
-        {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
-            {
-                goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
-        }
-    }
-
-    /* Allocate description element 5. */
-    if(opt_ptr->description_ele5 == MSG_OPTIONAL_YES)
-    {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
-        {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
-            {
-                goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
-        }
-    }
-
-    /* Allocate description element 6. */
-    if(opt_ptr->description_ele6 == MSG_OPTIONAL_YES)
-    {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
-        {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
-            {
-                goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
-        }
-    }
-
-    /* Allocate description element 7. */
-    if(opt_ptr->description_ele7 == MSG_OPTIONAL_YES)
-    {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
-        {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
-            {
-                goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
-        }
-    }
-
-    /* Allocate description element 8. */
-    if(opt_ptr->description_ele8 == MSG_OPTIONAL_YES)
-    {
-        element_ptr = calloc(1, sizeof(*element_ptr));
-        if(element_ptr != NULL)
-        {
-            *element_ptr = 0;
-            
-            /* Add description element to structure pointer. */
-            if(asn_sequence_add(&(rsa_ptr->rsaBody.description->list), element_ptr) != 0)
-            {
-                goto ERR_EXIT;
-            } 
-        }
-        else
-        {
-            goto ERR_EXIT;
-        }
+        goto ERR_EXIT;
     }
 
     return 0;
-
 
 ERR_EXIT:
     
@@ -361,24 +227,20 @@ ERR_EXIT:
 
 
 /* Parse rsa message into vam status structure. */
-static int rsa_parse_msg(RoadSideAlert_t *rsa_ptr, vam_rsa_evt_info_t *evt_ptr)
+static int rsa_parse_msg(RoadSideAlert_t *rsa_ptr, rsa_msg_st_ptr msg_ptr)
 {
 
+    /* Message count. */
+    msg_ptr->msgCnt = rsa_ptr->rsaBody.msgCnt;
+
+    /* Time stamp. */
     if(rsa_ptr->rsaBody.timeStamp != NULL)
     {
-        evt_ptr->dsecond = *(rsa_ptr->rsaBody.timeStamp);
+        msg_ptr->opt.timeStamp = MSG_OPTIONAL_YES;
+        msg_ptr->timeStamp = *(rsa_ptr->rsaBody.timeStamp);
     }
-    else
-    {
-        evt_ptr->dsecond = 0;
-    }
-    
-    evt_ptr->rsa_mask = 0; //decode_itiscode(rsa_ptr->rsaBody.typeEvent, rsa_ptr->rsaBody.description);
-    
-    evt_ptr->pos.longitude = decode_longitude(rsa_ptr->rsaBody.position->Long);
-    evt_ptr->pos.latitude = decode_latitude(rsa_ptr->rsaBody.position->lat);
 
- 
+
     return 0; 
 }
 
@@ -443,16 +305,11 @@ static int rsa_free_msg(RoadSideAlert_t *rsa_ptr)
 
 
 /* Allocate rsa message. */
-static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr opt_ptr) 
+static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_st_ptr msg_ptr) 
 {
     RoadSideAlert_t    *rsa_ptr = NULL;
-    vam_stastatus_t   vam_local = { 0 };
-    static uint8_t    msg_count = 0;
 
 
-    /* Get local current vam status. */
-    vam_get_local_current_status(&vam_local);
-    
     /* Allocate the rsa message. */
     rsa_ptr = calloc(1, sizeof(*rsa_ptr));
     if(rsa_ptr == NULL)
@@ -464,19 +321,19 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     rsa_ptr->dsrcMsgId = DSRCmsgIDEnum_roadSideAlert;
 
     /* Message count. */
-    rsa_ptr->rsaBody.msgCnt = msg_count ++;
-    if(127 < msg_count)
+    if(127 < msg_ptr->msgCnt)
     {
-        msg_count = 0;
+        goto ERR_EXIT;
     }
+    rsa_ptr->rsaBody.msgCnt = msg_ptr->msgCnt;
 
     /* Time stamp. */
-    if(opt_ptr->msg_timestamp == MSG_OPTIONAL_YES)
+    if(msg_ptr->opt.timeStamp == MSG_OPTIONAL_YES)
     {
-        rsa_ptr->rsaBody.timeStamp = calloc(1, sizeof(MinuteOfTheYear_t));
+        rsa_ptr->rsaBody.timeStamp = calloc(1, sizeof(*(rsa_ptr->rsaBody.timeStamp)));
         if(rsa_ptr->rsaBody.timeStamp != NULL)
         {
-            * rsa_ptr->rsaBody.timeStamp = osal_get_systime();
+            * rsa_ptr->rsaBody.timeStamp = msg_ptr->timeStamp;
         }
         else
         {
@@ -492,9 +349,9 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     rsa_ptr->rsaBody.typeEvent = 0;//encode_itiscode(vam_local.alert_mask, rsa_ptr->rsaBody.description);
 
     /* Description. */
-    if(opt_ptr->msg_description == MSG_OPTIONAL_YES)
+    if(msg_ptr->opt.description == MSG_OPTIONAL_YES)
     {
-        if(rsa_allocate_description_structure(rsa_ptr, opt_ptr, &vam_local) != 0)
+        if(rsa_allocate_description_structure(rsa_ptr, msg_ptr) != 0)
         {
             goto ERR_EXIT;
         }
@@ -505,7 +362,7 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     }
 
     /* Priority. */
-    if(opt_ptr->msg_priority == MSG_OPTIONAL_YES)
+    if(msg_ptr->opt.priority == MSG_OPTIONAL_YES)
     {
         rsa_ptr->rsaBody.priority = calloc(1, sizeof(Priority_t));
         if(rsa_ptr->rsaBody.priority != NULL)
@@ -533,7 +390,7 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     }
 
     /* Heading. */
-    if(opt_ptr->msg_heading == MSG_OPTIONAL_YES)
+    if(msg_ptr->opt.heading == MSG_OPTIONAL_YES)
     {
         rsa_ptr->rsaBody.heading = calloc(1, sizeof(HeadingSlice_t));
         if(rsa_ptr->rsaBody.heading != NULL)
@@ -564,7 +421,7 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     }
 
     /* Extend. */
-    if(opt_ptr->msg_extent == MSG_OPTIONAL_YES)
+    if(msg_ptr->opt.extent == MSG_OPTIONAL_YES)
     {
         rsa_ptr->rsaBody.extent = calloc(1, sizeof(Extent_t));
         if(rsa_ptr->rsaBody.extent != NULL)
@@ -582,9 +439,9 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     }
 
     /* Position. */
-    if(opt_ptr->msg_position == MSG_OPTIONAL_YES)
+    if(msg_ptr->opt.position == MSG_OPTIONAL_YES)
     {
-        if(DF_FullPositionVector_allocate(&(rsa_ptr->rsaBody.position), &(opt_ptr->position_opt), &vam_local) != 0)
+        if((DF_FullPositionVector_allocate(&(rsa_ptr->rsaBody.position), &(msg_ptr->position))) != 0)
         {
             goto ERR_EXIT;
         }
@@ -595,7 +452,7 @@ static int rsa_allocate_msg(RoadSideAlert_t **rsa_ptr_ptr, rsa_msg_opt_st_ptr op
     }
     
     /* Further info id. */
-    if(opt_ptr->msg_further_infoid == MSG_OPTIONAL_YES)
+    if(msg_ptr->opt.furtherInforID == MSG_OPTIONAL_YES)
     {
         rsa_ptr->rsaBody.furtherInfoID = calloc(1, sizeof(FurtherInfoID_t));
         if(rsa_ptr->rsaBody.furtherInfoID != NULL)
@@ -643,7 +500,7 @@ ERR_EXIT:
 
 
 /* Build rsa message into the specific buffer. */
-int rsa_build_msg(rsa_msg_opt_st_ptr opt_ptr, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr)
+int rsa_build_msg(rsa_msg_st_ptr msg_ptr, uint8_t *buffer_ptr, uint16_t buffer_size, uint16_t *valid_bit_ptr)
 {
     int                       result = 0;
     RoadSideAlert_t         *rsa_ptr = NULL;
@@ -651,7 +508,7 @@ int rsa_build_msg(rsa_msg_opt_st_ptr opt_ptr, uint8_t *buffer_ptr, uint16_t buff
 
 
     /* Error detection. */
-    if( (opt_ptr == NULL) || (buffer_ptr == NULL) || (buffer_size == 0) || (valid_bit_ptr == NULL) )
+    if( (msg_ptr == NULL) || (buffer_ptr == NULL) || (buffer_size == 0) || (valid_bit_ptr == NULL) )
     {
         printf(" rsa_build_msg() check error. \n ");
         result = -1;
@@ -659,7 +516,7 @@ int rsa_build_msg(rsa_msg_opt_st_ptr opt_ptr, uint8_t *buffer_ptr, uint16_t buff
     else
     {
         /* Allocate rsa message. */
-        result = rsa_allocate_msg(&rsa_ptr, opt_ptr);
+        result = rsa_allocate_msg(&rsa_ptr, msg_ptr);
         if(result != 0)
         {
             printf(" rsa_allocate_msg() is faild. \n ");
@@ -704,7 +561,7 @@ int rsa_build_msg(rsa_msg_opt_st_ptr opt_ptr, uint8_t *buffer_ptr, uint16_t buff
 
 
 /* Parse rsa message from the specific buffer. */
-int rsa_analyse_msg(vam_rsa_evt_info_t *evt_ptr, uint8_t *buffer_ptr, uint16_t buffer_size)
+int rsa_analyse_msg(rsa_msg_st_ptr msg_ptr, uint8_t *buffer_ptr, uint16_t buffer_size)
 {
     int                    result = 0;
     RoadSideAlert_t      *rsa_ptr = NULL;
@@ -714,7 +571,7 @@ int rsa_analyse_msg(vam_rsa_evt_info_t *evt_ptr, uint8_t *buffer_ptr, uint16_t b
 
 
     /* Error detection. */
-    if((evt_ptr == NULL) || (buffer_ptr == NULL) || (buffer_size == 0))
+    if((msg_ptr == NULL) || (buffer_ptr == NULL) || (buffer_size == 0))
     {
         printf(" rsa_analyse_msg() check error. \n ");
         result = -1;
@@ -731,7 +588,7 @@ int rsa_analyse_msg(vam_rsa_evt_info_t *evt_ptr, uint8_t *buffer_ptr, uint16_t b
         else
         {
             /* Parse the rsa message. */
-            result = rsa_parse_msg(rsa_ptr, evt_ptr); 
+            result = rsa_parse_msg(rsa_ptr, msg_ptr); 
         }
 
         /* Printf the rsa message structure when key on. */

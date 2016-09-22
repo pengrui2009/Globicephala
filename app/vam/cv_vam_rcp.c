@@ -139,11 +139,17 @@ int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, 
 
 int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 {
-    vam_rsa_evt_info_t param = { 0 };
+    rsa_msg_st_ptr msg_ptr = NULL;
+    int             result = -1;
 
 
-    return rsa_analyse_msg(&param, databuf, datalen);
+    if((msg_ptr = calloc(1, sizeof(*msg_ptr))) != NULL)
+    {
+        result = rsa_analyse_msg(msg_ptr, databuf, datalen);
+        free(msg_ptr);    
+    }
     
+    return result;    
 }
 
 
@@ -223,7 +229,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
 int rcp_send_rsa(vam_envar_t *p_vam)
 {
     int               result = 0;
-    rsa_msg_opt_st   rsa_opt = { 0 };
+    rsa_msg_st_ptr   msg_ptr = NULL;
     
     wnet_txbuf_t      *txbuf = NULL;
     uint16_t       valid_bit = 0;
@@ -235,10 +241,14 @@ int rcp_send_rsa(vam_envar_t *p_vam)
         osal_printf("get txbuf failed line%d", __LINE__);
         return -1;
     }
-
+  
+    if((msg_ptr = calloc(1, sizeof(*msg_ptr))) == NULL)
+    {
+        return -1;
+    }
 
     /* Build rsa message. */
-    result = rsa_build_msg(&rsa_opt, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
+    result = rsa_build_msg(msg_ptr, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
     if(result == 0)
     {
         txbuf->data_len = (valid_bit+7)/8;
