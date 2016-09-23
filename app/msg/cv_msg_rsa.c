@@ -16,14 +16,14 @@
 #include "J2735.h"
 
 
-
+#if 0
 uint16_t itiscode[RSA_TYPE_MAX+1] = 
 {
 #undef xx
 #define xx(SEQ, TYPE, ITISCODE) (ITISCODE),
     VAM_RSA_TYPE_2_ITISCODE
 };
-
+#endif
 
 /* Key for rsa tx message structure and UPER data printf. */
 static uint8_t KeyPrintfRsaTxStruct = 1;
@@ -54,7 +54,6 @@ static uint16_t encode_itiscode(uint16_t rsa_mask, itis_codes_t *p_des)
     return r;
 }
 
-#endif
 
 static void itiscode_2_rsa_mask(uint16_t type, uint16_t *rsa_mask)
 {
@@ -85,6 +84,7 @@ uint16_t decode_itiscode(uint16_t typeEvent, uint16_t *p_des)
 
 }
 
+#endif
 
 /* Printf rsa message structure data. */
 static void rsa_printf_msgstruct(const char *str, RoadSideAlert_t *rsa_ptr)
