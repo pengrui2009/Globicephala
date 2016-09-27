@@ -200,6 +200,15 @@ int rcp_send_bsm(vam_envar_t *p_vam)
         msg_ptr->partIIExt.vecSafetyExt.opt.events = MSG_OPTIONAL_YES;
     }
 
+
+    msg_ptr->coreData.id[0] = 0x01;
+    msg_ptr->coreData.id[1] = 0x01;
+    msg_ptr->coreData.id[2] = 0x10;
+    msg_ptr->coreData.id[3] = 0x10;
+
+    msg_ptr->coreData.angle = 47.512;
+    
+
     /* Build bsm message. */
     result = bsm_build_msg(msg_ptr, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
     if(result == 0)
