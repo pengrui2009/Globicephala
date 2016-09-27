@@ -861,7 +861,8 @@ void ehm_receive_msg
 						int framelen = (databuf[2] << 8) + databuf[3];
 						int msg_len = framelen + 0x4;
 						//printf("ret=%d [0]=%02x [1]=%02x [2]=%02x [3]=%02x\n",msg_len,databuf[0],databuf[1],databuf[2],databuf[3]);
-						while(framelen)
+						framelen -= (len -4);
+						while(framelen > 0)
 						{
 							result = dstream_device[DSTREAM_1].recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
 

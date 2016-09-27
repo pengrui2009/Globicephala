@@ -1,6 +1,6 @@
 include $(TOPDIR)/config.mk
 
-TARGET := rsu
+TARGET := Globicephala
 
 SUBDIRS += $(TOPDIR)/osal/linux
 SUBDIRS += $(TOPDIR)/osal
