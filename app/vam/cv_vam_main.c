@@ -92,7 +92,7 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
             /* Send evam message. */
             if(p_msg->argc == DSRCmsgIDEnum_emergencyVehicleAlert) 
             {
-                rcp_send_evam(p_vam);
+                rcp_send_eva(p_vam);
             }
 
             /* Send rsa message. */

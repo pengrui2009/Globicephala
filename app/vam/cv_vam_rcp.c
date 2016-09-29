@@ -33,18 +33,7 @@ float rcp_dbg_distance = 0;
 
 
 
-/*****************************************************************************
- * implementation of functions                                               *
-*****************************************************************************/
-
-
-
-int rcp_mda_process(uint8_t msg_hops, 
-                      uint8_t msg_count,
-                      uint8_t *p_temp_id, 
-                      uint8_t *p_forward_id,
-                      uint8_t * data,
-                      uint32_t datalen)
+int rcp_mda_process(uint8_t msg_hops, uint8_t msg_count, uint8_t *p_temp_id, uint8_t *p_forward_id, uint8_t *data, uint32_t datalen)
 {
     mda_msg_info_t src;
     mda_envar_t * p_mda;
@@ -78,7 +67,7 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 }
 
 
-int rcp_parse_evam(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+int rcp_parse_eva(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 {
 
 #if 0
@@ -153,6 +142,42 @@ int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 }
 
 
+int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{    
+    MessageModuleSet_t  *mms_ptr = NULL;
+    asn_dec_rval_t   decode_rval = { 0 };
+    asn_codec_ctx_t   decode_ctx = { 0 };
+
+
+    /* Decode into message module set for message parse. */
+    decode_rval = uper_decode(&decode_ctx, &asn_DEF_MessageModuleSet,(void **)&mms_ptr, databuf, datalen, 0, 0);
+    if(decode_rval.code != RC_OK)
+    {
+        printf("\n uper_decode() for MessageModuleSet_t is faild. \n ");
+        return -1;
+    }
+    else
+    {
+        switch(mms_ptr->dsrcMsgId)
+        {
+            case DSRCmsgIDEnum_basicSafetyMessage:  {
+                rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);    break;  } 
+                
+            case DSRCmsgIDEnum_emergencyVehicleAlert: {
+                rcp_parse_eva(p_vam, rxinfo, databuf, datalen);    break;  } 
+                
+            case DSRCmsgIDEnum_roadSideAlert:  {
+                rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);    break;  }
+                
+            default:              {
+                                                                   break;  }   
+        }
+        
+        return 0;
+    }
+}
+
+
 /*****************************************************************************
  @funcname: vam_rcp_recv
  @brief   : RCP receive data frame from network layer
@@ -164,11 +189,75 @@ int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 {
     vam_envar_t *p_vam = &p_cms_envar->vam;
-    //osal_printf("vam_rcp_recv...\r\n");
+
+
     //vam_add_event_queue(p_vam, VAM_MSG_RCPRX, datalen, (uint32_t)databuf, rxinfo);
     rcp_parse_msg(p_vam, rxinfo, databuf, datalen);
     return 0;
 }
+
+
+
+/* Init bsm message structure. */
+void bsm_init_msg(bsm_msg_st_ptr msg_ptr, vam_stastatus_t_ptr vam_ptr)
+{
+    static uint8_t msg_count = 0;
+
+
+    /* msgCnt. */
+    msg_ptr->coreData.msgCnt = msg_count ++;
+    if(127 < msg_count)
+    {
+        msg_count = 0;
+    }
+
+    /* id. */
+    memcpy(msg_ptr->coreData.id, vam_ptr->pid, sizeof(msg_ptr->coreData.id));
+
+    /* secMark. */
+    msg_ptr->coreData.secMark = vam_ptr->dsecond;
+
+    /* Position. */
+    msg_ptr->coreData.latitude = vam_ptr->pos.latitude;
+    msg_ptr->coreData.longitude = vam_ptr->pos.longitude;
+    msg_ptr->coreData.elevation = vam_ptr->pos.elevation;
+
+    /* accuracy. */
+    msg_ptr->coreData.accuracy.semi_major_accu = vam_ptr->pos_accuracy.semi_major_accu;
+    msg_ptr->coreData.accuracy.semi_minor_accu = vam_ptr->pos_accuracy.semi_minor_accu;
+    msg_ptr->coreData.accuracy.semi_major_orientation = vam_ptr->pos_accuracy.semi_major_orientation;
+
+    msg_ptr->coreData.trans = 
+
+
+    
+
+
+
+    msg_ptr->coreData.angle = 47.512;
+}
+
+
+/* Init rsa message structure. */
+void eva_init_msg(bsm_msg_st_ptr msg_ptr, vam_stastatus_t_ptr vam_ptr)
+{
+    
+}
+
+
+/* Init rsa message structure. */
+void rsa_init_msg(rsa_msg_st_ptr msg_ptr, vam_stastatus_t_ptr vam_ptr)
+{
+    
+}
+
+
+
+
+
+
+
+
 
 
 /* Send bsm message to others. */
@@ -186,7 +275,7 @@ int rcp_send_bsm(vam_envar_t *p_vam)
         return -1;
     }
 
-
+    /* Allocate room for message and clear the memory. */
     if((msg_ptr = calloc(1, sizeof(*msg_ptr))) == NULL)
     {
         return -1;
@@ -199,14 +288,6 @@ int rcp_send_bsm(vam_envar_t *p_vam)
         msg_ptr->partIIExt.opt.vecSafetyExt = MSG_OPTIONAL_YES;
         msg_ptr->partIIExt.vecSafetyExt.opt.events = MSG_OPTIONAL_YES;
     }
-
-
-    msg_ptr->coreData.id[0] = 0x01;
-    msg_ptr->coreData.id[1] = 0x01;
-    msg_ptr->coreData.id[2] = 0x10;
-    msg_ptr->coreData.id[3] = 0x10;
-
-    msg_ptr->coreData.angle = 47.512;
     
 
     /* Build bsm message. */
@@ -232,6 +313,12 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     wnet_release_txbuf(txbuf);
 
     return result;
+}
+
+
+int rcp_send_eva(vam_envar_t *p_vam)
+{
+    return 0;
 }
 
 
@@ -281,109 +368,14 @@ int rcp_send_rsa(vam_envar_t *p_vam)
 }
 
 
-
-int rcp_send_evam(vam_envar_t *p_vam)
+int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
 {
 
 #if 0
-    int result = 0;
-    rcp_msg_emergency_vehicle_alert_t *p_evam;
-    vam_stastatus_t *p_local = &p_vam->local;
-    wnet_txbuf_t *txbuf;
     wnet_txinfo_t *txinfo;
-    vam_stastatus_t current;
-	
-    txbuf = wnet_get_txbuf();
-    if (txbuf == NULL) {
-        return -1;
-    }
-
-    vam_get_local_current_status(&current);
-    p_local = &current;
-
-    p_evam = (rcp_msg_emergency_vehicle_alert_t *)WNET_TXBUF_DATA_PTR(txbuf);
-
-    p_evam->msg_id.hops = p_vam->working_param.evam_hops;
-    p_evam->msg_id.id = DSRCmsgIDEnum_emergencyVehicleAlert;
-    memcpy(p_evam->temporary_id, p_local->pid, RCP_TEMP_ID_LEN);
-
-    if (p_vam->working_param.evam_hops > 1){
-        memcpy(p_evam->forward_id, p_local->pid, RCP_TEMP_ID_LEN);
-    } 
-
-    txinfo = WNET_TXBUF_INFO_PTR(txbuf);
-//    memset(txinfo, 0, sizeof(wnet_txinfo_t));
-    memcpy(txinfo->dest.dsmp.addr, "\xFF\xFF\xFF\xFF\xFF\xFF", MACADDR_LENGTH);
-    txinfo->dest.dsmp.aid = 0x00000020;
-    txinfo->protocol = WNET_TRANS_PROT_DSMP;
-    txinfo->encryption = WNET_TRANS_ENCRYPT_NONE;
-    txinfo->prority = WNET_TRANS_RRORITY_EMERGENCY;
-    txinfo->timestamp = osal_get_systimestamp();
-
-    result = wnet_send(txinfo, (uint8_t *)p_evam, sizeof(rcp_msg_emergency_vehicle_alert_t));
-
-    wnet_release_txbuf(txbuf);
-#endif
-
-    return 0;
-}
-
-
-
-
-int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
-{    
-    MessageModuleSet_t  *mms_ptr = NULL;
-    asn_dec_rval_t   decode_rval = { 0 };
-    asn_codec_ctx_t   decode_ctx = { 0 };
-
-
-    /* Error detection. */
-    if (datalen < sizeof(rcp_msg_head_t))
-    {
-        return -1;
-    }
-
-    /* Decode into message module set for message parse. */
-    decode_rval = uper_decode(&decode_ctx, &asn_DEF_MessageModuleSet,(void **)&mms_ptr, databuf, datalen, 0, 0);
-    if(decode_rval.code != RC_OK)
-    {
-        printf("\nuper_decode() for MessageModuleSet_t is faild. \n ");
-        return -1;
-    }
-    else
-    {
-        switch(mms_ptr->dsrcMsgId)
-        {
-            case DSRCmsgIDEnum_basicSafetyMessage:  {
-                rcp_parse_bsm(p_vam, rxinfo, databuf, datalen);    break;  } 
-                
-            case DSRCmsgIDEnum_emergencyVehicleAlert: {
-                rcp_parse_evam(p_vam, rxinfo, databuf, datalen);   break;  } 
-                
-            case DSRCmsgIDEnum_roadSideAlert:  {
-                rcp_parse_rsa(p_vam, rxinfo, databuf, datalen);    break;  }
-                
-            default:              {
-                                                                   break;  }   
-        }
-        
-        return 0;
-    }
-}
-
-
-
-
-
-
-
-int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
-{
-    wnet_txinfo_t *txinfo;
-    rcp_msgid_t *p_msgid;
+//    rcp_msgid_t *p_msgid;
   //  rcp_msg_basic_safty_t *p_bsm;
-    rcp_msg_emergency_vehicle_alert_t *p_evam;
+//    rcp_msg_emergency_vehicle_alert_t *p_evam;
 
     vam_envar_t *p_vam = &p_cms_envar->vam;
     
@@ -397,28 +389,36 @@ int rcp_send_forward_msg(wnet_txbuf_t *txbuf)
     txinfo->timestamp = osal_get_systimestamp();
 
     /* modify the forward_id of msgdata */
-    p_msgid = (rcp_msgid_t *)(WNET_TXBUF_DATA_PTR(txbuf));
+//    p_msgid = (rcp_msgid_t *)(WNET_TXBUF_DATA_PTR(txbuf));
     if (DSRCmsgIDEnum_basicSafetyMessage == p_msgid->id){
  //       p_bsm = (rcp_msg_basic_safty_t *)WNET_TXBUF_DATA_PTR(txbuf);
  //       memcpy(p_bsm->forward_id, p_vam->local.pid, RCP_TEMP_ID_LEN);
     }
     else if(DSRCmsgIDEnum_emergencyVehicleAlert == p_msgid->id){
-        p_evam = (rcp_msg_emergency_vehicle_alert_t *)WNET_TXBUF_DATA_PTR(txbuf);
-        memcpy(p_evam->forward_id, p_vam->local.pid, RCP_TEMP_ID_LEN);    
+//        p_evam = (rcp_msg_emergency_vehicle_alert_t *)WNET_TXBUF_DATA_PTR(txbuf);
+//        memcpy(p_evam->forward_id, p_vam->local.pid, RCP_TEMP_ID_LEN);    
     }
     else {
         return -1;
     }
-    
+ 
+ 
     return wnet_send(txinfo, WNET_TXBUF_DATA_PTR(txbuf), txbuf->data_len);
+#endif
+
+    return 0;
+ 
 }
+
+
 wnet_txbuf_t *rcp_create_forward_msg(uint8_t left_hops, uint8_t *pdata, uint32_t length)
 {
-    rcp_msgid_t *p_msg;
+
+//    rcp_msgid_t *p_msg;
     wnet_txbuf_t *txbuf = NULL;
 
-    p_msg = (rcp_msgid_t *)pdata;
-    p_msg->hops = left_hops;
+//    p_msg = (rcp_msgid_t *)pdata;
+   // p_msg->hops = left_hops;
 
     txbuf = wnet_get_txbuf();
     if (!txbuf) {
@@ -429,6 +429,8 @@ wnet_txbuf_t *rcp_create_forward_msg(uint8_t left_hops, uint8_t *pdata, uint32_t
     txbuf->data_len = length;
     
     return txbuf;
+
+    
 }
 
 
