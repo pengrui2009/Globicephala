@@ -50,17 +50,191 @@ int rcp_mda_process(uint8_t msg_hops, uint8_t msg_count, uint8_t *p_temp_id, uin
 }
 
 
-/* Parse bsm message from others. */
-int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+
+/* Switch message data into vam status. */
+void bsm_msg2vamstatus(vam_stastatus_t_ptr stat_ptr, bsm_msg_st_ptr msg_ptr)
 {
-    bsm_msg_st_ptr msg_ptr = NULL;
-    int             result = -1;
+    /* id. */
+    memcpy(stat_ptr->pid, msg_ptr->coreData.id, sizeof(stat_ptr->pid));
 
+    /* secMark. */
+    stat_ptr->dsecond = msg_ptr->coreData.secMark;
 
-    if((msg_ptr = calloc(1, sizeof(*msg_ptr))) != NULL)
+    /* Position. */
+    stat_ptr->pos.latitude = msg_ptr->coreData.latitude;
+    stat_ptr->pos.longitude = msg_ptr->coreData.longitude;
+    stat_ptr->pos.elevation = msg_ptr->coreData.elevation;
+
+    /* accuracy. */
+    stat_ptr->pos_accuracy.semi_major_accu = msg_ptr->coreData.accuracy.semi_major_accu;
+    stat_ptr->pos_accuracy.semi_minor_accu = msg_ptr->coreData.accuracy.semi_minor_accu;
+    stat_ptr->pos_accuracy.semi_major_orientation = msg_ptr->coreData.accuracy.semi_major_orientation;
+
+    stat_ptr->transmission_state = msg_ptr->coreData.trans;
+    stat_ptr->speed = msg_ptr->coreData.speed;
+    stat_ptr->dir = msg_ptr->coreData.heading;
+    stat_ptr->steer_wheel_angle = msg_ptr->coreData.angle;
+
+    /* accSet. */
+    stat_ptr->acce_set.longitudinal = msg_ptr->coreData.acceSet.longitudinal;
+    stat_ptr->acce_set.lateral = msg_ptr->coreData.acceSet.lateral;
+    stat_ptr->acce_set.vertical = msg_ptr->coreData.acceSet.vertical;
+    stat_ptr->acce_set.yaw_rate = msg_ptr->coreData.acceSet.yaw_rate;
+
+    /* brakes. */
+    stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftfront = msg_ptr->coreData.brakes.wheelBrakes.brake_status_leftFront;
+    stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftrear = msg_ptr->coreData.brakes.wheelBrakes.brake_status_leftRear;
+    stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightfront = msg_ptr->coreData.brakes.wheelBrakes.brake_status_rightFront;
+    stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightrear = msg_ptr->coreData.brakes.wheelBrakes.brake_status_rightRear;
+    stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.unavailable = msg_ptr->coreData.brakes.wheelBrakes.brake_status_unavailable;
+
+    stat_ptr->brake_stat.traction = msg_ptr->coreData.brakes.traction;
+    stat_ptr->brake_stat.abs = msg_ptr->coreData.brakes.abs;
+    stat_ptr->brake_stat.scs = msg_ptr->coreData.brakes.scs;
+    stat_ptr->brake_stat.brakeboost = msg_ptr->coreData.brakes.brakeBoost;
+    stat_ptr->brake_stat.auxbrakes = msg_ptr->coreData.brakes.auxBrakes;
+
+    stat_ptr->vec_size.vec_width = msg_ptr->coreData.size.width;
+    stat_ptr->vec_size.vec_length = msg_ptr->coreData.size.length;
+
+    /* Set bsm optional setting. */
+    if(msg_ptr->partIIExt.opt.vecSafetyExt == MSG_OPTIONAL_YES)
     {
-        result = bsm_analyse_msg(msg_ptr, databuf, datalen);
-        free(msg_ptr);    
+        if(msg_ptr->partIIExt.vecSafetyExt.opt.events == MSG_OPTIONAL_YES)
+        {
+            if( msg_ptr->partIIExt.vecSafetyExt.events.eventHazardLights == 1)
+            {
+                stat_ptr->alert_mask |= VAM_ALERT_MASK_VBD;  
+            }
+            if(msg_ptr->partIIExt.vecSafetyExt.events.eventHardBraking == 1)
+            {
+                stat_ptr->alert_mask |= VAM_ALERT_MASK_EBD;
+            } 
+        }
+        else
+        {
+            stat_ptr->alert_mask = 0;
+        }
+    } 
+}
+
+
+/* Init bsm message structure. */
+void bsm_vamstatus2msg(bsm_msg_st_ptr msg_ptr, vam_stastatus_t_ptr stat_ptr)
+{
+    static uint8_t     msg_count = 0;
+
+
+    /* msgCnt. */
+    msg_ptr->coreData.msgCnt = msg_count ++;
+    if(127 < msg_count)
+    {
+        msg_count = 0;
+    }
+
+    /* id. */
+    memcpy(msg_ptr->coreData.id, stat_ptr->pid, sizeof(msg_ptr->coreData.id));
+
+    /* secMark. */
+    msg_ptr->coreData.secMark = stat_ptr->dsecond;
+
+    /* Position. */
+    msg_ptr->coreData.latitude = stat_ptr->pos.latitude;
+    msg_ptr->coreData.longitude = stat_ptr->pos.longitude;
+    msg_ptr->coreData.elevation = stat_ptr->pos.elevation;
+
+    /* accuracy. */
+    msg_ptr->coreData.accuracy.semi_major_accu = stat_ptr->pos_accuracy.semi_major_accu;
+    msg_ptr->coreData.accuracy.semi_minor_accu = stat_ptr->pos_accuracy.semi_minor_accu;
+    msg_ptr->coreData.accuracy.semi_major_orientation = stat_ptr->pos_accuracy.semi_major_orientation;
+
+    msg_ptr->coreData.trans = stat_ptr->transmission_state;
+    msg_ptr->coreData.speed = stat_ptr->speed;
+    msg_ptr->coreData.heading = stat_ptr->dir;
+    msg_ptr->coreData.angle = stat_ptr->steer_wheel_angle;
+
+    /* accSet. */
+    msg_ptr->coreData.acceSet.longitudinal = stat_ptr->acce_set.longitudinal;
+    msg_ptr->coreData.acceSet.lateral = stat_ptr->acce_set.lateral;
+    msg_ptr->coreData.acceSet.vertical = stat_ptr->acce_set.vertical;
+    msg_ptr->coreData.acceSet.yaw_rate = stat_ptr->acce_set.yaw_rate;
+
+    /* brakes. */
+    msg_ptr->coreData.brakes.wheelBrakes.brake_status_leftFront = stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftfront;
+    msg_ptr->coreData.brakes.wheelBrakes.brake_status_leftRear = stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.leftrear;
+    msg_ptr->coreData.brakes.wheelBrakes.brake_status_rightFront = stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightfront;
+    msg_ptr->coreData.brakes.wheelBrakes.brake_status_rightRear = stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.rightrear;
+    msg_ptr->coreData.brakes.wheelBrakes.brake_status_unavailable = stat_ptr->brake_stat.wheel_brakes.wheel_brake_bit.unavailable;
+
+    msg_ptr->coreData.brakes.traction = stat_ptr->brake_stat.traction;
+    msg_ptr->coreData.brakes.abs = stat_ptr->brake_stat.abs;
+    msg_ptr->coreData.brakes.scs = stat_ptr->brake_stat.scs;
+    msg_ptr->coreData.brakes.brakeBoost = stat_ptr->brake_stat.brakeboost;
+    msg_ptr->coreData.brakes.auxBrakes = stat_ptr->brake_stat.auxbrakes;
+
+    msg_ptr->coreData.size.width = stat_ptr->vec_size.vec_width;
+    msg_ptr->coreData.size.length = stat_ptr->vec_size.vec_length;
+
+    /* Set bsm optional setting. */
+    if(stat_ptr->alert_mask != 0)
+    {
+        msg_ptr->partIIExt.opt.vecSafetyExt = MSG_OPTIONAL_YES;
+        msg_ptr->partIIExt.vecSafetyExt.opt.events = MSG_OPTIONAL_YES;
+
+        if(stat_ptr->alert_mask | VAM_ALERT_MASK_VBD)
+        {
+            msg_ptr->partIIExt.vecSafetyExt.events.eventHazardLights = 1;
+        }
+        if(stat_ptr->alert_mask | VAM_ALERT_MASK_EBD)
+        {
+            msg_ptr->partIIExt.vecSafetyExt.events.eventHardBraking = 1;
+        } 
+    }
+}
+
+
+/* Parse bsm message from others. */
+int rcp_parse_bsm(vam_envar_t *vam_ptr, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
+{
+    bsm_msg_st_ptr   msg_ptr = NULL;
+    vam_sta_node_t *node_ptr = NULL;
+    int               result = -1;
+
+
+    /* Allocate room for message structure. */
+    if((msg_ptr = calloc(1, sizeof(*msg_ptr))) == NULL)
+    {
+        goto ERR_EXIT;     
+    }
+
+    /* Analysis buffer into bsm message structure. */
+    if((result = bsm_analyse_msg(msg_ptr, databuf, datalen)) != 0)
+    {
+        goto ERR_EXIT;
+    }
+
+    /* Find the current node id structure from neighbour list. */
+    if((node_ptr = vam_find_sta(vam_ptr, msg_ptr->coreData.id)) != NULL)
+    {
+        /* Record the received time. */
+        node_ptr->s.time = osal_get_systemtime();
+
+        /* Update message into node status. */
+        bsm_msg2vamstatus(&(node_ptr->s), msg_ptr);
+
+        /* Inform the vsa module. */
+        if((node_ptr->s.alert_mask != 0) && (vam_ptr->evt_handler[VAM_EVT_BSM_ALARM_UPDATE] != NULL))
+        {
+            vam_ptr->evt_handler[VAM_EVT_BSM_ALARM_UPDATE](&(node_ptr->s));
+        } 
+    }
+
+ERR_EXIT:
+    
+    /* Free message room when necessary. */
+    if(msg_ptr != NULL)
+    {
+        free(msg_ptr);
     }
     
     return result;
@@ -197,47 +371,6 @@ int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
 }
 
 
-
-/* Init bsm message structure. */
-void bsm_init_msg(bsm_msg_st_ptr msg_ptr, vam_stastatus_t_ptr vam_ptr)
-{
-    static uint8_t msg_count = 0;
-
-
-    /* msgCnt. */
-    msg_ptr->coreData.msgCnt = msg_count ++;
-    if(127 < msg_count)
-    {
-        msg_count = 0;
-    }
-
-    /* id. */
-    memcpy(msg_ptr->coreData.id, vam_ptr->pid, sizeof(msg_ptr->coreData.id));
-
-    /* secMark. */
-    msg_ptr->coreData.secMark = vam_ptr->dsecond;
-
-    /* Position. */
-    msg_ptr->coreData.latitude = vam_ptr->pos.latitude;
-    msg_ptr->coreData.longitude = vam_ptr->pos.longitude;
-    msg_ptr->coreData.elevation = vam_ptr->pos.elevation;
-
-    /* accuracy. */
-    msg_ptr->coreData.accuracy.semi_major_accu = vam_ptr->pos_accuracy.semi_major_accu;
-    msg_ptr->coreData.accuracy.semi_minor_accu = vam_ptr->pos_accuracy.semi_minor_accu;
-    msg_ptr->coreData.accuracy.semi_major_orientation = vam_ptr->pos_accuracy.semi_major_orientation;
-
-    msg_ptr->coreData.trans = 
-
-
-    
-
-
-
-    msg_ptr->coreData.angle = 47.512;
-}
-
-
 /* Init rsa message structure. */
 void eva_init_msg(bsm_msg_st_ptr msg_ptr, vam_stastatus_t_ptr vam_ptr)
 {
@@ -252,18 +385,10 @@ void rsa_init_msg(rsa_msg_st_ptr msg_ptr, vam_stastatus_t_ptr vam_ptr)
 }
 
 
-
-
-
-
-
-
-
-
 /* Send bsm message to others. */
-int rcp_send_bsm(vam_envar_t *p_vam)
+int rcp_send_bsm(vam_envar_t *vam_ptr)
 {
-    int                       result = 0;
+    int                       result = -1;
     wnet_txbuf_t              *txbuf = NULL;
     bsm_msg_st_ptr           msg_ptr = NULL;
     uint16_t               valid_bit = 0;
@@ -272,23 +397,17 @@ int rcp_send_bsm(vam_envar_t *p_vam)
     /* Get tx buffer from memory. */
     if((txbuf = wnet_get_txbuf()) == NULL) 
     {
-        return -1;
+        goto ERR_EXIT;
     }
 
     /* Allocate room for message and clear the memory. */
     if((msg_ptr = calloc(1, sizeof(*msg_ptr))) == NULL)
     {
-        return -1;
+        goto ERR_EXIT;
     }
 
-
-    /* Set bsm optional setting. */
-    if(p_vam->flag & VAM_FLAG_TX_BSM_ALERT)
-    {
-        msg_ptr->partIIExt.opt.vecSafetyExt = MSG_OPTIONAL_YES;
-        msg_ptr->partIIExt.vecSafetyExt.opt.events = MSG_OPTIONAL_YES;
-    }
-    
+    /* Update node status into message. */
+    bsm_vamstatus2msg(msg_ptr, &(vam_ptr->local));
 
     /* Build bsm message. */
     result = bsm_build_msg(msg_ptr, txbuf->data_ptr, sizeof(txbuf->buffer) - (txbuf->data_ptr - txbuf->buffer), &valid_bit);
@@ -308,10 +427,19 @@ int rcp_send_bsm(vam_envar_t *p_vam)
         result = wnet_send(&(txbuf->info), (uint8_t *)txbuf->data_ptr, txbuf->data_len);
     }
 
-    free(msg_ptr);
     
-    wnet_release_txbuf(txbuf);
+ERR_EXIT:
+    
+    if(msg_ptr != NULL)
+    {
+        free(msg_ptr);
+    }
 
+    if(txbuf != NULL)
+    {
+        wnet_release_txbuf(txbuf);
+    }
+    
     return result;
 }
 

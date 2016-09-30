@@ -725,10 +725,21 @@ void * vsa_base_proc(void *parameter)
             {    
                 if(vsa_app_handler_tbl[VSA_MSG_CFCW_ALARM](p_vsa, &i) == VSA_ID_CRD)
                 {
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_CRD)) == 0)
+                    {
+                        osal_printf("ID: %02x,%02x,%02x,%02x. Alert: CFCW active. Dis: %d. \n", p_vsa->node_group[i].pid[0], \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
                     p_vsa->node_group[i].vsa_alert |= (1 << VSA_ID_CRD);
                 }
                 else
                 {
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_CRD)) != 0)
+                    {
+                        osal_printf(" ID: %02x,%02x,%02x,%02x. Alert: CFCW cancel. Dis: %d. \n", p_vsa->node_group[i].pid[0],  \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
+                
                     p_vsa->node_group[i].vsa_alert &= ~(1 << VSA_ID_CRD);
                 }
             }
@@ -738,10 +749,20 @@ void * vsa_base_proc(void *parameter)
             {    
                 if(vsa_app_handler_tbl[VSA_MSG_CRCW_ALARM](p_vsa,&i) == VSA_ID_CRD_REAR)
                 {
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_CRD_REAR)) == 0)
+                    {
+                        osal_printf(" ID: %02x,%02x,%02x,%02x. Alert: CRCW active. Dis: %d. \n", p_vsa->node_group[i].pid[0],  \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
                     p_vsa->node_group[i].vsa_alert |= (1 << VSA_ID_CRD_REAR);
                 }
                 else
                 {
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_CRD_REAR)) != 0)
+                    {
+                        osal_printf(" ID: %02x,%02x,%02x,%02x. Alert: CRCW cancel. Dis: %d. \n", p_vsa->node_group[i].pid[0],  \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
                     p_vsa->node_group[i].vsa_alert &= ~(1 << VSA_ID_CRD_REAR);
                 }
             }
@@ -751,10 +772,21 @@ void * vsa_base_proc(void *parameter)
             {    
                 if(vsa_app_handler_tbl[VSA_MSG_VBD_RCV](p_vsa,&i) == VSA_ID_VBD)
                 {
-                    p_vsa->node_group[i].vsa_alert |= (1 << VSA_ID_VBD);
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_VBD)) == 0)
+                    {
+                        osal_printf(" ID: %02x,%02x,%02x,%02x. Alert: VBD active. Dis: %d. \n", p_vsa->node_group[i].pid[0],  \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
+                
+                    p_vsa->node_group[i].vsa_alert |= (1 << VSA_ID_VBD);  
                 }
                 else
                 {
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_VBD)) != 0)
+                    {
+                        osal_printf(" ID: %02x,%02x,%02x,%02x. Alert: VBD cancel. Dis: %d. \n", p_vsa->node_group[i].pid[0],  \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
                     p_vsa->node_group[i].vsa_alert &= ~(1 << VSA_ID_VBD);
                 }
             }
@@ -764,10 +796,22 @@ void * vsa_base_proc(void *parameter)
             {    
                 if(vsa_app_handler_tbl[VSA_MSG_EBD_RCV](p_vsa,&i) == VSA_ID_EBD)
                 {
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_EBD)) == 0)
+                    {
+                        osal_printf(" ID: %02x,%02x,%02x,%02x. Alert: EBD active. Dis: %d. \n", p_vsa->node_group[i].pid[0],  \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
+
                     p_vsa->node_group[i].vsa_alert |= (1 << VSA_ID_EBD);
                 }
                 else
                 {
+                    if((p_vsa->node_group[i].vsa_alert & (1 << VSA_ID_EBD)) != 0)
+                    {
+                        osal_printf(" ID: %02x,%02x,%02x,%02x. Alert: EBD cancel. Dis: %d. \n", p_vsa->node_group[i].pid[0],  \
+                           p_vsa->node_group[i].pid[1], p_vsa->node_group[i].pid[2], p_vsa->node_group[i].pid[3], p_vsa->node_group[i].linear_distance);
+                    }
+                
                     p_vsa->node_group[i].vsa_alert &= ~(1 << VSA_ID_EBD);
                 }
             }
