@@ -221,6 +221,17 @@ typedef struct _vam_sta_node
 
 }vam_sta_node_t;
 
+typedef struct _test_comm_node{
+    /* !!!DON'T modify it!!! */
+    list_head_t list;
+
+    uint8_t pid[RCP_TEMP_ID_LEN];  //temporary ID
+
+    /* private */
+    uint32_t rx_cnt;
+    float    distance_dev;
+    /* os related */
+}test_comm_node_t;
 
 typedef struct _vam_config
 {
@@ -365,7 +376,9 @@ extern void vam_stop_alert(void);
 extern uint8_t vam_get_gps_status(void);
 
 
-
+void init_test_list(void);
+void empty_test_list(void);
+void printf_stats(void);
 
 #endif /* __CV_VAM_H__ */
 

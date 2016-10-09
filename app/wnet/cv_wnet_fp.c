@@ -39,15 +39,17 @@ void test_comm(void)
 {
     int rx_ratio;
 
-	  if (++wnet_dbg_cacul_cnt >= wnet_dbg_cacul_peroid*10) {
+    if (++wnet_dbg_cacul_cnt >= wnet_dbg_cacul_peroid*10) {
         rx_ratio = wnet_dbg_rx_actual*100/wnet_dbg_cacul_cnt;
         osal_printf("\r\n[RX] Max=%d Act=%d Ratio=%d%% dis=%d\r\n\r\n", wnet_dbg_cacul_cnt,\
                     wnet_dbg_rx_actual, rx_ratio, (int)rcp_dbg_distance);
 
         wnet_dbg_cacul_cnt = 0;
         wnet_dbg_rx_actual = 0;
+        printf_stats();
+        empty_test_list();
     }
-		
+
     if (wnet_dbg_rx_fresh > 0) {
         if(wnet_dbg_rx_fresh > 1){
             osal_printf_unbuf("\b");
@@ -60,7 +62,6 @@ void test_comm(void)
     else {
         osal_printf_unbuf(" ");
     }
-
 }
 
 

@@ -206,6 +206,8 @@ void vam_init(void)
         list_add_tail(&p_vam->remote[i].list, &p_vam->sta_free_list);
     }
     
+    init_test_list();
+
     /* os object for vam */
     p_vam->queue_vam = osal_queue_create("q-vam", VAM_QUEUE_SIZE, VAM_MQ_MSG_SIZE);
     osal_assert(p_vam->queue_vam != NULL);

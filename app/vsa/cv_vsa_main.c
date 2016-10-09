@@ -236,10 +236,10 @@ int32_t  vsa_preprocess_pos(vsa_envar_t_ptr p_vsa)
     uint8_t peer_pid[VAM_NEIGHBOUR_MAXNUM][RCP_TEMP_ID_LEN];
     float temp_delta = 0;
 
-    if (0x1 & g_dbg_print_type)
-    {
-        test_comm();
-    }
+//    if (0x1 & g_dbg_print_type)
+//    {
+//        test_comm();
+//    }
     
     vam_get_all_peer_pid(peer_pid, VAM_NEIGHBOUR_MAXNUM, &(p_vsa->node_cnt));
 

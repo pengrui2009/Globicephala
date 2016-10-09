@@ -34,6 +34,8 @@ itis_codes_t itiscode[RSA_TYPE_MAX+1] =
 };
 
 float rcp_dbg_distance = 0;
+list_head_t test_comm_list;
+test_comm_node_t *test_node;
 
 /*****************************************************************************
  * implementation of functions                                               *
@@ -112,6 +114,7 @@ __COMPILE_INLINE__ uint16_t encode_itiscode(uint16_t rsa_mask, itis_codes_t *p_d
     return r;
 }
 
+
 static void itiscode_2_rsa_mask(itis_codes_t type, uint16_t *rsa_mask)
 {
     int i = 0;
@@ -129,14 +132,74 @@ __COMPILE_INLINE__ uint16_t decode_itiscode(itis_codes_t typeEvent, itis_codes_t
 	uint16_t rsa_mask = 0;
 	uint16_t r;
     r = cv_ntohs(typeEvent);
-    itiscode_2_rsa_mask(r, &rsa_mask);    
+    itiscode_2_rsa_mask(r, &rsa_mask);
     for(k=0; k<8; k++)
     {
         r = cv_ntohs(p_des[k]);
-        itiscode_2_rsa_mask(r, &rsa_mask);    
+        itiscode_2_rsa_mask(r, &rsa_mask);
     }
     return rsa_mask;
 
+}
+
+void init_test_list(void)
+{
+    INIT_LIST_HEAD(&test_comm_list);
+
+}
+
+test_comm_node_t *test_find_sta(uint8_t *temporary_id)
+{
+    test_comm_node_t *p_sta = NULL, *pos;
+
+    list_for_each_entry(pos, test_comm_node_t, &test_comm_list, list){
+        if (memcmp(pos->pid, temporary_id, RCP_TEMP_ID_LEN) == 0){
+            p_sta = pos;
+            break;
+        }
+    }
+
+    /* not found, allocate new one */
+    if (p_sta == NULL){
+        p_sta = (test_comm_node_t*)malloc(sizeof(test_comm_node_t));
+        if(p_sta != NULL){
+            memset(p_sta,0,sizeof(test_comm_node_t));
+            memcpy(p_sta->pid,temporary_id,RCP_TEMP_ID_LEN);
+            list_add(&p_sta->list,&test_comm_list);
+        }
+        else{
+            osal_printf("malloc error!");
+        }
+    }
+
+    return p_sta;
+}
+
+void empty_test_list(void)
+{
+    test_comm_node_t *pos = NULL;
+/*
+    list_for_each_entry(pos, test_comm_node_t, &test_comm_list, list){
+        list_del(&pos->list);
+        free(pos);
+    }
+*/
+	while (!list_empty(&test_comm_list))
+	{
+		pos = list_first_entry(&test_comm_list, test_comm_node_t, list);
+		list_del(&pos->list);
+		free(pos);
+	}
+}
+
+void printf_stats(void)
+{
+    test_comm_node_t *pos;
+
+    list_for_each_entry(pos, test_comm_node_t, &test_comm_list, list){
+        osal_printf("\r\npid(%02X %02X %02X %02X)[RX]Act=%d Ratio=%d%% dis=%d\r\n\r\n",\
+            pos->pid[0],pos->pid[1],pos->pid[2],pos->pid[3],pos->rx_cnt,pos->rx_cnt,(int)pos->distance_dev);
+    }
 }
 
 int rcp_mda_process(uint8_t msg_hops, 
@@ -217,6 +280,10 @@ int rcp_parse_bsm(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
         if (1 == g_dbg_print_type)
         {
             rcp_dbg_distance = vsm_get_distance(&p_vam->local.pos, &p_sta->s.pos); 
+			test_node = test_find_sta(p_sta->s.pid);
+			test_node->distance_dev = rcp_dbg_distance;
+			test_node->rx_cnt++;
+			//osal_printf("cnt is %d\n",test_node->rx_cnt);
         }
 
         /* Parsing event domain when has extra data. */

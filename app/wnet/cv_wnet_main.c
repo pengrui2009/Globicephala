@@ -118,7 +118,7 @@ extern int cv_drv_wifi_init(void);
 void timer_stat_callback(void* parameter)
 {
 //    wnet_envar_t *p_wnet = p_wnet_envar;
-    //test_comm();
+    test_comm();
 }
 
 void wnet_init(void)
@@ -173,10 +173,10 @@ void wnet_init(void)
                            DEF_THREAD_STACK_SIZE, RT_WNETTX_THREAD_PRIORITY);
     osal_assert(p_wnet->task_wnet_tx != NULL);
 #endif
-/*    p_wnet->timer_stat = osal_timer_create("tm-stat", timer_stat_callback, p_wnet,\
+    p_wnet->timer_stat = osal_timer_create("tm-stat", timer_stat_callback, p_wnet,\
         100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
-   osal_assert(p_wnet->timer_stat != NULL);
-*/
+    osal_assert(p_wnet->timer_stat != NULL);
+
     p_wnet->task_wnet_rx = osal_task_create("wnrx",
                            wnet_rx_thread_entry, p_wnet,
                            DEF_THREAD_STACK_SIZE, RT_WNETRX_THREAD_PRIORITY);
