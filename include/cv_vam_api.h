@@ -12,5 +12,5 @@
 int32_t vam_get_config(vam_config_t *config);
 int32_t vam_set_config(vam_config_t *config);
 int32_t vam_active_rsa(E_VAM_RSA_TYPE rsaType);
-
+int32_t vam_set_print(uint8_t type);
 #endif /* CV_VAM_API_H_ */

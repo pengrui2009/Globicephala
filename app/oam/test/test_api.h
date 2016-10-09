@@ -22,5 +22,6 @@
 
 oam_status cv_oam_vam_cfg_set(uint32_t mask, vam_config_t *cfg);
 oam_status cv_oam_vam_cfg_get(vam_config_t *cfg);
-
+oam_status cv_oam_vam_bsm_trigger(uint8_t trigger);
+oam_status cv_oam_vam_set_print(uint8_t type);
 #endif

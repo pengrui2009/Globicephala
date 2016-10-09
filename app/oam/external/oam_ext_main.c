@@ -63,18 +63,14 @@ void cv_oam_proc(uint8_t* pdu, uint32_t len)
                     break;    
             }
             break;
-            
         case CV_OAM_FRAME_TYPE_EVENT_MSG:
             //cv_oam_sdk_evt_proc(evt_msg);            
             break;
         case CV_OAM_FRAME_TYPE_RAW_DATA:
             //cv_oam_raw_pkt_proc(pkt_msg);
             break;
-
         case CV_OAM_FRAME_TYPE_KEEPALIVE:
-
             break;
-            
         default:
             break;
     }

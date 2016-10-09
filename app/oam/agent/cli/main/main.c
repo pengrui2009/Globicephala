@@ -45,7 +45,7 @@ struct option longopts[] =
 /* This is called from main when a daemon is invoked with -v or --version. */
 static void print_version (const char *progname)
 {
-  printf ("%s version %s\n", progname, CLI_AGNET_VERSION);
+	printf ("%s version %s\n", progname, CLI_AGNET_VERSION);
 }
 
 /* Help information display. */

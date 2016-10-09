@@ -27,21 +27,27 @@
 /*****************************************************************************
  * implementation of functions                                               *
 *****************************************************************************/
+int32_t vam_set_print(uint8_t type)
+{
+    g_dbg_print_type = type;
 
+    return 0;
+
+}
 
 
 int32_t vam_start(void)
 {
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s: --->\n", __FUNCTION__);
-    vam_add_event_queue(&p_cms_envar->vam, VAM_MSG_START, 0, 0, 0);
-    
+    vam_add_event_queue(&p_cms_envar->vam, VAM_MSG_START, 0, 0, NULL);
+
     return 0;
 }
 
 int32_t vam_stop(void)
 {
     OSAL_MODULE_DBGPRT(MODULE_NAME, OSAL_DEBUG_INFO, "%s: --->\n", __FUNCTION__);
-    vam_add_event_queue(&p_cms_envar->vam, VAM_MSG_STOP, 0, 0, 0);
+    vam_add_event_queue(&p_cms_envar->vam, VAM_MSG_STOP, 0, 0, NULL);
     return 0;
 }
 

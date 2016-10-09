@@ -54,7 +54,7 @@ DEFUN
 (
     show_config_info,
     show_config_cmd,
-    "show parameter (all|vam|wnet)",
+    "show parameter (all|vam|wnet|bsm)",
     SHOW_TIPS_EN SHOW_TIPS_CH
     "working parameter\n配置参数\n"
     "all config info\n所有配置参数信息\n"
@@ -126,10 +126,88 @@ DEFUN
 }
 
 
+
+
+DEFUN
+(
+    bsm_trigger_info,
+    bsm_trigger_cmd,
+    "bsm (stop|start)",    
+    "bsm start or stop\n发送或停止bsm\n"
+    "bsm start\n启动发送bsm\n"
+    "bsm stop\n停止发送bsm\n",
+    CMD_LEVEL_MONITOR_10
+)
+{
+    int ret = 0;
+
+    if(0 == strcmp(argv[0],"start")){
+
+       ret = cv_oam_vam_bsm_trigger(1);
+    }
+    else if((0 == strcmp(argv[0],"stop"))){
+
+       ret = cv_oam_vam_bsm_trigger(0);
+
+    }
+    else{
+
+        return CMD_WARNING;
+    }
+
+    if (ret != OAM_OK) {
+        VTY_SET_UNSUCCESSFULLY(vty);
+        return CMD_WARNING;
+
+    }
+    return CMD_SUCCESS;
+}
+
+
+DEFUN
+(
+    dbg_print_info,
+    dbg_print_cmd,
+    "dbg_print (stop|wnet_rx)",
+    "print wnet_rx\n打印收包信息\n"
+    "dbg_print stop\n停止打印bsm\n"
+    "dbg_print wnet_rx\n打印收包信息\n",
+    CMD_LEVEL_MONITOR_10
+)
+{
+    int ret = 0;
+
+    if(0 == strcmp(argv[0],"stop")){
+
+       ret = cv_oam_vam_set_print(0);
+    }
+    else if((0 == strcmp(argv[0],"wnet_rx"))){
+
+       ret = cv_oam_vam_set_print(1);
+
+    }
+//    else if((0 == strcmp(argv[0],"gps"))){
+//        ret = cv_oam_vam_set_print(4);
+//    }
+    else{
+
+        return CMD_WARNING;
+    }
+
+    if (ret != OAM_OK) {
+        VTY_SET_UNSUCCESSFULLY(vty);
+        return CMD_WARNING;
+
+    }
+    return CMD_SUCCESS;
+}
+
 void install_vam_manage_cmd(void)
 {
     install_element(ENABLE_NODE, &show_config_cmd);
     install_element(ENABLE_NODE, &set_config_cmd);
+    install_element(ENABLE_NODE, &bsm_trigger_cmd);  
+    install_element(ENABLE_NODE, &dbg_print_cmd);
     return;
 }
 

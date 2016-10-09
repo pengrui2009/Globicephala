@@ -67,14 +67,14 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
             if(p_vam->timer_send_bsm != NULL)
             {
                 osal_timer_stop(p_vam->timer_send_bsm);
-                p_vam->timer_send_bsm = NULL;
+                //p_vam->timer_send_bsm = NULL;
             }
 
             /* Stop neighbour life timer. */
             if(p_vam->timer_neighbour_life)
             {
                 osal_timer_stop(p_vam->timer_neighbour_life);
-                p_vam->timer_neighbour_life = NULL;
+                //p_vam->timer_neighbour_life = NULL;
             }
             
             p_vam->flag &= ~(VAM_FLAG_RX | VAM_FLAG_TX_BSM);
@@ -136,6 +136,7 @@ void * vam_thread_entry (void *parameter)
         memset(buf, 0, VAM_MQ_MSG_SIZE);
         
         err = osal_queue_recv(p_vam->queue_vam, buf, &len, OSAL_WAITING_FOREVER);
+
         if((err == OSAL_STATUS_SUCCESS) && (0 < len))
         {
             vam_main_proc(p_vam, (sys_msg_t *)buf);
