@@ -35,7 +35,7 @@ ehm_config_st ehm_config =
         
     { COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE },
     
-    V2X_BASIC_VEHICLE_STATUS|V2X_NB_VEHICLE_ALERT|V2X_ROADSIZE_ALERT
+    V2X_NB_NODE_SUMMRAY_INFO
 };
 
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
@@ -455,8 +455,8 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 
     //待完善，处理node_id关系
     /* node id. */
-    if(memcmp(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id)) == 0)
-    {
+    //if(memcmp(local.pid, status_ptr->node_id, sizeof(status_ptr->node_id)) == 0)
+    //{
     	/* position. */
 		local.pos.latitude =  decode_latitude(status_ptr->position.latitude);
 		local.pos.longitude =  decode_longitude(status_ptr->position.longitude);
@@ -480,7 +480,7 @@ int decode_basic_vehicle_status(uint8_t *pdata, uint16_t len, uint32_t time)
 		{
 			osal_printf("%s: vam_set_local_status err ret = %d. \n",__FUNCTION__, result);
 		}
-    }
+    //}
 
 	return result;
 }
@@ -1470,7 +1470,7 @@ void ehm_init(void)
 //    p_ehm->p_timer_send = osal_timer_create("tm-nb", timer_send_start_callback, p_ehm, 100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
 //        osal_assert(p_ehm->p_timer_heartbeat != NULL);
 
-    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 500, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
+    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 1000, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
     osal_assert(p_ehm->p_timer_heartbeat != NULL);
 
 

@@ -494,7 +494,7 @@ relogin:
     vty->node = USER_NODE;
     release_user(vty->user_index, 1);
     //vty_config_unlock(vty);
-    
+    _user_init();
     goto relogin;
 
     history_truncate_file(history_file,1000);

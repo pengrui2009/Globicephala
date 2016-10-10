@@ -58,7 +58,7 @@ int user_sem_lock(void);
 int user_sem_unlock(void);
 int get_cli_user_info(const char *user_name, char *user_pwd, int *pri, int *online, int *terminal_type);
 int get_cli_user_pwd(char *user_name, char *user_pwd);
-
+void _user_init(void);
 
 #ifdef __cplusplus
 #if __cplusplus

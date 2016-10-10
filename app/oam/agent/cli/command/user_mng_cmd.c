@@ -460,12 +460,12 @@ DEFUN
 )
 {
 //    uint32_t uiErrorCode;
-	int rc_error;
+	int rc_error = 0x0;
 	int iPri;
 //	uint uiPriLen = sizeof(iPri);
 	unsigned long i;
 	int iState;
-	char szUserName[MAX_USER_NAME_LEN+1];
+	char szUserName[MAX_USER_NAME_LEN+1] = "vanet";
 	char szState[2][10] = {"offline", "online"};
 	iPri = 0;
     VTY_OUT_EC(vty, "Username        Priority  Server  Userstatus%s",
@@ -475,8 +475,8 @@ DEFUN
                     "----------------------------------------%s",
                     VTY_NEWLINE);
 
-    while(1)
-    {
+//    while(1)
+//    {
         for (i=0; i<MAX_CLI_USER; ++i)
         {
             if (0 == strcmp(g_astUserArr[i].szName, szUserName))
@@ -493,7 +493,7 @@ DEFUN
                     "Local",
                     szState[iState],
                     VTY_NEWLINE);
-    }
+//    }
     
     return rc_error;
 }

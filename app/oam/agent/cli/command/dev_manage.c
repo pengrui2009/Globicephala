@@ -77,7 +77,11 @@ static int show_version(struct vty *vty)
     char deviceTypeString[65]={0};
 
     memset(deviceTypeString, 0, sizeof(deviceTypeString));
-
+    strcpy(deviceTypeString,"V2V-M03");
+    strcpy(SerialNo,"20161010");
+    strcpy(ProductVer,"V1.0");
+    strcpy(sw_version,"V1.0");
+    strcpy(hw_version,"V1.0");
     
     VTY_OUT_EC(vty, "%sDevice Type       : %s%s"
                 "%sSerial Number     : %s%s"
