@@ -13,7 +13,7 @@
 #include "cv_osal_dbg.h"
 
 static int cv_debug_syslog = 0;
-static int cv_debug_timestamp = 0;
+static int cv_debug_timestamp = 1;
 
 void cv_debug_print_timestamp(void)
 {

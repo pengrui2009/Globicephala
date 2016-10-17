@@ -21,7 +21,7 @@
 #include "cv_cms_def.h"
 #include "cv_wnet.h"
 
-
+#include "DSRCmsgIDEnum.h"
 
 
 /*****************************************************************************
@@ -84,19 +84,19 @@ void vam_main_proc(vam_envar_t *p_vam, sys_msg_t *p_msg)
         case VAM_MSG_RCPTX:
         {
             /* Send bsm message. */
-            if(p_msg->argc == RCP_MSG_ID_BSM)  
+            if(p_msg->argc == DSRCmsgIDEnum_basicSafetyMessage)  
             {
                 rcp_send_bsm(p_vam);
             }
 
             /* Send evam message. */
-            if(p_msg->argc == RCP_MSG_ID_EVAM) 
+            if(p_msg->argc == DSRCmsgIDEnum_emergencyVehicleAlert) 
             {
-                rcp_send_evam(p_vam);
+                rcp_send_eva(p_vam);
             }
 
             /* Send rsa message. */
-            if(p_msg->argc == RCP_MSG_ID_RSA)  
+            if(p_msg->argc == DSRCmsgIDEnum_roadSideAlert)  
             {
                 rcp_send_rsa(p_vam);
             }

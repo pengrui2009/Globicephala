@@ -32,35 +32,6 @@
 
 #define _COMPILE_INLINE__ inline
 
-//
-//_COMPILE_INLINE__ uint16_t cv_ntohs(uint16_t s16);
-//
-//__COMPILE_INLINE__ uint32_t cv_ntohl(uint32_t l32);
-//
-//__COMPILE_INLINE__ float cv_ntohf(float f32);
-
-
-//__COMPILE_INLINE__ uint16_t encode_speed(float x);
-//
-//__COMPILE_INLINE__ float decode_speed(uint16_t x);
-
-//__COMPILE_INLINE__ uint16_t encode_acce_lon(float x);
-
-//__COMPILE_INLINE__ float decode_acce_lon(uint16_t x);
-
-//__COMPILE_INLINE__ uint16_t encode_acce_lat(float x);
-
-//__COMPILE_INLINE__ float decode_acce_lat(uint16_t x);
-
-//__COMPILE_INLINE__ uint16_t encode_acce_vert(float x);
-
-//__COMPILE_INLINE__ float decode_acce_vert(uint16_t x);
-
-//__COMPILE_INLINE__ uint8_t encode_acce_yaw(float x);
-
-//__COMPILE_INLINE__ float decode_acce_yaw(uint8_t x);
-
-
 
 
 

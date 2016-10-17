@@ -20,15 +20,17 @@
 #include "app_msg_format.h"
 
 
+#include "cv_msg_bsm.h"
+
+
+
+
+
 /*****************************************************************************
  * definition of micro                                                       *
 *****************************************************************************/
 #define RCP_TEMP_ID_LEN 4
 #define RCP_MACADR_LEN 8
-
-#define RCP_MSG_ID_BSM   DSRCmsgID_basicSafetyMessage_D
-#define RCP_MSG_ID_EVAM  DSRCmsgID_emergencyVehicleAlert_D
-#define RCP_MSG_ID_RSA   DSRCmsgID_roadSideAlert_D
 
 
 #define BSM_BC_MODE_AUTO    1
@@ -110,7 +112,6 @@ enum VAM_EVT
 #pragma pack(1)
 
 
-
 /* Vehicle position accuracy structure. */
 typedef struct _vam_pos_accuracy_t
 {
@@ -186,6 +187,13 @@ typedef struct _vam_vehicle_size_t
 typedef struct _vam_stastatus_t
 { 
     uint32_t                     time;  /* This location point corresponding time. */  
+
+
+
+
+
+
+
 
     uint8_t      pid[RCP_TEMP_ID_LEN];  /* Product id. */
     uint16_t                  dsecond;  /* DSRC second. */
@@ -367,7 +375,7 @@ int32_t vam_get_peer_current_status(uint8_t *pid, vam_stastatus_t *local);
 int vam_rcp_recv(wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen);
 int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen);
 int rcp_send_bsm(vam_envar_t *p_vam);
-int rcp_send_evam(vam_envar_t *p_vam);
+int rcp_send_eva(vam_envar_t *p_vam);
 int rcp_send_rsa(vam_envar_t *p_vam);
 
 extern void vam_stop_alert(void);

@@ -49,7 +49,6 @@ inline int16_t encode_acceleration(float acceleration)
         result = (2000 < result)? 2000 : result;
         result = (result < -2000)? -2000 : result;
     }
-    result = cv_ntohs(result);
 
 	return result;
 }
@@ -68,7 +67,6 @@ inline float decode_acceleration(int16_t acceleration)
 
 
     /* unit 0.01m/s^2. */
-    acceleration = cv_ntohs(acceleration);
     result = (float)((float)acceleration / (float)100);
     if(result != 20.01)
     {
@@ -97,7 +95,6 @@ inline uint16_t encode_angle(float angle)
     {
         result = 28800;
     }
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -115,7 +112,6 @@ inline float decode_angle(uint16_t angle)
     float result = 0;
 
 
-    angle = cv_ntohs(angle);
     if(28800 <= angle)
     {
         angle = 28800;
@@ -146,7 +142,6 @@ inline int32_t encode_elevation(float elevation)
         result = (61439 < result)? 61439 : result;
         result = (result < -4095)? -4095 : result;
     }
-    result = cv_ntohl(result);
 
 	return result;
 }
@@ -166,7 +161,6 @@ inline float decode_elevation(int32_t elevation)
 
 
     /* unit 10 cm. */
-    elevation = cv_ntohl(elevation);
     result = (float)((float)elevation / (float)10);
     if(result != -409.6)
     {
@@ -196,7 +190,6 @@ inline int32_t encode_latitude(double latitude)
         result = (900000000 < result)? 900000000 : result;
         result = (result < -900000000)? -900000000 : result;
     }
-    result = cv_ntohl(result);
 
 	return result;
 }
@@ -214,7 +207,6 @@ inline double decode_latitude(int32_t latitude)
 
 
     /* unit 0.1 micro degree. */
-    latitude = cv_ntohl(latitude);
     result = (double)(latitude / 10000000.0);
     if(result != 90.0000001)
     {
@@ -244,7 +236,6 @@ inline int32_t encode_longitude(double longitude)
         result = (1800000000 < result)? 1800000000 : result;
         result = (result < -1799999999)? -1799999999 : result;
     }
-    result = cv_ntohl(result);
 
 	return result;
 }
@@ -261,7 +252,6 @@ inline double decode_longitude(int32_t longitude)
     double result = 0;
 
     /* unit 0.1 micro degree. */
-    longitude = cv_ntohl(longitude);
     result = (double)(longitude / 10000000.0);
     if(result != 180.0000001)
     {
@@ -321,7 +311,6 @@ inline uint16_t encode_semimajor_axis_orientation(float orientation)
     	result = 0xFFFF;
     else
     	result = ((uint16_t)(orientation / 0.0054932479));
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -338,7 +327,7 @@ inline float decode_semimajor_axis_orientation(uint16_t orientation)
 {
     float result = 0;
 
-    orientation = cv_ntohs(orientation);
+    
     if(orientation == 0xFFFF)
     	result = 360.00;
     else
@@ -421,7 +410,6 @@ inline uint16_t encode_vehicle_width(float width)
 
 
 	result = (uint16_t)(width * 100);
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -438,7 +426,6 @@ inline float decode_vehicle_width(uint16_t width)
     float result = 0;
 
 
-    width = cv_ntohs(width);
     result = (float)width / (float)100;
 
 	return result;
@@ -456,8 +443,7 @@ inline uint16_t encode_vehicle_length(float length)
     uint16_t result = 0;
 
 
-	result = (uint16_t)(length * 100);
-    result = cv_ntohs(result);
+    result = (uint16_t)(length * 100);
 
     return result;
 }
@@ -474,7 +460,6 @@ inline float decode_vehicle_length(uint16_t length)
     float result = 0;
 
 
-    length = cv_ntohs(length);
     result = (float)length / (float)100;
 
 	return result;
@@ -496,8 +481,6 @@ inline uint16_t encode_absolute_velocity(float velocity)
 
     result = (8190 < result)? 8190 : result;
 
-    result = cv_ntohs(result);
-
     return result;
 }
 /******************************************************************************
@@ -513,7 +496,6 @@ inline float decode_absolute_velocity(uint16_t velocity)
     float result = 0;
 
     //velocity * 3600 * 2 / 100000.0f
-    velocity = cv_ntohs(velocity);
     result = (float)(velocity * 3600 / 50000.0f);
     return result;
 }
@@ -535,7 +517,6 @@ inline int16_t encode_relative_velocity(float velocity)
 
     result = (8190 < result)? 8190 : result;
     result = (result < -8190)? -8190 : result;
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -550,11 +531,9 @@ inline int16_t encode_relative_velocity(float velocity)
 inline float decode_relative_velocity(int16_t velocity)
 {
     float result = 0;
+    
     //velocity * 3600 *2 / 100000.0f
-    velocity = cv_ntohs(velocity);
     result = (float)(velocity * 3600 / 50000.0f);
-
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -619,7 +598,6 @@ inline int16_t encode_yawrate(float yawrate)
 
     /* Unit 0.01 degree/s. */
     result = (int16_t)(yawrate / 0.01);
-    result = cv_ntohs(result);
 
     return result;
 }
@@ -636,115 +614,7 @@ inline float decode_yawrate(int16_t yawrate)
     float result = 0;
 
     /* Unit 0.01 degree/s. */
-    yawrate = cv_ntohs(yawrate);
     result = (float)((float)yawrate * 0.01);
     return result;
-}
-/******************************************************************************
-*	函数:	encode_vehicle_alert_flag
-*	功能:	将告警标识数据进行转换
-*	参数:	warning_id			- 	告警标识数据
-*	返回:	0 - 0xFFFFFFFF		-	正常数据
-*	说明:	AlertFlag（告警标记）中每 1 位代表 1 个告警状态，有效为 1 无效为 0,各告警位之间相互独立
-			(‘00000000 00000000 00000000 00000000’B)		-- 无任何告警
-			(‘00000000 00000000 00000000 00000001’B)		-- 前车近距离告警
-			(‘00000000 00000000 00000000 00000010’B)		-- 后车近距离告警
-			(‘00000000 00000000 00000000 00000100’B)		-- 车辆故障告警
-			(‘00000000 00000000 00000000 00001000’B)		-- 紧急刹车告警
-			(‘00000000 00000000 00000000 00010000’B)		-- 救护车告警
-			(‘00000000 00000000 00000000 00100000’B)		-- 危险货物运输车告警
-			(‘00000000 00000000 00000000 01000000’B)		-- 隧道告警
- ******************************************************************************/
-inline uint32_t encode_vehicle_alert_flag(uint16_t warning_id)
-{
-    alert_flag_st alert_flag;
-
-    alert_flag.alert_word = 0;
-
-    if (warning_id & VAM_ALERT_MASK_VBD) {
-
-        alert_flag.alert_bit.vec_breakdown = 1;
-    }
-
-    if (warning_id & VAM_ALERT_MASK_EBD) {
-
-        alert_flag.alert_bit.vec_brake_hard = 1;
-    }
-
-    return alert_flag.alert_word;
-}
-/******************************************************************************
-*	函数:	encode_vehicle_alert_flag
-*	功能:	将告警标识数据进行转换
-*	参数:	warning_id			- 	告警标识数据
-*	返回:	0 - 0xFFFFFFFF		-	正常数据
-*	说明:	AlertFlag（告警标记）中每 1 位代表 1 个告警状态，有效为 1 无效为 0,各告警位之间相互独立
-			(‘00000000 00000000 00000000 00000000’B)		-- 无任何告警
-			(‘00000000 00000000 00000000 00000001’B)		-- 前车近距离告警
-			(‘00000000 00000000 00000000 00000010’B)		-- 后车近距离告警
-			(‘00000000 00000000 00000000 00000100’B)		-- 车辆故障告警
-			(‘00000000 00000000 00000000 00001000’B)		-- 紧急刹车告警
-			(‘00000000 00000000 00000000 00010000’B)		-- 救护车告警
-			(‘00000000 00000000 00000000 00100000’B)		-- 危险货物运输车告警
-			(‘00000000 00000000 00000000 01000000’B)		-- 隧道告警
- ******************************************************************************/
-inline uint16_t decode_vehicle_alert_flag(uint32_t x)
-{
-    uint16_t r = 0;
-    x = cv_ntohl(x);
-    if (x & EventHazardLights) {
-        r |= VAM_ALERT_MASK_VBD;
-    }
-
-    if (x & EventHardBraking){
-        r |= VAM_ALERT_MASK_EBD;
-    }
-
-    if (x & EventDisabledVehicle){
-        r |= VAM_ALERT_MASK_VOT;
-    }
-    return r;
-}
-/******************************************************************************
-*	函数:	encode_brake_sytem_status
-*	功能:	将制动应用状态数据进行转换
-*	参数:	p_local_brakes			- 本地应用制动状态信息
-			p_remote_brakes			- 远程应用制动状态信息
-*	返回:	none
-*	说明:	制动系统状态涵盖了一系列当前车辆制动和系统控制行为的信息，该结构提供了每个车轮的刹车状态、牵
-			引力控制系统状态、 ABS 防抱死系统状态、 SC 车身稳定控制系统状态、制动增压系统状态和辅助制动系统状态。
- ******************************************************************************/
-inline void encode_brake_sytem_status(brake_system_status_st *p_local_brakes, brake_system_status_t *p_remote_brakes)
-{
-	p_remote_brakes->wheel_brakes_leftfront = p_local_brakes->wheel_brakes.wheel_brake_bit.leftfront;
-	p_remote_brakes->wheel_brakes_leftrear = p_local_brakes->wheel_brakes.wheel_brake_bit.leftrear;
-	p_remote_brakes->wheel_brakes_rightfront = p_local_brakes->wheel_brakes.wheel_brake_bit.rightfront;
-	p_remote_brakes->wheel_brakes_rightrear = p_local_brakes->wheel_brakes.wheel_brake_bit.rightrear;
-	p_remote_brakes->traction = p_local_brakes->traction;
-	p_remote_brakes->abs = p_local_brakes->abs;
-	p_remote_brakes->scs = p_local_brakes->scs;
-	p_remote_brakes->brake_boost = p_local_brakes->brakeboost;
-	p_remote_brakes->aux_brakes = p_local_brakes->auxbrakes;
-}
-/******************************************************************************
-*	函数:	decode_brake_sytem_status
-*	功能:	将制动应用状态数据进行转换
-*	参数:	p_local_brakes			- 本地应用制动状态信息
-			p_remote_brakes			- 远程应用制动状态信息
-*	返回:	none
-*	说明:	制动系统状态涵盖了一系列当前车辆制动和系统控制行为的信息，该结构提供了每个车轮的刹车状态、牵
-			引力控制系统状态、 ABS 防抱死系统状态、 SC 车身稳定控制系统状态、制动增压系统状态和辅助制动系统状态。
- ******************************************************************************/
-inline void decode_brake_sytem_status(brake_system_status_t *p_remote_brakes, brake_system_status_st *p_local_brakes)
-{
-    p_local_brakes->wheel_brakes.wheel_brake_bit.leftfront = p_remote_brakes->wheel_brakes_leftfront;
-    p_local_brakes->wheel_brakes.wheel_brake_bit.leftrear = p_remote_brakes->wheel_brakes_leftrear;
-    p_local_brakes->wheel_brakes.wheel_brake_bit.rightfront = p_remote_brakes->wheel_brakes_rightfront;
-    p_local_brakes->wheel_brakes.wheel_brake_bit.rightrear = p_remote_brakes->wheel_brakes_rightrear;
-    p_local_brakes->traction = p_remote_brakes->traction;
-    p_local_brakes->abs = p_remote_brakes->abs;
-    p_local_brakes->scs = p_remote_brakes->scs;
-    p_local_brakes->brakeboost = p_remote_brakes->brake_boost;
-    p_local_brakes->auxbrakes = p_remote_brakes->aux_brakes;
 }
 

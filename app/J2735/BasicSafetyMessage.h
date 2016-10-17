@@ -12,32 +12,17 @@
 
 /* Including external dependencies */
 #include "DSRCmsgID.h"
-#include "BSMcoreData.h"
-#include <asn_SEQUENCE_OF.h>
-#include <constr_SEQUENCE_OF.h>
+#include "BsmBody.h"
 #include <constr_SEQUENCE.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Forward declarations */
-struct BSMpartIIExtension;
-
 /* BasicSafetyMessage */
 typedef struct BasicSafetyMessage {
 	DSRCmsgID_t	 dsrcMsgId;
-	BSMcoreData_t	 coreData;
-	struct partII {
-		A_SEQUENCE_OF(struct BSMpartIIExtension) list;
-		
-		/* Context for parsing across buffer boundaries */
-		asn_struct_ctx_t _asn_ctx;
-	} *partII;
-	/*
-	 * This type is extensible,
-	 * possible extensions are below.
-	 */
+	BsmBody_t	 bsmBody;
 	
 	/* Context for parsing across buffer boundaries */
 	asn_struct_ctx_t _asn_ctx;
@@ -49,9 +34,6 @@ extern asn_TYPE_descriptor_t asn_DEF_BasicSafetyMessage;
 #ifdef __cplusplus
 }
 #endif
-
-/* Referred external types */
-#include "BSMpartIIExtension.h"
 
 #endif	/* _BasicSafetyMessage_H_ */
 #include <asn_internal.h>

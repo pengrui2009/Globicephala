@@ -136,10 +136,14 @@ int fp_recv(wnet_envar_t *p_wnet, wnet_rxinfo_t *rxinfo, uint8_t *pdata, uint32_
 wnet_txbuf_t *wnet_get_txbuf(void)
 {
     wnet_txbuf_t *txbuf = NULL;
+
+    
     txbuf = (wnet_txbuf_t *)malloc(sizeof(wnet_txbuf_t));
     memset(txbuf, 0, sizeof(wnet_txbuf_t));
+    
     txbuf->data_ptr = txbuf->buffer + TXBUF_RESERVE_LENGTH + drv_vnet_mac_header_len();
     txbuf->data_len = 0;
+
     return txbuf;   
 }
 

@@ -98,7 +98,8 @@ int drv_vnet_recv(wnet_rxinfo_t *rxinfo, uint8_t *pdata, uint32_t *length)
 
         radiotap_len = iter._max_length;
         hdr = (struct ieee80211_hdr *)(buf + radiotap_len);
-        if ((memcmp(hdr->addr3, BssidForV2V, sizeof(BssidForV2V))==0) && (memcmp(hdr->addr2, p_wifi->mac, MACADDR_LENGTH) != 0)){
+        if ((memcmp(hdr->addr3, BssidForV2V, sizeof(BssidForV2V))==0) && (memcmp(hdr->addr2, p_wifi->mac, MACADDR_LENGTH) != 0))
+        {
             *length = len - radiotap_len;
 #if 0
             monitor_buf_print(hdr, *length);  
@@ -165,7 +166,7 @@ int drv_vnet_init(wnet_envar_t *p_wnet)
 	snprintf(buf, IFNAMSIZ, "%s", IF_NAME);
 	buf[IFNAMSIZ - 1] = '\0';
 	p_wifi->dev_ifidx = if_nametoindex(buf);
-    p_wifi->working_param.channel = 13;
+    p_wifi->working_param.channel = 1;
         
     nl80211_init(&p_wifi->nl_state);
     drv_wifi_dev_config(p_wifi);

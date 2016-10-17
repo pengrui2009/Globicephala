@@ -1,5 +1,9 @@
 ASN_MODULE_SOURCES=	\
+	MessageModuleSet.c	\
 	BasicSafetyMessage.c	\
+	BsmBody.c	\
+	RoadSideAlert.c	\
+	RsaBody.c	\
 	PartIIid.c	\
 	BSMpartIIExtension.c	\
 	BSMcoreData.c	\
@@ -34,16 +38,21 @@ ASN_MODULE_SOURCES=	\
 	DYear.c	\
 	Elevation.c	\
 	ElevationConfidence.c	\
+	Extent.c	\
 	ExteriorLights.c	\
+	FurtherInfoID.c	\
 	GNSSstatus.c	\
 	Heading.c	\
 	HeadingConfidence.c	\
+	HeadingSlice.c	\
 	Latitude.c	\
 	Longitude.c	\
+	MinuteOfTheYear.c	\
 	MsgCount.c	\
+	OffsetLL-B18.c	\
 	PositionalAccuracy.c	\
 	PositionConfidence.c	\
-	OffsetLL-B18.c	\
+	Priority.c	\
 	RadiusOfCurvature.c	\
 	RegionId.c	\
 	SemiMajorAxisAccuracy.c	\
@@ -66,10 +75,15 @@ ASN_MODULE_SOURCES=	\
 	Velocity.c	\
 	VerticalAcceleration.c	\
 	VertOffset-B12.c	\
-	YawRate.c
+	YawRate.c	\
+	ITIScodes.c
 
 ASN_MODULE_HEADERS=	\
+	MessageModuleSet.h	\
 	BasicSafetyMessage.h	\
+	BsmBody.h	\
+	RoadSideAlert.h	\
+	RsaBody.h	\
 	PartIIid.h	\
 	BSMpartIIExtension.h	\
 	BSMcoreData.h	\
@@ -104,16 +118,21 @@ ASN_MODULE_HEADERS=	\
 	DYear.h	\
 	Elevation.h	\
 	ElevationConfidence.h	\
+	Extent.h	\
 	ExteriorLights.h	\
+	FurtherInfoID.h	\
 	GNSSstatus.h	\
 	Heading.h	\
 	HeadingConfidence.h	\
+	HeadingSlice.h	\
 	Latitude.h	\
 	Longitude.h	\
+	MinuteOfTheYear.h	\
 	MsgCount.h	\
+	OffsetLL-B18.h	\
 	PositionalAccuracy.h	\
 	PositionConfidence.h	\
-	OffsetLL-B18.h	\
+	Priority.h	\
 	RadiusOfCurvature.h	\
 	RegionId.h	\
 	SemiMajorAxisAccuracy.h	\
@@ -136,7 +155,8 @@ ASN_MODULE_HEADERS=	\
 	Velocity.h	\
 	VerticalAcceleration.h	\
 	VertOffset-B12.h	\
-	YawRate.h
+	YawRate.h	\
+	ITIScodes.h
 
 ASN_MODULE_HEADERS+=INTEGER.h
 ASN_MODULE_HEADERS+=NativeEnumerated.h

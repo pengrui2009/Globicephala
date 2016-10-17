@@ -114,7 +114,7 @@ typedef struct _wnet_txbuf {
     uint32_t flag;   /* buffer's status */
     
     uint8_t *data_ptr;
-    int32_t data_len;
+    int32_t  data_len;
 
     uint8_t buffer[TXBUF_LENGTH];
 }wnet_txbuf_t;
