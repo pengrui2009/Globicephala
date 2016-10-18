@@ -49,7 +49,7 @@ int drv_fls_write(uint32_t flash_address, uint8_t *p_databuf, uint32_t length)
 /*****************************************************************************
  * declaration of variables and functions                                    *
 *****************************************************************************/
-#define NODE_ID_BASE_ETH	"eth0"
+#define NODE_ID_BASE_ETH	"wlan0"
 cfg_param_t cms_param, *p_cms_param;
 
 uint8_t param_init_words[] = "Vanet-param1";

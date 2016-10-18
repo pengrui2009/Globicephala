@@ -1470,7 +1470,7 @@ void ehm_init(void)
 //    p_ehm->p_timer_send = osal_timer_create("tm-nb", timer_send_start_callback, p_ehm, 100, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
 //        osal_assert(p_ehm->p_timer_heartbeat != NULL);
 
-    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 1000, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
+    p_ehm->p_timer_heartbeat = osal_timer_create("tm-heartbeat", timer_heartbeat_callback, p_ehm, 500, TIMER_INTERVAL , TIMER_PRIO_NORMAL);
     osal_assert(p_ehm->p_timer_heartbeat != NULL);
 
 
