@@ -166,7 +166,7 @@ int drv_vnet_init(wnet_envar_t *p_wnet)
 	snprintf(buf, IFNAMSIZ, "%s", IF_NAME);
 	buf[IFNAMSIZ - 1] = '\0';
 	p_wifi->dev_ifidx = if_nametoindex(buf);
-    p_wifi->working_param.channel = 1;
+    p_wifi->working_param.channel = 13;
         
     nl80211_init(&p_wifi->nl_state);
     drv_wifi_dev_config(p_wifi);

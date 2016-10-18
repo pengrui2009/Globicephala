@@ -187,8 +187,8 @@ int net_udp_init(uint16_t port, uint8_t *localip,uint16_t timeout)
 	{
 		sockaddr_udp.sin_family = AF_INET;
 		sockaddr_udp.sin_port = htons(port);
-		//sockaddr_udp.sin_addr.s_addr = INADDR_ANY;                         //INADDR_ANY 表示所有计算机都能连过来
-		memcpy(&sockaddr_udp.sin_addr.s_addr, localip, IPADDR_LENGTH);
+                sockaddr_udp.sin_addr.s_addr = htonl(INADDR_ANY);   //INADDR_ANY 表示所有计算机都能连过来
+		//memcpy(&sockaddr_udp.sin_addr.s_addr, localip, IPADDR_LENGTH);
 		memset(&(sockaddr_udp.sin_zero), 0, 8);
 
 		//设置超时
@@ -361,7 +361,7 @@ int drv_simu_init(void)
 	uint16_t timeout;
 	drv_simu_envar_t *p_simu = &g_simu_envar;
 	memset(p_simu,0,sizeof(drv_simu_envar_t));
-	ret = net_ip_get("br-lan", p_simu->local_ipaddr);
+	ret = net_ip_get("eth0", p_simu->local_ipaddr);
 	if(ret < 0)
 	{
 		osal_printf("%s net_ip_get error ret=%d\n", __FUNCTION__, ret);
