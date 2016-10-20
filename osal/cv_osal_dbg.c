@@ -23,7 +23,6 @@ void cv_debug_print_timestamp(void)
 		return;
 
 	os_get_reltime(&tv);
-	printf("(%ld.%06u): ", (long) tv.sec, (unsigned int) tv.usec);
 }
 
 void cv_debug_open_syslog(void)
