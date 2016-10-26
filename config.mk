@@ -31,10 +31,13 @@ INCLUDEFLAGS += -I$(TOPDIR)/include \
 		-I$(TOPDIR)/utils/ \
 		-I$(TOPDIR)/library/libnl/include/libnl3/ \
 		-I$(TOPDIR)/library/readline/include/ \
+		-I$(TOPDIR)/drivers/cmn \
 		-I$(TOPDIR)/drivers/vnet \
 		-I$(TOPDIR)/drivers/vnet/simu \
 		-I$(TOPDIR)/drivers/vnet/wifi \
 		-I$(TOPDIR)/drivers/vnet/lte \
+		-I$(TOPDIR)/drivers/tbox/uart \
+		-I$(TOPDIR)/drivers/tbox/net \
 		-I$(TOPDIR)/app/oam/agent/cli/common \
 		-I$(TOPDIR)/app/oam/agent/cli/lib \
 		-I$(TOPDIR)/app/oam/agent/cli/main \

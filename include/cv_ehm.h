@@ -19,8 +19,8 @@
 #include "cv_vam.h"
 #include "cv_rcp.h"
 #include "app_msg_format.h"
-#include "uart.h"
-
+#include "cv_drv_uart.h"
+#include "cv_drv_net.h"
 
 #define EHM_TX_LEN   256
 #define EHM_RX_LEN   256
@@ -77,7 +77,6 @@ typedef enum _EHM_RECV_TYPE
 {
 	UART_RECV_TYPE = 1,
 	ETH_RECV_TYPE = 2,
-
 }EHM_RECV_TYPE_E;
 
 typedef enum _V2X_MSG_TYPE 
@@ -143,7 +142,7 @@ typedef struct _ehm_buffer_st
 
     /* Current effective data address and length. */
     uint8_t    * data_ptr;
-    int32_t      data_len;
+    uint16_t      data_len;
     uint32_t 	time;
 }ehm_buffer_st, *ehm_buffer_st_ptr;
 
@@ -155,7 +154,6 @@ typedef struct _ehm_config_st
 {
     /* Data receive type for rx thread. */
     EHM_RECV_TYPE_E        recv_type;
-
     /* uart configure parameter. */
     comport_config_t  comport_config;
 

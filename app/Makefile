@@ -16,7 +16,10 @@ ifeq ($(VNET_DRIVER_TYPE), VNET_DRIVER_TYPE_LTE)
 endif
 	SUBDIRS += $(TOPDIR)/drivers/vnet/simu
 	
-SUBDIRS += $(TOPDIR)/app/sys \
+SUBDIRS += \
+	$(TOPDIR)/drivers/tbox/uart \
+	$(TOPDIR)/drivers/tbox/net \
+	$(TOPDIR)/app/sys \
     $(TOPDIR)/app/ehm \
     $(TOPDIR)/app/vam \
     $(TOPDIR)/app/wnet \
@@ -26,7 +29,8 @@ SUBDIRS += $(TOPDIR)/app/sys \
     $(TOPDIR)/app/oam/test \
     $(TOPDIR)/app/oam/test/internal \
     $(TOPDIR)/app/J2735 \
-    $(TOPDIR)/app/msg
+    $(TOPDIR)/app/msg 
+    
 
 OBJ_FILES=$(SUBDIRS:%=%/*.o)
 LDFLAGS = -lm -lrt -pthread -L$(LIBDIR)/libnl/lib -lnl-3 -lnl-genl-3

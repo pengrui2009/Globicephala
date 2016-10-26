@@ -29,20 +29,25 @@
 *****************************************************************************/
 #define CFG_DSTREAM_BUF_SIZE	2048
 /* need add to global param  later*/
-ehm_config_st ehm_config = 
+network_config_t  network_config =
+{
+	"eth0", 1234
+};
+
+ehm_config_st ehm_config =
 { 
     UART_RECV_TYPE,
-        
-    { COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE },
-    
+
+    {COMPORT_VERIFY_NO, 8, 1, 0, 115200, COMPORT_RTSCTS_DISABLE},
+
     V2X_NB_NODE_SUMMRAY_INFO
 };
 
 ehm_envar_st   ehm_envar = { &ehm_config, 0 };
 
 //static uint32_t v2x_reported_info;
-static uint8_t databuf[CFG_DSTREAM_BUF_SIZE];//串口缓冲区
-static uint32_t len = 0x0;//串口缓冲区接收到字节长度
+static EHM_RECV_TYPE_E recv_type;
+
 /* Convert vsa alert to ehm alert flag. */
 alert_flag_st ehm_vsa_alert2alert_flag(uint32_t vsa_alert)
 {
@@ -832,87 +837,74 @@ static int ehm_msg_check_frame(uint8_t *buf, uint16_t len)
   * @param  See below.
   * @retval 0 access,-1 failure.
   */
-void ehm_receive_msg
-(
-    /* Message receive type. */
-    EHM_RECV_TYPE_E recv_type, 
-
-    /* Pointer to receive buffer structure. */
-    ehm_buffer_st_ptr buff_ptr
-)
-{ 
-//	int i;
-    int result = 0;
-
-    /* Receive data from the specific pipeline. */
-    switch(recv_type)
-    {
-        case UART_RECV_TYPE:
-        {
-			while(1)
-			{
-				result = dstream_device[DSTREAM_1].recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
-				//printf("ret= %d buf[len]=%02x \n",result, databuf[len -1]);
-				if(result)
-				{
-					len += result;
-					if((len > 3) && (databuf[0] == 0x55) && (databuf[1] == 0xAA))
-					{
-						int framelen = (databuf[2] << 8) + databuf[3];
-						int msg_len = framelen + 0x4;
-						//printf("ret=%d [0]=%02x [1]=%02x [2]=%02x [3]=%02x\n",msg_len,databuf[0],databuf[1],databuf[2],databuf[3]);
-						framelen -= (len -4);
-						while(framelen > 0)
-						{
-							result = dstream_device[DSTREAM_1].recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
-
-							if(result)
-							{
-								framelen -= result;
-								len += result;
-							}
-						}
-						result = ehm_msg_check_frame((databuf + 0x4), (msg_len - 6));
-						if(result != 0)
-						{
-							osal_printf("ehm msg check sum error. \n");
-						//     goto START_ROUTINE;
-						}
-						memcpy(buff_ptr->buffer, databuf, len + framelen);
-		                buff_ptr->data_ptr = buff_ptr->buffer + 0x4;//指向帧数据起始位置
-		                buff_ptr->data_len = len + framelen;
-		                buff_ptr->time = osal_get_systemtime();
-						//printf("recv frame: len=%d buf[0]=%02x buf[len-2] = %02x buf[len -1] = %02x\n", len, databuf[0], databuf[len -2], databuf[len -1]);
-//						for(i=0; i<len; i++)
-//							printf("%02x ",databuf[i]);
-//						printf("ok\n");
-						len = 0x0;
-//						if(len > msg_len)
+//void ehm_receive_msg
+//(
+//    /* Message receive type. */
+//    EHM_RECV_TYPE_E recv_type,
+//
+//    /* Pointer to receive buffer structure. */
+//    ehm_buffer_st_ptr buff_ptr
+//)
+//{
+//    int result = 0;
+//
+//    /* Receive data from the specific pipeline. */
+//    switch(recv_type)
+//    {
+//        case UART_RECV_TYPE:
+//        {
+//			while(1)
+//			{
+//				result = dstream_device[DSTREAM_1].recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
+//				if(result)
+//				{
+//					len += result;
+//					if((len > 3) && (databuf[0] == 0x55) && (databuf[1] == 0xAA))
+//					{
+//						int framelen = (databuf[2] << 8) + databuf[3];
+//						int msg_len = framelen + 0x4;
+//						framelen -= (len -4);
+//						while(framelen > 0)
 //						{
-//							memcpy(databuf,databuf + len - msg_len,len - msg_len);
-//							len = len - msg_len;
-//						}else{
-//							len = 0x0;
+//							result = dstream_device[DSTREAM_1].recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
+//
+//							if(result)
+//							{
+//								framelen -= result;
+//								len += result;
+//							}
 //						}
-						break;
-					}else if(len > 3){
-						len = 0x0;
-					}
-				}
-			}
-            break;
-        }	
-        case ETH_RECV_TYPE:
-        {
-            break;
-        }
-        default:
-        {
-            break;
-        }
-
-	}
-}
+//						result = ehm_msg_check_frame((databuf + 0x4), (msg_len - 6));
+//						if(result != 0)
+//						{
+//							osal_printf("ehm msg check sum error. \n");
+//						}
+//						memcpy(buff_ptr->buffer, databuf, len + framelen);
+//		                buff_ptr->data_ptr = buff_ptr->buffer + 0x4;//指向帧数据起始位置
+//		                buff_ptr->data_len = len + framelen;
+//		                buff_ptr->time = osal_get_systemtime();
+//
+//						len = 0x0;
+//
+//						break;
+//					}else if(len > 3){
+//						len = 0x0;
+//					}
+//				}
+//			}
+//            break;
+//        }
+//        case ETH_RECV_TYPE:
+//        {
+//            break;
+//        }
+//        default:
+//        {
+//            break;
+//        }
+//
+//	}
+//}
 
 
 /**
@@ -1012,7 +1004,6 @@ int ehm_prase_msgtype_v2x_apply
     int     result = 0;
     uint8_t msg_id = *(uint8_t *)data_ptr;
 
-    
     switch(msg_id)
 	{
     	case V2X_BASIC_VEHICLE_MSG: {
@@ -1050,7 +1041,6 @@ int ehm_parse_msg_body
 	int                      result = 0;
 	frame_msg_header_st_ptr msg_ptr = (frame_msg_header_st_ptr)buff_ptr->data_ptr;
 
-
     /* Detect effective data length. */
     if(buff_ptr->data_len < FRAME_MSG_HEADER_ST_LEN)
     {
@@ -1059,7 +1049,7 @@ int ehm_parse_msg_body
     }
 
     /* Update effective data address and length. */
-    buff_ptr->data_len -= FRAME_MSG_HEADER_ST_LEN - SIZEOF_MSG_CHK_DOMAIN;
+    buff_ptr->data_len -= FRAME_MSG_HEADER_ST_LEN;
     buff_ptr->data_ptr += FRAME_MSG_HEADER_ST_LEN;
 
     /* Detect frame header. */
@@ -1142,36 +1132,46 @@ static int ehm_package_send(ehm_envar_st * p_ehm)//, ehm_txinfo_t* tx_info, uint
 	uint8_t *pdata;
 	uint16_t *chksum;
 	uint32_t length;
-	int result = 0;
+	int ret = 0;
     uart_msg_header_st_ptr uart_ptr;
 
-    pdata = p_ehm->buffer_tx.buffer;
-    uart_ptr = (uart_msg_header_st_ptr)pdata;
-
-    length = p_ehm->buffer_tx.data_len;
-    /* Build uart message header. */
-    uart_ptr->magic_num1 = MSG_HEADER_MAGIC_NUM1;
-    uart_ptr->magic_num2 = MSG_HEADER_MAGIC_NUM2;
-    uart_ptr->length = cv_ntohs(length + SIZEOF_MSG_CHK_DOMAIN);
-
-    //待完善功能-增加CHK,CHK长度数据已经计算
-    chksum = (uint16_t *)(pdata + UART_MSG_HEADER_ST_LEN + length);
-    *chksum = cv_ntohs(ehm_msg_cal_frame((pdata + UART_MSG_HEADER_ST_LEN), length));
-
-    p_ehm->buffer_tx.data_len = UART_MSG_HEADER_ST_LEN + length + SIZEOF_MSG_CHK_DOMAIN;
-    /*uart send data to periph */
-
-    result = dstream_device[DSTREAM_1].send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
-    if(result < 0)
+    switch(recv_type)
     {
-    	osal_printf("comport_send error ret=%d\n", result);
+    case UART_RECV_TYPE:
+    	pdata = p_ehm->buffer_tx.buffer;
+    	length = p_ehm->buffer_tx.data_len;
+
+    	/* Build uart message header. */
+    	uart_ptr = (uart_msg_header_st_ptr)pdata;
+		uart_ptr->magic_num1 = MSG_HEADER_MAGIC_NUM1;
+		uart_ptr->magic_num2 = MSG_HEADER_MAGIC_NUM2;
+		uart_ptr->length = cv_ntohs(length + SIZEOF_MSG_CHK_DOMAIN);
+
+		//待完善功能-增加CHK,CHK长度数据已经计算
+		chksum = (uint16_t *)(pdata + UART_MSG_HEADER_ST_LEN + length);
+		*chksum = cv_ntohs(ehm_msg_cal_frame((pdata + UART_MSG_HEADER_ST_LEN), length));
+
+		p_ehm->buffer_tx.data_len = UART_MSG_HEADER_ST_LEN + length + SIZEOF_MSG_CHK_DOMAIN;
+
+		/*uart send data to periph */
+		ret = drv_uart_send((uint8_t *)uart_ptr, cv_ntohs(uart_ptr->length + UART_MSG_HEADER_ST_LEN));
+		if(ret < 0)
+		{
+			osal_printf("comport_send error ret=%d\n", ret);
+		}
+    	break;
+    case ETH_RECV_TYPE:
+    	pdata = p_ehm->buffer_tx.data_ptr;
+    	length = p_ehm->buffer_tx.data_len;
+    	ret = drv_net_send(pdata, length);
+    	if(ret < 0)
+    	{
+    		osal_printf("drv_net_send error ret=%d\n", ret);
+    	}
+    	break;
     }
 
-    //待完善功能-增加网络发送
-    /* eth send data to periph*/
-
-    return result;
-    
+    return ret;
 }
 
 
@@ -1301,15 +1301,6 @@ void ehm_send_msg_group(ehm_envar_st_ptr p_ehm)
 //	return v2x_reported_info;
 }
 
-
-
-
-
-
-
-
-
-
 /*****************************************************************************
  @funcname: ehm_tx_thread_entry
  @brief   : ehm tx thread process module
@@ -1361,7 +1352,91 @@ RCV_MSGQ:
     return NULL;    
 }
 
+void *ehm_uart_rx_thread_entry(void *arg)
+{
+	ehm_envar_st_ptr ehm_ptr = (ehm_envar_st_ptr)arg;
+	uint8_t databuf[CFG_DSTREAM_BUF_SIZE];//串口缓冲区
+	uint32_t len = 0x0;//串口缓冲区接收到字节长度
 
+	int	ret = 0;
+	while(1)
+	{
+		ehm_buffer_st_ptr buff_ptr = &ehm_ptr->buffer_rx;
+		/* Receive message from the specific pipeline. */
+		while(1)
+		{
+			ret = drv_uart_recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
+			if(ret)
+			{
+				len += ret;
+				if((len > 3) && (databuf[0] == 0x55) && (databuf[1] == 0xAA))
+				{
+					int framelen = (databuf[2] << 8) + databuf[3];
+					int msg_len = framelen + 0x4;
+					framelen -= (len -4);
+					while(framelen > 0)
+					{
+						ret = drv_uart_recv((databuf + len), (CFG_DSTREAM_BUF_SIZE - len));
+
+						if(ret)
+						{
+							framelen -= ret;
+							len += ret;
+						}
+					}
+					ret = ehm_msg_check_frame((databuf + 0x4), (msg_len - 6));
+					if(ret != 0)
+					{
+						osal_printf("ehm msg check sum error. \n");
+					}
+					memcpy(buff_ptr->buffer, databuf, len + framelen - SIZEOF_MSG_CHK_DOMAIN);
+					buff_ptr->data_ptr = buff_ptr->buffer + 0x4;//指向帧数据起始位置
+					buff_ptr->data_len = len + framelen - SIZEOF_MSG_CHK_DOMAIN;
+					buff_ptr->time = osal_get_systemtime();
+					recv_type = UART_RECV_TYPE;
+					len = 0x0;
+
+					break;
+				}else if(len > 3){
+					len = 0x0;
+				}
+			}
+		}
+
+		/* Parse message body. */
+		ret = ehm_parse_msg_body(buff_ptr);
+		if(ret != 0)
+		{
+			osal_printf("ehm parse msg body error. \n");
+		}
+	}
+	return NULL;
+}
+
+void *ehm_net_rx_thread_entry(void *arg)
+{
+	ehm_envar_st_ptr ehm_ptr = (ehm_envar_st_ptr)arg;
+	int ret = 0;
+	while(1)
+	{
+		ehm_buffer_st_ptr buff_ptr = &ehm_ptr->buffer_rx;
+		/* Receive message from the specific pipeline. */
+		ret = drv_net_recv(buff_ptr->buffer, &buff_ptr->data_len);
+		if(ret == 0)
+		{
+			buff_ptr->data_ptr = buff_ptr->buffer;
+			buff_ptr->time = osal_get_systemtime();
+			recv_type = ETH_RECV_TYPE;
+			/* Parse message body. */
+			ret = ehm_parse_msg_body(buff_ptr);
+			if(ret < 0)
+			{
+				osal_printf("ehm parse msg body error. \n");
+			}
+		}
+	}
+	return NULL;
+}
 /*****************************************************************************
  @funcname: ehm_rx_thread_entry
  @brief   : ehm rx  process thread module
@@ -1370,28 +1445,21 @@ RCV_MSGQ:
 *****************************************************************************/
 void * ehm_rx_thread_entry(void *param_ptr)
 {
-    ehm_envar_st_ptr ehm_ptr = (ehm_envar_st_ptr)param_ptr;
-    int               result = 0;
-
-
-START_ROUTINE:
-    
-    /* Receive message from the specific pipeline. */
-    ehm_receive_msg(ehm_ptr->config_ptr->recv_type, &(ehm_ptr->buffer_rx));
-
-	/* Parse message body. */
-	result = ehm_parse_msg_body(&(ehm_ptr->buffer_rx));
-//	ehm_ptr->buffer_rx.data_ptr += (msg_len - FRAME_MSG_HEADER_ST_LEN);
-//	ehm_ptr->buffer_rx.data_len -= msg_len;
-
-	if(result != 0)
-	{
-		osal_printf("ehm parse msg body error. \n");
-	}
-
-    goto START_ROUTINE;
-
-    /* Only for format matching. */
+	int ret;
+    pthread_t thread_net_id,thread_uart_id;
+    //网口监听接收
+    ret = os_pthread_create(&thread_net_id, "ehm_net_rx", EHM_RX_THREAD_PRIORITY, EHM_RX_THREAD_STACK_SIZE, ehm_net_rx_thread_entry, (void *)param_ptr);
+    if(ret < 0)
+    {
+    	goto err;
+    }
+    //串口监听接收
+    ret = os_pthread_create(&thread_uart_id, "ehm_uart_rx", EHM_RX_THREAD_PRIORITY, EHM_RX_THREAD_STACK_SIZE, ehm_uart_rx_thread_entry, (void *)param_ptr);
+    if(ret < 0)
+    {
+    	goto err;
+    }
+err:
     return NULL;
 }
 
@@ -1435,19 +1503,26 @@ void ehm_init(void)
 //    {
 //        list_add_tail(&p_ehm->txbuf[i].list, &p_ehm->txbuf_free_list);
 //    }
-
+    recv_type = UART_RECV_TYPE;
     /* Open uart module. */
-    result = dstream_device[DSTREAM_1].open();
+    result = drv_uart_open();
     if(result < 0)
     {
     	osal_printf("comport open error\n");
     }
-    result = dstream_device[DSTREAM_1].config(&p_ehm->config_ptr->comport_config);
+    result = drv_uart_config(&p_ehm->config_ptr->comport_config);
 	if(result < 0)
 	{
 		osal_printf("comport config error ret=%d \n", result);
 	}
 
+	//open v2v to tbox net module
+	result = drv_net_init(network_config.ifname , network_config.port);
+	if(result < 0)
+	{
+		osal_printf("drv_net_init error ret=%d \n", result);
+		goto err;
+	}
     /* ehm main process event queue. */
 
 
@@ -1476,6 +1551,8 @@ void ehm_init(void)
 
     osal_timer_start(p_ehm->p_timer_heartbeat);
 //    osal_timer_start(p_ehm->p_timer_send);
+err:
+    return;
 }
 
 

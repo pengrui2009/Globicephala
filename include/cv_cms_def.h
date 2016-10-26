@@ -104,7 +104,17 @@ enum SYSTEM_MSG_TYPE
 #define SECOND_TO_TICK(n) ((n)*1000)
 
 
+/*串口配置参数*/
+typedef struct _comport_config
+{
+	uint8_t		verify;			//校验方式
+	uint8_t		ndata;			//数据位位数
+	uint8_t		nstop;			//停止位位数
+	uint8_t		timeout;		//超时时间（单位100ms，为0时永久阻塞，0xff不阻塞）
+	uint32_t	baud;			//波特率
+	uint8_t		rtscts;			//是否使用rtscts流控信号线
 
+} comport_config_t;
 
 /* structure of system global message. */
 typedef struct _sys_msg_t
