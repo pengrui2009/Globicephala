@@ -9,6 +9,7 @@
 
 //C库头文件
 #include <stdio.h>						//printf
+#include <stdint.h>
 #include <fcntl.h>						//open
 #include <unistd.h>						//read,write
 #include <termios.h>					//串口设置及宏定义
