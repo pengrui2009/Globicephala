@@ -20,8 +20,8 @@ static uint8_t KeyPrintfBsmTxStruct = 0;
 static uint8_t KeyPrintfBsmTxData = 0;
 
 /* Key for bsm rx message structure and UPER data printf. */
-static uint8_t KeyPrintfBsmRxStruct = 1;
-static uint8_t KeyPrintfBsmRxData = 1;
+static uint8_t KeyPrintfBsmRxStruct = 0;
+static uint8_t KeyPrintfBsmRxData = 0;
 
 
 

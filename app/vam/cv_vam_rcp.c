@@ -392,7 +392,8 @@ int rcp_parse_rsa(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
 
 
 int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, uint32_t datalen)
-{    
+{ 
+    int ret;   
     MessageModuleSet_t  *mms_ptr = NULL;
     asn_dec_rval_t   decode_rval = { 0 };
     asn_codec_ctx_t   decode_ctx = { 0 };
@@ -403,7 +404,7 @@ int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
     if(decode_rval.code != RC_OK)
     {
         printf("\n uper_decode() for MessageModuleSet_t is faild. \n ");
-        return -1;
+        ret = -1;
     }
     else
     {
@@ -422,8 +423,13 @@ int rcp_parse_msg(vam_envar_t *p_vam, wnet_rxinfo_t *rxinfo, uint8_t *databuf, u
                                                                    break;  }   
         }
         
-        return 0;
+        ret = 0;
     }
+    if(mms_ptr != NULL)
+    {
+	free(mms_ptr);
+    }
+    return ret;
 }
 
 
