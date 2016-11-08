@@ -87,7 +87,7 @@ float getDistanceVer2(double lat1, double lng1, double lat2, double lng2)
 
     double b = radLng1 - radLng2;//RAD(lng1) - RAD(lng2);
 
-    s = 2 * asin(sqrt(pow(sin(a/2),2) + cos(lat1)*cos(lat2)*pow(sin(b/2),2)));
+    s = 2 * asin(sqrt(pow(sin(a/2),2) + cos(radLat1)*cos(radLat2)*pow(sin(b/2),2)));
 
     s = s * EARTH_RADIUS;
 
