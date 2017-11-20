@@ -1,0 +1,14 @@
+prefix=/home/pengrui/my-imx6/02_source/imx-3.14.52_1.0.o_ga/app/bluetooth/alsa-lib-1.0.25/build
+exec_prefix=/home/pengrui/my-imx6/02_source/imx-3.14.52_1.0.o_ga/app/bluetooth/alsa-lib-1.0.25/build
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: alsa
+Description: Advanced Linux Sound Architecture (ALSA) - Library
+Version: 1.0.25
+Requires: 
+Libs: -L${libdir} -lasound
+Libs.private: -lm -ldl -lpthread -lrt
+# -I${includedir}/alsa below is just for backward compatibility
+# (it was set so mistakely in the older version)
+Cflags: -I${includedir} -I${includedir}/alsa

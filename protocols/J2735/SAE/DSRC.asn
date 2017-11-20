@@ -1,0 +1,1798 @@
+-- The local module consisting of DEs / DFs and MSGs
+DSRC DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+	-- 
+	-- ASN.1 file for J2735-201603.
+	-- Created by wxw.
+
+	-- MSG_MessageModuleSet (MMS) Only for message parse.
+	MessageFrame ::= SEQUENCE {
+		messageId MESSAGE-ID-AND-TYPE.&id({MessageTypes}),
+		value MESSAGE-ID-AND-TYPE.&Type({MessageTypes}{@.messageId}),
+		...
+		}
+
+	MESSAGE-ID-AND-TYPE ::= CLASS {
+		&id DSRCmsgID UNIQUE,
+		&Type
+		} WITH SYNTAX {&Type IDENTIFIED BY &id}
+		
+	MessageTypes MESSAGE-ID-AND-TYPE ::= {
+		{ BasicSafetyMessage IDENTIFIED BY basicSafetyMessage } |
+		--{ MapData IDENTIFIED BY mapData } |
+		--{ SPAT IDENTIFIED BY signalPhaseAndTimingMessage } |
+		--{ CommonSafetyRequest IDENTIFIED BY commonSafetyRequest } |
+		--{ EmergencyVehicleAlert IDENTIFIED BY emergencyVehicleAlert } |
+		--{ IntersectionCollision IDENTIFIED BY intersectionCollision } |
+		--{ NMEAcorrections IDENTIFIED BY nmeaCorrections } |
+		--{ ProbeDataManagement IDENTIFIED BY probeDataManagement } |
+		--{ ProbeVehicleData IDENTIFIED BY probeVehicleData } |
+		{ RoadSideAlert IDENTIFIED BY roadSideAlert } |
+		{ RTCMcorrections IDENTIFIED BY rtcmCorrections } |
+		--{ SignalRequestMessage IDENTIFIED BY signalRequestMessage } |
+		--{ SignalStatusMessage IDENTIFIED BY signalStatusMessage } |
+		--{ TravelerInformation IDENTIFIED BY travelerInformation } |
+		--{ PersonalSafetyMessage IDENTIFIED BY personalSafetyMessage } |
+		{ TestMessage00 IDENTIFIED BY testMessage00 } | 
+		{ TestMessage01 IDENTIFIED BY testMessage01 } |
+		{ TestMessage02 IDENTIFIED BY testMessage02 } |
+		{ TestMessage03 IDENTIFIED BY testMessage03 } |
+		{ TestMessage04 IDENTIFIED BY testMessage04 } |
+		{ TestMessage05 IDENTIFIED BY testMessage05 } |
+		{ TestMessage06 IDENTIFIED BY testMessage06 } |
+		{ TestMessage07 IDENTIFIED BY testMessage07 } |
+		{ TestMessage08 IDENTIFIED BY testMessage08 } |
+		{ TestMessage09 IDENTIFIED BY testMessage09 } |
+		{ TestMessage10 IDENTIFIED BY testMessage10 } |
+		{ TestMessage11 IDENTIFIED BY testMessage11 } |
+		{ TestMessage12 IDENTIFIED BY testMessage12 } |
+		{ TestMessage13 IDENTIFIED BY testMessage13 } |
+		{ TestMessage14 IDENTIFIED BY testMessage14 } |
+		{ TestMessage15 IDENTIFIED BY testMessage15 } ,
+		... -- Expansion to be used only by the SAE J2735 DSRC TC
+		}
+	
+	-- DE_DSRC_MessageID
+	DSRCmsgID ::= INTEGER (0..32767)
+		--
+		-- DER forms,
+		-- All DER forms are now retired and not to be used
+		--
+		reservedMessageId-D DSRCmsgID ::= 0 --'00'H
+		alaCarteMessage-D DSRCmsgID ::= 1 --'01'H ACM
+		-- alaCarteMessage-D is Retired, not to be used
+		basicSafetyMessage-D DSRCmsgID ::= 2 --'02'H BSM, heartbeat msg
+		basicSafetyMessageVerbose-D DSRCmsgID ::= 3 --'03'H For testing only
+		commonSafetyRequest-D DSRCmsgID ::= 4 --'04'H CSR
+		emergencyVehicleAlert-D DSRCmsgID ::= 5 --'05'H EVA
+		intersectionCollision-D DSRCmsgID ::= 6 --'06'H ICA
+		mapData-D DSRCmsgID ::= 7 --'07'H MAP, intersections
+		nmeaCorrections-D DSRCmsgID ::= 8 --'08'H NMEA
+		probeDataManagement-D DSRCmsgID ::= 9 --'09'H PDM
+		probeVehicleData-D DSRCmsgID ::= 10 --'0A'H PVD
+		roadSideAlert-D DSRCmsgID ::= 11 --'0B'H RSA
+		rtcmCorrections-D DSRCmsgID ::= 12 --'0C'H RTCM
+		signalPhaseAndTimingMessage-D DSRCmsgID ::= 13 --'0D'H SPAT
+		signalRequestMessage-D DSRCmsgID ::= 14 --'0E'H SRM
+		signalStatusMessage-D DSRCmsgID ::= 15 --'0F'H SSM
+		travelerInformation-D DSRCmsgID ::= 16 --'10'H TIM
+		uperFrame-D DSRCmsgID ::= 17 --'11'H UPER frame
+		--
+		-- UPER forms
+		--
+		mapData DSRCmsgID ::= 18 -- MAP, intersections
+		signalPhaseAndTimingMessage DSRCmsgID ::= 19 -- SPAT
+		-- Above two entries were adopted in the 2015-04 edition
+		-- Message assignments added in 2015 follow below
+		basicSafetyMessage DSRCmsgID ::= 20 -- BSM, heartbeat msg
+		commonSafetyRequest DSRCmsgID ::= 21 -- CSR
+		emergencyVehicleAlert DSRCmsgID ::= 22 -- EVA
+		intersectionCollision DSRCmsgID ::= 23 -- ICA
+		nmeaCorrections DSRCmsgID ::= 24 -- NMEA
+		probeDataManagement DSRCmsgID ::= 25 -- PDM
+		probeVehicleData DSRCmsgID ::= 26 -- PVD
+		roadSideAlert DSRCmsgID ::= 27 -- RSA
+		rtcmCorrections DSRCmsgID ::= 28 -- RTCM
+		signalRequestMessage DSRCmsgID ::= 29 -- SRM
+		signalStatusMessage DSRCmsgID ::= 30 -- SSM
+		travelerInformation DSRCmsgID ::= 31 -- TIM
+		personalSafetyMessage DSRCmsgID ::= 32 -- PSM
+		--
+		-- The Below values are reserved for local message testing use
+		--
+		testMessage00 DSRCmsgID ::= 240 -- Hex 0xF0
+		testMessage01 DSRCmsgID ::= 241
+		testMessage02 DSRCmsgID ::= 242
+		testMessage03 DSRCmsgID ::= 243
+		testMessage04 DSRCmsgID ::= 244
+		testMessage05 DSRCmsgID ::= 245
+		testMessage06 DSRCmsgID ::= 246
+		testMessage07 DSRCmsgID ::= 247
+		testMessage08 DSRCmsgID ::= 248
+		testMessage09 DSRCmsgID ::= 249
+		testMessage10 DSRCmsgID ::= 250
+		testMessage11 DSRCmsgID ::= 251
+		testMessage12 DSRCmsgID ::= 252
+		testMessage13 DSRCmsgID ::= 253
+		testMessage14 DSRCmsgID ::= 254
+		testMessage15 DSRCmsgID ::= 255-- Hex 0xFF
+		--
+		-- All other values are reserved for std use
+		--
+		
+	-- Regional extensions support
+	REG-EXT-ID-AND-TYPE ::= CLASS {
+		&id RegionId UNIQUE,
+		&Type
+		} WITH SYNTAX {&Type IDENTIFIED BY &id}
+		
+	RegionalExtension {REG-EXT-ID-AND-TYPE : Set} ::= SEQUENCE {
+		regionId REG-EXT-ID-AND-TYPE.&id( {Set} ),
+		regExtValue REG-EXT-ID-AND-TYPE.&Type( {Set}{@regionId} )
+		}
+
+	-- MSG_BasicSafetyMessage (BSM)
+	BasicSafetyMessage ::= SEQUENCE {
+		-- Part I, Sent at all times with each message
+		coreData BSMcoreData,
+		-- Part II Content
+		partII SEQUENCE (SIZE(1..8)) OF PartIIcontent {{ BSMpartIIExtension }} OPTIONAL,
+		regional1 SEQUENCE (SIZE(1..4)) OF RegionalExtension {{Reg-BasicSafetyMessage}} OPTIONAL,
+		...
+		}
+	
+
+	-- MSG_RoadSideAlert (RSA)
+	RoadSideAlert ::= SEQUENCE {
+		msgCnt MsgCount,
+		timeStamp MinuteOfTheYear OPTIONAL,
+		typeEvent ITIScodes,
+		-- a category and an item from that category
+		-- all ITS stds use the same types here
+		-- to explain the type of the
+		-- alert / danger / hazard involved
+		description SEQUENCE (SIZE(1..8)) OF ITIScodes OPTIONAL,
+		-- up to eight ITIS code set entries to further
+		-- describe the event, give advice, or any
+		-- other ITIS codes
+		priority Priority OPTIONAL,
+		-- the urgency of this message, a relative
+		-- degree of merit compared with other
+		-- similar messages for this type (not other
+		-- messages being sent by the device), nor a
+		-- priority of display urgency
+		heading HeadingSlice OPTIONAL,
+		-- Applicable headings/direction
+		extent Extent OPTIONAL,
+		-- the spatial distance over which this
+		-- message applies and should be presented
+		-- to the driver
+		position FullPositionVector OPTIONAL,
+		-- a compact summary of the position,
+		-- heading, speed, etc. of the
+		-- event in question. Including stationary
+		-- and wide area events.
+		furtherInfoID FurtherInfoID OPTIONAL,
+		-- an index link to any other incident
+		-- information data that may be available
+		-- in the normal ATIS incident description
+		-- or other messages
+		-- 1~2 octets in length
+		regional2 SEQUENCE (SIZE(1..4)) OF RegionalExtension {{Reg-RoadSideAlert}} OPTIONAL,
+		...
+		}
+
+	-- MSG_RTCMcorrections (RTCM)
+	RTCMcorrections ::= SEQUENCE {
+		msgCnt MsgCount,
+		rev RTCM-Revision,
+		-- the specific edition of the standard
+		-- that is being sent
+		timeStamp MinuteOfTheYear OPTIONAL,
+		-- Observer position, if needed
+		anchorPoint FullPositionVector OPTIONAL,
+		-- Precise ant position and noise data for a rover
+		rtcmHeader RTCMheader OPTIONAL,
+		-- one or more RTCM messages
+		msgs RTCMmessageList,
+		regional3 SEQUENCE (SIZE(1..4)) OF RegionalExtension {{Reg-RTCMcorrections}} OPTIONAL,
+		...
+		}
+	
+	
+	TestMessage00 ::= SEQUENCE {
+		header Header OPTIONAL,
+		-- All content is added in below data frame
+		regional00 RegionalExtension {{Reg-TestMessage00}} OPTIONAL,
+		...
+		}
+	
+	TestMessage01 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional01 RegionalExtension {{Reg-TestMessage01}} OPTIONAL,
+		...
+		}
+	
+	TestMessage02 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional02 RegionalExtension {{Reg-TestMessage02}} OPTIONAL,
+		...
+		}
+	
+	TestMessage03 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional03 RegionalExtension {{Reg-TestMessage03}} OPTIONAL,
+		...
+		}
+		
+	TestMessage04 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional04 RegionalExtension {{Reg-TestMessage04}} OPTIONAL,
+		...
+		}
+	
+	TestMessage05 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional05 RegionalExtension {{Reg-TestMessage05}} OPTIONAL,
+		...
+		}
+	
+	TestMessage06 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional06 RegionalExtension {{Reg-TestMessage06}} OPTIONAL,
+		...
+		}
+	
+	TestMessage07 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional07 RegionalExtension {{Reg-TestMessage07}} OPTIONAL,
+		...
+		}
+	
+	TestMessage08 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional08 RegionalExtension {{Reg-TestMessage08}} OPTIONAL,
+		...
+		}
+	
+		
+	TestMessage09 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional09 RegionalExtension {{Reg-TestMessage09}} OPTIONAL,
+		...
+		}
+	
+	TestMessage10 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional10 RegionalExtension {{Reg-TestMessage10}} OPTIONAL,
+		...
+		}
+	
+	TestMessage11 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional11 RegionalExtension {{Reg-TestMessage11}} OPTIONAL,
+		...
+		}
+	
+	TestMessage12 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional12 RegionalExtension {{Reg-TestMessage12}} OPTIONAL,
+		...
+		}
+	
+	TestMessage13 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional13 RegionalExtension {{Reg-TestMessage13}} OPTIONAL,
+		...
+		}
+	
+	TestMessage14 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional14 RegionalExtension {{Reg-TestMessage14}} OPTIONAL,
+		...
+		}
+	
+	TestMessage15 ::= SEQUENCE {
+		header Header OPTIONAL,
+		regional15 RegionalExtension {{Reg-TestMessage15}} OPTIONAL,
+		...
+	}
+
+
+	-- BSM Part II content support
+	PARTII-EXT-ID-AND-TYPE ::= CLASS {
+		&id PartII-Id UNIQUE,
+		&Type
+		} WITH SYNTAX {&Type IDENTIFIED BY &id}
+		
+	
+
+	PartIIcontent { PARTII-EXT-ID-AND-TYPE: Set} ::= SEQUENCE {
+		partII-Id PARTII-EXT-ID-AND-TYPE.&id( {Set} ),
+		partII-Value PARTII-EXT-ID-AND-TYPE.&Type( {Set}{@partII-Id} )
+		}
+		
+	PartII-Id ::= INTEGER (0..63)
+		vehicleSafetyExt PartII-Id::= 0 -- VehicleSafetyExtensions
+		specialVehicleExt PartII-Id::= 1 -- SpecialVehicleExtensions
+		supplementalVehicleExt PartII-Id::= 2 -- SupplementalVehicleExtensions
+		
+	-- NOTE: new registered Part II content IDs will be denoted here
+	-- In a given message there may be multiple extensions present
+	-- but at most one instance of each extension type.
+
+	BSMpartIIExtension PARTII-EXT-ID-AND-TYPE ::= {
+		{ VehicleSafetyExtensions IDENTIFIED BY vehicleSafetyExt} |
+		{ SpecialVehicleExtensions IDENTIFIED BY specialVehicleExt} ,
+		--{ SupplementalVehicleExtensions IDENTIFIED BY supplementalVehicleExt} ,
+		...
+		}
+
+	-- DF_PartIIId (Useless and only for DF_BSMpartIIExtension mark.)
+	PartIIid ::= INTEGER (0..63)
+	   vehicleSafetyExtd       PartIIid::= 0 -- VehicleSafetyExtensions
+	   specialVehicleExtd      PartIIid::= 1 -- SpecialVehicleExtensions
+	   supplementalVehicleExtd PartIIid::= 2 -- SupplementalVehicleExtensions
+	   -- NOTE: new registered Part II content IDs will be denoted here
+
+
+	-- DF_AntennaOffsetSet
+	AntennaOffsetSet ::= SEQUENCE {
+		antOffsetX Offset-B12, -- a range of +- 20.47 meters
+	   antOffsetY Offset-B09, -- a range of +- 2.55 meters
+	   antOffsetZ Offset-B10  -- a range of +- 5.11 meters
+	}
+
+	Reg-BasicSafetyMessage DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-CommonSafetyRequest DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-EmergencyVehicleAlert DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-IntersectionCollision DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-NMEAcorrections DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-ProbeDataManagement DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-ProbeVehicleData DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-RoadSideAlert DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-RTCMcorrections DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SignalRequestMessage DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SignalStatusMessage DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SPAT DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TravelerInformation DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-PersonalSafetyMessage DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	
+	-- DF_BSMcoreData
+	BSMcoreData ::= SEQUENCE {
+	   msgCnt       MsgCount,
+	   id           TemporaryID,
+	   secMark      DSecond,
+	   lat          Latitude,
+	   long         Longitude,
+	   elev         Elevation,
+	   accuracy     PositionalAccuracy,
+	   transmission TransmissionState,
+	   speed        Speed,
+	   heading      Heading,
+	   angle        SteeringWheelAngle,
+	   accelSet     AccelerationSet4Way,
+	   brakes       BrakeSystemStatus,
+	   size         VehicleSize
+	}
+
+	-- DF_DDateTime
+	DDateTime ::= SEQUENCE {
+	   year   DYear OPTIONAL,
+	   month  DMonth OPTIONAL,
+	   day    DDay OPTIONAL,
+	   hour   DHour OPTIONAL,
+	   minute DMinute OPTIONAL,
+	   second DSecond OPTIONAL,
+	   offset DOffset OPTIONAL -- time zone
+	   }
+	
+	--DF_Header
+	Header ::= SEQUENCE {
+		-- Basic time and sequence values for the message
+		year DYear OPTIONAL,
+		timeStamp MinuteOfTheYear OPTIONAL,
+		secMark DSecond OPTIONAL,
+		msgIssueRevision MsgCount OPTIONAL,
+		...
+		}
+
+	-- DF_FullPositionVector
+	FullPositionVector ::= SEQUENCE {
+	   utcTime         DDateTime OPTIONAL, -- time with mSec precision
+	   long            Longitude,          -- 1/10th microdegree
+	   lat             Latitude,           -- 1/10th microdegree
+	   elevation       Elevation OPTIONAL, -- units of 0.1 m
+	   heading         Heading OPTIONAL,
+	   speed           TransmissionAndSpeed OPTIONAL,
+	   posAccuracy     PositionalAccuracy OPTIONAL,
+	   timeConfidence  TimeConfidence OPTIONAL,
+	   posConfidence   PositionConfidenceSet OPTIONAL,
+	   speedConfidence SpeedandHeadingandThrottleConfidence OPTIONAL,
+	   ...
+	   }
+
+	-- DF_PathHistory
+	PathHistory ::= SEQUENCE {
+	   initialPosition FullPositionVector OPTIONAL,
+	   currGNSSstatus  GNSSstatus OPTIONAL,
+	   crumbData       PathHistoryPointList,
+	   ...
+	   }
+
+	-- DF_PathHistoryPointList
+	PathHistoryPointList ::= SEQUENCE (SIZE(1..23)) OF PathHistoryPoint
+
+	-- DF_PathHistoryPoint
+	PathHistoryPoint ::= SEQUENCE {
+	   latOffset       OffsetLL-B18,
+	   lonOffset       OffsetLL-B18,
+	   elevationOffset VertOffset-B12,
+	   timeOffset      TimeOffset,
+	                   -- Offset backwards in time
+	   speed           Speed OPTIONAL,
+	                   -- Speed over the reported period
+	   posAccuracy     PositionalAccuracy OPTIONAL,
+	                   -- The accuracy of this value
+	   heading         CoarseHeading OPTIONAL,
+	                   -- overall heading
+	   ...
+	   }
+
+	-- DF_PathPrediction
+	PathPrediction ::= SEQUENCE {
+	   radiusOfCurve RadiusOfCurvature,
+	                 -- LSB units of 10cm
+	                 -- straight path to use value of 32767
+	   confidence    Confidence,
+	                 -- LSB units of 0.5 percent
+	   ...
+	   }
+
+	-- DF_PositionConfidenceSet
+	PositionConfidenceSet ::= SEQUENCE {
+	   pos       PositionConfidence, -- for both horizontal directions
+	   elevation ElevationConfidence
+	   }
+
+	-- DF_RTCMheader
+	RTCMheader ::= SEQUENCE {
+	   status    GNSSstatus,
+	   offsetSet AntennaOffsetSet
+	}
+
+	-- DF_RTCMmessageList
+	RTCMmessageList ::= SEQUENCE (SIZE(1..5)) OF RTCMmessage
+
+	--DF_VehicleClassification
+	VehicleClassification ::= SEQUENCE {
+		-- Composed of the following elements:
+		-- The 'master' DSRC list used when space is limited
+		keyType BasicVehicleClass OPTIONAL,
+		-- Types used in the MAP/SPAT/SSR/SRM exchanges
+		role BasicVehicleRole OPTIONAL, -- Basic CERT role at a given time
+		iso3883 Iso3833VehicleType OPTIONAL,
+		hpmsType VehicleType OPTIONAL, -- HPMS classification types
+		-- ITIS types for classes of vehicle and agency
+		vehicleType VehicleGroupAffected OPTIONAL,
+		responseEquip IncidentResponseEquipment OPTIONAL,
+		responderType ResponderGroupAffected OPTIONAL,
+		-- Fuel types for vehicles
+		fuelType FuelType OPTIONAL,
+		regional SEQUENCE (SIZE(1..4)) OF
+		RegionalExtension {{Reg-VehicleClassification}} OPTIONAL,
+		...
+		}
+
+	-- DF_SPeedandHeadingandThrottleConfidence
+	SpeedandHeadingandThrottleConfidence ::= SEQUENCE {
+	   heading  HeadingConfidence,
+	   speed    SpeedConfidence,
+	   throttle ThrottleConfidence
+	   }
+
+	-- DF_TransmissionAndSpeed
+	TransmissionAndSpeed ::= SEQUENCE {
+	   transmisson TransmissionState,
+	   speed       Velocity
+	   }
+	
+	--DF_BumperHeights
+	BumperHeights ::= SEQUENCE {
+		front BumperHeight,
+		rear BumperHeight
+		}
+	
+	
+	--DF_WiperSet
+	WiperSet ::= SEQUENCE {
+		statusFront WiperStatus,
+		rateFront WiperRate,
+		statusRear WiperStatus OPTIONAL,
+		rateRear WiperRate OPTIONAL
+		}
+	
+	--DF_VehicleData
+	VehicleData ::= SEQUENCE {
+		-- Values for width and length are sent in BSM part I
+		height VehicleHeight OPTIONAL,
+		bumpers BumperHeights OPTIONAL,
+		mass VehicleMass OPTIONAL,
+		trailerWeight TrailerWeight OPTIONAL,
+		...
+		}
+	
+	--DF_ObstacleDirection
+	ObstacleDirection ::= Angle
+	
+	--DF_WeatherReport
+	WeatherReport ::= SEQUENCE {
+		isRaining EssPrecipYesNo,
+		rainRate EssPrecipRate OPTIONAL,
+		precipSituation EssPrecipSituation OPTIONAL,
+		solarRadiation EssSolarRadiation OPTIONAL,
+		friction EssMobileFriction OPTIONAL,
+		roadFriction CoefficientOfFriction OPTIONAL,
+		...
+		}
+	
+	--DF_WeatherProbe
+	WeatherProbe ::= SEQUENCE {
+		airTemp AmbientAirTemperature OPTIONAL,
+		airPressure AmbientAirPressure OPTIONAL,
+		rainRates WiperSet OPTIONAL,
+		...
+		}
+	
+	
+	--DF_DisabledVehicle
+	DisabledVehicle ::= SEQUENCE {
+		statusDetails ITIScodes(523..541),
+		-- Codes 532 to 541, as taken from J2540:
+		-- Disabled, etc.
+		-- stalled-vehicle (532),
+		-- abandoned-vehicle (533),
+		-- disabled-vehicle (534),
+		-- disabled-truck (535),
+		-- disabled-semi-trailer (536), -^- Alt: disabled
+		-- tractor-trailer
+		-- disabled-bus (537),
+		-- disabled-train (538),
+		-- vehicle-spun-out (539),
+		-- vehicle-on-fire (540),
+		-- vehicle-in-water (541),
+		locationDetails GenericLocations OPTIONAL,
+		...
+		}
+	
+	--DF_ObstacleDetection
+	ObstacleDetection ::= SEQUENCE {
+		obDist ObstacleDistance, -- Obstacle Distance
+		obDirect ObstacleDirection, -- Obstacle Direction
+		description ITIScodes(523..541) OPTIONAL,
+		-- Uses a limited set of ITIS codes
+		locationDetails GenericLocations OPTIONAL,
+		dateTime DDateTime, -- Time detected
+		vertEvent VerticalAccelerationThreshold OPTIONAL,
+		-- Any wheels which have
+		-- exceeded the acceleration point
+		...
+		}
+
+	--DF_SpeedProfileMeasurement
+	SpeedProfileMeasurement ::= GrossSpeed
+	
+	--DF_SpeedProfileMeasurementList
+	SpeedProfileMeasurementList ::= SEQUENCE (SIZE(1..20)) OF SpeedProfileMeasurement
+	
+	--DF_SpeedProfile
+	SpeedProfile ::= SEQUENCE {
+		-- Composed of set of measured average speeds
+		speedReports SpeedProfileMeasurementList,
+		...
+		}
+	
+
+	--DF_RTCMPackage
+	RTCMPackage ::= SEQUENCE {
+		-- precise antenna position and noise data for a rover
+		rtcmHeader RTCMheader OPTIONAL,
+		-- one or more RTCM messages
+		msgs RTCMmessageList,
+		...
+		}
+
+	-- DF_VehicleSafetyExtensions
+	VehicleSafetyExtensions ::= SEQUENCE {
+	   events         VehicleEventFlags OPTIONAL,
+	   pathHistory    PathHistory       OPTIONAL,
+	   pathPrediction PathPrediction    OPTIONAL,
+	   lights         ExteriorLights    OPTIONAL,
+	   
+	   ...
+	   }
+	
+	-- DF_SpecialVehicleExtensions
+	SpecialVehicleExtensions ::= SEQUENCE {
+	   events         VehicleEventFlags OPTIONAL,
+	   ...
+	   }
+	
+	-- DF_SupplementalVehicleExtensions
+	SupplementalVehicleExtensions ::= SEQUENCE {
+		-- Note that VehicleEventFlags, ExteriorLights,
+		-- PathHistory, and PathPrediction are in VehicleSafetyExtensions
+		-- Vehicle Type Classification Data
+		classification BasicVehicleClass OPTIONAL,
+		-- May be required to be present for non passenger vehicles
+		classDetails VehicleClassification OPTIONAL,
+		vehicleData VehicleData OPTIONAL,
+		-- Various V2V Probe Data
+		weatherReport WeatherReport OPTIONAL,
+		weatherProbe WeatherProbe OPTIONAL,
+		-- Detected Obstacle data
+		obstacle ObstacleDetection OPTIONAL,
+		-- Disabled Vehicle Report
+		status DisabledVehicle OPTIONAL,
+		-- Oncoming lane speed reporting
+		speedProfile SpeedProfile OPTIONAL,
+		-- Raw GNSS measurements
+		theRTCM RTCMPackage OPTIONAL,
+		regional001 SEQUENCE (SIZE(1..4)) OF
+		RegionalExtension {{Reg-SupplementalVehicleExtensions}} OPTIONAL,
+		...
+		}
+
+	-- DF_VehicleDummyStruct
+	VehicleDummyStruct ::= SEQUENCE {
+	   events         VehicleEventFlags OPTIONAL,
+	   pathHistory    PathHistory       OPTIONAL,
+	   ...
+	   }
+	
+	Reg-TestMessage00 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage01 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage02 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage03 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage04 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage05 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage06 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage07 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage08 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage09 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage10 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage11 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage12 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage13 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage14 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-TestMessage15 DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	
+	
+	
+	--
+	-- Regional data frames with no currently defined extensions
+	--
+	Reg-AdvisorySpeed DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-ComputedLane DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-EventDescription DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-GenericLane DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-GeographicalPath DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-GeometricProjection DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-IntersectionGeometry DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-LaneAttributes DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-MovementState DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-NodeAttributeSetLL DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-NodeAttributeSetXY DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-NodeOffsetPointLL DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-RequestorDescription DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-RequestorType DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-RoadSegment DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SignalControlZone DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SignalRequest DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SignalRequestPackage DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SignalStatus DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SignalStatusPackage DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-SupplementalVehicleExtensions DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-VehicleClassification DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	Reg-VerticalOffset DSRC.REG-EXT-ID-AND-TYPE ::= { ... }
+	--
+	-- Data Frames with current adopted expansion point content
+	--
+	--Reg-ConnectionManeuverAssist DSRC.REG-EXT-ID-AND-TYPE ::= {
+	--{ AddGrpC.ConnectionManeuverAssist-addGrpC IDENTIFIED BY DSRC.addGrpC} ,
+	--...
+	--}
+	--Reg-IntersectionState DSRC.REG-EXT-ID-AND-TYPE ::= {
+	--{ AddGrpC.IntersectionState-addGrpC IDENTIFIED BY DSRC.addGrpC} ,
+	--...
+	--}
+	--Reg-LaneDataAttribute DSRC.REG-EXT-ID-AND-TYPE ::= {
+	--{ AddGrpB.LaneDataAttribute-addGrpB IDENTIFIED BY DSRC.addGrpB} ,
+	--...
+	--}
+	--Reg-MovementEvent DSRC.REG-EXT-ID-AND-TYPE ::= {
+	--{ AddGrpB.MovementEvent-addGrpB IDENTIFIED BY DSRC.addGrpB} ,
+	--...
+	--}
+	--Reg-NodeOffsetPointXY DSRC.REG-EXT-ID-AND-TYPE ::= {
+	--{ AddGrpB.NodeOffsetPointXY-addGrpB IDENTIFIED BY DSRC.addGrpB} ,
+	--...
+	--}
+	--Reg-Position3D DSRC.REG-EXT-ID-AND-TYPE ::= {
+	--{ AddGrpB.Position3D-addGrpB IDENTIFIED BY DSRC.addGrpB} |
+	--{ AddGrpC.Position3D-addGrpC IDENTIFIED BY DSRC.addGrpC} ,
+	--...
+	--}
+	--Reg-RestrictionUserType DSRC.REG-EXT-ID-AND-TYPE ::= {
+	--{ AddGrpC.RestrictionUserType-addGrpC IDENTIFIED BY DSRC.addGrpC} ,
+	--...
+	--}
+	--
+	-- The pattern used for regional adaptations is shown below
+	-- Use:
+	-- the text 'XXX' below is used to represent the name of the entry
+	-- the region should replace 'xxx-RegionName' with its own Type Def
+	-- a name pattern such as 'DataFrameName-RegionName' is recommended
+	-- the 'regionName' value must be assigned from the RegionId element
+	-- this value would be defined in the REGION module, unless a well-known
+	-- region was being used (these IDs are defined in the DSRC module)
+	-- refer to the full standard for additional details
+	--
+	--Reg-XXX DSRC.REG-EXT-ID-AND-TYPE ::= {
+	-- { XXX-RegionName IDENTIFIED BY regionName },
+	-- ...
+	--}
+	--regionName DSRC.RegionId ::= 128
+	--XXX-RegionName ::= SEQUENCE { ... }
+	--
+	-- End example pattern for regional us
+
+	-- Data Element
+	
+	
+	--DE_GrossSpeed
+	GrossSpeed ::= INTEGER (0..31) -- Units of 1.00 m/s
+	-- The value 30 shall be used for speeds of 30 m/s or greater (67.1 mph)
+	-- The value 31 shall indicate that the speed is unavailable
+	
+	Angle ::= INTEGER (0..28800)
+	-- LSB of 0.0125 degrees
+	-- A range of 0 to 359.9875 degrees
+	
+	--DE_VerticalAccelerationThreshold
+	VerticalAccelerationThreshold ::= BIT STRING {
+		notEquipped (0), -- Not equipped or off
+		leftFront (1), -- Left Front Event
+		leftRear (2), -- Left Rear Event
+		rightFront (3), -- Right Front Event
+		rightRear (4) -- Right Rear Event
+		} (SIZE(5))
+	
+	--DE_GenericLocations
+	GenericLocations ::= ENUMERATED {
+		-- Road Related
+		on-bridges (7937), -- Not to be used as the default for this
+		-- category
+		in-tunnels (7938),
+		entering-or-leaving-tunnels (7939),
+		on-ramps (7940),
+		in-road-construction-area (7941),
+		around-a-curve (7942),
+		on-curve (8026),
+		on-tracks (8009),
+		in-street (8025), -- As in in-street pad crossing
+		shoulder (8027),
+		on-minor-roads (7943),
+		in-the-opposing-lanes (7944),
+		adjacent-to-roadway (7945),
+		across-tracks (8024),
+		on-bend (7946),
+		intersection (8032),
+		entire-intersection (7947),
+		in-the-median (7948),
+		moved-to-side-of-road (7949),
+		moved-to-shoulder (7950),
+		on-the-roadway (7951), -- Use generic locations/groups affected to
+		-- make other such phrases
+		dip (8010),
+		traffic-circle (8011), -- Used for W2-6 graphic as well. Alt term:
+		-- roundabout
+		crossover (8028),
+		cross-road (8029), -- Also used for W2-1 Note that in some uses
+		-- this is one word
+		side-road (8030), -- Do not used for W2-2R and W2-2L
+		to (8014),
+		by (8015),
+		through (8016),
+		area-of (8017), -- Also area
+		under (8018),
+		over (8019),
+		from (8020),
+		approaching (8021),
+		entering-at (8022), -- Alt form: Entrance
+		exiting-at (8023),
+		-- Terrain & Geography
+		in-shaded-areas (7952),
+		in-low-lying-areas (7953),
+		in-the-downtown-area (7954),
+		in-the-inner-city-area (7955),
+		in-parts (7956),
+		in-some-places (7957),
+		in-the-ditch (7958),
+		in-the-valley (7959),
+		on-hill-top (7960),
+		near-the-foothills (7961),
+		at-high-altitudes (7962),
+		near-the-lake (7963),
+		near-the-shore (7964),
+		nearby-basin (8008),
+		over-the-crest-of-a-hill (7965),
+		other-than-on-the-roadway (7966),
+		near-the-beach (7967),
+		near-beach-access-point (7968),
+		mountain-pass (8006),
+		lower-level (7969),
+		upper-level (7970),
+		-- Transit Travel, Air Travel and Places
+		airport (7971),
+		concourse (7972),
+		gate (7973),
+		baggage-claim (7974),
+		customs-point (7975),
+		reservation-center (8007),
+		station (7976),
+		platform (7977), -- Alternative Rendering: track
+		dock (7978),
+		depot (7979),
+		ev-charging-point (7980),
+		information-welcome-point (7981), -- Use for Tourist Information as well (D9-10)
+		at-rest-area (7982),
+		at-service-area (7983),
+		at-weigh-station (7984),
+		roadside-park (8033),
+		picnic-areas (7985),
+		rest-area (7986),
+		service-stations (7987),
+		toilets (7988), -- Note also rest rooms in structures
+		bus-stop (8031),
+		park-and-ride-lot (8012), -- Not to be used as a mode of travel
+		-- Direction of Travel
+		on-the-right (7989),
+		on-the-left (7990),
+		in-the-center (7991),
+		in-the-opposite-direction (7992),
+		cross-traffic (7993),
+		northbound-traffic (7994),
+		eastbound-traffic (7995),
+		southbound-traffic (7996),
+		westbound-traffic (7997),
+		-- Compass Points
+		north (7998),
+		south (7999),
+		east (8000),
+		west (8001),
+		northeast (8002),
+		northwest (8003),
+		southeast (8004),
+		southwest (8005),
+		... -- # LOCAL_CONTENT_ITIS
+	}
+	
+	--DE_ObstacleDistance
+	ObstacleDistance ::= INTEGER (0..32767) -- LSB units of meters
+	
+	--DE_WiperRate
+	WiperRate ::= INTEGER (0..127) -- units of sweeps per minute
+	
+	--DE_WiperStatus
+	WiperStatus ::= ENUMERATED {
+		unavailable (0), -- Not Equipped with wiper status
+		-- or wiper status is unavailable
+		off (1),
+		intermittent (2),
+		low (3),
+		high (4),
+		washerInUse (5), -- washing solution being used
+		automaticPresent (6), -- Auto wiper equipped
+		...
+		}
+	
+	--DE_AmbientAirPressure
+	AmbientAirPressure ::= INTEGER (0..255)
+	-- 8 Bits in hPa starting at 580 with a resolution of
+	-- 2 hPa resulting in a range of 580 to 1088
+	
+	--DE_AmbientAirTemperature
+	AmbientAirTemperature ::= INTEGER (0..191) -- in deg C with a -40 offset
+	-- The value 191 shall indicate an unknown value
+	
+	--DE_CoefficientOfFriction
+	CoefficientOfFriction ::= INTEGER (0..50)
+		-- where 0 = 0.00 micro (frictionless), also used when data is unavailable
+		-- and 50 = 1.00 micro, in steps of 0.02
+	
+	--DE_EssMobileFriction
+	EssMobileFriction ::= INTEGER (0..101)
+	
+	--DE_EssSolarRadiation
+	EssSolarRadiation ::= INTEGER (0..65535)
+	
+	--DE_EssPrecipSituation
+	EssPrecipSituation ::= ENUMERATED {
+		other (1),
+		unknown (2),
+		noPrecipitation (3),
+		unidentifiedSlight (4),
+		unidentifiedModerate (5),
+		unidentifiedHeavy (6),
+		snowSlight (7),
+		snowModerate (8),
+		snowHeavy (9),
+		rainSlight (10),
+		rainModerate (11),
+		rainHeavy (12),
+		frozenPrecipitationSlight (13),
+		frozenPrecipitationModerate (14),
+		frozenPrecipitationHeavy (15)
+		}
+	
+	--DE_EssPrecipRate
+	EssPrecipRate ::= INTEGER (0..65535)
+	
+	--DE_EssPrecipYesNo
+	EssPrecipYesNo ::= ENUMERATED {precip (1), noPrecip (2), error (3)}
+	
+	--DE_TrailerWeight
+	TrailerWeight ::= INTEGER (0..64255)
+	
+	--DE_VehicleMass
+	VehicleMass ::= INTEGER (0..255)
+		-- Values 000 to 080 in steps of 50kg
+		-- Values 081 to 200 in steps of 500kg
+		-- Values 201 to 253 in steps of 2000kg
+		-- The Value 254 shall be used for weights above 170000 kg
+		-- The Value 255 shall be used when the value is unknown or unavailable
+		-- Encoded such that the values:
+		-- 81 represents 4500 kg
+		-- 181 represents 54500 kg
+		-- 253 represents 170000 kg
+	
+	--DE_BumperHeight
+	BumperHeight ::= INTEGER (0..127) -- in units of 0.01 meters from ground surface.
+	
+	--DE_VehicleHeight
+	VehicleHeight ::= INTEGER (0..127)
+		-- the height of the vehicle
+		-- LSB units of 5 cm, range to 6.35 meters
+	
+	--DE_FuelType
+	FuelType ::= INTEGER (0..15)
+		unknownFuel FuelType::= 0 -- Gasoline Powered
+		gasoline FuelType::= 1
+		ethanol FuelType::= 2 -- Including blends
+		diesel FuelType::= 3 -- All types
+		electric FuelType::= 4
+		hybrid FuelType::= 5 -- All types
+		hydrogen FuelType::= 6
+		natGasLiquid FuelType::= 7 -- Liquefied
+		natGasComp FuelType::= 8 -- Compressed
+		propane FuelType::= 9
+		
+	--DE_ResponderGroupAffected
+	ResponderGroupAffected ::= ENUMERATED {
+		emergency-vehicle-units (9729), -- Default, to be used when one of
+		-- the below does not fit better
+		federal-law-enforcement-units (9730),
+		state-police-units (9731),
+		county-police-units (9732), -- Hint: also sheriff response units
+		local-police-units (9733),
+		ambulance-units (9734),
+		rescue-units (9735),
+		fire-units (9736),
+		hAZMAT-units (9737),
+		light-tow-unit (9738),
+		heavy-tow-unit (9739),
+		freeway-service-patrols (9740),
+		transportation-response-units (9741),
+		private-contractor-response-units (9742),
+		... -- # LOCAL_CONTENT_ITIS
+		}
+		-- These groups are used in coordinated response and staging area information
+		-- (rather than typically consumer related)
+	
+	--DE_IncidentResponseEquipment
+	IncidentResponseEquipment ::= ENUMERATED {
+		ground-fire-suppression (9985),
+		heavy-ground-equipment (9986),
+		aircraft (9988),
+		marine-equipment (9989),
+		support-equipment (9990),
+		medical-rescue-unit (9991),
+		other (9993), -- Depreciated by fire standards, do not
+		-- use
+		ground-fire-suppression-other (9994),
+		engine (9995),
+		truck-or-aerial (9996),
+		quint (9997), -- A five-function type of fire
+		-- apparatus. The units in the
+		-- movie Backdraft were quints
+		tanker-pumper-combination (9998),
+		brush-truck (10000),
+		aircraft-rescue-firefighting (10001),
+		heavy-ground-equipment-other (10004),
+		dozer-or-plow (10005),
+		tractor (10006),
+		tanker-or-tender (10008),
+		aircraft-other (10024),
+		aircraft-fixed-wing-tanker (10025),
+		helitanker (10026),
+		helicopter (10027),
+		marine-equipment-other (10034),
+		fire-boat-with-pump (10035),
+		boat-no-pump (10036),
+		support-apparatus-other (10044),
+		breathing-apparatus-support (10045),
+		light-and-air-unit (10046),
+		medical-rescue-unit-other (10054),
+		rescue-unit (10055),
+		urban-search-rescue-unit (10056),
+		high-angle-rescue (10057),
+		crash-fire-rescue (10058),
+		bLS-unit (10059),
+		aLS-unit (10060),
+		mobile-command-post (10075), -- Depreciated, do not use
+		chief-officer-car (10076),
+		hAZMAT-unit (10077),
+		type-i-hand-crew (10078),
+		type-ii-hand-crew (10079),
+		privately-owned-vehicle (10083), -- (Often found in volunteer fire teams)
+		other-apparatus-resource (10084), -- (Remapped from fire code zero)
+		ambulance (10085),
+		bomb-squad-van (10086),
+		combine-harvester (10087),
+		construction-vehicle (10088),
+		farm-tractor (10089),
+		grass-cutting-machines (10090),
+		hAZMAT-containment-tow (10091),
+		heavy-tow (10092),
+		light-tow (10094),
+		flatbed-tow (10114),
+		hedge-cutting-machines (10093),
+		mobile-crane (10095),
+		refuse-collection-vehicle (10096),
+		resurfacing-vehicle (10097),
+		road-sweeper (10098),
+		roadside-litter-collection-crews (10099),
+		salvage-vehicle (10100),
+		sand-truck (10101),
+		snowplow (10102),
+		steam-roller (10103),
+		swat-team-van (10104),
+		track-laying-vehicle (10105),
+		unknown-vehicle (10106),
+		white-lining-vehicle (10107), -- Consider using Roadwork "road marking
+		-- operations" unless objective is to
+		-- refer to the specific vehicle of this
+		-- type. Alternative Rendering: line
+		-- painting vehicle
+		dump-truck (10108),
+		supervisor-vehicle (10109),
+		snow-blower (10110),
+		rotary-snow-blower (10111),
+		road-grader (10112), -- Alternative term: motor grader
+		steam-truck (10113), -- A special truck that thaws culverts
+		-- and storm drains
+		... -- # LOCAL_CONTENT_ITIS
+		}
+	
+	--DE_VehicleGroupAffected
+	VehicleGroupAffected ::= ENUMERATED {
+		all-vehicles (9217),
+		bicycles (9218),
+		motorcycles (9219), -- to include mopeds as well
+		cars (9220), -- (remapped from ERM value of
+		-- zero)
+		light-vehicles (9221),
+		cars-and-light-vehicles (9222),
+		cars-with-trailers (9223),
+		cars-with-recreational-trailers (9224),
+		vehicles-with-trailers (9225),
+		heavy-vehicles (9226),
+		trucks (9227),
+		buses (9228),
+		articulated-buses (9229),
+		school-buses (9230),
+		vehicles-with-semi-trailers (9231),
+		vehicles-with-double-trailers (9232), -- Alternative Rendering:
+		-- western doubles
+		high-profile-vehicles (9233),
+		wide-vehicles (9234),
+		long-vehicles (9235),
+		hazardous-loads (9236),
+		exceptional-loads (9237),
+		abnormal-loads (9238),
+		convoys (9239),
+		maintenance-vehicles (9240),
+		delivery-vehicles (9241),
+		vehicles-with-even-numbered-license-plates (9242),
+		vehicles-with-odd-numbered-license-plates (9243),
+		vehicles-with-parking-permits (9244),
+		vehicles-with-catalytic-converters (9245),
+		vehicles-without-catalytic-converters (9246),
+		gas-powered-vehicles (9247),
+		diesel-powered-vehicles (9248),
+		lPG-vehicles (9249), -- The L is lower case here
+		military-convoys (9250),
+		military-vehicles (9251),
+		... -- # LOCAL_CONTENT_ITIS
+		}
+		-- Classification of vehicles and types of transport
+	
+	---DE_VehicleType
+	VehicleType ::= ENUMERATED {
+		none (0), -- Not Equipped, Not known or unavailable
+		unknown (1), -- Does not fit any other category
+		special (2), -- Special use
+		moto (3), -- Motorcycle
+		car (4), -- Passenger car
+		carOther (5), -- Four tire single units
+		bus (6), -- Buses
+		axleCnt2 (7), -- Two axle, six tire single units
+		axleCnt3 (8), -- Three axle, single units
+		axleCnt4 (9), -- Four or more axle, single unit
+		axleCnt4Trailer (10), -- Four or less axle, single trailer
+		axleCnt5Trailer (11), -- Five or less axle, single trailer
+		axleCnt6Trailer (12), -- Six or more axle, single trailer
+		axleCnt5MultiTrailer (13), -- Five or less axle, multi-trailer
+		axleCnt6MultiTrailer (14), -- Six axle, multi-trailer
+		axleCnt7MultiTrailer (15), -- Seven or more axle, multi-trailer
+		...
+		}
+	
+	--DE_Iso3833VehicleType
+	Iso3833VehicleType ::= INTEGER (0..100)
+	
+	--DE_BasicVehicleRole
+	BasicVehicleRole ::= ENUMERATED {
+		-- Values used in the EU and in the US
+		basicVehicle (0), -- Light duty passenger vehicle type
+		publicTransport (1), -- Used in EU for Transit us
+		specialTransport (2), -- Used in EU (e.g. heavy load)
+		dangerousGoods (3), -- Used in EU for any HAZMAT
+		roadWork (4), -- Used in EU for State and Local DOT uses
+		roadRescue (5), -- Used in EU and in the US to include tow trucks.
+		emergency (6), -- Used in EU for Police, Fire and Ambulance units
+		safetyCar (7), -- Used in EU for Escort vehicles
+		-- Begin US unique numbering
+		none-unknown (8), -- added to follow current SAE style guidelines
+		truck (9), -- Heavy trucks with additional BSM rights and obligations
+		motorcycle (10), --
+		roadSideSource (11), -- For infrastructure generated calls such as
+		-- fire house, rail infrastructure, roadwork site, etc.
+		police (12), --
+		fire (13), --
+		ambulance (14), -- (does not include private para-transit etc.)
+		dot (15), -- all roadwork vehicles
+		transit (16), -- all transit vehicles
+		slowMoving (17), -- to also include oversize etc.
+		stopNgo (18), -- to include trash trucks, school buses and others
+		-- that routinely disturb the free flow of traffic
+		cyclist (19), --
+		pedestrian (20), -- also includes those with mobility limitations
+		nonMotorized (21), -- other, horse drawn, etc.
+		military (22), --
+		...
+		}
+	
+	--DE_BaiscVehiClass
+	BasicVehicleClass ::= INTEGER (0..255)
+		unknownVehicleClass BasicVehicleClass ::= 0
+		-- Not Equipped, Not known or unavailable
+		specialVehicleClass BasicVehicleClass ::= 1
+		-- Special use
+		--
+		-- Basic Passenger Motor Vehicle Types
+		--
+		passenger-Vehicle-TypeUnknown BasicVehicleClass ::= 10 -- default type
+		passenger-Vehicle-TypeOther BasicVehicleClass ::= 11
+		-- various fuel types are handled in another element
+		--
+		-- Light Trucks, Pickup, Van, Panel
+		--
+		lightTruck-Vehicle-TypeUnknown BasicVehicleClass ::= 20 -- default type
+		lightTruck-Vehicle-TypeOther BasicVehicleClass ::= 21
+		--
+		-- Trucks, Various axle types, includes HPMS items
+		--
+		truck-Vehicle-TypeUnknown BasicVehicleClass ::= 25 -- default type
+		truck-Vehicle-TypeOther BasicVehicleClass ::= 26
+		truck-axleCnt2 BasicVehicleClass ::= 27 -- Two axle, six tire single units
+		truck-axleCnt3 BasicVehicleClass ::= 28 -- Three axle, single units
+		truck-axleCnt4 BasicVehicleClass ::= 29 -- Four or more axle, single unit
+		truck-axleCnt4Trailer BasicVehicleClass ::= 30 -- Four or less axle, single trailer
+		truck-axleCnt5Trailer BasicVehicleClass ::= 31 -- Five or less axle, single trailer
+		truck-axleCnt6Trailer BasicVehicleClass ::= 32 -- Six or more axle, single trailer
+		truck-axleCnt5MultiTrailer BasicVehicleClass ::= 33 -- Five or less axle, multitrailer
+		truck-axleCnt6MultiTrailer BasicVehicleClass ::= 34 -- Six axle, multi-trailer
+		truck-axleCnt7MultiTrailer BasicVehicleClass ::= 35 -- Seven or more axle, multitrailer
+		--
+		-- Motorcycle Types
+		--
+		motorcycle-TypeUnknown BasicVehicleClass ::= 40 -- default type
+		motorcycle-TypeOther BasicVehicleClass ::= 41
+		motorcycle-Cruiser-Standard BasicVehicleClass ::= 42
+		motorcycle-SportUnclad BasicVehicleClass ::= 43
+		motorcycle-SportTouring BasicVehicleClass ::= 44
+		motorcycle-SuperSport BasicVehicleClass ::= 45
+		motorcycle-Touring BasicVehicleClass ::= 46
+		motorcycle-Trike BasicVehicleClass ::= 47
+		motorcycle-wPassengers BasicVehicleClass ::= 48 -- type not stated
+		--
+		-- Transit Types
+		--
+		transit-TypeUnknown BasicVehicleClass ::= 50 -- default type
+		transit-TypeOther BasicVehicleClass ::= 51
+		transit-BRT BasicVehicleClass ::= 52
+		transit-ExpressBus BasicVehicleClass ::= 53
+		transit-LocalBus BasicVehicleClass ::= 54
+		transit-SchoolBus BasicVehicleClass ::= 55
+		transit-FixedGuideway BasicVehicleClass ::= 56
+		transit-Paratransit BasicVehicleClass ::= 57
+		transit-Paratransit-Ambulance BasicVehicleClass ::= 58
+		--
+		-- Emergency Vehicle Types
+		--
+		emergency-TypeUnknown BasicVehicleClass ::= 60 -- default type
+		emergency-TypeOther BasicVehicleClass ::= 61 -- includes federal users
+		emergency-Fire-Light-Vehicle BasicVehicleClass ::= 62
+		emergency-Fire-Heavy-Vehicle BasicVehicleClass ::= 63
+		emergency-Fire-Paramedic-Vehicle BasicVehicleClass ::= 64
+		emergency-Fire-Ambulance-Vehicle BasicVehicleClass ::= 65
+		emergency-Police-Light-Vehicle BasicVehicleClass ::= 66
+		emergency-Police-Heavy-Vehicle BasicVehicleClass ::= 67
+		emergency-Other-Responder BasicVehicleClass ::= 68
+		emergency-Other-Ambulance BasicVehicleClass ::= 69
+		--
+		-- Other DSRC Equipped Travelers
+		--
+		otherTraveler-TypeUnknown BasicVehicleClass ::= 80 -- default type
+		otherTraveler-TypeOther BasicVehicleClass ::= 81
+		otherTraveler-Pedestrian BasicVehicleClass ::= 82
+		otherTraveler-Visually-Disabled BasicVehicleClass ::= 83
+		otherTraveler-Physically-Disabled BasicVehicleClass ::= 84
+		otherTraveler-Bicycle BasicVehicleClass ::= 85
+		otherTraveler-Vulnerable-Roadworker BasicVehicleClass ::= 86
+		--
+		-- Other DSRC Equipped Device Types
+		--
+		infrastructure-TypeUnknown BasicVehicleClass ::= 90 -- default type
+		infrastructure-Fixed BasicVehicleClass ::= 91
+		infrastructure-Movable BasicVehicleClass ::= 92
+		equipped-CargoTrailer BasicVehicleClass ::= 93
+
+
+
+
+	-- DE_Acceleration
+	Acceleration ::= INTEGER (-2000..2001)
+	   -- LSB units are 0.01 m/s^2
+	   -- the value 2000 shall be used for values greater than 2000
+	   -- the value -2000 shall be used for values less than -2000
+	   -- a value of 2001 shall be used for Unavailable
+
+	-- DE_AccelerationSet4Way
+	AccelerationSet4Way ::= SEQUENCE {
+	   long Acceleration,         -- Along the Vehicle Longitudinal axis
+	   lat  Acceleration,         -- Along the Vehicle Lateral axis
+	   vert VerticalAcceleration, -- Along the Vehicle Vertical axis
+	   yaw  YawRate
+	   }
+
+	-- DE_AntiLockBrakeStatus
+	AntiLockBrakeStatus ::= ENUMERATED {
+	   unavailable (0), -- B'00 Vehicle Not Equipped with ABS Brakes
+	                    -- or ABS Brakes status is unavailable
+	   off         (1), -- B'01 Vehicle's ABS are Off
+	   on          (2), -- B'10 Vehicle's ABS are On ( but not Engaged )
+	   engaged     (3)  -- B'11 Vehicle's ABS control is Engaged on any wheel
+	   }
+
+	-- DE_AuxiliaryBrakeStatus
+	AuxiliaryBrakeStatus ::= ENUMERATED {
+	   unavailable (0), -- B'00 Vehicle Not Equipped with Aux Brakes
+	                    -- or Aux Brakes status is unavailable
+	   off         (1), -- B'01 Vehicle's Aux Brakes are Off
+	   on          (2), -- B'10 Vehicle's Aux Brakes are On ( Engaged )
+	   reserved    (3)  -- B'11
+	   }
+
+	-- DE_BrakeAppliedStatus
+	BrakeAppliedStatus ::= BIT STRING {
+	   unavailable (0), -- When set, the brake applied status is unavailable
+	   leftFront   (1), -- Left Front Active
+	   leftRear    (2), -- Left Rear Active
+	   rightFront  (3), -- Right Front Active
+	   rightRear   (4)  -- Right Rear Active
+	   } (SIZE (5))
+
+	-- DE_BrakeBoostApplied
+	BrakeBoostApplied ::= ENUMERATED {
+	   unavailable (0), -- Vehicle not equipped with brake boost
+	                    -- or brake boost data is unavailable
+	   off         (1), -- Vehicle's brake boost is off
+	   on          (2)  -- Vehicle's brake boost is on (applied)
+	   }
+
+	-- DE_BrakeSystemStatus
+	BrakeSystemStatus ::= SEQUENCE {
+	   wheelBrakes BrakeAppliedStatus,
+	   traction    TractionControlStatus,
+	   abs         AntiLockBrakeStatus,
+	   scs         StabilityControlStatus,
+	   brakeBoost  BrakeBoostApplied,
+	   auxBrakes   AuxiliaryBrakeStatus
+	   }
+
+
+	-- DE_CoarseHeading
+	CoarseHeading ::= INTEGER (0..240)
+	   -- Where the LSB is in units of 1.5 degrees
+	   -- over a range of 0~358.5 degrees
+	   -- the value 240 shall be used for unavailable
+
+	-- DE_Confidence
+	Confidence ::= INTEGER (0..200)
+	   -- LSB units of 0.5 percent
+
+	-- DE_DSecond
+	DSecond ::= INTEGER (0..65535) -- units of milliseconds
+		
+	-- DE_DDay
+	DDay ::= INTEGER (0..31) -- units of days
+
+	-- DE_DHour
+	DHour ::= INTEGER (0..31) -- units of hours
+
+	-- DE_DMinute
+	DMinute ::= INTEGER (0..60) -- units of minutes
+
+	-- DE_DMonth
+	DMonth ::= INTEGER (0..12) -- units of months
+
+	-- DE_DOffset
+	DOffset ::= INTEGER (-840..840) -- units of minutes from UTC time
+
+	-- DE_DYear
+	DYear ::= INTEGER (0..4095) -- units of years
+
+
+	-- DE_Elevation
+	Elevation ::= INTEGER (-4096..61439)
+	   -- In units of 10 cm steps above or below the reference ellipsoid
+	   -- Providing a range of -409.5 to + 6143.9 meters
+	   -- The value -4096 shall be used when Unknown is to be sent
+
+	-- DE_ElevationConfidence
+	ElevationConfidence ::= ENUMERATED {
+	   unavailable (0), -- B'0000 Not Equipped or unavailable
+	   elev-500-00 (1), -- B'0001 (500 m)
+	   elev-200-00 (2), -- B'0010 (200 m)
+	   elev-100-00 (3), -- B'0011 (100 m)
+	   elev-050-00 (4), -- B'0100 (50 m)
+	   elev-020-00 (5), -- B'0101 (20 m)
+	   elev-010-00 (6), -- B'0110 (10 m)
+	   elev-005-00 (7), -- B'0111 (5 m)
+	   elev-002-00 (8), -- B'1000 (2 m)
+	   elev-001-00 (9), -- B'1001 (1 m)
+	   elev-000-50 (10), -- B'1010 (50 cm)
+	   elev-000-20 (11), -- B'1011 (20 cm)
+	   elev-000-10 (12), -- B'1100 (10 cm)
+	   elev-000-05 (13), -- B'1101 (5 cm)
+	   elev-000-02 (14), -- B'1110 (2 cm)
+	   elev-000-01 (15) -- B'1111 (1 cm)
+	   } -- Encoded as a 4 bit value
+
+	-- DE_Extent
+	Extent ::= ENUMERATED {
+	   useInstantlyOnly      (0),
+	   useFor3meters         (1),
+	   useFor10meters        (2),
+	   useFor50meters        (3),
+	   useFor100meters       (4),
+	   useFor500meters       (5),
+	   useFor1000meters      (6),
+	   useFor5000meters      (7),
+	   useFor10000meters     (8),
+	   useFor50000meters     (9),
+	   useFor100000meters   (10),
+	   useFor500000meters   (11),
+	   useFor1000000meters  (12),
+	   useFor5000000meters  (13),
+	   useFor10000000meters (14),
+	   forever              (15) -- very wide area
+	   } -- Encoded as a 4 bit value
+
+	-- DE_ExteriorLights
+	ExteriorLights ::= BIT STRING {
+	   -- All lights off is indicated by no bits set
+	   lowBeamHeadlightsOn     (0),
+	   highBeamHeadlightsOn    (1),
+	   leftTurnSignalOn        (2),
+	   rightTurnSignalOn       (3),
+	   hazardSignalOn          (4),
+	   automaticLightControlOn (5),
+	   daytimeRunningLightsOn  (6),
+	   fogLightOn              (7),
+	   parkingLightsOn         (8)
+	   } (SIZE (9, ...))
+
+	--DE_FurtherInfoID
+	FurtherInfoID ::= OCTET STRING (SIZE(2))
+	   -- a link to any other incident
+	   -- information data that may be available
+	   -- in the normal ATIS incident description
+	   -- or other messages
+
+	-- DE_GNSSstatus
+	GNSSstatus ::= BIT STRING {
+	   unavailable               (0), -- Not Equipped or unavailable
+	   isHealthy                 (1),
+	   isMonitored               (2),
+	   baseStationType           (3), -- Set to zero if a moving base station,
+	                                  -- or if a rover device (an OBU),
+	                                  -- set to one if it is a fixed base station
+	   aPDOPofUnder5             (4), -- A dilution of precision greater than 5
+	   inViewOfUnder5            (5), -- Less than 5 satellites in view
+	   localCorrectionsPresent   (6), -- DGPS type corrections used
+	   networkCorrectionsPresent (7)  -- RTK type corrections used
+	   } (SIZE(8))
+
+	-- DE_Heading
+	Heading ::= INTEGER (0..28800)
+	   -- LSB of 0.0125 degrees
+	   -- A range of 0 to 359.9875 degrees
+
+	-- DE_HeadingConfidence
+	HeadingConfidence ::= ENUMERATED {
+	   unavailable   (0), -- B'000 Not Equipped or unavailable
+	   prec10deg     (1), -- B'010 10 degrees
+	   prec05deg     (2), -- B'011 5 degrees
+	   prec01deg     (3), -- B'100 1 degrees
+	   prec0-1deg    (4), -- B'101 0.1 degrees
+	   prec0-05deg   (5), -- B'110 0.05 degrees
+	   prec0-01deg   (6), -- B'110 0.01 degrees
+	   prec0-0125deg (7) -- B'111 0.0125 degrees, aligned with heading LSB
+	   } -- Encoded as a 3 bit value
+
+	-- DE_HeadingSlice
+	HeadingSlice ::= BIT STRING {
+	   -- Each bit 22.5 degree starting from
+	   -- North and moving Eastward (clockwise) as one bit
+	   -- a value of noHeading means no bits set, while a
+	   -- value of allHeadings means all bits would be set
+
+	   from000-0to022-5degrees (0),
+	   from022-5to045-0degrees (1),
+	   from045-0to067-5degrees (2),
+	   from067-5to090-0degrees (3),
+	   from090-0to112-5degrees (4),
+	   from112-5to135-0degrees (5),
+	   from135-0to157-5degrees (6),
+	   from157-5to180-0degrees (7),
+	   from180-0to202-5degrees (8),
+	   from202-5to225-0degrees (9),
+	   from225-0to247-5degrees (10),
+	   from247-5to270-0degrees (11),
+	   from270-0to292-5degrees (12),
+	   from292-5to315-0degrees (13),
+	   from315-0to337-5degrees (14),
+	   from337-5to360-0degrees (15)
+	   } (SIZE (16))
+
+	-- DE_Latitude
+	Latitude ::= INTEGER (-900000000..900000001)
+	   -- LSB = 1/10 micro degree
+	   -- Providing a range of plus-minus 90 degrees
+
+	-- DE_Longitude
+	Longitude ::= INTEGER (-1799999999..1800000001)
+	   -- LSB = 1/10 micro degree
+	   -- Providing a range of plus-minus 180 degrees
+
+	-- DE_MinuteOfTheYear
+	MinuteOfTheYear ::= INTEGER (0..527040)
+	   -- the value 527040 shall be used for invalid
+
+	-- DE_MsgCount
+	MsgCount ::= INTEGER (0..127)
+
+	-- DE_Offset_B09
+	Offset-B09 ::= INTEGER (-256..255)
+	   -- a range of +- 2.55 meters
+
+	-- DE_Offset_B10
+	Offset-B10 ::= INTEGER (-512..511)
+	   -- a range of +- 5.11 meters
+
+	-- DE_Offset_B12
+	Offset-B12 ::= INTEGER (-2048..2047)
+	   -- a range of +- 20.47 meters
+
+	-- DE_OffsetLL-B18
+	OffsetLL-B18 ::= INTEGER (-131072..131071)
+	   -- A range of +- 0.0131071 degrees
+	   -- The value +131071 shall be used for values >= than +0.0131071 degrees
+	   -- The value -131071 shall be used for values <= than -0.0131071 degrees
+	   -- The value -131072 shall be used unknown
+	   -- In LSB units of 0.1 microdegrees (unless a zoom is employed)
+
+	-- DE_PositionAccuracy
+	PositionalAccuracy ::= SEQUENCE {
+	   -- NMEA-183 values expressed in strict ASN form
+	   semiMajor SemiMajorAxisAccuracy,
+	   semiMinor SemiMinorAxisAccuracy,
+	   orientation SemiMajorAxisOrientation
+	   }
+
+	-- DE_PositionConfidence
+	PositionConfidence ::= ENUMERATED {
+	   unavailable (0), -- B'0000 Not Equipped or unavailable
+	   a500m       (1), -- B'0001 500m or about 5 * 10 ^ -3 decimal degrees
+	   a200m       (2), -- B'0010 200m or about 2 * 10 ^ -3 decimal degrees
+	   a100m       (3), -- B'0011 100m or about 1 * 10 ^ -3 decimal degrees
+	   a50m        (4), -- B'0100 50m or about 5 * 10 ^ -4 decimal degrees
+	   a20m        (5), -- B'0101 20m or about 2 * 10 ^ -4 decimal degrees
+	   a10m        (6), -- B'0110 10m or about 1 * 10 ^ -4 decimal degrees
+	   a5m         (7), -- B'0111 5m or about 5 * 10 ^ -5 decimal degrees
+	   a2m         (8), -- B'1000 2m or about 2 * 10 ^ -5 decimal degrees
+	   a1m         (9), -- B'1001 1m or about 1 * 10 ^ -5 decimal degrees
+	   a50cm      (10), -- B'1010 0.50m or about 5 * 10 ^ -6 decimal degrees
+	   a20cm      (11), -- B'1011 0.20m or about 2 * 10 ^ -6 decimal degrees
+	   a10cm      (12), -- B'1100 0.10m or about 1 * 10 ^ -6 decimal degrees
+	   a5cm       (13), -- B'1101 0.05m or about 5 * 10 ^ -7 decimal degrees
+	   a2cm       (14), -- B'1110 0.02m or about 2 * 10 ^ -7 decimal degrees
+	   a1cm       (15)  -- B'1111 0.01m or about 1 * 10 ^ -7 decimal degrees
+	   }
+	   -- Encoded as a 4 bit value
+
+	-- DE_Priority
+	Priority ::= OCTET STRING (SIZE(1))
+	   -- Follow definition notes on setting these bits
+	   
+	-- DE_RadiusOfCurvature
+	RadiusOfCurvature ::= INTEGER (-32767..32767)
+	   -- LSB units of 10cm
+	   -- A straight path to use value of 32767
+
+	-- DE_RegionId 
+	RegionId ::= INTEGER (0..255)
+	   noRegion RegionId ::= 0 -- Use default supplied stubs
+	   addGrpA  RegionId ::= 1 -- USA
+	   addGrpB  RegionId ::= 2 -- Japan
+	   addGrpC  RegionId ::= 3 -- EU
+	   -- NOTE: new registered regional IDs will be added here
+	   -- The values 128 and above are for local region use
+
+	-- DE_RTCM_Revision
+	RTCM-Revision ::= ENUMERATED {
+	   unknown  (0),
+	   rtcmRev2 (1), -- Std 10402.x et al
+	   rtcmRev3 (2), -- Std 10403.x et al
+	   reserved (3),
+	   ...
+	}
+
+	-- DE_RTCMmessage
+	RTCMmessage ::= OCTET STRING (SIZE(1..1023))
+
+	-- DE_SemiMajorAxisAccuracy
+	SemiMajorAxisAccuracy ::= INTEGER (0..255)
+	   -- semi-major axis accuracy at one standard dev
+	   -- range 0-12.7 meter, LSB = .05m
+	   -- 254 = any value equal or greater than 12.70 meter
+	   -- 255 = unavailable semi-major axis value
+
+	-- DE_SemiMajorAxisOrientation
+	SemiMajorAxisOrientation ::= INTEGER (0..65535)
+	   -- orientation of semi-major axis
+	   -- relative to true north (0~359.9945078786 degrees)
+	   -- LSB units of 360/65535 deg = 0.0054932479
+	   -- a value of 0 shall be 0 degrees
+	   -- a value of 1 shall be 0.0054932479 degrees
+	   -- a value of 65534 shall be 359.9945078786 deg
+	   -- a value of 65535 shall be used for orientation unavailable
+
+	-- DE_SemiMinorAxisAccuracy
+	SemiMinorAxisAccuracy ::= INTEGER (0..255)
+	   -- semi-minor axis accuracy at one standard dev
+	   -- range 0-12.7 meter, LSB = .05m
+	   -- 254 = any value equal or greater than 12.70 meter
+	   -- 255 = unavailable semi-minor axis value
+
+	-- DE_Speed
+	Speed ::= INTEGER (0..8191) -- Units of 0.02 m/s
+	   -- The value 8191 indicates that
+	   -- speed is unavailable
+
+	-- SpeedConfidence
+	SpeedConfidence ::= ENUMERATED {
+	   unavailable (0), -- Not Equipped or unavailable
+	   prec100ms   (1), -- 100 meters / sec
+	   prec10ms    (2), -- 10 meters / sec
+	   prec5ms     (3), -- 5 meters / sec
+	   prec1ms     (4), -- 1 meters / sec
+	   prec0-1ms   (5), -- 0.1 meters / sec
+	   prec0-05ms  (6), -- 0.05 meters / sec
+	   prec0-01ms  (7)  -- 0.01 meters / sec
+	   }
+
+	-- DE_StabilityControlStatus
+	StabilityControlStatus ::= ENUMERATED {
+	   unavailable (0), -- B'00 Not Equipped with SC
+	                    -- or SC status is unavailable
+	   off         (1), -- B'01 Off
+	   on          (2), -- B'10 On or active (but not engaged)
+	   engaged     (3)  -- B'11 stability control is Engaged
+	   }
+
+	-- DE_SteeringWheelAngle
+	SteeringWheelAngle ::= INTEGER (-126..127)
+	   -- LSB units of 1.5 degrees, a range of -189 to +189 degrees
+	   -- +001 = +1.5 deg
+	   -- -126 = -189 deg and beyond
+	   -- +126 = +189 deg and beyond
+	   -- +127 to be used for unavailable
+
+	--DE_TemporaryID
+	TemporaryID ::= OCTET STRING (SIZE(4))
+
+	-- DE_ThrottleConfidence
+	ThrottleConfidence ::= ENUMERATED {
+	   unavailable (0), -- B'00 Not Equipped or unavailable
+	   prec10percent (1), -- B'01 10 percent Confidence level
+	   prec1percent (2), -- B'10 1 percent Confidence level
+	   prec0-5percent (3) -- B'11 0.5 percent Confidence level
+	   }
+
+	--DE_TimeConfidence
+	TimeConfidence ::= ENUMERATED {
+	   unavailable (0), -- Not Equipped or unavailable
+	   time-100-000 (1), -- Better than 100 Seconds
+	   time-050-000 (2), -- Better than 50 Seconds
+	   time-020-000 (3), -- Better than 20 Seconds
+	   time-010-000 (4), -- Better than 10 Seconds
+	   time-002-000 (5), -- Better than 2 Seconds
+	   time-001-000 (6), -- Better than 1 Second
+	   time-000-500 (7), -- Better than 0.5 Seconds
+	   time-000-200 (8), -- Better than 0.2 Seconds
+	   time-000-100 (9), -- Better than 0.1 Seconds
+	   time-000-050 (10), -- Better than 0.05 Seconds
+	   time-000-020 (11), -- Better than 0.02 Seconds
+	   time-000-010 (12), -- Better than 0.01 Seconds
+	   time-000-005 (13), -- Better than 0.005 Seconds
+	   time-000-002 (14), -- Better than 0.002 Seconds
+	   time-000-001 (15), -- Better than 0.001 Seconds
+	                      -- Better than one millisecond
+	   time-000-000-5 (16), -- Better than 0.000,5 Seconds
+	   time-000-000-2 (17), -- Better than 0.000,2 Seconds
+	   time-000-000-1 (18), -- Better than 0.000,1 Seconds
+	   time-000-000-05 (19), -- Better than 0.000,05 Seconds
+	   time-000-000-02 (20), -- Better than 0.000,02 Seconds
+	   time-000-000-01 (21), -- Better than 0.000,01 Seconds
+	   time-000-000-005 (22), -- Better than 0.000,005 Seconds
+	   time-000-000-002 (23), -- Better than 0.000,002 Seconds
+	   time-000-000-001 (24), -- Better than 0.000,001 Seconds
+	                          -- Better than one micro second
+	   time-000-000-000-5 (25), -- Better than 0.000,000,5 Seconds
+	   time-000-000-000-2 (26), -- Better than 0.000,000,2 Seconds
+	   time-000-000-000-1 (27), -- Better than 0.000,000,1 Seconds
+	   time-000-000-000-05 (28), -- Better than 0.000,000,05 Seconds
+	   time-000-000-000-02 (29), -- Better than 0.000,000,02 Seconds
+	   time-000-000-000-01 (30), -- Better than 0.000,000,01 Seconds
+	   time-000-000-000-005 (31), -- Better than 0.000,000,005 Seconds
+	   time-000-000-000-002 (32), -- Better than 0.000,000,002 Seconds
+	   time-000-000-000-001 (33), -- Better than 0.000,000,001 Seconds
+	                              -- Better than one nano second
+	   time-000-000-000-000-5 (34), -- Better than 0.000,000,000,5 Seconds
+	   time-000-000-000-000-2 (35), -- Better than 0.000,000,000,2 Seconds
+	   time-000-000-000-000-1 (36), -- Better than 0.000,000,000,1 Seconds
+	   time-000-000-000-000-05 (37), -- Better than 0.000,000,000,05 Seconds
+	   time-000-000-000-000-02 (38), -- Better than 0.000,000,000,02 Seconds
+	   time-000-000-000-000-01 (39) -- Better than 0.000,000,000,01 Seconds
+	   }
+
+	-- DE_TimeOffset
+	TimeOffset ::= INTEGER (1..65535)
+	   -- LSB units of of 10 mSec,
+	   -- with a range of 0.01 seconds to 10 minutes and 55.34 seconds
+	   -- a value of 65534 to be used for 655.34 seconds or greater
+	   -- a value of 65535 to be unavailable
+
+	-- DE_TractionControlStatus
+	TractionControlStatus ::= ENUMERATED {
+	   unavailable (0), -- B'00 Not Equipped with traction control
+	                    -- or traction control status is unavailable
+	   off         (1), -- B'01 traction control is Off
+	   on          (2), -- B'10 traction control is On (but not Engaged)
+	   engaged     (3)  -- B'11 traction control is Engaged
+	   }
+
+	-- DE_TransmissionState
+	TransmissionState ::= ENUMERATED {
+	   neutral      (0), -- Neutral
+	   park         (1), -- Park
+	   forwardGears (2), -- Forward gears
+	   reverseGears (3), -- Reverse gears
+	   reserved1    (4),
+	   reserved2    (5),
+	   reserved3    (6),
+	   unavailable  (7)  -- not-equipped or unavailable value,
+	   -- Any related speed is relative to the vehicle reference frame used
+	   }
+
+	-- DE_VehicleEventFlags
+	VehicleEventFlags ::= BIT STRING {
+	   eventHazardLights              (0),
+	   eventStopLineViolation         (1), -- Intersection Violation
+	   eventABSactivated              (2),
+	   eventTractionControlLoss       (3),
+	   eventStabilityControlactivated (4),
+	   eventHazardousMaterials        (5),
+	   eventReserved1                 (6),
+	   eventHardBraking               (7),
+	   eventLightsChanged             (8),
+	   eventWipersChanged             (9),
+	   eventFlatTire                 (10),
+	   eventDisabledVehicle          (11), -- The DisabledVehicle DF may also be sent
+	   eventAirBagDeployment         (12)
+	   } (SIZE (13, ...))
+
+	-- DE_VehicleSize
+	VehicleSize ::= SEQUENCE {
+	   width  VehicleWidth,
+	   length VehicleLength
+	   }
+
+	-- DE_VehicleLength
+	VehicleLength ::= INTEGER (0.. 4095) -- LSB units of 1 cm with a range of >40 meters
+
+	-- DE_VehicleWidth
+	VehicleWidth ::= INTEGER (0..1023) -- LSB units are 1 cm with a range of >10 meters
+
+	-- DE_Velocity
+	Velocity ::= INTEGER (0..8191) -- Units of 0.02 m/s
+	   -- The value 8191 indicates that
+	   -- velocity is unavailable
+
+	-- DE_VerticalAcceleration
+	VerticalAcceleration ::= INTEGER (-127..127)
+	   -- LSB units of 0.02 G steps over -2.52 to +2.54 G
+	   -- The value +127 shall be used for ranges >= 2.54 G
+	   -- The value -126 shall be used for ranges <= 2.52 G
+	   -- The value -127 shall be used for unavailable
+
+	-- DE_VertOffset-B12
+	VertOffset-B12 ::= INTEGER (-2048..2047)
+	   -- LSB units of of 10 cm
+	   -- with a range of +- 204.7 meters vertical
+	   -- value 2047 to be used for 2047 or greater
+	   -- value -2047 to be used for -2047 or greater
+	   -- value -2048 to be unavailable
+
+	-- DE_YawRate
+	YawRate ::= INTEGER (-32767..32767)
+	   -- LSB units of 0.01 degrees per second (signed)
+
+
+	-- Extra Data Element
+
+	-- EXT_ITIS_Codes[ITIS]
+	ITIScodes ::= INTEGER (0..65535)
+	   -- The defined list of ITIS codes is too long to list here
+	   -- Many smaller lists use a sub-set of these codes as defined elements
+	   -- Also enumerated values expressed as text constant are very common,
+	   -- and in many deployments the list codes are used as a shorthand for
+	   -- this text. Also the XML expressions commonly use a union of the
+	   -- code values and the textual expressions.
+	   -- Consult SAE J2540 for further details.
+
+END
