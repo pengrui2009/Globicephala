@@ -1,7 +1,7 @@
 #ifndef _DRV_GET_PRESSURE_FROM_NET_H_
 #define _DRV_GET_PRESSURE_FROM_NET_H_
 
-#define JSON_DATA_BUF	8192  /*The buf size of the json number obtained from the network*/
+#define JSON_DATA_BUF    8192  /*The buf size of the json number obtained from the network*/
 
 /*****************************************************
 func:drv_get_pressure_init

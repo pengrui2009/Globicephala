@@ -1,10 +1,10 @@
 /*
- * netlink/route/cls/ematch/cmp.h	Simple Comparison
+ * netlink/route/cls/ematch/cmp.h    Simple Comparison
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation version 2.1
- *	of the License.
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation version 2.1
+ *    of the License.
  *
  * Copyright (c) 2008-2010 Thomas Graf <tgraf@suug.ch>
  */
@@ -20,10 +20,10 @@
 extern "C" {
 #endif
 
-extern void	rtnl_ematch_cmp_set(struct rtnl_ematch *,
-				    struct tcf_em_cmp *);
+extern void    rtnl_ematch_cmp_set(struct rtnl_ematch *,
+                    struct tcf_em_cmp *);
 extern struct tcf_em_cmp *
-		rtnl_ematch_cmp_get(struct rtnl_ematch *);
+        rtnl_ematch_cmp_get(struct rtnl_ematch *);
 
 #ifdef __cplusplus
 }

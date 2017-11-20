@@ -24,21 +24,21 @@ int osal_sem_open(sem_t **sem_ptr)
 
 int osal_sem_take(sem_t *sem_ptr)
 {
-	int ret = 0;
-	int value = 0;
-	ret = sem_wait(sem_ptr);
+    int ret = 0;
+    int value = 0;
+    ret = sem_wait(sem_ptr);
         if(ret)
-	{
-		ret = -1;
-		goto ERR_EXIT;
-	}
+    {
+        ret = -1;
+        goto ERR_EXIT;
+    }
 
-	
-    	sem_getvalue(sem_ptr, &value);
-    	printf("value:%d\n", value);
+    
+        sem_getvalue(sem_ptr, &value);
+        printf("value:%d\n", value);
 ERR_EXIT:
 
-	return ret;
+    return ret;
 }
 
 int main()
@@ -50,18 +50,18 @@ int main()
     result = osal_sem_open(&sem);
     if(result)
     {
-	fprintf(stderr, "sem_open error()\n");
+    fprintf(stderr, "sem_open error()\n");
     }
     
     sem_getvalue(sem, &value);
     printf("value:%d\n", value);
 
-	result = osal_sem_take(sem);
-	if(result)
-	{
-		fprintf(stderr, "sem_take error\n");
-	}	
-	
+    result = osal_sem_take(sem);
+    if(result)
+    {
+        fprintf(stderr, "sem_take error\n");
+    }    
+    
     sem_getvalue(sem, &value);
     printf("value:%d\n", value);
     return 0;

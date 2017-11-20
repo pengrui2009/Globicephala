@@ -91,26 +91,26 @@ static int cJSON_weather_to_pressure(char *text, double *pressure)
     if (!json)  
     {  
         printf("Error before: [%s]\n",cJSON_GetErrorPtr());  
-		return -ERR_INVAL;
+        return -ERR_INVAL;
     }  
     else  
     {  
         item = cJSON_GetObjectItem(json,"status");  /*Find the 'status' object*/
-		if(item != NULL)
-		{
-			if(strcmp(item->valuestring, "OK"))  /*Determine the corresponding value*/
-			{
-				printf("status error:[%s]",item->valuestring);
-				return -ERR_SYS;
-			}
-		}
-		arrayItem = cJSON_GetObjectItem(json,"weather"); /*Find the 'weather' object*/
+        if(item != NULL)
+        {
+            if(strcmp(item->valuestring, "OK"))  /*Determine the corresponding value*/
+            {
+                printf("status error:[%s]",item->valuestring);
+                return -ERR_SYS;
+            }
+        }
+        arrayItem = cJSON_GetObjectItem(json,"weather"); /*Find the 'weather' object*/
         if(arrayItem != NULL)  
         {  
             int size = cJSON_GetArraySize(arrayItem);  /*Get the size of the array*/
             //printf("cJSON_GetArraySize: size=%d\n",size);  
 
-			/*According to the size of the array cycle*/
+            /*According to the size of the array cycle*/
             for(i = 0;i < size;i++)  
             {  
                 //printf("i=%d\n",i);  
@@ -121,12 +121,12 @@ static int cJSON_weather_to_pressure(char *text, double *pressure)
                 {  
                     //printf("cJSON_GetObjectItem: type=%d, string is %s\n",object1->type,object1->string);  
                     item = cJSON_GetObjectItem(object1,"pressure"); /*Find the 'pressure' object*/
-					if(item != NULL)
-					{
-						*pressure = atoi(item->valuestring);
-						//printf("cJSON_GetObjectItem: type=%d, string is %s\n",item->type,item->string);
-						//printf("valueint=%d,valuedouble=%f,valuestring=%s\n",item->valueint,item->valuedouble,item->valuestring);
-					}
+                    if(item != NULL)
+                    {
+                        *pressure = atoi(item->valuestring);
+                        //printf("cJSON_GetObjectItem: type=%d, string is %s\n",item->type,item->string);
+                        //printf("valueint=%d,valuedouble=%f,valuestring=%s\n",item->valueint,item->valuedouble,item->valuestring);
+                    }
                 }  
             }  
         }    
@@ -158,24 +158,24 @@ return:ERR_OK is successful, other value is failed
 */
 static int cJson_coor_to_cityID(char *text,char *cityID)
 {
-	cJSON *json,*arrayItem,*item,*object;
-	int i;  
+    cJSON *json,*arrayItem,*item,*object;
+    int i;  
   
     json = cJSON_Parse(text);  /* Default options for cJSON_Parse */
     if (!json)  
     {  
         printf("Error before: [%s]\n",cJSON_GetErrorPtr());  
-		return -ERR_INVAL;
+        return -ERR_INVAL;
     }  
     else  
     {  
-		arrayItem = cJSON_GetObjectItem(json,"results"); /*Find the 'results' object*/
+        arrayItem = cJSON_GetObjectItem(json,"results"); /*Find the 'results' object*/
         if(arrayItem != NULL)  
         {  
             int size=cJSON_GetArraySize(arrayItem);  /*Get the size of the array*/
             //printf("cJSON_GetArraySize: size=%d\n",size);  
 
-			/*According to the size of the array cycle*/
+            /*According to the size of the array cycle*/
             for(i = 0;i < size;i++)  
             {  
                 //printf("i=%d\n",i);  
@@ -187,7 +187,7 @@ static int cJson_coor_to_cityID(char *text,char *cityID)
                     //printf("cJSON_GetObjectItem: type=%d, string is %s\n",item->type,item->string);  
                     strcpy(cityID, item->valuestring);
                 } 
-				item = cJSON_GetObjectItem(object,"name");  /*Find the 'name' object*/
+                item = cJSON_GetObjectItem(object,"name");  /*Find the 'name' object*/
                 if(item != NULL)  
                 {  
                     //printf("cJSON_GetObjectItem: type=%d, string is %s\n",item->type,item->string);  
@@ -195,12 +195,12 @@ static int cJson_coor_to_cityID(char *text,char *cityID)
                 }
             }  
         } 
-		else
-		{
-			printf("can't find query result\n");
-			cJSON_Delete(json); /*release resource*/
-			return -ERR_SYS;
-		}
+        else
+        {
+            printf("can't find query result\n");
+            cJSON_Delete(json); /*release resource*/
+            return -ERR_SYS;
+        }
         cJSON_Delete(json);  /*release resource*/
     }  
     return ERR_OK;  
@@ -217,7 +217,7 @@ static size_t down_data_callback(void* buffer,size_t size,size_t nmemb,void *str
     printf("debug:%s\n",(char *)buffer);  
     //printf("size=%d,nmenb=%d\n",size, nmemb);
     memset(g_json_data, 0, sizeof(g_json_data));
-	memcpy(g_json_data, buffer, size*nmemb);
+    memcpy(g_json_data, buffer, size*nmemb);
     return size*nmemb;  //Returns the data length
 }
 
@@ -258,56 +258,56 @@ return:ERR_OK is successful, other value is failed
 *****************************************************/
 int get_pressure_from_net(double longitude, double latitude, double *pressure)
 {
-	int ret = ERR_OK;
-	/*the site is that translating coordinate to cityid*/
-	char url_cityId[] = "weixin.jirengu.com/weather/cityid?location=39.9852:116.4995";
-	/*the site is that getting the information of pressure*/
-	char url_weather[512] = "weixin.jirengu.com/weather/now?cityid=";//"weixin.jirengu.com/weather";WX4FBXXFKE4F
-	char cityID[50]; //city id
+    int ret = ERR_OK;
+    /*the site is that translating coordinate to cityid*/
+    char url_cityId[] = "weixin.jirengu.com/weather/cityid?location=39.9852:116.4995";
+    /*the site is that getting the information of pressure*/
+    char url_weather[512] = "weixin.jirengu.com/weather/now?cityid=";//"weixin.jirengu.com/weather";WX4FBXXFKE4F
+    char cityID[50]; //city id
 
-	if(pressure == NULL)
-	{
-		printf("pressure is invalid\n");
-		return -ERR_INVAL;
-	}
+    if(pressure == NULL)
+    {
+        printf("pressure is invalid\n");
+        return -ERR_INVAL;
+    }
 
-	/*get the city ID*/
-	ret = curl_get_content (url_cityId);
-	if(ret < 0)
-	{
-		printf("curl_get_content failed,ret=%d\n",ret);
-		goto error;
-	}
+    /*get the city ID*/
+    ret = curl_get_content (url_cityId);
+    if(ret < 0)
+    {
+        printf("curl_get_content failed,ret=%d\n",ret);
+        goto error;
+    }
 
-	/*translate json data to cityID*/
-	ret = cJson_coor_to_cityID(g_json_data, cityID);
-	if(ret < 0)
-	{
-		printf("cJson_coor_to_cityID failed,ret=%d\n",ret);
-		goto error;
-	}
-	strcat(url_weather, cityID);
+    /*translate json data to cityID*/
+    ret = cJson_coor_to_cityID(g_json_data, cityID);
+    if(ret < 0)
+    {
+        printf("cJson_coor_to_cityID failed,ret=%d\n",ret);
+        goto error;
+    }
+    strcat(url_weather, cityID);
 
-	/*get the weather data*/
-	ret = curl_get_content (url_weather);
-	if(ret < 0)
-	{
-		printf("curl_get_content failed,ret=%d\n",ret);
-		goto error;
-	}
+    /*get the weather data*/
+    ret = curl_get_content (url_weather);
+    if(ret < 0)
+    {
+        printf("curl_get_content failed,ret=%d\n",ret);
+        goto error;
+    }
 
-	/*translate json data to pressure*/
-	ret = cJSON_weather_to_pressure(g_json_data, pressure);
-	if(ret < 0)
-	{
-		printf("cJSON_to_struct_array failed,ret=%d\n",ret);
-		goto error;
-	}
-	
-	printf("pressure:%f[hPa]\n",*pressure);
+    /*translate json data to pressure*/
+    ret = cJSON_weather_to_pressure(g_json_data, pressure);
+    if(ret < 0)
+    {
+        printf("cJSON_to_struct_array failed,ret=%d\n",ret);
+        goto error;
+    }
+    
+    printf("pressure:%f[hPa]\n",*pressure);
 
 error:
-	return ret;
+    return ret;
 }
 
 /*****************************************************
@@ -317,28 +317,28 @@ return:ERR_OK is successful, other value is failed
 *****************************************************/
 int drv_get_pressure_init()
 {
-	int ret = ERR_OK;
-	CURLcode return_code;
+    int ret = ERR_OK;
+    CURLcode return_code;
 
-	if(drv_get_pressure_init_flag)
-	{
-		printf("drv_get_pressure_init has been initialized\n");
-		return ERR_OK;
-	}
-	memset(g_json_data, 0, JSON_DATA_BUF);
+    if(drv_get_pressure_init_flag)
+    {
+        printf("drv_get_pressure_init has been initialized\n");
+        return ERR_OK;
+    }
+    memset(g_json_data, 0, JSON_DATA_BUF);
 
-	/*init libcurl*/
-	return_code = curl_global_init(CURL_GLOBAL_ALL);
-	if (CURLE_OK != return_code) {
+    /*init libcurl*/
+    return_code = curl_global_init(CURL_GLOBAL_ALL);
+    if (CURLE_OK != return_code) {
         printf("initlibcurl failed.\n");
-		/*release libcurl*/
-		curl_global_cleanup();
-       	ret = -ERR_SYS;
+        /*release libcurl*/
+        curl_global_cleanup();
+           ret = -ERR_SYS;
     }
 
-	drv_get_pressure_init_flag = 1;
-	
-	return ret;
+    drv_get_pressure_init_flag = 1;
+    
+    return ret;
 }
 
 /*****************************************************
@@ -348,20 +348,20 @@ return:ERR_OK is successful, other value is failed
 *****************************************************/
 int drv_get_pressure_deinit()
 {
-	int ret = ERR_OK;
+    int ret = ERR_OK;
 
-	if(!drv_get_pressure_init_flag)
-	{
-		printf("drv_get_pressure_init has been deinitialized\n");
-		return ERR_OK;
-	}
-	memset(g_json_data, 0, JSON_DATA_BUF);
-	
-	/*release curl resource*/
-	curl_global_cleanup();
-	drv_get_pressure_init_flag = 0;
-	
-	return ret;
+    if(!drv_get_pressure_init_flag)
+    {
+        printf("drv_get_pressure_init has been deinitialized\n");
+        return ERR_OK;
+    }
+    memset(g_json_data, 0, JSON_DATA_BUF);
+    
+    /*release curl resource*/
+    curl_global_cleanup();
+    drv_get_pressure_init_flag = 0;
+    
+    return ret;
 }
 
 

@@ -1,10 +1,10 @@
 /*
- * netlink/fib_lookup/fib_lookup.h	FIB Lookup
+ * netlink/fib_lookup/fib_lookup.h    FIB Lookup
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation version 2.1
- *	of the License.
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation version 2.1
+ *    of the License.
  *
  * Copyright (c) 2003-2008 Thomas Graf <tgraf@suug.ch>
  */
@@ -23,17 +23,17 @@ extern "C" {
 
 struct flnl_result;
 
-extern struct flnl_result *	flnl_result_alloc(void);
-extern void			flnl_result_put(struct flnl_result *);
+extern struct flnl_result *    flnl_result_alloc(void);
+extern void            flnl_result_put(struct flnl_result *);
 
-extern struct nl_cache *	flnl_result_alloc_cache(void);
+extern struct nl_cache *    flnl_result_alloc_cache(void);
 
-extern int			flnl_lookup_build_request(struct flnl_request *,
-							  int,
-							  struct nl_msg **);
-extern int			flnl_lookup(struct nl_sock *,
-					    struct flnl_request *,
-					    struct nl_cache *);
+extern int            flnl_lookup_build_request(struct flnl_request *,
+                              int,
+                              struct nl_msg **);
+extern int            flnl_lookup(struct nl_sock *,
+                        struct flnl_request *,
+                        struct nl_cache *);
 
 #ifdef __cplusplus
 }

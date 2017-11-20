@@ -14,14 +14,14 @@
 
 int main()
 {
-	int result = 0;
+    int result = 0;
 
-	tbox_shminfo_st tbox_info = {0};
+    tbox_shminfo_st tbox_info = {0};
 
-	tbox_shmconfig_st tbox_config = {SHM_DIR_TBOX_TO_V2X, ".", 'B', ".", 'C', 0xFF};
-	
-	result = tbox_shm_init(&tbox_info, &tbox_config);
-	
-	return result;
+    tbox_shmconfig_st tbox_config = {SHM_DIR_TBOX_TO_V2X, ".", 'B', ".", 'C', 0xFF};
+    
+    result = tbox_shm_init(&tbox_info, &tbox_config);
+    
+    return result;
 }
 

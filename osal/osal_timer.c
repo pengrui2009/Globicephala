@@ -23,7 +23,7 @@
             arg                              - the arguments of the handler function
             millisec                         - the time of the timer(uint msec)
             flag                             - the attribute of the timer {TIMER_ONESHOT, TIMER_INTERVAL, TIMER_STOPPED}
-            prio     						 - the PRIO of the timer
+            prio                              - the PRIO of the timer
 *    Return:
             = 0                              - success
             < 0                              - failed
@@ -73,7 +73,7 @@ int osal_timer_start(osal_timer_t timerfd)
     int ret = 0;
 
     ret = os_timer_start(timerfd);
-	
+    
     return ret; 
 }
 
@@ -92,7 +92,7 @@ int osal_timer_stop(osal_timer_t timerfd)
     int ret = 0;
 
     ret = os_timer_stop(timerfd);
-	
+    
     return ret; 
 }
     
@@ -102,8 +102,8 @@ int osal_timer_stop(osal_timer_t timerfd)
 *    Paramters:
             timer_ptr                        - the handler of the timer
 *    Return:
-			= 0 						     - success
-			< 0 							 - failed
+            = 0                              - success
+            < 0                              - failed
 *    Comments: 
 ******************************************************************************/
 int osal_timer_reset(osal_timer_t timerfd)
@@ -111,7 +111,7 @@ int osal_timer_reset(osal_timer_t timerfd)
     int ret;
    
     ret = os_timer_start(timerfd);
-	
+    
     return ret; 
 }
 
@@ -122,8 +122,8 @@ int osal_timer_reset(osal_timer_t timerfd)
             timerfd                          - the handler of the timer
             millisec                         - the period of the timer(uint msec)
 *    Return:
-			= 0 						     - success
-			< 0 							 - failed
+            = 0                              - success
+            < 0                              - failed
 *    Comments: 
 ******************************************************************************/
 osal_status_t osal_timer_change(osal_timer_t timerfd, int millisec)

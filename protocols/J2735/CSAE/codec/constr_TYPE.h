@@ -8,8 +8,8 @@
  * This structure even contains pointer to these encoding and decoding routines
  * for each defined ASN.1 type.
  */
-#ifndef	_CONSTR_TYPE_H_
-#define	_CONSTR_TYPE_H_
+#ifndef    _CONSTR_TYPE_H_
+#define    _CONSTR_TYPE_H_
 
 #include <ber_tlv_length.h>
 #include <ber_tlv_tag.h>
@@ -18,8 +18,8 @@
 extern "C" {
 #endif
 
-struct asn_TYPE_descriptor_s;	/* Forward declaration */
-struct asn_TYPE_member_s;	/* Forward declaration */
+struct asn_TYPE_descriptor_s;    /* Forward declaration */
+struct asn_TYPE_member_s;    /* Forward declaration */
 
 /*
  * This type provides the context information for various ASN.1 routines,
@@ -27,29 +27,29 @@ struct asn_TYPE_member_s;	/* Forward declaration */
  * included into certain target language's structures, such as compound types.
  */
 typedef struct asn_struct_ctx_s {
-	short phase;		/* Decoding phase */
-	short step;		/* Elementary step of a phase */
-	int context;		/* Other context information */
-	void *ptr;		/* Decoder-specific stuff (stack elements) */
-	ber_tlv_len_t left;	/* Number of bytes left, -1 for indefinite */
+    short phase;        /* Decoding phase */
+    short step;        /* Elementary step of a phase */
+    int context;        /* Other context information */
+    void *ptr;        /* Decoder-specific stuff (stack elements) */
+    ber_tlv_len_t left;    /* Number of bytes left, -1 for indefinite */
 } asn_struct_ctx_t;
 
-#include <ber_decoder.h>	/* Basic Encoding Rules decoder */
-#include <der_encoder.h>	/* Distinguished Encoding Rules encoder */
-#include <xer_decoder.h>	/* Decoder of XER (XML, text) */
-#include <xer_encoder.h>	/* Encoder into XER (XML, text) */
-#include <per_decoder.h>	/* Packet Encoding Rules decoder */
-#include <per_encoder.h>	/* Packet Encoding Rules encoder */
-#include <constraints.h>	/* Subtype constraints support */
-#include <asn_random_fill.h>	/* Random structures support */
+#include <ber_decoder.h>    /* Basic Encoding Rules decoder */
+#include <der_encoder.h>    /* Distinguished Encoding Rules encoder */
+#include <xer_decoder.h>    /* Decoder of XER (XML, text) */
+#include <xer_encoder.h>    /* Encoder into XER (XML, text) */
+#include <per_decoder.h>    /* Packet Encoding Rules decoder */
+#include <per_encoder.h>    /* Packet Encoding Rules encoder */
+#include <constraints.h>    /* Subtype constraints support */
+#include <asn_random_fill.h>    /* Random structures support */
 
 #ifdef  ASN_DISABLE_OER_SUPPORT
 typedef void (oer_type_decoder_f)();
 typedef void (oer_type_encoder_f)();
 typedef void asn_oer_constraints_t;
 #else
-#include <oer_decoder.h>	/* Octet Encoding Rules encoder */
-#include <oer_encoder.h>	/* Octet Encoding Rules encoder */
+#include <oer_decoder.h>    /* Octet Encoding Rules encoder */
+#include <oer_encoder.h>    /* Octet Encoding Rules encoder */
 #endif
 
 /*
@@ -63,8 +63,8 @@ enum asn_struct_free_method {
     ASFM_FREE_UNDERLYING_AND_RESET   /* FREE_UNDERLYING + memset(0) */
 };
 typedef void (asn_struct_free_f)(
-		const struct asn_TYPE_descriptor_s *type_descriptor,
-		void *struct_ptr, enum asn_struct_free_method);
+        const struct asn_TYPE_descriptor_s *type_descriptor,
+        void *struct_ptr, enum asn_struct_free_method);
 
 /*
  * Free the structure including freeing the memory pointed to by ptr itself.
@@ -109,9 +109,9 @@ typedef int(asn_struct_print_f)(
  * "smaller", "greater" and "equal to".
  */
 typedef int (asn_struct_compare_f)(
-		const struct asn_TYPE_descriptor_s *type_descriptor,
-		const void *struct_A,
-		const void *struct_B);
+        const struct asn_TYPE_descriptor_s *type_descriptor,
+        const void *struct_A,
+        const void *struct_B);
 
 /*
  * Return the outmost tag of the type.
@@ -120,8 +120,8 @@ typedef int (asn_struct_compare_f)(
  * Do not use it in your application.
  */
 typedef ber_tlv_tag_t (asn_outmost_tag_f)(
-		const struct asn_TYPE_descriptor_s *type_descriptor,
-		const void *struct_ptr, int tag_mode, ber_tlv_tag_t tag);
+        const struct asn_TYPE_descriptor_s *type_descriptor,
+        const void *struct_ptr, int tag_mode, ber_tlv_tag_t tag);
 /* The instance of the above function type; used internally. */
 asn_outmost_tag_f asn_TYPE_outmost_tag;
 
@@ -245,8 +245,8 @@ typedef struct asn_TYPE_tag2member_s {
  * This function prints out the contents of the target language's structure
  * (struct_ptr) into the file pointer (stream) in human readable form.
  * RETURN VALUES:
- * 	 0: The structure is printed.
- * 	-1: Problem dumping the structure.
+ *      0: The structure is printed.
+ *     -1: Problem dumping the structure.
  * (See also xer_fprint() in xer_encoder.h)
  */
 int asn_fprint(FILE *stream, /* Destination stream descriptor */
@@ -257,4 +257,4 @@ int asn_fprint(FILE *stream, /* Destination stream descriptor */
 }
 #endif
 
-#endif	/* _CONSTR_TYPE_H_ */
+#endif    /* _CONSTR_TYPE_H_ */

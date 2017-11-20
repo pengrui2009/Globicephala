@@ -31,9 +31,9 @@ int osal_queue_create(osal_queue_t *queue_ptr, const char *qname, uint32_t max_m
     osal_mqd_t mqd;
 
     if(queue_ptr == NULL)
-   	{
-   	    ret = -ERR_INVAL;
-	    goto ERR_EXIT;
+       {
+           ret = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
     /* flags = 0, block */
@@ -119,11 +119,11 @@ int osal_queue_send(osal_queue_t queuefd, void *data, uint32_t len, uint32_t pri
     int ret = 0;
 
     if(len > queuefd.msg_size)
-	{
-	    ret = -ERR_INVAL;
-	    goto ERR_EXIT;
-	}
-	
+    {
+        ret = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
+    
     /* timeout 0xFFFFFFFF:block   0:  noblock */
     if (OSAL_BLOCK == timeout) 
     {
@@ -133,7 +133,7 @@ int osal_queue_send(osal_queue_t queuefd, void *data, uint32_t len, uint32_t pri
     }
 
 ERR_EXIT:
-	
+    
     return ret;
 }
 

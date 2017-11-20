@@ -36,63 +36,63 @@ extern "C" {
  *  \{
  */
 
-#define	SM_PLAY			0
-#define SM_CAPT			1
+#define    SM_PLAY            0
+#define SM_CAPT            1
 
-#define SM_CAP_GVOLUME		(1<<1)
-#define SM_CAP_GSWITCH		(1<<2)
-#define SM_CAP_PVOLUME		(1<<3)
-#define SM_CAP_PVOLUME_JOIN	(1<<4)
-#define SM_CAP_PSWITCH		(1<<5) 
-#define SM_CAP_PSWITCH_JOIN	(1<<6) 
-#define SM_CAP_CVOLUME		(1<<7) 
-#define SM_CAP_CVOLUME_JOIN	(1<<8) 
-#define SM_CAP_CSWITCH		(1<<9) 
-#define SM_CAP_CSWITCH_JOIN	(1<<10)
-#define SM_CAP_CSWITCH_EXCL	(1<<11)
-#define SM_CAP_PENUM		(1<<12)
-#define SM_CAP_CENUM		(1<<13)
+#define SM_CAP_GVOLUME        (1<<1)
+#define SM_CAP_GSWITCH        (1<<2)
+#define SM_CAP_PVOLUME        (1<<3)
+#define SM_CAP_PVOLUME_JOIN    (1<<4)
+#define SM_CAP_PSWITCH        (1<<5) 
+#define SM_CAP_PSWITCH_JOIN    (1<<6) 
+#define SM_CAP_CVOLUME        (1<<7) 
+#define SM_CAP_CVOLUME_JOIN    (1<<8) 
+#define SM_CAP_CSWITCH        (1<<9) 
+#define SM_CAP_CSWITCH_JOIN    (1<<10)
+#define SM_CAP_CSWITCH_EXCL    (1<<11)
+#define SM_CAP_PENUM        (1<<12)
+#define SM_CAP_CENUM        (1<<13)
 /* SM_CAP_* 24-31 => private for module use */
 
-#define SM_OPS_IS_ACTIVE	0
-#define SM_OPS_IS_MONO		1
-#define SM_OPS_IS_CHANNEL	2
-#define SM_OPS_IS_ENUMERATED	3
-#define SM_OPS_IS_ENUMCNT	4
+#define SM_OPS_IS_ACTIVE    0
+#define SM_OPS_IS_MONO        1
+#define SM_OPS_IS_CHANNEL    2
+#define SM_OPS_IS_ENUMERATED    3
+#define SM_OPS_IS_ENUMCNT    4
 
-#define sm_selem(x)		((sm_selem_t *)((x)->private_data))
-#define sm_selem_ops(x)		((sm_selem_t *)((x)->private_data))->ops
+#define sm_selem(x)        ((sm_selem_t *)((x)->private_data))
+#define sm_selem_ops(x)        ((sm_selem_t *)((x)->private_data))->ops
 
 typedef struct _sm_selem {
-	snd_mixer_selem_id_t *id;
-	struct sm_elem_ops *ops;
-	unsigned int caps;
-	unsigned int capture_group;
+    snd_mixer_selem_id_t *id;
+    struct sm_elem_ops *ops;
+    unsigned int caps;
+    unsigned int capture_group;
 } sm_selem_t;
 
 typedef struct _sm_class_basic {
-	char *device;
-	snd_ctl_t *ctl;
-	snd_hctl_t *hctl;
-	snd_ctl_card_info_t *info;
+    char *device;
+    snd_ctl_t *ctl;
+    snd_hctl_t *hctl;
+    snd_ctl_card_info_t *info;
 } sm_class_basic_t;
 
-struct sm_elem_ops {	
-	int (*is)(snd_mixer_elem_t *elem, int dir, int cmd, int val);
-	int (*get_range)(snd_mixer_elem_t *elem, int dir, long *min, long *max);
-	int (*set_range)(snd_mixer_elem_t *elem, int dir, long min, long max);
-	int (*get_dB_range)(snd_mixer_elem_t *elem, int dir, long *min, long *max);
-	int (*ask_vol_dB)(snd_mixer_elem_t *elem, int dir, long value, long *dbValue);
-	int (*ask_dB_vol)(snd_mixer_elem_t *elem, int dir, long dbValue, long *value, int xdir);
-	int (*get_volume)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long *value);
-	int (*get_dB)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long *value);
-	int (*set_volume)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long value);
-	int (*set_dB)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long value, int xdir);
-	int (*get_switch)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, int *value);
-	int (*set_switch)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, int value);
-	int (*enum_item_name)(snd_mixer_elem_t *elem, unsigned int item, size_t maxlen, char *buf);
-	int (*get_enum_item)(snd_mixer_elem_t *elem, snd_mixer_selem_channel_id_t channel, unsigned int *itemp);
-	int (*set_enum_item)(snd_mixer_elem_t *elem, snd_mixer_selem_channel_id_t channel, unsigned int item);
+struct sm_elem_ops {    
+    int (*is)(snd_mixer_elem_t *elem, int dir, int cmd, int val);
+    int (*get_range)(snd_mixer_elem_t *elem, int dir, long *min, long *max);
+    int (*set_range)(snd_mixer_elem_t *elem, int dir, long min, long max);
+    int (*get_dB_range)(snd_mixer_elem_t *elem, int dir, long *min, long *max);
+    int (*ask_vol_dB)(snd_mixer_elem_t *elem, int dir, long value, long *dbValue);
+    int (*ask_dB_vol)(snd_mixer_elem_t *elem, int dir, long dbValue, long *value, int xdir);
+    int (*get_volume)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long *value);
+    int (*get_dB)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long *value);
+    int (*set_volume)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long value);
+    int (*set_dB)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, long value, int xdir);
+    int (*get_switch)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, int *value);
+    int (*set_switch)(snd_mixer_elem_t *elem, int dir, snd_mixer_selem_channel_id_t channel, int value);
+    int (*enum_item_name)(snd_mixer_elem_t *elem, unsigned int item, size_t maxlen, char *buf);
+    int (*get_enum_item)(snd_mixer_elem_t *elem, snd_mixer_selem_channel_id_t channel, unsigned int *itemp);
+    int (*set_enum_item)(snd_mixer_elem_t *elem, snd_mixer_selem_channel_id_t channel, unsigned int item);
 };
 
 int snd_mixer_selem_compare(const snd_mixer_elem_t *c1, const snd_mixer_elem_t *c2);

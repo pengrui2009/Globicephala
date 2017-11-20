@@ -39,7 +39,7 @@ extern "C" {
  */
 
 /** dlsym version for interface entry callback */
-#define SND_RAWMIDI_DLSYM_VERSION	_dlsym_rawmidi_001
+#define SND_RAWMIDI_DLSYM_VERSION    _dlsym_rawmidi_001
 
 /** RawMidi information container */
 typedef struct _snd_rawmidi_info snd_rawmidi_info_t;
@@ -50,39 +50,39 @@ typedef struct _snd_rawmidi_status snd_rawmidi_status_t;
 
 /** RawMidi stream (direction) */
 typedef enum _snd_rawmidi_stream {
-	/** Output stream */
-	SND_RAWMIDI_STREAM_OUTPUT = 0,
-	/** Input stream */
-	SND_RAWMIDI_STREAM_INPUT,
-	SND_RAWMIDI_STREAM_LAST = SND_RAWMIDI_STREAM_INPUT
+    /** Output stream */
+    SND_RAWMIDI_STREAM_OUTPUT = 0,
+    /** Input stream */
+    SND_RAWMIDI_STREAM_INPUT,
+    SND_RAWMIDI_STREAM_LAST = SND_RAWMIDI_STREAM_INPUT
 } snd_rawmidi_stream_t;
 
 /** Append (flag to open mode) \hideinitializer */
-#define SND_RAWMIDI_APPEND	0x0001
+#define SND_RAWMIDI_APPEND    0x0001
 /** Non blocking mode (flag to open mode) \hideinitializer */
-#define SND_RAWMIDI_NONBLOCK	0x0002
+#define SND_RAWMIDI_NONBLOCK    0x0002
 /** Write sync mode (Flag to open mode) \hideinitializer */
-#define SND_RAWMIDI_SYNC	0x0004
+#define SND_RAWMIDI_SYNC    0x0004
 
 /** RawMidi handle */
 typedef struct _snd_rawmidi snd_rawmidi_t;
 
 /** RawMidi type */
 typedef enum _snd_rawmidi_type {
-	/** Kernel level RawMidi */
-	SND_RAWMIDI_TYPE_HW,
-	/** Shared memory client RawMidi (not yet implemented) */
-	SND_RAWMIDI_TYPE_SHM,
-	/** INET client RawMidi (not yet implemented) */
-	SND_RAWMIDI_TYPE_INET,
-	/** Virtual (sequencer) RawMidi */
-	SND_RAWMIDI_TYPE_VIRTUAL
+    /** Kernel level RawMidi */
+    SND_RAWMIDI_TYPE_HW,
+    /** Shared memory client RawMidi (not yet implemented) */
+    SND_RAWMIDI_TYPE_SHM,
+    /** INET client RawMidi (not yet implemented) */
+    SND_RAWMIDI_TYPE_INET,
+    /** Virtual (sequencer) RawMidi */
+    SND_RAWMIDI_TYPE_VIRTUAL
 } snd_rawmidi_type_t;
 
 int snd_rawmidi_open(snd_rawmidi_t **in_rmidi, snd_rawmidi_t **out_rmidi,
-		     const char *name, int mode);
+             const char *name, int mode);
 int snd_rawmidi_open_lconf(snd_rawmidi_t **in_rmidi, snd_rawmidi_t **out_rmidi,
-			   const char *name, int mode, snd_config_t *lconf);
+               const char *name, int mode, snd_config_t *lconf);
 int snd_rawmidi_close(snd_rawmidi_t *rmidi);
 int snd_rawmidi_poll_descriptors_count(snd_rawmidi_t *rmidi);
 int snd_rawmidi_poll_descriptors(snd_rawmidi_t *rmidi, struct pollfd *pfds, unsigned int space);

@@ -16,32 +16,32 @@
 
 int main()
 {
-	int result = 0;
-	osal_msg_t msgfd = 0;
+    int result = 0;
+    osal_msg_t msgfd = 0;
 
-	result = osal_msg_open(&msgfd, MSG_KEY_NAME, MSG_KEY_ID);
-	if(result)
-	{
-		fprintf(stderr, "osal_msg_open() error:%d.\n", result);
-		goto ERR_EXIT;
-	}
+    result = osal_msg_open(&msgfd, MSG_KEY_NAME, MSG_KEY_ID);
+    if(result)
+    {
+        fprintf(stderr, "osal_msg_open() error:%d.\n", result);
+        goto ERR_EXIT;
+    }
 
-	result = osal_msg_clear(msgfd);
-	if(result)
-	{
-		fprintf(stderr, "osal_msg_clear() error:%d.\n", result);
-		goto ERR_EXIT;
-	}
+    result = osal_msg_clear(msgfd);
+    if(result)
+    {
+        fprintf(stderr, "osal_msg_clear() error:%d.\n", result);
+        goto ERR_EXIT;
+    }
 
-	result = osal_msg_close(msgfd);
-	if(result)
-	{
-		fprintf(stderr, "osal_msg_close() error:%d.\n", result);
-		goto ERR_EXIT;
-	}
+    result = osal_msg_close(msgfd);
+    if(result)
+    {
+        fprintf(stderr, "osal_msg_close() error:%d.\n", result);
+        goto ERR_EXIT;
+    }
 
 ERR_EXIT:
 
-	return 0;
+    return 0;
 }
 

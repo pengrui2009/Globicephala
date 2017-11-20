@@ -221,7 +221,7 @@ ERR_EXIT:
 int os_sem_open(sem_t **sem_ptr, const char *name, int init_cnt)
 {
     int result = 0;
-	char sem_name[SEM_NAME_LEN] ={0};
+    char sem_name[SEM_NAME_LEN] ={0};
 
     if(name == NULL)
     {
@@ -229,7 +229,7 @@ int os_sem_open(sem_t **sem_ptr, const char *name, int init_cnt)
         goto ERR_EXIT;
     }
 
-	snprintf(sem_name,SEM_NAME_LEN,"/%s",name);
+    snprintf(sem_name,SEM_NAME_LEN,"/%s",name);
 
     *sem_ptr = sem_open(sem_name, O_CREAT, S_IRWXU | S_IRWXG, init_cnt);
 
@@ -395,22 +395,22 @@ int os_sem_wait(sem_t* sem_ptr, uint32_t timeout)
     if(timeout == OSAL_NOBLOCK)
     {
         result = sem_trywait(sem_ptr);
-		if(result)
-		{
-		    (void) fprintf(stderr, "sem_trywait(): %s\r\n", strerror(errno));
-		    result = -ERR_SYS;
-		    goto ERR_EXIT;
-		}
+        if(result)
+        {
+            (void) fprintf(stderr, "sem_trywait(): %s\r\n", strerror(errno));
+            result = -ERR_SYS;
+            goto ERR_EXIT;
+        }
     }
     else if(timeout == OSAL_BLOCK)
     {
         result = sem_wait(sem_ptr);
-		if(result)
-		{
-		    (void) fprintf(stderr, "sem_wait(): %s\r\n", strerror(errno));
-		    result = -ERR_SYS;
-		    goto ERR_EXIT;
-		}
+        if(result)
+        {
+            (void) fprintf(stderr, "sem_wait(): %s\r\n", strerror(errno));
+            result = -ERR_SYS;
+            goto ERR_EXIT;
+        }
 
     }
     else
@@ -441,8 +441,8 @@ int os_sem_wait(sem_t* sem_ptr, uint32_t timeout)
         if(result)
         {
             (void) fprintf(stderr, "sem_timedwait(): %s\r\n", strerror(errno));
-		    result = -ERR_SYS;
-		    goto ERR_EXIT;
+            result = -ERR_SYS;
+            goto ERR_EXIT;
         }
     }
 
@@ -641,7 +641,7 @@ int os_spinlock_init(pthread_spinlock_t  *spinlock_ptr, int pshared)
     if(NULL == spinlock_ptr)
     {
         ret = -ERR_INVAL;
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
     ret = pthread_spin_init(spinlock_ptr, pshared);
@@ -673,15 +673,15 @@ int os_spinlock_lock(pthread_spinlock_t *spinlock_ptr)
     if (NULL == spinlock_ptr)
     {
         ret = -ERR_INVAL;
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
-	
+    
     ret = pthread_spin_lock(spinlock_ptr);
-	if(ret)
+    if(ret)
     {
         (void) fprintf(stderr, "pthread_spin_lock(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
 ERR_EXIT:
@@ -702,23 +702,23 @@ ERR_EXIT:
 int os_spinlock_trylock(pthread_spinlock_t *spinlock_ptr)
 {
     int ret = 0;
-	
+    
     if (NULL == spinlock_ptr)
     {
         ret = -ERR_INVAL;
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
-	ret = pthread_spin_trylock(spinlock_ptr);
-	if(ret)
+    ret = pthread_spin_trylock(spinlock_ptr);
+    if(ret)
     {
         (void) fprintf(stderr, "pthread_spin_trylock(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
 ERR_EXIT:
-	
+    
     return ret;
 }
 
@@ -737,14 +737,14 @@ int os_spinlock_unlock(pthread_spinlock_t *spinlock_ptr)
     int ret = 0;
 
     if (NULL == spinlock_ptr)
-	{
+    {
         ret = -ERR_INVAL;
         goto ERR_EXIT;
-	}
+    }
 
     ret = pthread_spin_unlock(spinlock_ptr);
     if(ret)
-	{
+    {
         (void) fprintf(stderr, "pthread_spin_unlock(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
         goto ERR_EXIT;
@@ -773,16 +773,16 @@ int os_spinlock_destroy(pthread_spinlock_t *spinlock_ptr)
     if (NULL == spinlock_ptr)
     {
         ret = -ERR_INVAL;
-	    goto ERR_EXIT;
-	}
-	
+        goto ERR_EXIT;
+    }
+    
     ret = pthread_spin_destroy(spinlock_ptr);
     if(ret)
-	{
+    {
         (void) fprintf(stderr, "pthread_spin_destroy(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
         goto ERR_EXIT;
-	}
+    }
 
 ERR_EXIT:
 
@@ -827,10 +827,10 @@ int os_get_time(struct os_time *t)
     if(ret)
     {
         ret = -ERR_SYS;
-		(void) fprintf(stderr, "gettimeofday(): %s\r\n", strerror(errno));
-		goto ERR_EXIT;
+        (void) fprintf(stderr, "gettimeofday(): %s\r\n", strerror(errno));
+        goto ERR_EXIT;
     }
-	
+    
     t->sec = tv.tv_sec;
     t->usec = tv.tv_usec;
 
@@ -862,7 +862,7 @@ int os_get_reltime(struct os_reltime *t)
         return 0;
     }else{
         ret = -ERR_SYS;
-	    (void) fprintf(stderr, "clock_gettime(): %s\r\n", strerror(errno));
+        (void) fprintf(stderr, "clock_gettime(): %s\r\n", strerror(errno));
         return ret;
     }
 }
@@ -890,9 +890,9 @@ int os_set_reltime(struct os_reltime *t)
     if(result)
     {
         result = -ERR_SYS;
-	    (void) fprintf(stderr, "clock_settime(): %s\r\n", strerror(errno));
+        (void) fprintf(stderr, "clock_settime(): %s\r\n", strerror(errno));
     }
-	
+    
     return result;
 }
 
@@ -991,7 +991,7 @@ int os_queue_create(mqd_t *queue_id, const char *queue_name, unsigned int queue_
 
     if((queue_id == NULL) || (queue_name == NULL))
     {
-		result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1003,7 +1003,7 @@ int os_queue_create(mqd_t *queue_id, const char *queue_name, unsigned int queue_
 
     id = mq_open(mq_name, O_RDWR | O_CREAT, S_IRWXU | S_IRWXG, &attrs);
     if(id == -1)
-	{
+    {
         (void) fprintf(stderr, "mq_open(): %s\r\n", strerror(errno));
         result = -ERR_SYS;
         goto ERR_EXIT;;
@@ -1107,7 +1107,7 @@ int os_queue_send(mqd_t queue_id, void *data, unsigned int size, uint32_t priori
     if(result)
     {
         (void) fprintf(stderr, "mq_send(): %s\r\n", strerror(errno)); 
-	    result = -ERR_SYS;
+        result = -ERR_SYS;
         goto ERR_EXIT;
     }
 
@@ -1280,14 +1280,14 @@ int os_msg_init(int *id_ptr, const char * key_name_ptr, int key_id)
     result = msgget(msgkey, 0666|IPC_CREAT);
     if(-1 == result)//|IPC_EXCL
     {
-		(void) fprintf(stderr, "msgget() error: %s\r\n", strerror(errno));
+        (void) fprintf(stderr, "msgget() error: %s\r\n", strerror(errno));
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
 
     *id_ptr = result;
 
-	result = 0;
+    result = 0;
 ERR_EXIT:
     
     return result;
@@ -1329,8 +1329,8 @@ int os_msg_snd(int fd, long type, const void* data_ptr, size_t data_len, uint16_
     if(MSGBUF_SIZE < data_len)
     {
         ret = -ERR_INVAL;
-		fprintf(stderr, "msglen is large than the msgsize(%d)\n", MSGBUF_SIZE);
-		data_len = MSGBUF_SIZE;
+        fprintf(stderr, "msglen is large than the msgsize(%d)\n", MSGBUF_SIZE);
+        data_len = MSGBUF_SIZE;
     }
     
     msg.msgtype = type;
@@ -1353,7 +1353,7 @@ int os_msg_snd(int fd, long type, const void* data_ptr, size_t data_len, uint16_
         }
     }else if(OSAL_WAIT_FOREVER == timeout){
         ret = msgsnd(fd, (void *)&msg, data_len, 0);
-		if(-1 == ret)
+        if(-1 == ret)
         {
             fprintf(stderr, "msgsnd() error: %s\r\n", strerror(errno));
             ret = -ERR_SYS;

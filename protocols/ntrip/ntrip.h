@@ -8,11 +8,11 @@
 #include <osal_queue.h>
 #include <os_core.h>
 
-#define NTRIP_SERVER	"rtk.ntrip.qxwz.com" /*ntrip server URL*/
-#define NTRIP_PORT	"8002" /*The port number*/
+#define NTRIP_SERVER    "rtk.ntrip.qxwz.com" /*ntrip server URL*/
+#define NTRIP_PORT    "8002" /*The port number*/
 
-#define NTRIP_USER	"carsmart001" /*username*/
-#define NTRIP_PASSWD	"ce3a7e1" /*password*/
+#define NTRIP_USER    "carsmart001" /*username*/
+#define NTRIP_PASSWD    "ce3a7e1" /*password*/
 
 #define closesocket(sock)       close(sock) /*Close the socket*/
 
@@ -20,10 +20,10 @@
 #define AGENTSTRING "NTRIP NtripClientPOSIX"
 
 #define MAXDATASIZE 1000 /* max number of bytes we can get at once */
-#define GGA_BUF_SIZE	200 /*gga buffer size*/
+#define GGA_BUF_SIZE    200 /*gga buffer size*/
 
-#define NTRIP_THREAD_STACK_SIZE	(1024*8192) /*ntrip thread stack size,8K*/
-#define NTRIP_THREAD_PRIORITY		(TK_PRIO_DEFAULT) /*ntrip thread priority*/
+#define NTRIP_THREAD_STACK_SIZE    (1024*8192) /*ntrip thread stack size,8K*/
+#define NTRIP_THREAD_PRIORITY        (TK_PRIO_DEFAULT) /*ntrip thread priority*/
 
 /*Network request mode*/
 enum MODE { HTTP = 1, RTSP = 2, NTRIP1 = 3, AUTO = 4, UDP = 5, END };
@@ -51,25 +51,25 @@ typedef void (*ntrip_callback_fun)(uint8_t *, uint32_t); /*ntrip callback type,u
 /*ntrip config type*/
 typedef struct _ntrip_config_t
 {
-	uint8_t mode;//gps mode
-	int gps_port;//gps fd
-	ntrip_callback_fun ntrip_rsu_callback;//Rtcm data callback function in RSU mode
+    uint8_t mode;//gps mode
+    int gps_port;//gps fd
+    ntrip_callback_fun ntrip_rsu_callback;//Rtcm data callback function in RSU mode
 }ntrip_config_t;
 
 /*ntrip control type*/
 typedef struct _ntrip_contrl_t
 {
-	uint8_t ntrip_start_flag;  /*NTRIP service start flag*/
-	uint8_t gga_valid_flag;  /*gga is a valid sign*/
-	uint8_t task_ntrip_valid;  /*NTRIP task is a valid sign*/
-	osal_task_t task_ntrip; /*NTRIP handles data tasks*/
+    uint8_t ntrip_start_flag;  /*NTRIP service start flag*/
+    uint8_t gga_valid_flag;  /*gga is a valid sign*/
+    uint8_t task_ntrip_valid;  /*NTRIP task is a valid sign*/
+    osal_task_t task_ntrip; /*NTRIP handles data tasks*/
 }ntrip_contrl_t;
 
 /*****************************************************
 func:ntrip_init
 desc:init ntrip services
 para:ntrip_config is the config of ntrip.
-	When mode is RSU, you need to initialize the ntrip_rsu_callback parameter;When mode is normal, you need to initialize the gps_port parameter
+    When mode is RSU, you need to initialize the ntrip_rsu_callback parameter;When mode is normal, you need to initialize the gps_port parameter
 return:Less than 0 failed,Greater than or equal to 0 indicates success
 *****************************************************/
 int ntrip_init(ntrip_config_t ntrip_config);

@@ -69,12 +69,12 @@ typedef struct _pcm_play_list_info_t
 {
     //the node of pcm data
     pcm_data_node_t pcm_node[MAX_PCM_NODE_NUM];
-	//the mutex of pcm list
+    //the mutex of pcm list
     pthread_mutex_t mutex;
-	
+    
     struct list_head list_idle;
-	struct list_head list_normal;//normal sound data
-	struct list_head list_real;//emergent sound data
+    struct list_head list_normal;//normal sound data
+    struct list_head list_real;//emergent sound data
 }pcm_play_list_info_t;
 
 /* global data */
@@ -153,7 +153,7 @@ static int pcm_open(void)
     if (result < 0) 
     {
         fprintf(stderr, "snd_pcm_info() error: %s\n", snd_strerror(result));
-		snd_pcm_info_free(info);
+        snd_pcm_info_free(info);
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
@@ -179,33 +179,33 @@ static int pcm_open(void)
         writen_func = snd_pcm_writen;
         readn_func = snd_pcm_readn;
     }
-	
-	return result;
+    
+    return result;
 ERR_EXIT:
 
-	if(pcm_handle)
-	{
-		snd_pcm_close(pcm_handle);  
-		pcm_handle = NULL;
-	}
-	
+    if(pcm_handle)
+    {
+        snd_pcm_close(pcm_handle);  
+        pcm_handle = NULL;
+    }
+    
     return result;    
 }
 
 void pcm_close(void)
 {
-	if(pcm_handle)
-	{
-		if (nonblock) 
-	    {
-	        snd_pcm_nonblock(pcm_handle, 0);              
+    if(pcm_handle)
+    {
+        if (nonblock) 
+        {
+            snd_pcm_nonblock(pcm_handle, 0);              
             snd_pcm_drain(pcm_handle);
             snd_pcm_nonblock(pcm_handle, nonblock);
-	    }
-		snd_pcm_drain(pcm_handle);
-		snd_pcm_close(pcm_handle);  
-		pcm_handle = NULL;
-	}
+        }
+        snd_pcm_drain(pcm_handle);
+        snd_pcm_close(pcm_handle);  
+        pcm_handle = NULL;
+    }
 }
 
 static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
@@ -253,21 +253,21 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
     }
     
     if (result < 0) {
-		fprintf(stderr, "Access type not available\n");
+        fprintf(stderr, "Access type not available\n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
     
     result = snd_pcm_hw_params_set_format(handle, params, hwparams.format);
     if (result < 0) {
-		fprintf(stderr, "Sample format non available\n");
+        fprintf(stderr, "Sample format non available\n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
     result = snd_pcm_hw_params_set_channels(handle, params, hwparams.channels);
     if (result < 0) {
-		fprintf(stderr, "Channels count non available\n");
-		result = -ERR_SYS;
+        fprintf(stderr, "Channels count non available\n");
+        result = -ERR_SYS;
         goto ERR_EXIT;
     }
 
@@ -279,7 +279,7 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
     result = snd_pcm_hw_params_set_rate_near(handle, params, &hwparams.rate, 0);
     if(result < 0)
     {
-		
+        
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
@@ -293,7 +293,7 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
                                 &buffer_time, 0);
         if(result < 0)
         {
-			fprintf(stderr, "snd_pcm_hw_params_get_buffer_time_max\n");
+            fprintf(stderr, "snd_pcm_hw_params_get_buffer_time_max\n");
             result = -ERR_SYS;
             goto ERR_EXIT;
         }
@@ -315,7 +315,7 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
                                  &period_frames, 0);
     if(result < 0)
     {
-		fprintf(stderr, "snd_pcm_hw_params_set_period_size_near() error\n");
+        fprintf(stderr, "snd_pcm_hw_params_set_period_size_near() error\n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
@@ -329,7 +329,7 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
     }
     if(result < 0)
     {
-		fprintf(stderr, "snd_pcm_hw_params_set_period_size_near() error \n");
+        fprintf(stderr, "snd_pcm_hw_params_set_period_size_near() error \n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
@@ -338,14 +338,14 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
     //can_pause = snd_pcm_hw_params_can_pause(params);
     result = snd_pcm_hw_params(handle, params);
     if (result < 0) {
-		fprintf(stderr, "Unable to install hw params \n");
+        fprintf(stderr, "Unable to install hw params \n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
     snd_pcm_hw_params_get_period_size(params, &chunk_size, 0);
     snd_pcm_hw_params_get_buffer_size(params, &buffer_size);
     if (chunk_size == buffer_size) {
-		fprintf(stderr, "Can't use period equal to buffer size (%lu == %lu)\n", chunk_size, buffer_size);
+        fprintf(stderr, "Can't use period equal to buffer size (%lu == %lu)\n", chunk_size, buffer_size);
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
@@ -368,7 +368,7 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
     result = snd_pcm_sw_params_set_start_threshold(handle, swparams, start_threshold);
     if (result < 0) 
     {
-		fprintf(stderr, "snd_pcm_sw_params_set_start_threshold() error\n");
+        fprintf(stderr, "snd_pcm_sw_params_set_start_threshold() error\n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
@@ -380,13 +380,13 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
     result = snd_pcm_sw_params_set_stop_threshold(handle, swparams, stop_threshold);
     if (result < 0) 
     {
-		fprintf(stderr, "snd_pcm_sw_params_set_start_threshold() error.\n");
+        fprintf(stderr, "snd_pcm_sw_params_set_start_threshold() error.\n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
 
     if (snd_pcm_sw_params(handle, swparams) < 0) {
-		fprintf(stderr, "unable to install sw params \n");
+        fprintf(stderr, "unable to install sw params \n");
         result = -ERR_SYS;
         goto ERR_EXIT;
     }
@@ -406,11 +406,11 @@ static int pcm_config(snd_pcm_t *handle, pcm_params_info_t hwparams)
         int i;
         result = snd_pcm_mmap_begin(handle, &areas, &offset, &size);
         if (result < 0) {
-			fprintf(stderr, "snd_pcm_mmap_begin problem: %s\n", snd_strerror(result));
+            fprintf(stderr, "snd_pcm_mmap_begin problem: %s\n", snd_strerror(result));
             result = -ERR_SYS;
             goto ERR_EXIT;
         }
-		
+        
         for (i = 0; i < hwparams.channels; i++)
             fprintf(stderr, "mmap_area[%i] = %p,%u,%u (%u)\n", i, areas[i].addr, areas[i].first, areas[i].step, snd_pcm_format_physical_width(hwparams.format));
         /* not required, but for sure */
@@ -852,28 +852,28 @@ static int mixer_open(void)
         goto ERR_EXIT2;
     }
 
-	return result;
+    return result;
 ERR_EXIT2:
     snd_mixer_detach(mixer_handle, mixer_name);
 ERR_EXIT1:
-	snd_mixer_close(mixer_handle);
-	mixer_handle = NULL;
+    snd_mixer_close(mixer_handle);
+    mixer_handle = NULL;
 ERR_EXIT:
     return result;
 }
 /*close mixer*/
 void mixer_close(void)
 {
-	char *mixer_name = "default";
-	
-	if(mixer_handle)
-	{
-		snd_mixer_detach(mixer_handle, mixer_name);
-		
-		snd_mixer_close(mixer_handle);
-		mixer_handle = NULL;
-	}
-	
+    char *mixer_name = "default";
+    
+    if(mixer_handle)
+    {
+        snd_mixer_detach(mixer_handle, mixer_name);
+        
+        snd_mixer_close(mixer_handle);
+        mixer_handle = NULL;
+    }
+    
 }
 /* config mixer */
 static int mixer_config(snd_mixer_t *handle, uint8_t volume)
@@ -965,7 +965,7 @@ static void *thread_play_entry(void *arg)
                 pcm_data = pnode->pcm_data;
                 pcm_len = pnode->pcm_len;
                 pthread_mutex_unlock (&pcm_play_list.mutex);
-            	
+                
                 for(offset=0; offset < pcm_len; offset += chunk_bytes )
                 {
                     int len =0;
@@ -974,7 +974,7 @@ static void *thread_play_entry(void *arg)
                     {
                         len = chunk_bytes;
                     }
-					
+                    
                     result = drv_audio_write(&(pcm_data[offset]), len);
                     if(result < 0)
                     {
@@ -990,7 +990,7 @@ static void *thread_play_entry(void *arg)
                 if(pnode->pcm_data)
                 {
                     os_free(pnode->pcm_data);
-					pnode->pcm_data = NULL;
+                    pnode->pcm_data = NULL;
                 }
                 list_add (&pnode->list, &pcm_play_list.list_idle);
                 //获得互斥锁
@@ -1038,8 +1038,8 @@ static void *thread_play_entry(void *arg)
 
                 if(pnode->pcm_data)
                 {
-	                os_free(pnode->pcm_data);
-					pnode->pcm_data = NULL;
+                    os_free(pnode->pcm_data);
+                    pnode->pcm_data = NULL;
                 }
                 list_add (&pnode->list, &pcm_play_list.list_idle);
                 //获得互斥锁
@@ -1096,20 +1096,20 @@ int drv_audio_open(void)
         result = -ERR_INVAL;
         goto ERR_EXIT2;
     }
-	
+    
     result = osal_task_create(&task_audio, "tk-audio", thread_play_entry, NULL, AUDIO_TASK_STACK_SIZE, AUDIO_TASK_PRIORITY);
     if(result)
     {
         goto ERR_EXIT3;
     }
 
-	return result;
+    return result;
 ERR_EXIT3:
-	mixer_close();
+    mixer_close();
 ERR_EXIT2:
-	pcm_close();
+    pcm_close();
 ERR_EXIT1:
-	pthread_mutex_destroy(&pcm_play_list.mutex);
+    pthread_mutex_destroy(&pcm_play_list.mutex);
 ERR_EXIT:
 
     return result;
@@ -1281,7 +1281,7 @@ int drv_audio_close()
         if(pnode->pcm_data)
         {
             os_free(pnode->pcm_data);
-			pnode->pcm_data = NULL;
+            pnode->pcm_data = NULL;
         }
     }
     
@@ -1290,18 +1290,18 @@ int drv_audio_close()
         if(pnode->pcm_data)
         {
             os_free(pnode->pcm_data);
-			pnode->pcm_data = NULL;
+            pnode->pcm_data = NULL;
         }
     }
 
-	pthread_mutex_destroy(&pcm_play_list.mutex);
+    pthread_mutex_destroy(&pcm_play_list.mutex);
     
     pcm_close();
-	
+    
     mixer_close();
 
-	osal_task_del(task_audio);
-	
+    osal_task_del(task_audio);
+    
     snd_config_update_free_global();
     return result;
 }

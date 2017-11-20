@@ -1,10 +1,10 @@
 /*
- * netlink/cache-api.h		Caching API
+ * netlink/cache-api.h        Caching API
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation version 2.1
- *	of the License.
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation version 2.1
+ *    of the License.
  *
  * Copyright (c) 2013 Thomas Graf <tgraf@suug.ch>
  */

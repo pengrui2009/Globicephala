@@ -20,15 +20,15 @@
 
 
 /******************************************************************************
-*	Function: net_config
-*	Descriptions: config the specific net fd driver.
-*	Paramters:
-			fd		        -	the file descriptor.
-			cfg_ptr			-	the config paramters pointer.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: net_config
+*    Descriptions: config the specific net fd driver.
+*    Paramters:
+            fd                -    the file descriptor.
+            cfg_ptr            -    the config paramters pointer.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 int net_config(int fd, net_config_st_ptr cfg_ptr)
 {
@@ -61,21 +61,21 @@ int net_config(int fd, net_config_st_ptr cfg_ptr)
 
 ERR_EXIT:
     
-	return ret;
+    return ret;
 }
 
 
 /******************************************************************************
-*	Function: net_send
-*	Descriptions: Send data to the specific net driver.
-*	Paramters:
-			fd		        -	the file descriptor.
-			buff_ptr        -   buffer head address for data storage.
-			data_len        -   the data length that user want to send.
-*	Return:
-			>= 0			-	the data count that have sended.
-			< 0				-	failed
-*	Comments: 
+*    Function: net_send
+*    Descriptions: Send data to the specific net driver.
+*    Paramters:
+            fd                -    the file descriptor.
+            buff_ptr        -   buffer head address for data storage.
+            data_len        -   the data length that user want to send.
+*    Return:
+            >= 0            -    the data count that have sended.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 int net_send(int fd, uint8_t *buff_ptr, uint16_t data_len)
 {
@@ -94,54 +94,56 @@ int net_send(int fd, uint8_t *buff_ptr, uint16_t data_len)
         goto ERR_EXIT;
     }
 
-	/* Set destination address. */
+    /* Set destination address. */
     bzero(&dest_addr, sizeof(struct sockaddr_in));
-	dest_addr.sin_family = AF_INET;
+    dest_addr.sin_family = AF_INET;
 
     /* Set boardcast destination ip to host ip's network segment ip. Do not use "dest_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST)", 
     or the frame will output from eth0 not the network bridge. */
-	memcpy(ip_broadcast, &(net_ptr->local_ip.word), sizeof(ip_broadcast));
+    memcpy(ip_broadcast, &(net_ptr->local_ip.word), sizeof(ip_broadcast));
+    ip_broadcast[0] = 0xFF;
+    ip_broadcast[1] = 0xFF;
+    ip_broadcast[2] = 0xFF;
     ip_broadcast[3] = 0xFF;
-	memcpy(&(dest_addr.sin_addr.s_addr), ip_broadcast, sizeof(ip_broadcast));
-    
+    memcpy(&(dest_addr.sin_addr.s_addr), ip_broadcast, sizeof(ip_broadcast));
     dest_addr.sin_port = htons(net_ptr->config.remote_port);
 
     /* Send data to destination. */
-	if((ret = (sendto(net_ptr->fd, buff_ptr, data_len, 0, (struct sockaddr*)&dest_addr, sizeof(struct sockaddr)))) < 0)
-	{
+    if((ret = (sendto(net_ptr->fd, buff_ptr, data_len, 0, (struct sockaddr*)&dest_addr, sizeof(struct sockaddr)))) < 0)
+    {
         printf("[%s %d]: Send data to net socket error. ret = %d. \n", __FUNCTION__, __LINE__, ret);
-		if((errno == EPIPE) || (errno == EDESTADDRREQ) || (errno == EBADF))
-		{
-			ret = -ERR_DISCONNECT;
-		}
+        if((errno == EPIPE) || (errno == EDESTADDRREQ) || (errno == EBADF))
+        {
+            ret = -ERR_DISCONNECT;
+        }
         else
-		{
-			ret = -ERR_TIMEOUT;
-		}
-		goto ERR_EXIT;
-	}
-    
+        {
+            ret = -ERR_TIMEOUT;
+        }
+        goto ERR_EXIT;
+    }
+
 ERR_EXIT:
     
-	return ret;
+    return ret;
 }
 
 
 /******************************************************************************
-*	Function: net_receive
-*	Descriptions: Receive data from the specific net driver.
-*	Paramters:
-			fd		        -	the file descriptor.
-			buff_ptr        -   buffer head address for data storage.
-			data_len        -   the data count that user want to receive.
-*	Return:
-			>= 0			-	the data count that have received.
-			< 0				-	failed
-*	Comments: 
+*    Function: net_receive
+*    Descriptions: Receive data from the specific net driver.
+*    Paramters:
+            fd                -    the file descriptor.
+            buff_ptr        -   buffer head address for data storage.
+            data_len        -   the data count that user want to receive.
+*    Return:
+            >= 0            -    the data count that have received.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len)
 {
-	int               ret = 0x00;
+    int               ret = 0x00;
     struct  sockaddr_in src_addr;
     socklen_t         len = 0; 
     int        actual_len = 0;
@@ -162,65 +164,65 @@ int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len)
     len = sizeof(struct sockaddr);
     actual_len = recvfrom(net_ptr->fd, buff_ptr, data_len, 0, (struct sockaddr *)&src_addr, &len);
     if(actual_len < 0)
-	{
+    {
         printf("[%s %d]: Read data in net socket error. \n", __FUNCTION__, __LINE__);
         
-		ret = -ERR_SYS;
-		goto ERR_EXIT;
-	}
+        ret = -ERR_SYS;
+        goto ERR_EXIT;
+    }
 
     /* Return the actual data length. */
     ret = actual_len;
 
 ERR_EXIT:
 
-	return ret;
+    return ret;
 }
 
 
 /******************************************************************************
-*	Function: net_local_ip_init
-*	Descriptions: Get local ip address.
-*	Paramters:
-			name_ptr	    -	the net name.
-			net_ptr         -   net driver structure pointer.
-*	Return:
-			= 0			    -	success.
-			< 0				-	failed
-*	Comments: 
+*    Function: net_local_ip_init
+*    Descriptions: Get local ip address.
+*    Paramters:
+            name_ptr        -    the net name.
+            net_ptr         -   net driver structure pointer.
+*    Return:
+            = 0                -    success.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 static int net_local_ip_init(const char *name_ptr, net_st_ptr net_ptr)
 {
-	int                  ret = 0;
-	int            socket_fd = 0;
-	struct             ifreq ifr;
-	struct sockaddr_in *addr_ptr;
+    int                  ret = 0;
+    int            socket_fd = 0;
+    struct             ifreq ifr;
+    struct sockaddr_in *addr_ptr;
 
 
     /* Create raw socket. */
-	if((socket_fd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) < 0) 
+    if((socket_fd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) < 0) 
     {
-    	printf("[%s %d]: Create local_ip socket error. \n", __FUNCTION__, __LINE__);
+        printf("[%s %d]: Create local_ip socket error. \n", __FUNCTION__, __LINE__);
 
-		ret = -ERR_SYS;
-		goto ERR_EXIT;
-	}
+        ret = -ERR_SYS;
+        goto ERR_EXIT;
+    }
 
     /* Get interface address. */
     bzero(&ifr, sizeof(ifr));
-	ifr.ifr_addr.sa_family = AF_INET;
-	strncpy(ifr.ifr_name, name_ptr, strlen(name_ptr)+1);
+    ifr.ifr_addr.sa_family = AF_INET;
+    strncpy(ifr.ifr_name, name_ptr, strlen(name_ptr)+1);
     
-	if(ioctl(socket_fd, SIOCGIFADDR, &ifr) == 0)
+    if(ioctl(socket_fd, SIOCGIFADDR, &ifr) == 0)
     {
         addr_ptr = (struct sockaddr_in *)&ifr.ifr_addr;
-	    memcpy(&(net_ptr->local_ip.word), &(addr_ptr->sin_addr.s_addr), sizeof(net_ptr->local_ip.word));
+        memcpy(&(net_ptr->local_ip.word), &(addr_ptr->sin_addr.s_addr), sizeof(net_ptr->local_ip.word));
 
         ret = ERR_OK;
     }
     else
     {
-       	printf("[%s %d]: Get local ip error. \n", __FUNCTION__, __LINE__);
+           printf("[%s %d]: Get local ip error. \n", __FUNCTION__, __LINE__);
         ret = -ERR_SYS;
     }
     
@@ -231,48 +233,48 @@ ERR_EXIT:
     {
         close(socket_fd);
     }
-	
-	return ret;
+    
+    return ret;
 }
 
 
 /******************************************************************************
-*	Function: net_socket_fd_init
-*	Descriptions: Init net socket file.
-*	Paramters:
-			net_ptr         -   net driver structure pointer.
-*	Return:
-			= 0			    -	success.
-			< 0				-	failed
-*	Comments: 
+*    Function: net_socket_fd_init
+*    Descriptions: Init net socket file.
+*    Paramters:
+            net_ptr         -   net driver structure pointer.
+*    Return:
+            = 0                -    success.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 static int net_socket_fd_init(net_st_ptr net_ptr)
 {
-	int                  ret = 0x00;
+    int                  ret = 0x00;
     int               optval = 1;
     struct sockaddr_in sockaddr_udp;
 
 
     /* Application socket. */
-	if((net_ptr->fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-	{
-	    printf("[%s %d]: Create net socket error. \n", __FUNCTION__, __LINE__);
-		ret = -ERR_NODEV;
-		goto ERR_EXIT;
-	}
+    if((net_ptr->fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        printf("[%s %d]: Create net socket error. \n", __FUNCTION__, __LINE__);
+        ret = -ERR_NODEV;
+        goto ERR_EXIT;
+    }
 
     /* Set socket broadcast mode. */
-	if(setsockopt(net_ptr->fd, SOL_SOCKET, SO_BROADCAST,(char *)&optval, sizeof(optval)) !=  0)
-	{
-	    printf("[%s %d]: Set net socket broadcast mode error. \n", __FUNCTION__, __LINE__);
+    if(setsockopt(net_ptr->fd, SOL_SOCKET, SO_BROADCAST,(char *)&optval, sizeof(optval)) !=  0)
+    {
+        printf("[%s %d]: Set net socket broadcast mode error. \n", __FUNCTION__, __LINE__);
         
-		/* Close socket. */
-	    close(net_ptr->fd);
+        /* Close socket. */
+        close(net_ptr->fd);
         net_ptr->fd = -1;
 
-		ret = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+        ret = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
     /* Set reuse mode. */
     if(setsockopt(net_ptr->fd, SOL_SOCKET, SO_REUSEADDR,(char *)&optval,sizeof(optval)) !=  0)
@@ -290,23 +292,23 @@ static int net_socket_fd_init(net_st_ptr net_ptr)
     
     /* Init udp socket address. */
     bzero(&sockaddr_udp, sizeof(struct sockaddr_in));
-	sockaddr_udp.sin_family = AF_INET;
+    sockaddr_udp.sin_family = AF_INET;
     sockaddr_udp.sin_addr.s_addr = htonl(INADDR_ANY);
     //memcpy(&sockaddr_udp.sin_addr.s_addr, net_ptr->local_ip.byte, sizeof(net_ptr->local_ip.byte));
     sockaddr_udp.sin_port = htons(net_ptr->config.host_port);
 
     /* Bind net socket. */
-	if(bind(net_ptr->fd, (struct sockaddr *)&sockaddr_udp, sizeof(struct sockaddr)) < 0)
-	{
-	    printf("[%s %d]: Bind net socket error. \n", __FUNCTION__, __LINE__);
+    if(bind(net_ptr->fd, (struct sockaddr *)&sockaddr_udp, sizeof(struct sockaddr)) < 0)
+    {
+        printf("[%s %d]: Bind net socket error. \n", __FUNCTION__, __LINE__);
         
-	    /* Close socket. */
-	    close(net_ptr->fd);
+        /* Close socket. */
+        close(net_ptr->fd);
         net_ptr->fd = -1;
         
-		ret = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+        ret = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
     ret = ERR_OK;
     
@@ -317,20 +319,20 @@ ERR_EXIT:
 
 
 /******************************************************************************
-*	Function: net_init
-*	Descriptions: open the specific net device.
-*	Paramters:
+*    Function: net_init
+*    Descriptions: open the specific net device.
+*    Paramters:
             fd_ptr          -   the pointer that hold net file descriptor.
-			name_ptr	    -	the device character pointer.
-			cfg_ptr			-	the config paramters pointer.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+            name_ptr        -    the device character pointer.
+            cfg_ptr            -    the config paramters pointer.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 int net_init(int *fd_ptr, const char *name_ptr, net_config_st_ptr cfg_ptr)
 {
-	int            ret = ERR_OK;
+    int            ret = ERR_OK;
     net_st_ptr net_ptr = NULL;
 
 
@@ -401,18 +403,18 @@ ERR_EXIT:
 
 
 /******************************************************************************
-*	Function: net_deinit
-*	Descriptions: Deinit the net fd device.
-*	Paramters:
-			fd		        -	the file descriptor.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: net_deinit
+*    Descriptions: Deinit the net fd device.
+*    Paramters:
+            fd                -    the file descriptor.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 int net_deinit(int fd)
 {
-	int                ret = ERR_OK;
+    int                ret = ERR_OK;
     net_st_ptr net_ptr = (net_st_ptr)fd;
     
     
@@ -439,7 +441,7 @@ int net_deinit(int fd)
         ret = ERR_OK;
     }
 
-	return ret;
+    return ret;
 }
 
 

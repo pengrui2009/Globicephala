@@ -7,7 +7,7 @@
 #include "gps_drv.h"
 
 
-#define UBX_CFG_DELAY	usleep(100000)  /*ubx cfg command wait time*/
+#define UBX_CFG_DELAY    usleep(100000)  /*ubx cfg command wait time*/
 #define UBX_SYNC_CHAR1  0xB5 /*ubx sync character 1*/
 #define UBX_SYNC_CHAR2  0x62 /*ubx sync character 2*/
 
@@ -43,10 +43,10 @@ typedef enum ubx_cfg_gnss_type
 /*ublox gps reset mode*/
 typedef enum ubx_cfg_reset_mode
 {
-	UBX_CFG_RESET_HOTSTART = 0x00,
-	UBX_CFG_RESET_WARMSTART,
-	UBX_CFG_RESET_COLDSTART,
-	UBX_CFG_RESET_END
+    UBX_CFG_RESET_HOTSTART = 0x00,
+    UBX_CFG_RESET_WARMSTART,
+    UBX_CFG_RESET_COLDSTART,
+    UBX_CFG_RESET_END
 }ubx_cfg_reset_mode_t;
 
 /*ublox ubx header of packet*/

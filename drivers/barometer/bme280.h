@@ -39,9 +39,9 @@
  * No license is granted by implication or otherwise under any patent or
  * patent rights of the copyright holder.
  *
- * @file	bme280.h
- * @date	13 Jul 2017
- * @version	3.3.0
+ * @file    bme280.h
+ * @date    13 Jul 2017
+ * @version    3.3.0
  * @brief
  *
  */
@@ -112,7 +112,7 @@ int8_t bme280_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint16_t len, const 
  * desired settings. User can do OR operation of these macros for configuring
  * multiple settings.
  *
- * Macros		  |   Functionality
+ * Macros          |   Functionality
  * -----------------------|----------------------------------------------
  * BME280_OSR_PRESS_SEL    |   To set pressure oversampling.
  * BME280_OSR_TEMP_SEL     |   To set temperature oversampling.
@@ -152,7 +152,7 @@ int8_t bme280_get_sensor_settings(struct bme280_dev *dev);
  * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
  */
 int8_t bme280_set_sensor_mode(uint8_t sensor_mode,
-				const struct bme280_dev *dev);
+                const struct bme280_dev *dev);
 
 /*!
  * @brief This API gets the power mode of the sensor.

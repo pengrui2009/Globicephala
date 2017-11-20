@@ -9,8 +9,8 @@
  * will do).
  * This type may be used when integer range is limited by subtype constraints.
  */
-#ifndef	_NativeInteger_H_
-#define	_NativeInteger_H_
+#ifndef    _NativeInteger_H_
+#define    _NativeInteger_H_
 
 #include <asn_application.h>
 #include <INTEGER.h>
@@ -41,4 +41,4 @@ asn_random_fill_f  NativeInteger_random_fill;
 }
 #endif
 
-#endif	/* _NativeInteger_H_ */
+#endif    /* _NativeInteger_H_ */

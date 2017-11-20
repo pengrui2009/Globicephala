@@ -5,21 +5,21 @@
 #include <osal_thread.h>
 #include <error.h>
 
-#define BAROMETER_DEV_BUS	"dev/i2c-1"
+#define BAROMETER_DEV_BUS    "dev/i2c-1"
 
-#define BAROMETER_THREAD_STACK_SIZE	(1024*8192) /*gps thread stack size,8K*/
-#define BAROMETER_THREAD_PRIORITY		(TK_PRIO_DEFAULT) /*gps ubx thread priority*/
+#define BAROMETER_THREAD_STACK_SIZE    (1024*8192) /*gps thread stack size,8K*/
+#define BAROMETER_THREAD_PRIORITY        (TK_PRIO_DEFAULT) /*gps ubx thread priority*/
 
 
 /*the data of collected */
 typedef struct _barometer_data_t
 {
-	/* Compensated pressure */
-	double pressure;
-	/* Compensated temperature */
-	double temperature;
-	/* Compensated humidity */
-	double humidity; 
+    /* Compensated pressure */
+    double pressure;
+    /* Compensated temperature */
+    double temperature;
+    /* Compensated humidity */
+    double humidity; 
 }barometer_data_t,*barometer_data_t_ptr;
 
 typedef void (*barometer_callback_fun)(barometer_data_t_ptr, uint32_t); /*barometer callback type,barometer_data_t_ptr is data buf,uint32_t is the length of data buf*/
@@ -27,10 +27,10 @@ typedef void (*barometer_callback_fun)(barometer_data_t_ptr, uint32_t); /*barome
 /*barometer config type*/
 typedef struct _barometer_config_t
 {
-	int fd; //barometer device descstor
-	barometer_callback_fun barometer_callback; //barometer callback function
-	osal_task_t task_barometer; //the task of barometer is that collect data
-	uint8_t task_barometer_valid;//the flag of barometer, 0:invalid 1:valid
+    int fd; //barometer device descstor
+    barometer_callback_fun barometer_callback; //barometer callback function
+    osal_task_t task_barometer; //the task of barometer is that collect data
+    uint8_t task_barometer_valid;//the flag of barometer, 0:invalid 1:valid
 }barometer_config_t;
 
 /*****************************************************

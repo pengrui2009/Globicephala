@@ -2,8 +2,8 @@
  * Copyright (c) 2003-2017 Lev Walkin <vlm@lionet.info>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
-#ifndef	CONSTR_SET_OF_H
-#define	CONSTR_SET_OF_H
+#ifndef    CONSTR_SET_OF_H
+#define    CONSTR_SET_OF_H
 
 #include <asn_application.h>
 
@@ -44,4 +44,4 @@ extern asn_TYPE_operation_t asn_OP_SET_OF;
 }
 #endif
 
-#endif	/* CONSTR_SET_OF_H */
+#endif    /* CONSTR_SET_OF_H */

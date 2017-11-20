@@ -39,9 +39,9 @@ extern "C" {
  */
 
 /** dlsym version for interface entry callback */
-#define SND_TIMER_DLSYM_VERSION		_dlsym_timer_001
+#define SND_TIMER_DLSYM_VERSION        _dlsym_timer_001
 /** dlsym version for interface entry callback */
-#define SND_TIMER_QUERY_DLSYM_VERSION	_dlsym_timer_query_001
+#define SND_TIMER_QUERY_DLSYM_VERSION    _dlsym_timer_query_001
 
 /** timer identification structure */
 typedef struct _snd_timer_id snd_timer_id_t;
@@ -59,78 +59,78 @@ typedef struct _snd_timer_params snd_timer_params_t;
 typedef struct _snd_timer_status snd_timer_status_t;
 /** timer master class */
 typedef enum _snd_timer_class {
-	SND_TIMER_CLASS_NONE = -1,	/**< invalid */
-	SND_TIMER_CLASS_SLAVE = 0,	/**< slave timer */
-	SND_TIMER_CLASS_GLOBAL,		/**< global timer */
-	SND_TIMER_CLASS_CARD,		/**< card timer */
-	SND_TIMER_CLASS_PCM,		/**< PCM timer */
-	SND_TIMER_CLASS_LAST = SND_TIMER_CLASS_PCM	/**< last timer */
+    SND_TIMER_CLASS_NONE = -1,    /**< invalid */
+    SND_TIMER_CLASS_SLAVE = 0,    /**< slave timer */
+    SND_TIMER_CLASS_GLOBAL,        /**< global timer */
+    SND_TIMER_CLASS_CARD,        /**< card timer */
+    SND_TIMER_CLASS_PCM,        /**< PCM timer */
+    SND_TIMER_CLASS_LAST = SND_TIMER_CLASS_PCM    /**< last timer */
 } snd_timer_class_t;
 
 /** timer slave class */
 typedef enum _snd_timer_slave_class {
-	SND_TIMER_SCLASS_NONE = 0,		/**< none */
-	SND_TIMER_SCLASS_APPLICATION,		/**< for internal use */
-	SND_TIMER_SCLASS_SEQUENCER,		/**< sequencer timer */
-	SND_TIMER_SCLASS_OSS_SEQUENCER,		/**< OSS sequencer timer */
-	SND_TIMER_SCLASS_LAST = SND_TIMER_SCLASS_OSS_SEQUENCER	/**< last slave timer */
+    SND_TIMER_SCLASS_NONE = 0,        /**< none */
+    SND_TIMER_SCLASS_APPLICATION,        /**< for internal use */
+    SND_TIMER_SCLASS_SEQUENCER,        /**< sequencer timer */
+    SND_TIMER_SCLASS_OSS_SEQUENCER,        /**< OSS sequencer timer */
+    SND_TIMER_SCLASS_LAST = SND_TIMER_SCLASS_OSS_SEQUENCER    /**< last slave timer */
 } snd_timer_slave_class_t;
 
 /** timer read event identification */
 typedef enum _snd_timer_event {
-	SND_TIMER_EVENT_RESOLUTION = 0,	/* val = resolution in ns */
-	SND_TIMER_EVENT_TICK,		/* val = ticks */
-	SND_TIMER_EVENT_START,		/* val = resolution in ns */
-	SND_TIMER_EVENT_STOP,		/* val = 0 */
-	SND_TIMER_EVENT_CONTINUE,	/* val = resolution in ns */
-	SND_TIMER_EVENT_PAUSE,		/* val = 0 */
-	SND_TIMER_EVENT_EARLY,		/* val = 0 */
-	SND_TIMER_EVENT_SUSPEND,	/* val = 0 */
-	SND_TIMER_EVENT_RESUME,		/* val = resolution in ns */
-	/* master timer events for slave timer instances */
-	SND_TIMER_EVENT_MSTART = SND_TIMER_EVENT_START + 10,
-	SND_TIMER_EVENT_MSTOP = SND_TIMER_EVENT_STOP + 10,
-	SND_TIMER_EVENT_MCONTINUE = SND_TIMER_EVENT_CONTINUE + 10,
-	SND_TIMER_EVENT_MPAUSE = SND_TIMER_EVENT_PAUSE + 10,
-	SND_TIMER_EVENT_MSUSPEND = SND_TIMER_EVENT_SUSPEND + 10,
-	SND_TIMER_EVENT_MRESUME = SND_TIMER_EVENT_RESUME + 10	
+    SND_TIMER_EVENT_RESOLUTION = 0,    /* val = resolution in ns */
+    SND_TIMER_EVENT_TICK,        /* val = ticks */
+    SND_TIMER_EVENT_START,        /* val = resolution in ns */
+    SND_TIMER_EVENT_STOP,        /* val = 0 */
+    SND_TIMER_EVENT_CONTINUE,    /* val = resolution in ns */
+    SND_TIMER_EVENT_PAUSE,        /* val = 0 */
+    SND_TIMER_EVENT_EARLY,        /* val = 0 */
+    SND_TIMER_EVENT_SUSPEND,    /* val = 0 */
+    SND_TIMER_EVENT_RESUME,        /* val = resolution in ns */
+    /* master timer events for slave timer instances */
+    SND_TIMER_EVENT_MSTART = SND_TIMER_EVENT_START + 10,
+    SND_TIMER_EVENT_MSTOP = SND_TIMER_EVENT_STOP + 10,
+    SND_TIMER_EVENT_MCONTINUE = SND_TIMER_EVENT_CONTINUE + 10,
+    SND_TIMER_EVENT_MPAUSE = SND_TIMER_EVENT_PAUSE + 10,
+    SND_TIMER_EVENT_MSUSPEND = SND_TIMER_EVENT_SUSPEND + 10,
+    SND_TIMER_EVENT_MRESUME = SND_TIMER_EVENT_RESUME + 10    
 } snd_timer_event_t;
 
 /** timer read structure */
 typedef struct _snd_timer_read {
-	unsigned int resolution;	/**< tick resolution in nanoseconds */
-        unsigned int ticks;		/**< count of happened ticks */
+    unsigned int resolution;    /**< tick resolution in nanoseconds */
+        unsigned int ticks;        /**< count of happened ticks */
 } snd_timer_read_t;
 
 /** timer tstamp + event read structure */
 typedef struct _snd_timer_tread {
-	snd_timer_event_t event;	/**< Timer event */
-	snd_htimestamp_t tstamp;	/**< Time stamp of each event */
-	unsigned int val;		/**< Event value */
+    snd_timer_event_t event;    /**< Timer event */
+    snd_htimestamp_t tstamp;    /**< Time stamp of each event */
+    unsigned int val;        /**< Event value */
 } snd_timer_tread_t;
 
 /** global timer - system */
 #define SND_TIMER_GLOBAL_SYSTEM 0
 /** global timer - RTC */
-#define SND_TIMER_GLOBAL_RTC 	1
+#define SND_TIMER_GLOBAL_RTC     1
 /** global timer - HPET */
-#define SND_TIMER_GLOBAL_HPET	2
+#define SND_TIMER_GLOBAL_HPET    2
 /** global timer - HRTIMER */
 #define SND_TIMER_GLOBAL_HRTIMER 3
 
 /** timer open mode flag - non-blocking behaviour */
-#define SND_TIMER_OPEN_NONBLOCK		(1<<0)
+#define SND_TIMER_OPEN_NONBLOCK        (1<<0)
 /** use timestamps and event notification - enhanced read */
-#define SND_TIMER_OPEN_TREAD		(1<<1)
+#define SND_TIMER_OPEN_TREAD        (1<<1)
 
 /** timer handle type */
 typedef enum _snd_timer_type {
-	/** Kernel level HwDep */
-	SND_TIMER_TYPE_HW = 0,
-	/** Shared memory client timer (not yet implemented) */
-	SND_TIMER_TYPE_SHM,
-	/** INET client timer (not yet implemented) */
-	SND_TIMER_TYPE_INET
+    /** Kernel level HwDep */
+    SND_TIMER_TYPE_HW = 0,
+    /** Shared memory client timer (not yet implemented) */
+    SND_TIMER_TYPE_SHM,
+    /** INET client timer (not yet implemented) */
+    SND_TIMER_TYPE_INET
 } snd_timer_type_t;
 
 /** timer query handle */
@@ -151,7 +151,7 @@ int snd_timer_open(snd_timer_t **handle, const char *name, int mode);
 int snd_timer_open_lconf(snd_timer_t **handle, const char *name, int mode, snd_config_t *lconf);
 int snd_timer_close(snd_timer_t *handle);
 int snd_async_add_timer_handler(snd_async_handler_t **handler, snd_timer_t *timer,
-				snd_async_callback_t callback, void *private_data);
+                snd_async_callback_t callback, void *private_data);
 snd_timer_t *snd_async_handler_get_timer(snd_async_handler_t *handler);
 int snd_timer_poll_descriptors_count(snd_timer_t *handle);
 int snd_timer_poll_descriptors(snd_timer_t *handle, struct pollfd *pfds, unsigned int space);

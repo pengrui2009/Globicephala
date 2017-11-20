@@ -7,7 +7,7 @@
  @author : wangxianwen
  @history:
            2016-09-20    wangxianwen    Created file
-           2017-10-12	 pengrui		Modify for CSAE
+           2017-10-12     pengrui        Modify for CSAE
            ...
 ******************************************************************************/
 
@@ -43,7 +43,7 @@ const static bsctyp_transf_st BasicTypeGroup[BSCTYP_DEF_EN_MAX] =
 
     {   359.9875,           0,       360.0,         80.0,       0.0125  }, /* DE_Heading. Unit: degree & 0.0125 degree. */
    
-    {	  527040,           0,	    527040,          1.0,          1.0  }, /* DE_MinuteOfTheYear. Uint: 1 minute & 1 minute */
+    {      527040,           0,        527040,          1.0,          1.0  }, /* DE_MinuteOfTheYear. Uint: 1 minute & 1 minute */
     {        127,           0,         255,          1.0,          1.0  }, /* DE_MsgCount. Unit: 1 count & 1 count. */
 
     {       2.55,       -2.55,       -2.56,        100.0,         0.01  }, /* DE_Offset_B09. Unit: meter & 0.01 meter. */
@@ -60,7 +60,7 @@ const static bsctyp_transf_st BasicTypeGroup[BSCTYP_DEF_EN_MAX] =
   
     {     3276.7,     -3276.7,     -3276.8,         10.0,          0.1  }, /* DE_RadiusOfCurvature. Unit: meter & 10 cm. */
     {      102.4,           0,           0,         10.0,          0.1  }, /* DE_Radius. Unit: meter & 10 cm. */
-    {      65535,           0,           0,          1.0,	   1.0  }, /* DE_RoadRegulatorID. Uint: */
+    {      65535,           0,           0,          1.0,       1.0  }, /* DE_RoadRegulatorID. Uint: */
   
     {      12.70,           0,       12.75,         20.0,         0.05  }, /* DE_SemiMajorAxisAccuracy. Unit: meter & 0.05m. */
     {359.9945078786,        0,360.0000011265,182.0416660971,0.0054932479}, /* DE_SemiMajorAxisOrientation. Unit: degree & 0.0054932479 degree. */
@@ -68,7 +68,7 @@ const static bsctyp_transf_st BasicTypeGroup[BSCTYP_DEF_EN_MAX] =
     {    589.680,           0,     589.752,13.8888888889,        0.072  }, /* DE_Speed. Unit: km/h & 0.02m/s. */
     {        189,        -189,       190.5, 0.6666666666666667,    1.5  }, /* DE_SteeringWheelAngle. Unit: degree & 1.5degree. */
 
-    {	  3600.0,           0,	    3600.1,	    10.0,          0.1  }, /* DE_TimeMark. Unit:s & 0.1s  */
+    {      3600.0,           0,        3600.1,        10.0,          0.1  }, /* DE_TimeMark. Unit:s & 0.1s  */
     {     655.34,        0.01,      655.35,        100.0,         0.01  }, /* DE_TimeOffset. Unit: second & 10 mSec. */
 
     {       6.35,        0.05,           0,         20.0,         0.05  }, /* DE_VehicleHeight. Unit: m & 0.05m. */
@@ -96,7 +96,7 @@ outertyp_t bsctyp_encode(bsctyp_def_en type, innertyp_t inner_data)
 {
     outertyp_t result = 0;
 
-	
+    
     if( ((BasicTypeGroup[type].value_err - 0.00000005) < inner_data) \
      && (inner_data < (BasicTypeGroup[type].value_err + 0.00000005)) )
     {
@@ -177,8 +177,8 @@ int bsctyp_parse(bsctyp_def_en type, outertyp_t_ptr outer_data_ptr, innertyp_t_p
 /* Free routine for DE_AllowedManeuvers. */
 int DE_AllowedManeuvers_free(AllowedManeuvers_t *maneuvers_ptr)
 {
-	int result = 0;
-	
+    int result = 0;
+    
     if(maneuvers_ptr != NULL)
     {
         if(maneuvers_ptr->buf != NULL)
@@ -198,7 +198,7 @@ int DE_AllowedManeuvers_free(AllowedManeuvers_t *maneuvers_ptr)
 /* Allocate routine for DE_AllowedManeuvers. */
 int DE_AllowedManeuvers_allocate(AllowedManeuvers_t *maneuvers_ptr, DE_AllowedManeuvers_un_ptr Maneuvers_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     uint16_t    event_mask = 0;
 
@@ -206,7 +206,7 @@ int DE_AllowedManeuvers_allocate(AllowedManeuvers_t *maneuvers_ptr, DE_AllowedMa
     /* Error detect. */
     if((maneuvers_ptr == NULL) || (Maneuvers_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -218,7 +218,7 @@ int DE_AllowedManeuvers_allocate(AllowedManeuvers_t *maneuvers_ptr, DE_AllowedMa
     maneuvers_ptr->bits_unused = 4;
     if((maneuvers_ptr->buf = CALLOC(1, maneuvers_ptr->size)) == NULL)
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -250,15 +250,15 @@ ERR_EXIT:
 /* Parse routine for DE_AllowedManeuvers. */
 int DE_AllowedManeuvers_parse(AllowedManeuvers_t *maneuvers_ptr, DE_AllowedManeuvers_un_ptr Maneuvers_ptr)
 {
-	int result = 0;
-	
+    int result = 0;
+    
     uint16_t    event_mask = 0;
 
 
     /* Error detect. */
     if((maneuvers_ptr == NULL) || (Maneuvers_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -268,7 +268,7 @@ int DE_AllowedManeuvers_parse(AllowedManeuvers_t *maneuvers_ptr, DE_AllowedManeu
     /* Parse the buffer. */
     if(maneuvers_ptr->buf == NULL)
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
     
@@ -283,10 +283,10 @@ int DE_AllowedManeuvers_parse(AllowedManeuvers_t *maneuvers_ptr, DE_AllowedManeu
     Maneuvers_ptr->bit.AllowedManeuvers_maneuverLeftTurnOnRedAllowed  = (event_mask >> (15 - AllowedManeuvers_maneuverLeftTurnOnRedAllowed)) & 0x01;        
     Maneuvers_ptr->bit.AllowedManeuvers_maneuverRightTurnOnRedAllowed = (event_mask >> (15 - AllowedManeuvers_maneuverRightTurnOnRedAllowed)) & 0x01;        
     Maneuvers_ptr->bit.AllowedManeuvers_maneuverLaneChangeAllowed     = (event_mask >> (15 - AllowedManeuvers_maneuverLaneChangeAllowed)) & 0x01;         
-    Maneuvers_ptr->bit.AllowedManeuvers_maneuverNoStoppingAllowed     = (event_mask >> (15 - AllowedManeuvers_maneuverNoStoppingAllowed)) & 0x01;	
+    Maneuvers_ptr->bit.AllowedManeuvers_maneuverNoStoppingAllowed     = (event_mask >> (15 - AllowedManeuvers_maneuverNoStoppingAllowed)) & 0x01;    
     Maneuvers_ptr->bit.AllowedManeuvers_yieldAllwaysRequired          = (event_mask >> (15 - AllowedManeuvers_yieldAllwaysRequired)) & 0x01;  
-	Maneuvers_ptr->bit.AllowedManeuvers_goWithHalt                    = (event_mask >> (15 - AllowedManeuvers_goWithHalt)) & 0x01; 
-	Maneuvers_ptr->bit.AllowedManeuvers_caution                       = (event_mask >> (15 - AllowedManeuvers_caution)) & 0x01; 
+    Maneuvers_ptr->bit.AllowedManeuvers_goWithHalt                    = (event_mask >> (15 - AllowedManeuvers_goWithHalt)) & 0x01; 
+    Maneuvers_ptr->bit.AllowedManeuvers_caution                       = (event_mask >> (15 - AllowedManeuvers_caution)) & 0x01; 
 
     return result;
 
@@ -299,192 +299,192 @@ ERR_EXIT:
 /* Free routine for DE_BrakeAppliedStatus. */
 int DE_BrakeAppliedStatus_free(BrakeAppliedStatus_t *wheelBrakes_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if(wheelBrakes_ptr != NULL)
-	{
-		if(wheelBrakes_ptr->buf != NULL)
-		{
-			FREEMEM(wheelBrakes_ptr->buf);
-		}
+    if(wheelBrakes_ptr != NULL)
+    {
+        if(wheelBrakes_ptr->buf != NULL)
+        {
+            FREEMEM(wheelBrakes_ptr->buf);
+        }
 
-		memset(wheelBrakes_ptr, 0x00, sizeof(*wheelBrakes_ptr));
-	}
+        memset(wheelBrakes_ptr, 0x00, sizeof(*wheelBrakes_ptr));
+    }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DE_BrakeAppliedStatus. */
 int DE_BrakeAppliedStatus_allocate(BrakeAppliedStatus_t *wheelBrakes_ptr, DE_BrakeAppliedStatus_st_ptr WheelBrakes_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((wheelBrakes_ptr == NULL) || (WheelBrakes_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((wheelBrakes_ptr == NULL) || (WheelBrakes_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* reset all the zone */
-	memset(wheelBrakes_ptr, 0x00, sizeof(*wheelBrakes_ptr));
+    /* reset all the zone */
+    memset(wheelBrakes_ptr, 0x00, sizeof(*wheelBrakes_ptr));
 
-	wheelBrakes_ptr->size = 1;
-	wheelBrakes_ptr->bits_unused = 3;
-	wheelBrakes_ptr->buf = CALLOC(1, wheelBrakes_ptr->size);
-	
-	if(wheelBrakes_ptr->buf == NULL)
-	{
-		result = -ERR_NOMEM;
-		goto ERR_EXIT;
-	}
+    wheelBrakes_ptr->size = 1;
+    wheelBrakes_ptr->bits_unused = 3;
+    wheelBrakes_ptr->buf = CALLOC(1, wheelBrakes_ptr->size);
+    
+    if(wheelBrakes_ptr->buf == NULL)
+    {
+        result = -ERR_NOMEM;
+        goto ERR_EXIT;
+    }
 
-	*(wheelBrakes_ptr->buf) = ((WheelBrakes_ptr->brake_status_unavailable << (7 - BrakeAppliedStatus_unavailable)) | \
-							  (WheelBrakes_ptr->brake_status_leftFront << (7 - BrakeAppliedStatus_leftFront)) | \
-							  (WheelBrakes_ptr->brake_status_leftRear << (7 - BrakeAppliedStatus_leftRear)) | \
-							  (WheelBrakes_ptr->brake_status_rightFront << (7 - BrakeAppliedStatus_rightFront)) | \
-							  (WheelBrakes_ptr->brake_status_rightRear<< (7 - BrakeAppliedStatus_rightRear)));
-	
-	return result;
-	
+    *(wheelBrakes_ptr->buf) = ((WheelBrakes_ptr->brake_status_unavailable << (7 - BrakeAppliedStatus_unavailable)) | \
+                              (WheelBrakes_ptr->brake_status_leftFront << (7 - BrakeAppliedStatus_leftFront)) | \
+                              (WheelBrakes_ptr->brake_status_leftRear << (7 - BrakeAppliedStatus_leftRear)) | \
+                              (WheelBrakes_ptr->brake_status_rightFront << (7 - BrakeAppliedStatus_rightFront)) | \
+                              (WheelBrakes_ptr->brake_status_rightRear<< (7 - BrakeAppliedStatus_rightRear)));
+    
+    return result;
+    
 ERR_EXIT:
 
-	DE_BrakeAppliedStatus_free(wheelBrakes_ptr);
+    DE_BrakeAppliedStatus_free(wheelBrakes_ptr);
 
-	return result;
+    return result;
 }
 
 
 /* parse routine for DE_BrakeAppliedStatus. */
 int DE_BrakeAppliedStatus_parse(BrakeAppliedStatus_t *wheelBrakes_ptr, DE_BrakeAppliedStatus_st_ptr WheelBrakes_ptr)
 {
-	uint8_t mask = 0x00;
-	int result = 0;
-	
-	if((wheelBrakes_ptr == NULL) || (WheelBrakes_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    uint8_t mask = 0x00;
+    int result = 0;
+    
+    if((wheelBrakes_ptr == NULL) || (WheelBrakes_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
+    /* Reset all the zone. */
     memset(WheelBrakes_ptr, 0, sizeof(*WheelBrakes_ptr));
 
     /* Parse the buffer. */
     if(wheelBrakes_ptr->buf == NULL)
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
-	mask = wheelBrakes_ptr->buf[0];
-	WheelBrakes_ptr->brake_status_unavailable = !!(mask & 0x80 );
-	WheelBrakes_ptr->brake_status_leftFront = !!(mask & 0x40);
-	WheelBrakes_ptr->brake_status_leftRear = !!(mask & 0x20);
-	WheelBrakes_ptr->brake_status_rightFront = !!(mask & 0x10);
-	WheelBrakes_ptr->brake_status_rightRear = !!(mask & 0x08);
+    mask = wheelBrakes_ptr->buf[0];
+    WheelBrakes_ptr->brake_status_unavailable = !!(mask & 0x80 );
+    WheelBrakes_ptr->brake_status_leftFront = !!(mask & 0x40);
+    WheelBrakes_ptr->brake_status_leftRear = !!(mask & 0x20);
+    WheelBrakes_ptr->brake_status_rightFront = !!(mask & 0x10);
+    WheelBrakes_ptr->brake_status_rightRear = !!(mask & 0x08);
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 
 /* free routine of DE_DescriptiveName */
 int DE_DescriptiveName_free(DescriptiveName_t *name_ptr)
 {
-	int    result = 0;
-	
-	
-	if(name_ptr != NULL)
-	{
-		if(name_ptr->buf != NULL)
-		{
-			FREEMEM(name_ptr->buf);
-		}
+    int    result = 0;
+    
+    
+    if(name_ptr != NULL)
+    {
+        if(name_ptr->buf != NULL)
+        {
+            FREEMEM(name_ptr->buf);
+        }
         
-		/* Must clear all the zone and avoid repeat free operation*/
-		memset(name_ptr, 0x00, sizeof(*name_ptr));	
-		
-		result = ERR_OK;
-	}
-	else
-	{
-		result = -ERR_INVAL;
-	}
+        /* Must clear all the zone and avoid repeat free operation*/
+        memset(name_ptr, 0x00, sizeof(*name_ptr));    
+        
+        result = ERR_OK;
+    }
+    else
+    {
+        result = -ERR_INVAL;
+    }
 
-	return result;
+    return result;
 }
 
 
 /* allocate routine for DE_DescriptiveName */
 int DE_DescriptiveName_allocate(DescriptiveName_t *name_ptr, DE_DescriptiveName_st_ptr Name_ptr)
 {
-	int    result = 0;
+    int    result = 0;
 
-	
-	/* Erroe detection. */
-	if((name_ptr == NULL) || (Name_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    
+    /* Erroe detection. */
+    if((name_ptr == NULL) || (Name_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/*Reset all the zone. */
-	memset(name_ptr, 0x00, sizeof(*name_ptr));
+    /*Reset all the zone. */
+    memset(name_ptr, 0x00, sizeof(*name_ptr));
 
     /* Set descriptive name. */
-	name_ptr->size = Name_ptr->DescriptiveName_size;
-	if((name_ptr->buf = CALLOC(1, name_ptr->size)) != NULL)
-	{
+    name_ptr->size = Name_ptr->DescriptiveName_size;
+    if((name_ptr->buf = CALLOC(1, name_ptr->size)) != NULL)
+    {
         memcpy(name_ptr->buf, Name_ptr->DescriptiveName_data, Name_ptr->DescriptiveName_size);
-	}
-	else
-	{
+    }
+    else
+    {
         result = -ERR_NOMEM;
         goto ERR_EXIT;
-	}
-	
-	return result;
-	
+    }
+    
+    return result;
+    
 ERR_EXIT:
-	
-	DE_DescriptiveName_free(name_ptr);
-	return result;
+    
+    DE_DescriptiveName_free(name_ptr);
+    return result;
 }
 
 
 /* parse routine of DE_DescriptiveName */
 int DE_DescriptiveName_parse(DescriptiveName_t *name_ptr, DE_DescriptiveName_st_ptr Name_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detectin. */
-	if((name_ptr == NULL) || (Name_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((name_ptr == NULL) || (Name_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
+    /* Reset all the zone. */
     memset(Name_ptr, 0, sizeof(*Name_ptr));
 
     /* Copy id data. */
-	Name_ptr->DescriptiveName_size = name_ptr->size;
+    Name_ptr->DescriptiveName_size = name_ptr->size;
     memcpy(Name_ptr->DescriptiveName_data, name_ptr->buf, name_ptr->size);
 
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 
 /* Free routine for DE_ExteriorLights. */
 int DE_ExteriorLights_free(ExteriorLights_t *lights_ptr)
 {
-	int result = 0;
-	
+    int result = 0;
+    
     if(lights_ptr != NULL)
     {
         if(lights_ptr->buf != NULL)
@@ -504,7 +504,7 @@ int DE_ExteriorLights_free(ExteriorLights_t *lights_ptr)
 /* Allocate routine for DE_ExteriorLights. */
 int DE_ExteriorLights_allocate(ExteriorLights_t *lights_ptr, DE_ExteriorLights_un_ptr Lights_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     uint16_t    event_mask = 0;
 
@@ -512,7 +512,7 @@ int DE_ExteriorLights_allocate(ExteriorLights_t *lights_ptr, DE_ExteriorLights_u
     /* Error detect. */
     if((lights_ptr == NULL) || (Lights_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -524,7 +524,7 @@ int DE_ExteriorLights_allocate(ExteriorLights_t *lights_ptr, DE_ExteriorLights_u
     lights_ptr->bits_unused = 7;
     if((lights_ptr->buf = CALLOC(1, lights_ptr->size)) == NULL)
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -554,15 +554,15 @@ ERR_EXIT:
 /* Parse routine for DE_ExteriorLights. */
 int DE_ExteriorLights_parse(ExteriorLights_t *lights_ptr, DE_ExteriorLights_un_ptr Lights_ptr)
 {
-	int result = 0;
-	
+    int result = 0;
+    
     uint16_t    event_mask = 0;
 
 
     /* Error detect. */
     if((lights_ptr == NULL) || (Lights_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -572,7 +572,7 @@ int DE_ExteriorLights_parse(ExteriorLights_t *lights_ptr, DE_ExteriorLights_un_p
     /* Parse the buffer. */
     if(lights_ptr->buf == NULL)
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
     
@@ -588,7 +588,7 @@ int DE_ExteriorLights_parse(ExteriorLights_t *lights_ptr, DE_ExteriorLights_un_p
     Lights_ptr->bit.ExteriorLights_automaticLightControlOn = (event_mask >> (15 - ExteriorLights_automaticLightControlOn)) & 0x01;        
     Lights_ptr->bit.ExteriorLights_daytimeRunningLightsOn  = (event_mask >> (15 - ExteriorLights_daytimeRunningLightsOn)) & 0x01;         
     Lights_ptr->bit.ExteriorLights_fogLightOn              = (event_mask >> (15 - ExteriorLights_fogLightOn)) & 0x01;
-	
+    
     Lights_ptr->bit.ExteriorLights_parkingLightsOn         = (event_mask >> (15 - ExteriorLights_parkingLightsOn)) & 0x01;         
 
     return result;
@@ -624,11 +624,11 @@ int DE_FurtherInfoID_free(FurtherInfoID_t *id_ptr)
 /* Allocate routine for DE_FurtherInfoID. */
 int DE_FurtherInfoID_allocate(FurtherInfoID_t *id_ptr, DE_FurtherInfoID_st_ptr ID_ptr)
 {
-	int		result  =0;
+    int        result  =0;
     /* Error detect. */
     if((id_ptr == NULL) || (ID_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -643,7 +643,7 @@ int DE_FurtherInfoID_allocate(FurtherInfoID_t *id_ptr, DE_FurtherInfoID_st_ptr I
     }
     else
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
     
@@ -659,11 +659,11 @@ ERR_EXIT:
 /* Parse routine for DE_FurtherInfoID. */
 int DE_FurtherInfoID_parse(FurtherInfoID_t *id_ptr, DE_FurtherInfoID_st_ptr ID_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((id_ptr == NULL) || (ID_ptr == NULL))
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -682,9 +682,9 @@ ERR_EXIT:
 /* Free routine for DE_GNSSstatus. */
 int DE_GNSSstatus_free(GNSSstatus_t *status_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	
+    
     if(status_ptr != NULL)
     {
         if(status_ptr->buf != NULL)
@@ -697,18 +697,18 @@ int DE_GNSSstatus_free(GNSSstatus_t *status_ptr)
 
     }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DE_GNSSstatus. */
 int DE_GNSSstatus_allocate(GNSSstatus_t *status_ptr, DE_GNSSstatus_st_ptr Status_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((status_ptr == NULL) || (Status_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -731,7 +731,7 @@ int DE_GNSSstatus_allocate(GNSSstatus_t *status_ptr, DE_GNSSstatus_st_ptr Status
     }
     else
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -747,11 +747,11 @@ ERR_EXIT:
 /* Parse routine for DE_GNSSstatus. */
 int DE_GNSSstatus_parse(GNSSstatus_t *status_ptr, DE_GNSSstatus_st_ptr Status_ptr)
 {
-	int		result  = 0;
+    int        result  = 0;
     /* Error detect. */
     if((status_ptr == NULL) || (Status_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -779,7 +779,7 @@ ERR_EXIT:
 /* Free routine for DE_IntersectionStatusObject. */
 int DE_IntersectionStatusObject_free(IntersectionStatusObject_t *status_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     if(status_ptr != NULL)
@@ -807,7 +807,7 @@ int DE_IntersectionStatusObject_allocate(IntersectionStatusObject_t *status_ptr,
     /* Error detect. */
     if((status_ptr == NULL) || (Status_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -819,7 +819,7 @@ int DE_IntersectionStatusObject_allocate(IntersectionStatusObject_t *status_ptr,
     status_ptr->bits_unused = 0;
     if((status_ptr->buf = CALLOC(1, status_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -861,7 +861,7 @@ int DE_IntersectionStatusObject_parse(IntersectionStatusObject_t *status_ptr, DE
     /* Error detect. */
     if((status_ptr == NULL) || (Status_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -871,7 +871,7 @@ int DE_IntersectionStatusObject_parse(IntersectionStatusObject_t *status_ptr, DE
     /* Parse the buffer. */
     if(status_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -904,7 +904,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_Vehicle. */
 int DE_LaneAttributes_Vehicle_free(LaneAttributes_Vehicle_t *vehicle_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(vehicle_ptr != NULL)
     {
@@ -931,7 +931,7 @@ int DE_LaneAttributes_Vehicle_allocate(LaneAttributes_Vehicle_t *vehicle_ptr, DE
     /* Error detect. */
     if((vehicle_ptr == NULL) || (Vehicle_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -943,7 +943,7 @@ int DE_LaneAttributes_Vehicle_allocate(LaneAttributes_Vehicle_t *vehicle_ptr, DE
     vehicle_ptr->bits_unused = 8;
     if((vehicle_ptr->buf = CALLOC(1, vehicle_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -979,7 +979,7 @@ int DE_LaneAttributes_Vehicle_parse(LaneAttributes_Vehicle_t *vehicle_ptr, DE_La
     /* Error detect. */
     if((vehicle_ptr == NULL) || (Vehicle_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -989,7 +989,7 @@ int DE_LaneAttributes_Vehicle_parse(LaneAttributes_Vehicle_t *vehicle_ptr, DE_La
     /* Parse the buffer. */
     if(vehicle_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1015,7 +1015,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_Crosswalk. */
 int DE_LaneAttributes_Crosswalk_free(LaneAttributes_Crosswalk_t *crosswalk_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(crosswalk_ptr != NULL)
     {
@@ -1042,7 +1042,7 @@ int DE_LaneAttributes_Crosswalk_allocate(LaneAttributes_Crosswalk_t *crosswalk_p
     /* Error detect. */
     if((crosswalk_ptr == NULL) || (Crosswalk_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1054,7 +1054,7 @@ int DE_LaneAttributes_Crosswalk_allocate(LaneAttributes_Crosswalk_t *crosswalk_p
     crosswalk_ptr->bits_unused = 7;
     if((crosswalk_ptr->buf = CALLOC(1, crosswalk_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1067,7 +1067,7 @@ int DE_LaneAttributes_Crosswalk_allocate(LaneAttributes_Crosswalk_t *crosswalk_p
                | (Crosswalk_ptr->bit.LaneAttributes_Crosswalk_hasPushToWalkButton         << (15 - LaneAttributes_Crosswalk_hasPushToWalkButton))
                | (Crosswalk_ptr->bit.LaneAttributes_Crosswalk_audioSupport                << (15 - LaneAttributes_Crosswalk_audioSupport))
                | (Crosswalk_ptr->bit.LaneAttributes_Crosswalk_rfSignalRequestPresent      << (15 - LaneAttributes_Crosswalk_rfSignalRequestPresent))
-			   | (Crosswalk_ptr->bit.LaneAttributes_Crosswalk_unsignalizedSegmentsPresent << (15 - LaneAttributes_Crosswalk_unsignalizedSegmentsPresent));
+               | (Crosswalk_ptr->bit.LaneAttributes_Crosswalk_unsignalizedSegmentsPresent << (15 - LaneAttributes_Crosswalk_unsignalizedSegmentsPresent));
                
     crosswalk_ptr->buf[0] = (event_mask >> 8) & 0x00FF;
     crosswalk_ptr->buf[1] = event_mask & 0x00FF;
@@ -1091,7 +1091,7 @@ int DE_LaneAttributes_Crosswalk_parse(LaneAttributes_Crosswalk_t *crosswalk_ptr,
     /* Error detect. */
     if((crosswalk_ptr == NULL) || (Crosswalk_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1101,7 +1101,7 @@ int DE_LaneAttributes_Crosswalk_parse(LaneAttributes_Crosswalk_t *crosswalk_ptr,
     /* Parse the buffer. */
     if(crosswalk_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1117,7 +1117,7 @@ int DE_LaneAttributes_Crosswalk_parse(LaneAttributes_Crosswalk_t *crosswalk_ptr,
     Crosswalk_ptr->bit.LaneAttributes_Crosswalk_hasPushToWalkButton           = (event_mask >> (15 - LaneAttributes_Crosswalk_hasPushToWalkButton)) & 0x01;        
     Crosswalk_ptr->bit.LaneAttributes_Crosswalk_audioSupport                  = (event_mask >> (15 - LaneAttributes_Crosswalk_audioSupport)) & 0x01;        
     Crosswalk_ptr->bit.LaneAttributes_Crosswalk_rfSignalRequestPresent        = (event_mask >> (15 - LaneAttributes_Crosswalk_rfSignalRequestPresent)) & 0x01;   
-	Crosswalk_ptr->bit.LaneAttributes_Crosswalk_unsignalizedSegmentsPresent   = (event_mask >> (15 - LaneAttributes_Crosswalk_unsignalizedSegmentsPresent)) & 0x01;        
+    Crosswalk_ptr->bit.LaneAttributes_Crosswalk_unsignalizedSegmentsPresent   = (event_mask >> (15 - LaneAttributes_Crosswalk_unsignalizedSegmentsPresent)) & 0x01;        
     
 
 ERR_EXIT:
@@ -1128,7 +1128,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_Bike. */
 int DE_LaneAttributes_Bike_free(LaneAttributes_Bike_t *bike_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(bike_ptr != NULL)
     {
@@ -1155,7 +1155,7 @@ int DE_LaneAttributes_Bike_allocate(LaneAttributes_Bike_t *bike_ptr, DE_LaneAttr
     /* Error detect. */
     if((bike_ptr == NULL) || (Bike_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1167,7 +1167,7 @@ int DE_LaneAttributes_Bike_allocate(LaneAttributes_Bike_t *bike_ptr, DE_LaneAttr
     bike_ptr->bits_unused = 9;
     if((bike_ptr->buf = CALLOC(1, bike_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1202,7 +1202,7 @@ int DE_LaneAttributes_Bike_parse(LaneAttributes_Bike_t *bike_ptr, DE_LaneAttribu
     /* Error detect. */
     if((bike_ptr == NULL) || (Bike_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1212,7 +1212,7 @@ int DE_LaneAttributes_Bike_parse(LaneAttributes_Bike_t *bike_ptr, DE_LaneAttribu
     /* Parse the buffer. */
     if(bike_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1237,7 +1237,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_Sidewalk. */
 int DE_LaneAttributes_Sidewalk_free(LaneAttributes_Sidewalk_t *sidewalk_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(sidewalk_ptr != NULL)
     {
@@ -1263,7 +1263,7 @@ int DE_LaneAttributes_Sidewalk_allocate(LaneAttributes_Sidewalk_t *sidewalk_ptr,
     /* Error detect. */
     if((sidewalk_ptr == NULL) || (Sidewalk_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1275,7 +1275,7 @@ int DE_LaneAttributes_Sidewalk_allocate(LaneAttributes_Sidewalk_t *sidewalk_ptr,
     sidewalk_ptr->bits_unused = 12;
     if((sidewalk_ptr->buf = CALLOC(1, sidewalk_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1307,7 +1307,7 @@ int DE_LaneAttributes_Sidewalk_parse(LaneAttributes_Sidewalk_t *sidewalk_ptr, DE
     /* Error detect. */
     if((sidewalk_ptr == NULL) || (Sidewalk_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1317,7 +1317,7 @@ int DE_LaneAttributes_Sidewalk_parse(LaneAttributes_Sidewalk_t *sidewalk_ptr, DE
     /* Parse the buffer. */
     if(sidewalk_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1339,7 +1339,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_Barrier. */
 int DE_LaneAttributes_Barrier_free(LaneAttributes_Barrier_t *barrier_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(barrier_ptr != NULL)
     {
@@ -1365,7 +1365,7 @@ int DE_LaneAttributes_Barrier_allocate(LaneAttributes_Barrier_t *barrier_ptr, DE
     /* Error detect. */
     if((barrier_ptr == NULL) || (Barrier_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1377,7 +1377,7 @@ int DE_LaneAttributes_Barrier_allocate(LaneAttributes_Barrier_t *barrier_ptr, DE
     barrier_ptr->bits_unused = 6;
     if((barrier_ptr->buf = CALLOC(1, barrier_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1386,11 +1386,11 @@ int DE_LaneAttributes_Barrier_allocate(LaneAttributes_Barrier_t *barrier_ptr, DE
                | (Barrier_ptr->bit.LaneAttributes_Barrier_median                << (15 - LaneAttributes_Barrier_median))
                | (Barrier_ptr->bit.LaneAttributes_Barrier_whiteLineHashing      << (15 - LaneAttributes_Barrier_whiteLineHashing))
                | (Barrier_ptr->bit.LaneAttributes_Barrier_stripedLines          << (15 - LaneAttributes_Barrier_stripedLines))
-			   | (Barrier_ptr->bit.LaneAttributes_Barrier_doubleStripedLines    << (15 - LaneAttributes_Barrier_doubleStripedLines))
+               | (Barrier_ptr->bit.LaneAttributes_Barrier_doubleStripedLines    << (15 - LaneAttributes_Barrier_doubleStripedLines))
                | (Barrier_ptr->bit.LaneAttributes_Barrier_trafficCones          << (15 - LaneAttributes_Barrier_trafficCones))
                | (Barrier_ptr->bit.LaneAttributes_Barrier_constructionBarrier   << (15 - LaneAttributes_Barrier_constructionBarrier))
-	           | (Barrier_ptr->bit.LaneAttributes_Barrier_trafficChannels       << (15 - LaneAttributes_Barrier_trafficChannels))
-		       | (Barrier_ptr->bit.LaneAttributes_Barrier_lowCurbs              << (15 - LaneAttributes_Barrier_lowCurbs))
+               | (Barrier_ptr->bit.LaneAttributes_Barrier_trafficChannels       << (15 - LaneAttributes_Barrier_trafficChannels))
+               | (Barrier_ptr->bit.LaneAttributes_Barrier_lowCurbs              << (15 - LaneAttributes_Barrier_lowCurbs))
                | (Barrier_ptr->bit.LaneAttributes_Barrier_highCurbs             << (15 - LaneAttributes_Barrier_highCurbs));
                
     barrier_ptr->buf[0] = (event_mask >> 8) & 0x00FF;
@@ -1415,7 +1415,7 @@ int DE_LaneAttributes_Barrier_parse(LaneAttributes_Barrier_t *barrier_ptr, DE_La
     /* Error detect. */
     if((barrier_ptr == NULL) || (Barrier_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1425,7 +1425,7 @@ int DE_LaneAttributes_Barrier_parse(LaneAttributes_Barrier_t *barrier_ptr, DE_La
     /* Parse the buffer. */
     if(barrier_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1437,11 +1437,11 @@ int DE_LaneAttributes_Barrier_parse(LaneAttributes_Barrier_t *barrier_ptr, DE_La
     Barrier_ptr->bit.LaneAttributes_Barrier_median               = (event_mask >> (15 - LaneAttributes_Barrier_median)) & 0x01;       
     Barrier_ptr->bit.LaneAttributes_Barrier_whiteLineHashing     = (event_mask >> (15 - LaneAttributes_Barrier_whiteLineHashing)) & 0x01;        
     Barrier_ptr->bit.LaneAttributes_Barrier_stripedLines         = (event_mask >> (15 - LaneAttributes_Barrier_stripedLines)) & 0x01;
-	Barrier_ptr->bit.LaneAttributes_Barrier_doubleStripedLines   = (event_mask >> (15 - LaneAttributes_Barrier_doubleStripedLines)) & 0x01;        
+    Barrier_ptr->bit.LaneAttributes_Barrier_doubleStripedLines   = (event_mask >> (15 - LaneAttributes_Barrier_doubleStripedLines)) & 0x01;        
     Barrier_ptr->bit.LaneAttributes_Barrier_trafficCones         = (event_mask >> (15 - LaneAttributes_Barrier_trafficCones)) & 0x01;       
     Barrier_ptr->bit.LaneAttributes_Barrier_constructionBarrier  = (event_mask >> (15 - LaneAttributes_Barrier_constructionBarrier)) & 0x01;        
     Barrier_ptr->bit.LaneAttributes_Barrier_trafficChannels      = (event_mask >> (15 - LaneAttributes_Barrier_trafficChannels)) & 0x01;
-	Barrier_ptr->bit.LaneAttributes_Barrier_lowCurbs             = (event_mask >> (15 - LaneAttributes_Barrier_lowCurbs)) & 0x01;        
+    Barrier_ptr->bit.LaneAttributes_Barrier_lowCurbs             = (event_mask >> (15 - LaneAttributes_Barrier_lowCurbs)) & 0x01;        
     Barrier_ptr->bit.LaneAttributes_Barrier_highCurbs            = (event_mask >> (15 - LaneAttributes_Barrier_highCurbs)) & 0x01;
     
 
@@ -1453,7 +1453,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_Striping. */
 int DE_LaneAttributes_Striping_free(LaneAttributes_Striping_t *striping_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(striping_ptr != NULL)
     {
@@ -1479,7 +1479,7 @@ int DE_LaneAttributes_Striping_allocate(LaneAttributes_Striping_t *striping_ptr,
     /* Error detect. */
     if((striping_ptr == NULL) || (Striping_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1491,7 +1491,7 @@ int DE_LaneAttributes_Striping_allocate(LaneAttributes_Striping_t *striping_ptr,
     striping_ptr->bits_unused = 10;
     if((striping_ptr->buf = CALLOC(1, striping_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1500,7 +1500,7 @@ int DE_LaneAttributes_Striping_allocate(LaneAttributes_Striping_t *striping_ptr,
                | (Striping_ptr->bit.LaneAttributes_Striping_stripeDrawOnLeft                     << (15 - LaneAttributes_Striping_stripeDrawOnLeft))
                | (Striping_ptr->bit.LaneAttributes_Striping_stripeDrawOnRight                    << (15 - LaneAttributes_Striping_stripeDrawOnRight))
                | (Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesLeft          << (15 - LaneAttributes_Striping_stripeToConnectingLanesLeft))
-			   | (Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesRight         << (15 - LaneAttributes_Striping_stripeToConnectingLanesRight))
+               | (Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesRight         << (15 - LaneAttributes_Striping_stripeToConnectingLanesRight))
                | (Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesAhead         << (15 - LaneAttributes_Striping_stripeToConnectingLanesAhead));
                
     striping_ptr->buf[0] = (event_mask >> 8) & 0x00FF;
@@ -1525,7 +1525,7 @@ int DE_LaneAttributes_Striping_parse(LaneAttributes_Striping_t *striping_ptr, DE
     /* Error detect. */
     if((striping_ptr == NULL) || (Striping_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1535,7 +1535,7 @@ int DE_LaneAttributes_Striping_parse(LaneAttributes_Striping_t *striping_ptr, DE
     /* Parse the buffer. */
     if(striping_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1547,7 +1547,7 @@ int DE_LaneAttributes_Striping_parse(LaneAttributes_Striping_t *striping_ptr, DE
     Striping_ptr->bit.LaneAttributes_Striping_stripeDrawOnLeft                     = (event_mask >> (15 - LaneAttributes_Striping_stripeDrawOnLeft)) & 0x01;       
     Striping_ptr->bit.LaneAttributes_Striping_stripeDrawOnRight                    = (event_mask >> (15 - LaneAttributes_Striping_stripeDrawOnRight)) & 0x01;        
     Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesLeft          = (event_mask >> (15 - LaneAttributes_Striping_stripeToConnectingLanesLeft)) & 0x01;
-	Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesRight         = (event_mask >> (15 - LaneAttributes_Striping_stripeToConnectingLanesRight)) & 0x01;        
+    Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesRight         = (event_mask >> (15 - LaneAttributes_Striping_stripeToConnectingLanesRight)) & 0x01;        
     Striping_ptr->bit.LaneAttributes_Striping_stripeToConnectingLanesAhead         = (event_mask >> (15 - LaneAttributes_Striping_stripeToConnectingLanesAhead)) & 0x01;
 
 ERR_EXIT:
@@ -1558,7 +1558,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_TrackedVehicle. */
 int DE_LaneAttributes_TrackedVehicle_free(LaneAttributes_TrackedVehicle_t *trackedVehicle_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(trackedVehicle_ptr != NULL)
     {
@@ -1584,7 +1584,7 @@ int DE_LaneAttributes_TrackedVehicle_allocate(LaneAttributes_TrackedVehicle_t *t
     /* Error detect. */
     if((trackedVehicle_ptr == NULL) || (TrackedVehicle_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1596,7 +1596,7 @@ int DE_LaneAttributes_TrackedVehicle_allocate(LaneAttributes_TrackedVehicle_t *t
     trackedVehicle_ptr->bits_unused = 11;
     if((trackedVehicle_ptr->buf = CALLOC(1, trackedVehicle_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1605,7 +1605,7 @@ int DE_LaneAttributes_TrackedVehicle_allocate(LaneAttributes_TrackedVehicle_t *t
                | (TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_commuterRailRoadTrack << (15 - LaneAttributes_TrackedVehicle_spec_commuterRailRoadTrack))
                | (TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_lightRailRoadTrack    << (15 - LaneAttributes_TrackedVehicle_spec_lightRailRoadTrack))
                | (TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_heavyRailRoadTrack    << (15 - LaneAttributes_TrackedVehicle_spec_heavyRailRoadTrack))
-			   | (TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_otherRailType         << (15 - LaneAttributes_TrackedVehicle_spec_otherRailType));
+               | (TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_otherRailType         << (15 - LaneAttributes_TrackedVehicle_spec_otherRailType));
                
     trackedVehicle_ptr->buf[0] = (event_mask >> 8) & 0x00FF;
     trackedVehicle_ptr->buf[1] = event_mask & 0x00FF;
@@ -1629,7 +1629,7 @@ int DE_LaneAttributes_TrackedVehicle_parse(LaneAttributes_TrackedVehicle_t *trac
     /* Error detect. */
     if((trackedVehicle_ptr == NULL) || (TrackedVehicle_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1639,7 +1639,7 @@ int DE_LaneAttributes_TrackedVehicle_parse(LaneAttributes_TrackedVehicle_t *trac
     /* Parse the buffer. */
     if(trackedVehicle_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1651,7 +1651,7 @@ int DE_LaneAttributes_TrackedVehicle_parse(LaneAttributes_TrackedVehicle_t *trac
     TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_commuterRailRoadTrack = (event_mask >> (15 - LaneAttributes_TrackedVehicle_spec_commuterRailRoadTrack)) & 0x01;       
     TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_lightRailRoadTrack    = (event_mask >> (15 - LaneAttributes_TrackedVehicle_spec_lightRailRoadTrack)) & 0x01;        
     TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_heavyRailRoadTrack    = (event_mask >> (15 - LaneAttributes_TrackedVehicle_spec_heavyRailRoadTrack)) & 0x01;
-	TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_otherRailType         = (event_mask >> (15 - LaneAttributes_TrackedVehicle_spec_otherRailType)) & 0x01;        
+    TrackedVehicle_ptr->bit.LaneAttributes_TrackedVehicle_spec_otherRailType         = (event_mask >> (15 - LaneAttributes_TrackedVehicle_spec_otherRailType)) & 0x01;        
     
 ERR_EXIT:
     
@@ -1661,7 +1661,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneAttributes_Parking. */
 int DE_LaneAttributes_Parking_free(LaneAttributes_Parking_t *parking_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(parking_ptr != NULL)
     {
@@ -1687,7 +1687,7 @@ int DE_LaneAttributes_Parking_allocate(LaneAttributes_Parking_t *parking_ptr, DE
     /* Error detect. */
     if((parking_ptr == NULL) || (Parking_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1699,7 +1699,7 @@ int DE_LaneAttributes_Parking_allocate(LaneAttributes_Parking_t *parking_ptr, DE
     parking_ptr->bits_unused = 9;
     if((parking_ptr->buf = CALLOC(1, parking_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1708,9 +1708,9 @@ int DE_LaneAttributes_Parking_allocate(LaneAttributes_Parking_t *parking_ptr, DE
                | (Parking_ptr->bit.LaneAttributes_Parking_parallelParkingInUse << (15 - LaneAttributes_Parking_parallelParkingInUse))
                | (Parking_ptr->bit.LaneAttributes_Parking_headInParkingInUse   << (15 - LaneAttributes_Parking_headInParkingInUse))
                | (Parking_ptr->bit.LaneAttributes_Parking_doNotParkZone        << (15 - LaneAttributes_Parking_doNotParkZone))
-			   | (Parking_ptr->bit.LaneAttributes_Parking_parkingForBusUse     << (15 - LaneAttributes_Parking_parkingForBusUse))
-	           | (Parking_ptr->bit.LaneAttributes_Parking_parkingForTaxiUse    << (15 - LaneAttributes_Parking_parkingForTaxiUse))
-			   | (Parking_ptr->bit.LaneAttributes_Parking_noPublicParkingUse   << (15 - LaneAttributes_Parking_noPublicParkingUse));
+               | (Parking_ptr->bit.LaneAttributes_Parking_parkingForBusUse     << (15 - LaneAttributes_Parking_parkingForBusUse))
+               | (Parking_ptr->bit.LaneAttributes_Parking_parkingForTaxiUse    << (15 - LaneAttributes_Parking_parkingForTaxiUse))
+               | (Parking_ptr->bit.LaneAttributes_Parking_noPublicParkingUse   << (15 - LaneAttributes_Parking_noPublicParkingUse));
                
     parking_ptr->buf[0] = (event_mask >> 8) & 0x00FF;
     parking_ptr->buf[1] = event_mask & 0x00FF;
@@ -1734,7 +1734,7 @@ int DE_LaneAttributes_Parking_parse(LaneAttributes_Parking_t *parking_ptr, DE_La
     /* Error detect. */
     if((parking_ptr == NULL) || (Parking_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1744,7 +1744,7 @@ int DE_LaneAttributes_Parking_parse(LaneAttributes_Parking_t *parking_ptr, DE_La
     /* Parse the buffer. */
     if(parking_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1756,9 +1756,9 @@ int DE_LaneAttributes_Parking_parse(LaneAttributes_Parking_t *parking_ptr, DE_La
     Parking_ptr->bit.LaneAttributes_Parking_parallelParkingInUse = (event_mask >> (15 - LaneAttributes_Parking_parallelParkingInUse)) & 0x01;       
     Parking_ptr->bit.LaneAttributes_Parking_headInParkingInUse   = (event_mask >> (15 - LaneAttributes_Parking_headInParkingInUse)) & 0x01;        
     Parking_ptr->bit.LaneAttributes_Parking_doNotParkZone        = (event_mask >> (15 - LaneAttributes_Parking_doNotParkZone)) & 0x01;
-	Parking_ptr->bit.LaneAttributes_Parking_parkingForBusUse     = (event_mask >> (15 - LaneAttributes_Parking_parkingForBusUse)) & 0x01;  
-	Parking_ptr->bit.LaneAttributes_Parking_parkingForTaxiUse    = (event_mask >> (15 - LaneAttributes_Parking_parkingForTaxiUse)) & 0x01;
-	Parking_ptr->bit.LaneAttributes_Parking_noPublicParkingUse   = (event_mask >> (15 - LaneAttributes_Parking_noPublicParkingUse)) & 0x01;        
+    Parking_ptr->bit.LaneAttributes_Parking_parkingForBusUse     = (event_mask >> (15 - LaneAttributes_Parking_parkingForBusUse)) & 0x01;  
+    Parking_ptr->bit.LaneAttributes_Parking_parkingForTaxiUse    = (event_mask >> (15 - LaneAttributes_Parking_parkingForTaxiUse)) & 0x01;
+    Parking_ptr->bit.LaneAttributes_Parking_noPublicParkingUse   = (event_mask >> (15 - LaneAttributes_Parking_noPublicParkingUse)) & 0x01;        
     
 ERR_EXIT:
     
@@ -1768,7 +1768,7 @@ ERR_EXIT:
 /* Free routine for DE_LaneSharing. */
 int DE_LaneSharing_free(LaneSharing_t *sharing_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(sharing_ptr != NULL)
     {
@@ -1795,7 +1795,7 @@ int DE_LaneSharing_allocate(LaneSharing_t *sharing_ptr, DE_LaneSharing_un_ptr Sh
     /* Error detect. */
     if((sharing_ptr == NULL) || (Sharing_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1807,7 +1807,7 @@ int DE_LaneSharing_allocate(LaneSharing_t *sharing_ptr, DE_LaneSharing_un_ptr Sh
     sharing_ptr->bits_unused = 6;
     if((sharing_ptr->buf = CALLOC(1, sharing_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1820,8 +1820,8 @@ int DE_LaneSharing_allocate(LaneSharing_t *sharing_ptr, DE_LaneSharing_un_ptr Sh
                | (Sharing_ptr->bit.LaneSharing_taxiVehicleTraffic                 << (15 - LaneSharing_taxiVehicleTraffic))
                | (Sharing_ptr->bit.LaneSharing_pedestriansTraffic                 << (15 - LaneSharing_pedestriansTraffic))
                | (Sharing_ptr->bit.LaneSharing_cyclistVehicleTraffic              << (15 - LaneSharing_cyclistVehicleTraffic))
-			   | (Sharing_ptr->bit.LaneSharing_trackedVehicleTraffic              << (15 - LaneSharing_trackedVehicleTraffic))
-	           | (Sharing_ptr->bit.LaneSharing_pedestrianTraffic                  << (15 - LaneSharing_pedestrianTraffic));
+               | (Sharing_ptr->bit.LaneSharing_trackedVehicleTraffic              << (15 - LaneSharing_trackedVehicleTraffic))
+               | (Sharing_ptr->bit.LaneSharing_pedestrianTraffic                  << (15 - LaneSharing_pedestrianTraffic));
                
     sharing_ptr->buf[0] = (event_mask >> 8) & 0x00FF;
     sharing_ptr->buf[1] = event_mask & 0x00FF;
@@ -1845,7 +1845,7 @@ int DE_LaneSharing_parse(LaneSharing_t *sharing_ptr, DE_LaneSharing_un_ptr Shari
     /* Error detect. */
     if((sharing_ptr == NULL) || (Sharing_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1855,7 +1855,7 @@ int DE_LaneSharing_parse(LaneSharing_t *sharing_ptr, DE_LaneSharing_un_ptr Shari
     /* Parse the buffer. */
     if(sharing_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1871,7 +1871,7 @@ int DE_LaneSharing_parse(LaneSharing_t *sharing_ptr, DE_LaneSharing_un_ptr Shari
     Sharing_ptr->bit.LaneSharing_taxiVehicleTraffic                 = (event_mask >> (15 - LaneSharing_taxiVehicleTraffic)) & 0x01;        
     Sharing_ptr->bit.LaneSharing_pedestriansTraffic                 = (event_mask >> (15 - LaneSharing_pedestriansTraffic)) & 0x01;        
     Sharing_ptr->bit.LaneSharing_cyclistVehicleTraffic              = (event_mask >> (15 - LaneSharing_cyclistVehicleTraffic)) & 0x01;   
-	Sharing_ptr->bit.LaneSharing_trackedVehicleTraffic              = (event_mask >> (15 - LaneSharing_trackedVehicleTraffic)) & 0x01;        
+    Sharing_ptr->bit.LaneSharing_trackedVehicleTraffic              = (event_mask >> (15 - LaneSharing_trackedVehicleTraffic)) & 0x01;        
     Sharing_ptr->bit.LaneSharing_pedestrianTraffic                  = (event_mask >> (15 - LaneSharing_pedestrianTraffic)) & 0x01;
 
 ERR_EXIT:
@@ -1907,11 +1907,11 @@ int DE_HeadingSlice_free(HeadingSlice_t *heading_ptr)
 /* Allocate routine for DE_HeadingSlice. */
 int DE_HeadingSlice_allocate(HeadingSlice_t *heading_ptr, DE_HeadingSlice_st_ptr Heading_ptr)
 {
-	int		result  = 0;
+    int        result  = 0;
     /* Error detect. */
     if((heading_ptr == NULL) || (Heading_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1943,7 +1943,7 @@ int DE_HeadingSlice_allocate(HeadingSlice_t *heading_ptr, DE_HeadingSlice_st_ptr
     }
     else
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -1959,11 +1959,11 @@ ERR_EXIT:
 /* Parse routine for DE_HeadingSlice. */
 int DE_HeadingSlice_parse(HeadingSlice_t *heading_ptr, DE_HeadingSlice_st_ptr Heading_ptr)
 {
-	int result = 0;
+    int result = 0;
     /* Error detect. */
     if((heading_ptr == NULL) || (Heading_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -2001,83 +2001,83 @@ ERR_EXIT:
 /* free routine of DE_plateNo */
 int DE_PlateNo_free(OCTET_STRING_t *plateNo_ptr)
 {
-	int result = 0;
-	
-	if(plateNo_ptr != NULL)
-	{
-		if(plateNo_ptr->buf != NULL)
-		{
-			FREEMEM(plateNo_ptr->buf);
-		}
-		/* Must clear all the zone and avoid repeat free operation*/
-		memset(plateNo_ptr, 0x00, sizeof(*plateNo_ptr));
-		
-	}else{
-	
-		result = -ERR_NOMEM;
-	}
+    int result = 0;
+    
+    if(plateNo_ptr != NULL)
+    {
+        if(plateNo_ptr->buf != NULL)
+        {
+            FREEMEM(plateNo_ptr->buf);
+        }
+        /* Must clear all the zone and avoid repeat free operation*/
+        memset(plateNo_ptr, 0x00, sizeof(*plateNo_ptr));
+        
+    }else{
+    
+        result = -ERR_NOMEM;
+    }
 
-	return result;
+    return result;
 }
 
 
 /* allocate routine for DE_plateNo */
 int DE_PlateNo_allocate(OCTET_STRING_t *plateNo_ptr, DE_PlateNo_st_ptr PlateNo_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	
-	if((plateNo_ptr == NULL) || (PlateNo_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    
+    if((plateNo_ptr == NULL) || (PlateNo_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/*Reset all the zone. */
-	memset(plateNo_ptr, 0x00, sizeof(*plateNo_ptr));
-	
-	plateNo_ptr->size = PlateNo_ptr->bufsize;
-	plateNo_ptr->buf = CALLOC(1, plateNo_ptr->size);
-	
-	if(plateNo_ptr->buf == NULL)
-	{
-		result = -ERR_NOMEM;
-		goto ERR_EXIT;
-	}else{
-		memcpy(plateNo_ptr->buf, PlateNo_ptr->buf, plateNo_ptr->size);
-	}
-	
-	return result;
-	
+    /*Reset all the zone. */
+    memset(plateNo_ptr, 0x00, sizeof(*plateNo_ptr));
+    
+    plateNo_ptr->size = PlateNo_ptr->bufsize;
+    plateNo_ptr->buf = CALLOC(1, plateNo_ptr->size);
+    
+    if(plateNo_ptr->buf == NULL)
+    {
+        result = -ERR_NOMEM;
+        goto ERR_EXIT;
+    }else{
+        memcpy(plateNo_ptr->buf, PlateNo_ptr->buf, plateNo_ptr->size);
+    }
+    
+    return result;
+    
 ERR_EXIT:
-	
-	DE_PlateNo_free(plateNo_ptr);
-	return result;
+    
+    DE_PlateNo_free(plateNo_ptr);
+    return result;
 }
 
 /* parse routine of DE_plateNo */
 int DE_PlateNo_parse(OCTET_STRING_t *plateNo_ptr, DE_PlateNo_st_ptr PlateNo_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((plateNo_ptr == NULL) || (PlateNo_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((plateNo_ptr == NULL) || (PlateNo_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
+    /* Reset all the zone. */
     memset(PlateNo_ptr, 0, DE_PlateNo_st_len);
 
     /* Copy id data. */
-	PlateNo_ptr->bufsize = plateNo_ptr->size;
+    PlateNo_ptr->bufsize = plateNo_ptr->size;
     memcpy(PlateNo_ptr->buf, plateNo_ptr->buf, PlateNo_ptr->bufsize);
 
     return result;
 
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 
@@ -2106,7 +2106,7 @@ int DE_Priority_free(Priority_t *pri_ptr)
 /* Allocate routine for DE_Priority. */
 int DE_Priority_allocate(Priority_t *pri_ptr, DE_Priority_st_ptr Pri_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((pri_ptr == NULL) || (Pri_ptr == NULL))
     {
@@ -2124,7 +2124,7 @@ int DE_Priority_allocate(Priority_t *pri_ptr, DE_Priority_st_ptr Pri_ptr)
     }
     else
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
     
@@ -2140,11 +2140,11 @@ ERR_EXIT:
 /* Parse routine for DE_Priority. */
 int DE_Priority_parse(Priority_t *pri_ptr, DE_Priority_st_ptr Pri_ptr)
 {
-	int 	result = 0;
+    int     result = 0;
     /* Error detect. */
     if((pri_ptr == NULL) || (Pri_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -2205,12 +2205,12 @@ int DE_RTCMmessage_freeExt(RTCMmessage_t *msg_ptr)
 /* Allocate routine for DE_RTCMmessage. */
 int DE_RTCMmessage_allocate(RTCMmessage_t *msg_ptr, DE_RTCMmessage_st_ptr Msg_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((msg_ptr == NULL) || (Msg_ptr == NULL) 
     || (Msg_ptr->length < DE_RTCMmessage_BUFSIZE_MIN) || (DE_RTCMmessage_BUFSIZE_MAX < Msg_ptr->length))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -2225,7 +2225,7 @@ int DE_RTCMmessage_allocate(RTCMmessage_t *msg_ptr, DE_RTCMmessage_st_ptr Msg_pt
     }
     else
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
     
@@ -2241,12 +2241,12 @@ ERR_EXIT:
 /* Parse routine for DE_RTCMmessage. */
 int DE_RTCMmessage_parse(RTCMmessage_t *msg_ptr, DE_RTCMmessage_st_ptr Msg_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((msg_ptr == NULL) || (Msg_ptr == NULL) 
     || (msg_ptr->size < DE_RTCMmessage_BUFSIZE_MIN) || (DE_RTCMmessage_BUFSIZE_MAX < msg_ptr->size))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -2268,7 +2268,7 @@ ERR_EXIT:
 /* Free routine for DE_TemporaryID. */
 int DE_TemporaryID_free(OCTET_STRING_t *id_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(id_ptr != NULL)
     {
@@ -2281,20 +2281,20 @@ int DE_TemporaryID_free(OCTET_STRING_t *id_ptr)
         memset(id_ptr, 0, sizeof(*id_ptr));
     }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DE_TemporaryID. */
 int DE_TemporaryID_allocate(OCTET_STRING_t *id_ptr, DE_TemporaryID_st_ptr ID_ptr)
 {
-	int		result = 0;
+    int        result = 0;
 
-	
+    
     /* Error detect. */
     if((id_ptr == NULL) || (ID_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -2309,7 +2309,7 @@ int DE_TemporaryID_allocate(OCTET_STRING_t *id_ptr, DE_TemporaryID_st_ptr ID_ptr
     }
     else
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
     
@@ -2325,11 +2325,11 @@ ERR_EXIT:
 /* Parse routine for DE_TemporaryID. */
 int DE_TemporaryID_parse(OCTET_STRING_t *id_ptr, DE_TemporaryID_st_ptr ID_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((id_ptr == NULL) || (ID_ptr == NULL))
     {
-    	result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -2350,7 +2350,7 @@ ERR_EXIT:
 /* Free routine for DE_VehicleEventFlags. */
 int DE_VehicleEventFlags_free(VehicleEventFlags_t *event_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(event_ptr != NULL)
     {
@@ -2372,7 +2372,7 @@ int DE_VehicleEventFlags_free(VehicleEventFlags_t *event_ptr)
 /* Allocate routine for DE_VehicleEventFlags. */
 int DE_VehicleEventFlags_allocate(VehicleEventFlags_t *event_ptr, DE_VehicleEventFlags_un_ptr Event_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     uint16_t    event_mask = 0;
 
@@ -2380,7 +2380,7 @@ int DE_VehicleEventFlags_allocate(VehicleEventFlags_t *event_ptr, DE_VehicleEven
     /* Error detect. */
     if((event_ptr == NULL) || (Event_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -2392,7 +2392,7 @@ int DE_VehicleEventFlags_allocate(VehicleEventFlags_t *event_ptr, DE_VehicleEven
     event_ptr->bits_unused = 3;
     if((event_ptr->buf = CALLOC(1, event_ptr->size)) == NULL)
     {
-	    result = -ERR_NOMEM;
+        result = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -2426,15 +2426,15 @@ ERR_EXIT:
 /* Parse routine for DE_VehicleEventFlags. */
 int DE_VehicleEventFlags_parse(VehicleEventFlags_t *event_ptr, DE_VehicleEventFlags_un_ptr Event_ptr)
 {
-	int result = 0;
-	
+    int result = 0;
+    
     uint16_t    event_mask = 0;
 
 
     /* Error detect. */
     if((event_ptr == NULL) || (Event_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -2444,7 +2444,7 @@ int DE_VehicleEventFlags_parse(VehicleEventFlags_t *event_ptr, DE_VehicleEventFl
     /* Parse the buffer. */
     if(event_ptr->buf == NULL)
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     

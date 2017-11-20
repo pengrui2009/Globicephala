@@ -40,24 +40,24 @@ extern "C" {
  */
 
 /** \brief \c dlsym version for the config evaluate callback. */
-#define SND_CONFIG_DLSYM_VERSION_EVALUATE	_dlsym_config_evaluate_001
+#define SND_CONFIG_DLSYM_VERSION_EVALUATE    _dlsym_config_evaluate_001
 /** \brief \c dlsym version for the config hook callback. */
-#define SND_CONFIG_DLSYM_VERSION_HOOK		_dlsym_config_hook_001
+#define SND_CONFIG_DLSYM_VERSION_HOOK        _dlsym_config_hook_001
 
 /** \brief Configuration node type. */
 typedef enum _snd_config_type {
-	/** Integer number. */
+    /** Integer number. */
         SND_CONFIG_TYPE_INTEGER,
-	/** 64-bit integer number. */
+    /** 64-bit integer number. */
         SND_CONFIG_TYPE_INTEGER64,
-	/** Real number. */
+    /** Real number. */
         SND_CONFIG_TYPE_REAL,
-	/** Character string. */
+    /** Character string. */
         SND_CONFIG_TYPE_STRING,
         /** Pointer (runtime only, cannot be saved). */
         SND_CONFIG_TYPE_POINTER,
-	/** Compound node. */
-	SND_CONFIG_TYPE_COMPOUND = 1024
+    /** Compound node. */
+    SND_CONFIG_TYPE_COMPOUND = 1024
 } snd_config_type_t;
 
 /**
@@ -95,18 +95,18 @@ int snd_config_update_free(snd_config_update_t *update);
 int snd_config_update_free_global(void);
 
 int snd_config_search(snd_config_t *config, const char *key,
-		      snd_config_t **result);
+              snd_config_t **result);
 int snd_config_searchv(snd_config_t *config, 
-		       snd_config_t **result, ...);
+               snd_config_t **result, ...);
 int snd_config_search_definition(snd_config_t *config,
-				 const char *base, const char *key,
-				 snd_config_t **result);
+                 const char *base, const char *key,
+                 snd_config_t **result);
 
 int snd_config_expand(snd_config_t *config, snd_config_t *root,
-		      const char *args, snd_config_t *private_data,
-		      snd_config_t **result);
+              const char *args, snd_config_t *private_data,
+              snd_config_t **result);
 int snd_config_evaluate(snd_config_t *config, snd_config_t *root,
-			snd_config_t *private_data, snd_config_t **result);
+            snd_config_t *private_data, snd_config_t **result);
 
 int snd_config_add(snd_config_t *config, snd_config_t *leaf);
 int snd_config_delete(snd_config_t *config);
@@ -114,7 +114,7 @@ int snd_config_delete_compound_members(const snd_config_t *config);
 int snd_config_copy(snd_config_t **dst, snd_config_t *src);
 
 int snd_config_make(snd_config_t **config, const char *key,
-		    snd_config_type_t type);
+            snd_config_type_t type);
 int snd_config_make_integer(snd_config_t **config, const char *key);
 int snd_config_make_integer64(snd_config_t **config, const char *key);
 int snd_config_make_real(snd_config_t **config, const char *key);
@@ -170,7 +170,7 @@ snd_config_t *snd_config_iterator_entry(const snd_config_iterator_t iterator);
  * This macro allows deleting or removing the current node.
  */
 #define snd_config_for_each(pos, next, node) \
-	for (pos = snd_config_iterator_first(node), next = snd_config_iterator_next(pos); pos != snd_config_iterator_end(node); pos = next, next = snd_config_iterator_next(pos))
+    for (pos = snd_config_iterator_first(node), next = snd_config_iterator_next(pos); pos != snd_config_iterator_end(node); pos = next, next = snd_config_iterator_next(pos))
 
 /* Misc functions */
 
@@ -190,9 +190,9 @@ typedef struct snd_devname snd_devname_t;
  * Device-name list element (definition)
  */
 struct snd_devname {
-	char *name;	/**< Device name string */
-	char *comment;	/**< Comments */
-	snd_devname_t *next;	/**< Next pointer */
+    char *name;    /**< Device name string */
+    char *comment;    /**< Comments */
+    snd_devname_t *next;    /**< Next pointer */
 };
 
 int snd_names_list(const char *iface, snd_devname_t **list);

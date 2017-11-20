@@ -25,8 +25,8 @@
 #include "osal_thread.h"
 #include "error.h"
 
-#define STR_EMER_MSG	        ("EMER_MSG")
-#define MAX_MSG_BUF_SIZE		16
+#define STR_EMER_MSG            ("EMER_MSG")
+#define MAX_MSG_BUF_SIZE        16
 
 
 /* Data type for share zone data. */
@@ -82,7 +82,7 @@ typedef struct _shzone_st
     osal_msg_t       msg_id;
 
     /* Task that handle callback  */
-	osal_task_t  cback_task;
+    osal_task_t  cback_task;
     
 }shzone_st, * shzone_st_ptr;
 
@@ -93,58 +93,58 @@ typedef struct _shzone_st
 
 
 /******************************************************************************
-*	Function: shzone_read
-*	Descriptions: Read data from share memory zone.
-*	Paramters:
-			fd		        -	the file descriptor.
-			addr            -   Address for data to read.
-			buff_ptr        -   buffer head address for data storage.
-			data_len        -   the data length that user want to read.
-*	Return:
-			>= 0			-	the data count that have readed.
-			< 0				-	failed
-*	Comments: 
+*    Function: shzone_read
+*    Descriptions: Read data from share memory zone.
+*    Paramters:
+            fd                -    the file descriptor.
+            addr            -   Address for data to read.
+            buff_ptr        -   buffer head address for data storage.
+            data_len        -   the data length that user want to read.
+*    Return:
+            >= 0            -    the data count that have readed.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int shzone_read(int fd, uint32_t addr, void *buff_ptr, uint16_t data_len);
 
 /******************************************************************************
-*	Function: shzone_write
-*	Descriptions: Write data to share memory zone.
-*	Paramters:
-			fd		        -	the file descriptor.
-			type            -   Data type for buffer.
-			addr            -   Address for data to write.
-			buff_ptr        -   buffer head address for data storage.
-			data_len        -   the data length that user want to write.
-*	Return:
-			>= 0			-	the data count that have writed.
-			< 0				-	failed
-*	Comments: 
+*    Function: shzone_write
+*    Descriptions: Write data to share memory zone.
+*    Paramters:
+            fd                -    the file descriptor.
+            type            -   Data type for buffer.
+            addr            -   Address for data to write.
+            buff_ptr        -   buffer head address for data storage.
+            data_len        -   the data length that user want to write.
+*    Return:
+            >= 0            -    the data count that have writed.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int shzone_write(int fd, shzone_datatype_em type, uint32_t addr, void *buff_ptr, uint16_t data_len);
 
 /******************************************************************************
-*	Function: shzone_init
-*	Descriptions: open or create the share zone structure.
-*	Paramters:
+*    Function: shzone_init
+*    Descriptions: open or create the share zone structure.
+*    Paramters:
             fd_ptr          -   the pointer that hold net file descriptor.
-			cfg_ptr			-	the config paramters pointer.
-*	Return:
-			> 0			    -	file descriptor
-			< 0			    -	failed
-*	Comments: 
+            cfg_ptr            -    the config paramters pointer.
+*    Return:
+            > 0                -    file descriptor
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int shzone_init(int *fd_ptr, shzone_config_st_ptr cfg_ptr);
 
 /******************************************************************************
-*	Function: shzone_deinit
-*	Descriptions: close share memory driver.
-*	Paramters:
-			fd		        -	the file descriptor.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: shzone_deinit
+*    Descriptions: close share memory driver.
+*    Paramters:
+            fd                -    the file descriptor.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int shzone_deinit(int fd);
 

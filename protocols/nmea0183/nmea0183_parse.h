@@ -1,5 +1,5 @@
 #ifndef _NMEA0183_PARSE_H_
-#define	_NMEA0183_PARSE_H_
+#define    _NMEA0183_PARSE_H_
 
 #include <stdint.h>
 
@@ -163,25 +163,25 @@ typedef struct _nmea_GxGGA_st
 /* NMEA0183 frame segment status: GxGSA. */
 typedef struct _nmea_GxGSA_opt_st
 {
-	uint8_t				  name :1; /* Frame name. */
+    uint8_t                  name :1; /* Frame name. */
     uint8_t            op_mode :1;  
     uint8_t           nav_mode :1;
     
     uint8_t      satellite_id1 :1;  
-	uint8_t      satellite_id2 :1;
-	uint8_t      satellite_id3 :1;
-	uint8_t      satellite_id4 :1;
-	uint8_t      satellite_id5 :1;
-	uint8_t      satellite_id6 :1;
-	uint8_t      satellite_id7 :1;
-	uint8_t      satellite_id8 :1;
-	uint8_t      satellite_id9 :1;
-	uint8_t     satellite_id10 :1;
-	uint8_t     satellite_id11 :1;
-	uint8_t     satellite_id12 :1;
+    uint8_t      satellite_id2 :1;
+    uint8_t      satellite_id3 :1;
+    uint8_t      satellite_id4 :1;
+    uint8_t      satellite_id5 :1;
+    uint8_t      satellite_id6 :1;
+    uint8_t      satellite_id7 :1;
+    uint8_t      satellite_id8 :1;
+    uint8_t      satellite_id9 :1;
+    uint8_t     satellite_id10 :1;
+    uint8_t     satellite_id11 :1;
+    uint8_t     satellite_id12 :1;
     uint8_t               pdop :1;
     uint8_t               hdop :1;
-	uint8_t               vdop :1;
+    uint8_t               vdop :1;
     uint8_t          system_id :1;  /* NMEA v4.1 and above only */
     uint8_t          check_sum :1;
     
@@ -222,15 +222,15 @@ typedef enum _nmea_gps_navStatus_em
 /* NMEA0183 frame: GxGSA. */
 typedef struct _nmea_GxGSA_st
 {
-	nmea_GxGSA_opt_st        opt;  /* Optional status. */
+    nmea_GxGSA_opt_st        opt;  /* Optional status. */
     char                 name[7];  /* Frame name. */
-	nmea_gps_opMode_em   op_mode;
-	nmea_gps_navMode_em nav_mode;
-	uint8_t	    satellite_id[12];
-	double                  pdop;  /* Position dilution of precision*/
-	double                  hdop;
-	double                  vdop;
-	uint8_t 		   system_id;   
+    nmea_gps_opMode_em   op_mode;
+    nmea_gps_navMode_em nav_mode;
+    uint8_t        satellite_id[12];
+    double                  pdop;  /* Position dilution of precision*/
+    double                  hdop;
+    double                  vdop;
+    uint8_t            system_id;   
     uint16_t           check_sum;
     
 }nmea_GxGSA_st, * nmea_GxGSA_st_ptr;
@@ -240,7 +240,7 @@ typedef struct _nmea_GxGSA_st
 /* NMEA0183 frame segment status: GxRMC. */
 typedef struct _nmea_GxRMC_opt_st
 {
-	uint8_t				  name :1; /* Frame name. */
+    uint8_t                  name :1; /* Frame name. */
     uint8_t           utc_time :1;  
     uint8_t             status :1;
     
@@ -249,12 +249,12 @@ typedef struct _nmea_GxRMC_opt_st
     uint8_t          longitude :1;  /* Unit: degree. */
     uint8_t             lon_ew :1;
     uint8_t              speed :1;
-	uint8_t				course :1;
+    uint8_t                course :1;
     uint8_t           utc_date :1;
-	uint8_t                 mv :1;
+    uint8_t                 mv :1;
     uint8_t              mv_ew :1;  
-	uint8_t			  pos_mode :1;  /*NMEA v2.3 and above only*/
-	uint8_t			nav_status :1;  /*NMEA v4.1 and above only*/
+    uint8_t              pos_mode :1;  /*NMEA v2.3 and above only*/
+    uint8_t            nav_status :1;  /*NMEA v4.1 and above only*/
     uint8_t          check_sum :1;
     
 }nmea_GxRMC_opt_st, * nmea_GxRMC_opt_st_ptr;
@@ -265,21 +265,21 @@ typedef struct _nmea_GxRMC_opt_st
 /* NMEA0183 frame: GxRMC. */
 typedef struct _nmea_GxRMC_st
 {
-	nmea_GxRMC_opt_st		     opt;
+    nmea_GxRMC_opt_st             opt;
     char                     name[7];  /* Frame name. */
     nmea_utc_time_st        utc_time;
-	nmea_gps_status_em        status;
-	double                  latitude;  /* Unit: degree. */
+    nmea_gps_status_em        status;
+    double                  latitude;  /* Unit: degree. */
     nmea_latitude_em          lat_ns;
     double                 longitude;  /* Unit: degree. */
     nmea_longitude_em         lon_ew;
-	double				       speed;
-	double				      course;
-	nmea_utc_date_st        utc_date;
-	uint8_t				          mv;
-	uint8_t				        mvEW;
-	nmea_gps_posMode_em     pos_mode;
-	nmea_gps_navStatus_em nav_status;
+    double                       speed;
+    double                      course;
+    nmea_utc_date_st        utc_date;
+    uint8_t                          mv;
+    uint8_t                        mvEW;
+    nmea_gps_posMode_em     pos_mode;
+    nmea_gps_navStatus_em nav_status;
     uint16_t               check_sum;
     
 }nmea_GxRMC_st, * nmea_GxRMC_st_ptr;
@@ -300,7 +300,7 @@ typedef struct _nmea_GxXXX_st
 func:nmea_parse_main
 desc:Main function that parse nmea0183 frame to the specific structure. 
 para:type_ptr is return that we needed frame type,xxx_ptr is return data struct,
-	data_ptr is data that needed to deal,length is the length of data 
+    data_ptr is data that needed to deal,length is the length of data 
 return:ERR_OK is successful, other value is failed
 ******************************************************************/
 int nmea_parse_main(nmea_frametype_em_ptr type_ptr, nmea_GxXXX_st_ptr xxx_ptr, uint8_t *data_ptr, uint16_t length);

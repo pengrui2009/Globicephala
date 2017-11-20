@@ -25,18 +25,18 @@ static int wsmp_build_dsmp(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_p
     if((buffer_ptr->data_len + DSMP_HEADER_ST_LEN) <= buffer_ptr->buffer_size)
     {
         /* Move room for dsmp header. */
-    	buffer_ptr->buffer_ptr -= DSMP_HEADER_ST_LEN;
+        buffer_ptr->buffer_ptr -= DSMP_HEADER_ST_LEN;
         dsmp_ptr = (dsmp_header_st_ptr)buffer_ptr->buffer_ptr;
-    	memset(dsmp_ptr, 0x00, DSMP_HEADER_ST_LEN);
+        memset(dsmp_ptr, 0x00, DSMP_HEADER_ST_LEN);
 
         /* Set dsmp header. */
-    	dsmp_ptr->version = DSMP_VERSION_V1;
+        dsmp_ptr->version = DSMP_VERSION_V1;
         
         data_u32 = infor_ptr->dsmp_aid;
-    	dsmp_ptr->aid = cv_ntohl(data_u32);
+        dsmp_ptr->aid = cv_ntohl(data_u32);
         
-    	dsmp_ptr->element_id = infor_ptr->dsmp_element_id;
-    	dsmp_ptr->length = cv_ntohs(buffer_ptr->data_len);
+        dsmp_ptr->element_id = infor_ptr->dsmp_element_id;
+        dsmp_ptr->length = cv_ntohs(buffer_ptr->data_len);
 
         /* Set data length. */
         buffer_ptr->data_len += DSMP_HEADER_ST_LEN;
@@ -56,13 +56,13 @@ static int wsmp_build_dsmp(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_p
 static int wsmp_analyse_dsmp(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_ptr)
 {
     int                     ret = ERR_OK;
-	dsmp_header_st_ptr dsmp_ptr = NULL;
+    dsmp_header_st_ptr dsmp_ptr = NULL;
 
 
     /* Error detection. */
     if(buffer_ptr->data_len < DSMP_HEADER_ST_LEN)
     {
-    	ret = ERR_NOMEM;
+        ret = ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -100,10 +100,10 @@ static int wsmp_build_sec(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_pt
     sec_des_header_st_ptr des_ptr = NULL;
 
 
-	/* Set sec header only when set exit. */
+    /* Set sec header only when set exit. */
     switch(infor_ptr->sec_security_type)
-	{
-	    case SEC_SECURITY_TYPE_NONE:
+    {
+        case SEC_SECURITY_TYPE_NONE:
         {
             break;    
         }
@@ -117,14 +117,14 @@ static int wsmp_build_sec(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_pt
                 des_ptr = (sec_des_header_st_ptr)buffer_ptr->buffer_ptr;
                 memset(des_ptr, 0x00, SEC_DES_HEADER_ST_LEN);
 
-            	/* Set sec_dex header. */
-            	des_ptr->enc_type = 0;
-            	des_ptr->key[0] = 0;
+                /* Set sec_dex header. */
+                des_ptr->enc_type = 0;
+                des_ptr->key[0] = 0;
                 des_ptr->key[1] = 0;
                 des_ptr->key[2] = 0;
                 
                 /* Set data length. */
-            	buffer_ptr->data_len += SEC_DES_HEADER_ST_LEN;
+                buffer_ptr->data_len += SEC_DES_HEADER_ST_LEN;
             }
             else
             {
@@ -141,7 +141,7 @@ static int wsmp_build_sec(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_pt
             
             break;    
         }
-	}
+    }
 
     /* Add sec header only when buffer room valid. */
     if((buffer_ptr->data_len + SEC_HEADER_ST_LEN) <= buffer_ptr->buffer_size)
@@ -151,12 +151,12 @@ static int wsmp_build_sec(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_pt
         sec_ptr = (sec_header_st_ptr)buffer_ptr->buffer_ptr;
         memset(sec_ptr, 0x00, SEC_HEADER_ST_LEN);
 
-    	/* Set sec header. */
-    	sec_ptr->version = SEC_VERSION;
-    	sec_ptr->security_type = infor_ptr->sec_security_type;
+        /* Set sec header. */
+        sec_ptr->version = SEC_VERSION;
+        sec_ptr->security_type = infor_ptr->sec_security_type;
 
         /* Set data length. */
-    	buffer_ptr->data_len += SEC_HEADER_ST_LEN;
+        buffer_ptr->data_len += SEC_HEADER_ST_LEN;
 
         /* return ok; */
         ret = ERR_OK;
@@ -176,21 +176,21 @@ ERR_EXIT:
 static int wsmp_analyse_sec(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_ptr)
 {
     int                   ret = ERR_OK;
-	sec_header_st_ptr sec_ptr = NULL;
+    sec_header_st_ptr sec_ptr = NULL;
 
 
     /* Error detection. */
     if(buffer_ptr->data_len < SEC_HEADER_ST_LEN)
     {
-    	ret = ERR_NOMEM;
+        ret = ERR_NOMEM;
         goto ERR_EXIT;
     }
     
-	/* Analyse sec header. */
+    /* Analyse sec header. */
     sec_ptr = (sec_header_st_ptr)buffer_ptr->buffer_ptr;
-	switch(sec_ptr->security_type)
-	{
-    	case SEC_SECURITY_TYPE_NONE:
+    switch(sec_ptr->security_type)
+    {
+        case SEC_SECURITY_TYPE_NONE:
         {     
             infor_ptr->sec_security_type = sec_ptr->security_type;
 
@@ -212,7 +212,7 @@ static int wsmp_analyse_sec(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_
             /* Error detection. */
             if(buffer_ptr->data_len < SEC_DES_HEADER_ST_LEN)
             {
-            	ret = ERR_NOMEM;
+                ret = ERR_NOMEM;
             }
             else
             {
@@ -224,12 +224,12 @@ static int wsmp_analyse_sec(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_
             }
             break;
         }
-	    default:
+        default:
         {
             ret = ERR_NOTSUPPORT;
             break;
         }
-	}
+    }
 
 ERR_EXIT:
 
@@ -245,21 +245,21 @@ static int wsmp_build_llc(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_pt
     uint16_t         data_u16 = 0;
 
     
-	switch(infor_ptr->llc_ether_type)
-	{
-    	case LLC_ETHERTYPE_DSMPv1:
+    switch(infor_ptr->llc_ether_type)
+    {
+        case LLC_ETHERTYPE_DSMPv1:
         {
             /* Add llc header only when buffer room valid. */
             if((buffer_ptr->data_len + LLC_HEADER_ST_LEN) <= buffer_ptr->buffer_size)
             {
                 /* Move room for llc header. */
-            	buffer_ptr->buffer_ptr -= LLC_HEADER_ST_LEN;
+                buffer_ptr->buffer_ptr -= LLC_HEADER_ST_LEN;
                 llc_ptr = (llc_header_st_ptr)buffer_ptr->buffer_ptr;
-            	memset(llc_ptr, 0x00, LLC_HEADER_ST_LEN);
+                memset(llc_ptr, 0x00, LLC_HEADER_ST_LEN);
                 
                 /* Set llc header. */
-            	llc_ptr->dsap = LLC_DSAP;
-            	llc_ptr->ssap = LLC_SSAP;
+                llc_ptr->dsap = LLC_DSAP;
+                llc_ptr->ssap = LLC_SSAP;
                 llc_ptr->control = LLC_CONTROL;
 
                 data_u16 = infor_ptr->llc_ether_type;
@@ -277,12 +277,12 @@ static int wsmp_build_llc(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_pt
 
             break;
         }
-	    default:
+        default:
         {
             ret = ERR_NOTSUPPORT;
             break;
         }
-	}
+    }
 
     return ret;
 }
@@ -292,33 +292,33 @@ static int wsmp_build_llc(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_pt
 static int wsmp_analyse_llc(wsmp_infor_st_ptr infor_ptr, wsmp_buf_st_ptr buffer_ptr)
 {
     int                   ret = ERR_OK;
-	llc_header_st_ptr llc_ptr = NULL;
+    llc_header_st_ptr llc_ptr = NULL;
 
 
     /* Error detection. */
     if(buffer_ptr->data_len < LLC_HEADER_ST_LEN)
     {
-    	ret = ERR_NOMEM;
+        ret = ERR_NOMEM;
         goto ERR_EXIT;
     }
 
     /* Analyse llc header. */
     llc_ptr = (llc_header_st_ptr)buffer_ptr->buffer_ptr;
-	switch(cv_ntohs(llc_ptr->ether_type))
-	{
-    	case LLC_ETHERTYPE_DSMPv1:
+    switch(cv_ntohs(llc_ptr->ether_type))
+    {
+        case LLC_ETHERTYPE_DSMPv1:
         {
             infor_ptr->llc_ether_type = LLC_ETHERTYPE_DSMPv1;
             
             ret = ERR_OK;
             break;
         }
-	    default:
+        default:
         {
             ret = ERR_NOTSUPPORT;
             break;
         }
-	}
+    }
 
     /* Move over llc header. */
     buffer_ptr->buffer_ptr += LLC_HEADER_ST_LEN;
@@ -340,14 +340,14 @@ int wsmp_build_msg(wsmp_infor_st_ptr infor_ptr, uint8_t *buffer_ptr, uint16_t bu
     /* Error detection. */
     if((infor_ptr == NULL) || (buffer_ptr == NULL) || (data_len_ptr == NULL))
     {
-        ret = ERR_INVAL;
+        ret = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
     /* Check buffer size for new message. */
     if(buffer_size <= *data_len_ptr)
     {
-        ret = ERR_NOMEM;
+        ret = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 

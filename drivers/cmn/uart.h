@@ -52,103 +52,103 @@ typedef enum _comport_flowctl_em
 typedef struct _uart_config_st
 {
     /* Verify mode. */
-	comport_verify_em	verify;
+    comport_verify_em    verify;
 
     /* Data bit. */
-	uint8_t		         ndata;
+    uint8_t                 ndata;
     
     /* Stop bit. */
-	uint8_t		         nstop;
+    uint8_t                 nstop;
 
     /* Timeout mode. Unit 100ms, 0x00 Block forever, 0xFF No block forever. */
-	uint8_t		       timeout;
+    uint8_t               timeout;
 
     /* Baudrate. */
-	uint32_t	          baud;
+    uint32_t              baud;
 
     /* Hardware flow control. */
-	comport_flowctl_em	rtscts;
+    comport_flowctl_em    rtscts;
 
 } uart_config_st, *uart_config_st_ptr;
 
 
 /******************************************************************************
-*	Function: comport_config
-*	Descriptions: config the specific uart fd device.
-*	Paramters:
-			fd		        -	the file descriptor.
-			cfg_ptr			-	the config paramters pointer.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: comport_config
+*    Descriptions: config the specific uart fd device.
+*    Paramters:
+            fd                -    the file descriptor.
+            cfg_ptr            -    the config paramters pointer.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int comport_config (int fd, uart_config_st_ptr cfg_ptr);
 
 /******************************************************************************
-*	Function: comport_send
-*	Descriptions: Send data to the specific uart device.
-*	Paramters:
-			fd		        -	the file descriptor.
-			buff_ptr        -   buffer head address for data storage.
-			count           -   the data count that user want to send.
-*	Return:
-			>= 0			-	the data count that have received.
-			< 0				-	failed
-*	Comments: 
+*    Function: comport_send
+*    Descriptions: Send data to the specific uart device.
+*    Paramters:
+            fd                -    the file descriptor.
+            buff_ptr        -   buffer head address for data storage.
+            count           -   the data count that user want to send.
+*    Return:
+            >= 0            -    the data count that have received.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int comport_send (int fd, uint8_t *buff_ptr, uint32_t count);
 
 /******************************************************************************
-*	Function: comport_receive
-*	Descriptions: Receive data from the specific uart device.
-*	Paramters:
-			fd		        -	the file descriptor.
-			buff_ptr        -   buffer head address for data storage.
-			count           -   the data count that user want to receive.
-*	Return:
-			>= 0			-	the data count that have received.
-			< 0				-	failed
-*	Comments: 
+*    Function: comport_receive
+*    Descriptions: Receive data from the specific uart device.
+*    Paramters:
+            fd                -    the file descriptor.
+            buff_ptr        -   buffer head address for data storage.
+            count           -   the data count that user want to receive.
+*    Return:
+            >= 0            -    the data count that have received.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int comport_receive (int fd, uint8_t *buff_ptr, uint32_t count);
 
 /******************************************************************************
-*	Function: comport_flush
-*	Descriptions: Flush the specific uart buffer.
-*	Paramters:
-			fd		        -	the file descriptor.
-			mode            -   buffer mode.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: comport_flush
+*    Descriptions: Flush the specific uart buffer.
+*    Paramters:
+            fd                -    the file descriptor.
+            mode            -   buffer mode.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int comport_flush (int fd, comport_buff_em mode);
 
 /******************************************************************************
-*	Function: comport_init
-*	Descriptions: open the specific uart device.
-*	Paramters:
+*    Function: comport_init
+*    Descriptions: open the specific uart device.
+*    Paramters:
             fd_ptr          -   the pointer that hold uart file descriptor.
-			name_ptr	    -	the device character pointer.
-			cfg_ptr			-	the config paramters pointer.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+            name_ptr        -    the device character pointer.
+            cfg_ptr            -    the config paramters pointer.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int comport_init (int *fd_ptr, const char *name_ptr, uart_config_st_ptr cfg_ptr);
 
 /******************************************************************************
-*	Function: comport_deinit
-*	Descriptions: Deinit the uart fd device.
-*	Paramters:
-			fd		        -	the file descriptor.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: comport_deinit
+*    Descriptions: Deinit the uart fd device.
+*    Paramters:
+            fd                -    the file descriptor.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int comport_deinit(int fd);
 

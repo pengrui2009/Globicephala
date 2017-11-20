@@ -2,16 +2,16 @@
  * Copyright (c) 2004-2017 Lev Walkin <vlm@lionet.info>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
-#ifndef	ASN1_CONSTRAINTS_VALIDATOR_H
-#define	ASN1_CONSTRAINTS_VALIDATOR_H
+#ifndef    ASN1_CONSTRAINTS_VALIDATOR_H
+#define    ASN1_CONSTRAINTS_VALIDATOR_H
 
-#include <asn_system.h>		/* Platform-dependent types */
+#include <asn_system.h>        /* Platform-dependent types */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct asn_TYPE_descriptor_s;		/* Forward declaration */
+struct asn_TYPE_descriptor_s;        /* Forward declaration */
 
 /*
  * Validate the structure according to the ASN.1 constraints.
@@ -47,16 +47,16 @@ typedef int(asn_constr_check_f)(
  * INTERNALLY USEFUL FUNCTIONS *
  *******************************/
 
-asn_constr_check_f asn_generic_no_constraint;	/* No constraint whatsoever */
+asn_constr_check_f asn_generic_no_constraint;    /* No constraint whatsoever */
 asn_constr_check_f asn_generic_unknown_constraint; /* Not fully supported */
 
 /*
  * Invoke the callback with a complete error message.
  */
-#define	ASN__CTFAIL	if(ctfailcb) ctfailcb
+#define    ASN__CTFAIL    if(ctfailcb) ctfailcb
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* ASN1_CONSTRAINTS_VALIDATOR_H */
+#endif    /* ASN1_CONSTRAINTS_VALIDATOR_H */

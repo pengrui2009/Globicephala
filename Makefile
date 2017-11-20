@@ -21,6 +21,7 @@ SUBDIRS = \
 	  $(TOPDIR)/drivers/cmn \
 	  $(TOPDIR)/drivers/gps \
 	  $(TOPDIR)/drivers/led \
+	  $(TOPDIR)/drivers/ltev \
 	  $(TOPDIR)/drivers/pps \
 	  $(TOPDIR)/drivers/vguest \
 	  $(TOPDIR)/drivers/vhost \
@@ -56,11 +57,13 @@ endif
 .PHONEY: all clean image install 
 
 all:
+	sh ./format_file.sh
 	@for subdir in $(SUBDIRS); do \
 		(cd $$subdir && $(MAKE) all) || exit 1; \
 	done
-	
 	$(CC) $(OBJ_FILES) $(LDFLAGS) -o $(TARGET)
+	$(STRIP) --strip-unneeded  --remove-section=.comment --remove-section=.note $(TARGET)
+	
 	mv $(TARGET) $(IMAGEDIR)
 clean:
 	@for subdir in $(SUBDIRS); do \

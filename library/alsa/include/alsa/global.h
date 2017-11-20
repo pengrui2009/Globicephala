@@ -64,9 +64,9 @@ const char *snd_asoundlib_version(void);
 #else /* static build */
 
 struct snd_dlsym_link {
-	struct snd_dlsym_link *next;
-	const char *dlsym_name;
-	const void *dlsym_ptr;
+    struct snd_dlsym_link *next;
+    const char *dlsym_name;
+    const void *dlsym_ptr;
 };
 
 extern struct snd_dlsym_link *snd_dlsym_start;
@@ -121,7 +121,7 @@ typedef struct _snd_async_handler snd_async_handler_t;
 typedef void (*snd_async_callback_t)(snd_async_handler_t *handler);
 
 int snd_async_add_handler(snd_async_handler_t **handler, int fd, 
-			  snd_async_callback_t callback, void *private_data);
+              snd_async_callback_t callback, void *private_data);
 int snd_async_del_handler(snd_async_handler_t *handler);
 int snd_async_handler_get_fd(snd_async_handler_t *handler);
 int snd_async_handler_get_signo(snd_async_handler_t *handler);
@@ -135,13 +135,13 @@ int snd_user_file(const char *file, char **result);
 
 #if !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE)
 struct timeval {
-	time_t		tv_sec;		/* seconds */
-	long		tv_usec;	/* microseconds */
+    time_t        tv_sec;        /* seconds */
+    long        tv_usec;    /* microseconds */
 };
 
 struct timespec {
-	time_t		tv_sec;		/* seconds */
-	long		tv_nsec;	/* nanoseconds */
+    time_t        tv_sec;        /* seconds */
+    long        tv_nsec;    /* nanoseconds */
 };
 #endif
 

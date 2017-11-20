@@ -34,11 +34,11 @@ int DF_AntennaOffsetSet_free(AntennaOffsetSet_t *offset_ptr)
 /* Allocate routine for DF_AntennaOffsetSet. */
 int DF_AntennaOffsetSet_allocate(AntennaOffsetSet_t *offset_ptr, DF_AntennaOffsetSet_st_ptr Offset_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((offset_ptr == NULL) || (Offset_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -62,11 +62,11 @@ ERR_EXIT:
 /* Parse routine for DF_AntennaOffsetSet. */
 int DF_AntennaOffsetSet_parse(AntennaOffsetSet_t *offset_ptr, DF_AntennaOffsetSet_st_ptr Offset_ptr)
 {  
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((offset_ptr == NULL) || (Offset_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -106,54 +106,54 @@ int DF_AccelerationSet4Way_free(AccelerationSet4Way_t *accset_ptr)
 /* Allocate routine for DF_AccelerationSet4Way. */
 int DF_AccelerationSet4Way_allocate(AccelerationSet4Way_t *accset_ptr, DF_AccelerationSet4Way_st_ptr Accset_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((accset_ptr == NULL) || (Accset_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((accset_ptr == NULL) || (Accset_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(accset_ptr, 0x00, sizeof(*accset_ptr));
+    /* Reset all the zone. */
+    memset(accset_ptr, 0x00, sizeof(*accset_ptr));
 
-	accset_ptr->Long   = bsctyp_encode(DE_Acceleration, Accset_ptr->longitudinal);
-	accset_ptr->lat    = bsctyp_encode(DE_Acceleration, Accset_ptr->lateral);
-	accset_ptr->vert   = bsctyp_encode(DE_VerticalAcceleration, Accset_ptr->vertical);
-	accset_ptr->yaw    = bsctyp_encode(DE_YawRate, Accset_ptr->yaw_rate);
+    accset_ptr->Long   = bsctyp_encode(DE_Acceleration, Accset_ptr->longitudinal);
+    accset_ptr->lat    = bsctyp_encode(DE_Acceleration, Accset_ptr->lateral);
+    accset_ptr->vert   = bsctyp_encode(DE_VerticalAcceleration, Accset_ptr->vertical);
+    accset_ptr->yaw    = bsctyp_encode(DE_YawRate, Accset_ptr->yaw_rate);
 
-	return result;
-	
+    return result;
+    
 ERR_EXIT:
     
     DF_AccelerationSet4Way_free(accset_ptr);
-	return result;
+    return result;
 }
 
 /* Parse routine for DF_AccelerationSet4Way. */
 int DF_AccelerationSet4Way_parse(AccelerationSet4Way_t *accset_ptr, DF_AccelerationSet4Way_st_ptr Accset_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((accset_ptr == NULL) || (Accset_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((accset_ptr == NULL) || (Accset_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(Accset_ptr, 0x00, sizeof(*Accset_ptr));
-	
-	Accset_ptr->longitudinal = bsctyp_decode(DE_Acceleration, accset_ptr->Long);
-	Accset_ptr->lateral      = bsctyp_decode(DE_Acceleration, accset_ptr->lat);
-	Accset_ptr->vertical     = bsctyp_decode(DE_VerticalAcceleration, accset_ptr->vert);
-	Accset_ptr->yaw_rate     = bsctyp_decode(DE_YawRate, accset_ptr->yaw);
-	
-	return result;
-	
+    /* Reset all the zone. */
+    memset(Accset_ptr, 0x00, sizeof(*Accset_ptr));
+    
+    Accset_ptr->longitudinal = bsctyp_decode(DE_Acceleration, accset_ptr->Long);
+    Accset_ptr->lateral      = bsctyp_decode(DE_Acceleration, accset_ptr->lat);
+    Accset_ptr->vertical     = bsctyp_decode(DE_VerticalAcceleration, accset_ptr->vert);
+    Accset_ptr->yaw_rate     = bsctyp_decode(DE_YawRate, accset_ptr->yaw);
+    
+    return result;
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 
 }
 
@@ -161,238 +161,238 @@ ERR_EXIT:
 /* Free routine for DF_BrakeSystemStatus. */
 int DF_BrakeSystemStatus_free(BrakeSystemStatus_t *brakes_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if(brakes_ptr != NULL)
-	{
-		if(brakes_ptr->brakePadel != NULL)
-		{
-			FREEMEM(brakes_ptr->brakePadel);
-		}
+    if(brakes_ptr != NULL)
+    {
+        if(brakes_ptr->brakePadel != NULL)
+        {
+            FREEMEM(brakes_ptr->brakePadel);
+        }
 
-		if(brakes_ptr->wheelBrakes != NULL)
-		{
-			DE_BrakeAppliedStatus_free(brakes_ptr->wheelBrakes);
-			FREEMEM(brakes_ptr->wheelBrakes);
-		}
+        if(brakes_ptr->wheelBrakes != NULL)
+        {
+            DE_BrakeAppliedStatus_free(brakes_ptr->wheelBrakes);
+            FREEMEM(brakes_ptr->wheelBrakes);
+        }
 
-		if(brakes_ptr->traction != NULL)
-		{
-			FREEMEM(brakes_ptr->traction);
-		}
+        if(brakes_ptr->traction != NULL)
+        {
+            FREEMEM(brakes_ptr->traction);
+        }
 
-		if(brakes_ptr->abs != NULL)
-		{
-			FREEMEM(brakes_ptr->abs);
-		}
+        if(brakes_ptr->abs != NULL)
+        {
+            FREEMEM(brakes_ptr->abs);
+        }
 
-		if(brakes_ptr->scs != NULL)
-		{
-			FREEMEM(brakes_ptr->scs);
-		}
+        if(brakes_ptr->scs != NULL)
+        {
+            FREEMEM(brakes_ptr->scs);
+        }
 
-		if(brakes_ptr->brakeBoost!= NULL)
-		{
-			FREEMEM(brakes_ptr->brakeBoost);
-		}
+        if(brakes_ptr->brakeBoost!= NULL)
+        {
+            FREEMEM(brakes_ptr->brakeBoost);
+        }
 
-		if(brakes_ptr->auxBrakes!= NULL)
-		{
-			FREEMEM(brakes_ptr->auxBrakes);
-		}
+        if(brakes_ptr->auxBrakes!= NULL)
+        {
+            FREEMEM(brakes_ptr->auxBrakes);
+        }
 
-		memset(brakes_ptr, 0x00, sizeof(*brakes_ptr));
-	}
+        memset(brakes_ptr, 0x00, sizeof(*brakes_ptr));
+    }
 
-	return result;
+    return result;
 }
 
 /* Allocate routine for DF_BrakeSystemStatus. */
 int DF_BrakeSystemStatus_allocate(BrakeSystemStatus_t *brakes_ptr, DF_BrakeSystemStatus_st_ptr Brakes_ptr)
 {
-	int result = 0;
-	
-	if((brakes_ptr == NULL)||(Brakes_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    int result = 0;
+    
+    if((brakes_ptr == NULL)||(Brakes_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(brakes_ptr, 0x00, sizeof(*brakes_ptr));
+    /* Reset all the zone. */
+    memset(brakes_ptr, 0x00, sizeof(*brakes_ptr));
 
-	if(Brakes_ptr->opt.BrakeSystemStatus_opt_brakepadel == MSG_OPTIONAL_YES)
-	{
-		brakes_ptr->brakePadel = CALLOC(1, sizeof(*brakes_ptr->brakePadel));
-		if(brakes_ptr->brakePadel == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Brakes_ptr->opt.BrakeSystemStatus_opt_brakepadel == MSG_OPTIONAL_YES)
+    {
+        brakes_ptr->brakePadel = CALLOC(1, sizeof(*brakes_ptr->brakePadel));
+        if(brakes_ptr->brakePadel == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*brakes_ptr->brakePadel = Brakes_ptr->brakepedal;
-	}else{
-		brakes_ptr->brakePadel = NULL;
-	}
+        *brakes_ptr->brakePadel = Brakes_ptr->brakepedal;
+    }else{
+        brakes_ptr->brakePadel = NULL;
+    }
 
-	if(Brakes_ptr->opt.BrakeSystemStatus_opt_wheelBrakes == MSG_OPTIONAL_YES)
-	{
-		brakes_ptr->wheelBrakes = CALLOC(1, sizeof(*brakes_ptr->wheelBrakes));
-		if(brakes_ptr->wheelBrakes == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Brakes_ptr->opt.BrakeSystemStatus_opt_wheelBrakes == MSG_OPTIONAL_YES)
+    {
+        brakes_ptr->wheelBrakes = CALLOC(1, sizeof(*brakes_ptr->wheelBrakes));
+        if(brakes_ptr->wheelBrakes == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		if((result = DE_BrakeAppliedStatus_allocate(brakes_ptr->wheelBrakes, &Brakes_ptr->wheelBrakes)) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}else{
-		brakes_ptr->wheelBrakes = NULL;
-	}
+        if((result = DE_BrakeAppliedStatus_allocate(brakes_ptr->wheelBrakes, &Brakes_ptr->wheelBrakes)) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }else{
+        brakes_ptr->wheelBrakes = NULL;
+    }
 
-	if(Brakes_ptr->opt.BrakeSystemStatus_opt_traction == MSG_OPTIONAL_YES)
-	{
-		brakes_ptr->traction = CALLOC(1, sizeof(*brakes_ptr->traction));
-		if(brakes_ptr->traction == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Brakes_ptr->opt.BrakeSystemStatus_opt_traction == MSG_OPTIONAL_YES)
+    {
+        brakes_ptr->traction = CALLOC(1, sizeof(*brakes_ptr->traction));
+        if(brakes_ptr->traction == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*brakes_ptr->traction = Brakes_ptr->traction;
-	}else{
-		brakes_ptr->traction = NULL;
-	}
+        *brakes_ptr->traction = Brakes_ptr->traction;
+    }else{
+        brakes_ptr->traction = NULL;
+    }
 
-	if(Brakes_ptr->opt.BrakeSystemStatus_opt_abs == MSG_OPTIONAL_YES)
-	{
-		brakes_ptr->abs = CALLOC(1, sizeof(*brakes_ptr->abs));
-		if(brakes_ptr->abs == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Brakes_ptr->opt.BrakeSystemStatus_opt_abs == MSG_OPTIONAL_YES)
+    {
+        brakes_ptr->abs = CALLOC(1, sizeof(*brakes_ptr->abs));
+        if(brakes_ptr->abs == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*brakes_ptr->abs = Brakes_ptr->abs;
-	}else{
-		brakes_ptr->abs = NULL;
-	}
+        *brakes_ptr->abs = Brakes_ptr->abs;
+    }else{
+        brakes_ptr->abs = NULL;
+    }
 
-	if(Brakes_ptr->opt.BrakeSystemStatus_opt_scs == MSG_OPTIONAL_YES)
-	{
-		brakes_ptr->scs = CALLOC(1, sizeof(*brakes_ptr->scs));
-		if(brakes_ptr->scs == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Brakes_ptr->opt.BrakeSystemStatus_opt_scs == MSG_OPTIONAL_YES)
+    {
+        brakes_ptr->scs = CALLOC(1, sizeof(*brakes_ptr->scs));
+        if(brakes_ptr->scs == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*brakes_ptr->scs = Brakes_ptr->scs;
-	}else{
-		brakes_ptr->scs = NULL;
-	}
+        *brakes_ptr->scs = Brakes_ptr->scs;
+    }else{
+        brakes_ptr->scs = NULL;
+    }
 
-	if(Brakes_ptr->opt.BrakeSystemStatus_opt_brakeBoost == MSG_OPTIONAL_YES)
-	{
-		brakes_ptr->brakeBoost= CALLOC(1, sizeof(*brakes_ptr->brakeBoost));
-		if(brakes_ptr->brakeBoost == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Brakes_ptr->opt.BrakeSystemStatus_opt_brakeBoost == MSG_OPTIONAL_YES)
+    {
+        brakes_ptr->brakeBoost= CALLOC(1, sizeof(*brakes_ptr->brakeBoost));
+        if(brakes_ptr->brakeBoost == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*brakes_ptr->brakeBoost = Brakes_ptr->brakeBoost;
-	}else{
-		brakes_ptr->brakeBoost = NULL;
-	}
+        *brakes_ptr->brakeBoost = Brakes_ptr->brakeBoost;
+    }else{
+        brakes_ptr->brakeBoost = NULL;
+    }
 
-	if(Brakes_ptr->opt.BrakeSystemStatus_opt_auxBrakes == MSG_OPTIONAL_YES)
-	{
-		brakes_ptr->auxBrakes = CALLOC(1, sizeof(*brakes_ptr->auxBrakes));
-		if(brakes_ptr->auxBrakes == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Brakes_ptr->opt.BrakeSystemStatus_opt_auxBrakes == MSG_OPTIONAL_YES)
+    {
+        brakes_ptr->auxBrakes = CALLOC(1, sizeof(*brakes_ptr->auxBrakes));
+        if(brakes_ptr->auxBrakes == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*brakes_ptr->auxBrakes = Brakes_ptr->auxBrakes;
-	}else{
-		brakes_ptr->auxBrakes = NULL;
-	}
+        *brakes_ptr->auxBrakes = Brakes_ptr->auxBrakes;
+    }else{
+        brakes_ptr->auxBrakes = NULL;
+    }
 
-	return result;
+    return result;
 ERR_EXIT:
 
-	DF_BrakeSystemStatus_free(brakes_ptr);
+    DF_BrakeSystemStatus_free(brakes_ptr);
 
-	return result;
+    return result;
 }
 
 
 /* parse routine for DF_BrakeSystemStatus. */
 int DF_BrakeSystemStatus_parse(BrakeSystemStatus_t *brakes_ptr, DF_BrakeSystemStatus_st_ptr Brakes_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((brakes_ptr == NULL)||(Brakes_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((brakes_ptr == NULL)||(Brakes_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone */
-	memset(Brakes_ptr, 0x00, sizeof(*Brakes_ptr));
+    /* Reset all the zone */
+    memset(Brakes_ptr, 0x00, sizeof(*Brakes_ptr));
 
-	if(brakes_ptr->brakePadel != NULL)
-	{
-		Brakes_ptr->opt.BrakeSystemStatus_opt_brakepadel = MSG_OPTIONAL_YES;
-		Brakes_ptr->brakepedal = *brakes_ptr->brakePadel;
-	}
+    if(brakes_ptr->brakePadel != NULL)
+    {
+        Brakes_ptr->opt.BrakeSystemStatus_opt_brakepadel = MSG_OPTIONAL_YES;
+        Brakes_ptr->brakepedal = *brakes_ptr->brakePadel;
+    }
 
-	if(brakes_ptr->wheelBrakes != NULL)
-	{
-		Brakes_ptr->opt.BrakeSystemStatus_opt_wheelBrakes = MSG_OPTIONAL_YES;
-		if((result = DE_BrakeAppliedStatus_parse(brakes_ptr->wheelBrakes, &Brakes_ptr->wheelBrakes)) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}
+    if(brakes_ptr->wheelBrakes != NULL)
+    {
+        Brakes_ptr->opt.BrakeSystemStatus_opt_wheelBrakes = MSG_OPTIONAL_YES;
+        if((result = DE_BrakeAppliedStatus_parse(brakes_ptr->wheelBrakes, &Brakes_ptr->wheelBrakes)) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
 
-	if(brakes_ptr->traction!= NULL)
-	{
-		Brakes_ptr->opt.BrakeSystemStatus_opt_traction = MSG_OPTIONAL_YES;
-		Brakes_ptr->traction = *brakes_ptr->traction;
-	}
+    if(brakes_ptr->traction!= NULL)
+    {
+        Brakes_ptr->opt.BrakeSystemStatus_opt_traction = MSG_OPTIONAL_YES;
+        Brakes_ptr->traction = *brakes_ptr->traction;
+    }
 
-	if(brakes_ptr->abs != NULL)
-	{
-		Brakes_ptr->opt.BrakeSystemStatus_opt_abs = MSG_OPTIONAL_YES;
-		Brakes_ptr->abs = *brakes_ptr->abs;
-	}
+    if(brakes_ptr->abs != NULL)
+    {
+        Brakes_ptr->opt.BrakeSystemStatus_opt_abs = MSG_OPTIONAL_YES;
+        Brakes_ptr->abs = *brakes_ptr->abs;
+    }
 
-	if(brakes_ptr->scs != NULL)
-	{
-		Brakes_ptr->opt.BrakeSystemStatus_opt_scs = MSG_OPTIONAL_YES;
-		Brakes_ptr->scs = *brakes_ptr->scs;
-	}
+    if(brakes_ptr->scs != NULL)
+    {
+        Brakes_ptr->opt.BrakeSystemStatus_opt_scs = MSG_OPTIONAL_YES;
+        Brakes_ptr->scs = *brakes_ptr->scs;
+    }
 
-	if(brakes_ptr->brakeBoost != NULL)
-	{
-		Brakes_ptr->opt.BrakeSystemStatus_opt_brakeBoost = MSG_OPTIONAL_YES;
-		Brakes_ptr->brakeBoost = *brakes_ptr->brakeBoost;
-	}
+    if(brakes_ptr->brakeBoost != NULL)
+    {
+        Brakes_ptr->opt.BrakeSystemStatus_opt_brakeBoost = MSG_OPTIONAL_YES;
+        Brakes_ptr->brakeBoost = *brakes_ptr->brakeBoost;
+    }
 
-	if(brakes_ptr->auxBrakes!= NULL)
-	{
-		Brakes_ptr->opt.BrakeSystemStatus_opt_auxBrakes = MSG_OPTIONAL_YES;
-		Brakes_ptr->auxBrakes = *brakes_ptr->auxBrakes;
-	}
+    if(brakes_ptr->auxBrakes!= NULL)
+    {
+        Brakes_ptr->opt.BrakeSystemStatus_opt_auxBrakes = MSG_OPTIONAL_YES;
+        Brakes_ptr->auxBrakes = *brakes_ptr->auxBrakes;
+    }
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 
 }
 
@@ -401,8 +401,8 @@ int DF_ConnectingLane_free(ConnectingLane_t *connlane_ptr)
 {
     if(connlane_ptr != NULL)
     {
-    	if(connlane_ptr->maneuver != NULL)
-			FREEMEM(connlane_ptr->maneuver);
+        if(connlane_ptr->maneuver != NULL)
+            FREEMEM(connlane_ptr->maneuver);
         /* Must clear all the zone and avoid repeat free operation. */
         memset(connlane_ptr, 0, sizeof(*connlane_ptr));
         return 0;
@@ -417,102 +417,102 @@ int DF_ConnectingLane_free(ConnectingLane_t *connlane_ptr)
 /* Allocate routine for DF_ConnectingLane. */
 int DF_ConnectingLane_allocate(ConnectingLane_t *connlane_ptr, DF_ConnectingLane_st_ptr Connlane_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((connlane_ptr == NULL) || (Connlane_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((connlane_ptr == NULL) || (Connlane_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(connlane_ptr, 0x00, sizeof(*connlane_ptr));
+    /* Reset all the zone. */
+    memset(connlane_ptr, 0x00, sizeof(*connlane_ptr));
 
-	connlane_ptr->lane = bsctyp_encode(DE_LaneID, Connlane_ptr->lane);
+    connlane_ptr->lane = bsctyp_encode(DE_LaneID, Connlane_ptr->lane);
 
-	
-	if(Connlane_ptr->opt.DF_ConnectingLane_opt_maneuver == MSG_OPTIONAL_YES)
-	{
-		if((connlane_ptr->maneuver = CALLOC(1, sizeof(*(connlane_ptr->maneuver)))) != NULL)
-		{
-			result = DE_AllowedManeuvers_allocate(connlane_ptr->maneuver, &(Connlane_ptr->maneuver));
-			if(result)
-				goto ERR_EXIT;
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
-	else
-	{
-		connlane_ptr->maneuver = NULL;
-	}
+    
+    if(Connlane_ptr->opt.DF_ConnectingLane_opt_maneuver == MSG_OPTIONAL_YES)
+    {
+        if((connlane_ptr->maneuver = CALLOC(1, sizeof(*(connlane_ptr->maneuver)))) != NULL)
+        {
+            result = DE_AllowedManeuvers_allocate(connlane_ptr->maneuver, &(Connlane_ptr->maneuver));
+            if(result)
+                goto ERR_EXIT;
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
+    else
+    {
+        connlane_ptr->maneuver = NULL;
+    }
 
-	return result;
-	
+    return result;
+    
 ERR_EXIT:
     
     DF_ConnectingLane_free(connlane_ptr);
-	return result;
+    return result;
 }
 
 /* Parse routine for DF_ConnectingLane. */
 int DF_ConnectingLane_parse(ConnectingLane_t *connlane_ptr, DF_ConnectingLane_st_ptr Connlane_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((connlane_ptr == NULL) || (Connlane_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((connlane_ptr == NULL) || (Connlane_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(Connlane_ptr, 0x00, sizeof(*Connlane_ptr));
-	
-	Connlane_ptr->lane = bsctyp_decode(DE_LaneID, connlane_ptr->lane);
-	
-	if(connlane_ptr->maneuver != NULL)
-	{
-		result = DE_AllowedManeuvers_parse(connlane_ptr->maneuver, &(Connlane_ptr->maneuver));
-		if(result)
-			goto ERR_EXIT;
-		
-		Connlane_ptr->opt.DF_ConnectingLane_opt_maneuver = MSG_OPTIONAL_YES;
-	}
-	else
-		Connlane_ptr->opt.DF_ConnectingLane_opt_maneuver = MSG_OPTIONAL_NO;
-	
-	return result;
-	
+    /* Reset all the zone. */
+    memset(Connlane_ptr, 0x00, sizeof(*Connlane_ptr));
+    
+    Connlane_ptr->lane = bsctyp_decode(DE_LaneID, connlane_ptr->lane);
+    
+    if(connlane_ptr->maneuver != NULL)
+    {
+        result = DE_AllowedManeuvers_parse(connlane_ptr->maneuver, &(Connlane_ptr->maneuver));
+        if(result)
+            goto ERR_EXIT;
+        
+        Connlane_ptr->opt.DF_ConnectingLane_opt_maneuver = MSG_OPTIONAL_YES;
+    }
+    else
+        Connlane_ptr->opt.DF_ConnectingLane_opt_maneuver = MSG_OPTIONAL_NO;
+    
+    return result;
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 
 }
 
 /* Free routine for DF_Connection. */
 int DF_Connection_free(Connection_t *conn_ptr)
 {
-	int result = 0;
+    int result = 0;
     if(conn_ptr != NULL)
     {
-    	if(conn_ptr->connectingLane != NULL)
-    	{
-    		result = DF_ConnectingLane_free(conn_ptr->connectingLane);
-			if(result)
-				return result;
-			
-			FREEMEM(conn_ptr->connectingLane);
-    	}
+        if(conn_ptr->connectingLane != NULL)
+        {
+            result = DF_ConnectingLane_free(conn_ptr->connectingLane);
+            if(result)
+                return result;
+            
+            FREEMEM(conn_ptr->connectingLane);
+        }
 
-		if(conn_ptr->phaseId != NULL)
-		{
-			FREEMEM(conn_ptr->phaseId);
-		}
-		
+        if(conn_ptr->phaseId != NULL)
+        {
+            FREEMEM(conn_ptr->phaseId);
+        }
+        
         /* Must clear all the zone and avoid repeat free operation. */
         memset(conn_ptr, 0, sizeof(*conn_ptr));
         return 0;
@@ -526,14 +526,14 @@ int DF_Connection_free(Connection_t *conn_ptr)
 /* Free extention routine for DF_Connection. Diff with DF_Connection_free() and this will free the point itself. */
 int DF_Connection_freeExt(Connection_t *conn_ptr)
 {
-	int result = 0;
+    int result = 0;
     if(conn_ptr != NULL)
     {
         /* Free Connection point content and point itself. */
         result = DF_Connection_free(conn_ptr);
-		if(result)
-			return result;
-		
+        if(result)
+            return result;
+        
         FREEMEM(conn_ptr);
 
         return 0;
@@ -548,107 +548,107 @@ int DF_Connection_freeExt(Connection_t *conn_ptr)
 /* Allocate routine for DF_Connection. */
 int DF_Connection_allocate(Connection_t *conn_ptr, DF_Connection_st_ptr Conn_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((conn_ptr == NULL) || (Conn_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((conn_ptr == NULL) || (Conn_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(conn_ptr, 0x00, sizeof(*conn_ptr));
+    /* Reset all the zone. */
+    memset(conn_ptr, 0x00, sizeof(*conn_ptr));
 
-	result = DF_NodeReferenceID_allocate(&(conn_ptr->remoteIntersection),&(Conn_ptr->remoteIntersection));
-	if(result)
-		goto ERR_EXIT;
+    result = DF_NodeReferenceID_allocate(&(conn_ptr->remoteIntersection),&(Conn_ptr->remoteIntersection));
+    if(result)
+        goto ERR_EXIT;
 
-	if(Conn_ptr->opt.Connection_opt_connectingLane == MSG_OPTIONAL_YES)
-	{
-		if((conn_ptr->connectingLane = CALLOC(1, sizeof(*(conn_ptr->connectingLane)))) != NULL)
-		{
-			result = DF_ConnectingLane_allocate(conn_ptr->connectingLane, &(Conn_ptr->connectingLane));
-			if(result)
-				goto ERR_EXIT;
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
-	else
-	{
-		conn_ptr->connectingLane = NULL;
-	}
-	
-	if(Conn_ptr->opt.Connection_opt_phaseId == MSG_OPTIONAL_YES)
-	{
-		if((conn_ptr->phaseId = CALLOC(1, sizeof(*(conn_ptr->phaseId)))) != NULL)
-		{
-			*(conn_ptr->phaseId) = bsctyp_encode(DE_PhaseID, Conn_ptr->phaseid);
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
-	else
-	{
-		conn_ptr->connectingLane = NULL;
-	}
+    if(Conn_ptr->opt.Connection_opt_connectingLane == MSG_OPTIONAL_YES)
+    {
+        if((conn_ptr->connectingLane = CALLOC(1, sizeof(*(conn_ptr->connectingLane)))) != NULL)
+        {
+            result = DF_ConnectingLane_allocate(conn_ptr->connectingLane, &(Conn_ptr->connectingLane));
+            if(result)
+                goto ERR_EXIT;
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
+    else
+    {
+        conn_ptr->connectingLane = NULL;
+    }
+    
+    if(Conn_ptr->opt.Connection_opt_phaseId == MSG_OPTIONAL_YES)
+    {
+        if((conn_ptr->phaseId = CALLOC(1, sizeof(*(conn_ptr->phaseId)))) != NULL)
+        {
+            *(conn_ptr->phaseId) = bsctyp_encode(DE_PhaseID, Conn_ptr->phaseid);
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
+    else
+    {
+        conn_ptr->connectingLane = NULL;
+    }
 
-	return result;
-	
+    return result;
+    
 ERR_EXIT:
     
     DF_Connection_free(conn_ptr);
-	return result;
+    return result;
 }
 
 /* Parse routine for DF_Connection. */
 int DF_Connection_parse(Connection_t *conn_ptr, DF_Connection_st_ptr Conn_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((conn_ptr == NULL) || (Conn_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((conn_ptr == NULL) || (Conn_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(Conn_ptr, 0x00, sizeof(*Conn_ptr));
+    /* Reset all the zone. */
+    memset(Conn_ptr, 0x00, sizeof(*Conn_ptr));
 
-	result = DF_NodeReferenceID_parse(&(conn_ptr->remoteIntersection),&(Conn_ptr->remoteIntersection));
-	if(result)
-		goto ERR_EXIT;
+    result = DF_NodeReferenceID_parse(&(conn_ptr->remoteIntersection),&(Conn_ptr->remoteIntersection));
+    if(result)
+        goto ERR_EXIT;
 
-	if(conn_ptr->connectingLane != NULL)
-	{
-		result = DF_ConnectingLane_parse(conn_ptr->connectingLane, &(Conn_ptr->connectingLane));
-		if(result)
-			goto ERR_EXIT;
-		
-		Conn_ptr->opt.Connection_opt_connectingLane = MSG_OPTIONAL_YES;
-	}
-	else
-		Conn_ptr->opt.Connection_opt_connectingLane = MSG_OPTIONAL_NO;
-	
-	if(conn_ptr->phaseId != NULL)
-	{
-		Conn_ptr->phaseid = bsctyp_decode(DE_PhaseID, *(conn_ptr->phaseId));
-		Conn_ptr->opt.Connection_opt_phaseId = MSG_OPTIONAL_YES;
-	}
-	else
-		Conn_ptr->opt.Connection_opt_phaseId = MSG_OPTIONAL_NO;
-	
-	return result;
-	
+    if(conn_ptr->connectingLane != NULL)
+    {
+        result = DF_ConnectingLane_parse(conn_ptr->connectingLane, &(Conn_ptr->connectingLane));
+        if(result)
+            goto ERR_EXIT;
+        
+        Conn_ptr->opt.Connection_opt_connectingLane = MSG_OPTIONAL_YES;
+    }
+    else
+        Conn_ptr->opt.Connection_opt_connectingLane = MSG_OPTIONAL_NO;
+    
+    if(conn_ptr->phaseId != NULL)
+    {
+        Conn_ptr->phaseid = bsctyp_decode(DE_PhaseID, *(conn_ptr->phaseId));
+        Conn_ptr->opt.Connection_opt_phaseId = MSG_OPTIONAL_YES;
+    }
+    else
+        Conn_ptr->opt.Connection_opt_phaseId = MSG_OPTIONAL_NO;
+    
+    return result;
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 
 }
 
@@ -674,7 +674,7 @@ int DF_ConnectsToList_free(ConnectsToList_t *list_ptr)
 /* Allocate routine for DF_ConnectsToList. */
 int DF_ConnectsToList_allocate(ConnectsToList_t *list_ptr, DF_ConnectsToList_st_ptr List_ptr)
 {
-	int                  result = 0;
+    int                  result = 0;
     uint8_t         point_index = 0;
     Connection_t     * elem_ptr = NULL;
   
@@ -720,7 +720,7 @@ int DF_ConnectsToList_allocate(ConnectsToList_t *list_ptr, DF_ConnectsToList_st_
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -771,7 +771,7 @@ ERR_EXIT:
 /* Free routine for DF_DDateTime. */
 int DF_DDateTime_free(DDateTime_t *time_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     if(time_ptr != NULL)
     {
         if(time_ptr->year != NULL)
@@ -818,18 +818,18 @@ int DF_DDateTime_free(DDateTime_t *time_ptr)
         result = -ERR_INVAL;
     }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_DDateTime. */
 int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((time_ptr == NULL) || (DDate_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -845,7 +845,7 @@ int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -863,7 +863,7 @@ int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -881,7 +881,7 @@ int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -899,7 +899,7 @@ int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -917,7 +917,7 @@ int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -935,7 +935,7 @@ int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -953,7 +953,7 @@ int DF_DDateTime_allocate(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -974,11 +974,11 @@ ERR_EXIT:
 /* Parse routine for DF_DDateTime. */
 int DF_DDateTime_parse(DDateTime_t *time_ptr, DF_DDateTime_st_ptr DDate_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((time_ptr == NULL) || (DDate_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1045,7 +1045,7 @@ ERR_EXIT:
 /* Free routine for FullPositionVector. */
 int DF_FullPositionVector_free(FullPositionVector_t *pos_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(pos_ptr != NULL)
     {
@@ -1055,40 +1055,40 @@ int DF_FullPositionVector_free(FullPositionVector_t *pos_ptr)
             FREEMEM(pos_ptr->utcTime);
         }
 
-		DF_Position3D_free(&pos_ptr->pos);
-		
+        DF_Position3D_free(&pos_ptr->pos);
+        
         if(pos_ptr->heading != NULL)
         {
             FREEMEM(pos_ptr->heading);
         }
-		
-		if(pos_ptr->transmission != NULL)
-		{
-			FREEMEM(pos_ptr->transmission);
-		}
-		
+        
+        if(pos_ptr->transmission != NULL)
+        {
+            FREEMEM(pos_ptr->transmission);
+        }
+        
         if(pos_ptr->speed != NULL)
         {
             FREEMEM(pos_ptr->speed);
         }
-		
+        
         if(pos_ptr->posAccuracy != NULL)
         {
             DF_PositionConfidenceSet_free(pos_ptr->posAccuracy);
             FREEMEM(pos_ptr->posAccuracy);
         }
-		
+        
         if(pos_ptr->timeConfidence != NULL)
         {
             FREEMEM(pos_ptr->timeConfidence);
         }
-		
+        
         if(pos_ptr->posConfidence != NULL)
         {   
             DF_PositionConfidenceSet_free(pos_ptr->posConfidence);
             FREEMEM(pos_ptr->posConfidence);
         }
-		
+        
         if(pos_ptr->motionCfd != NULL)
         {
             DF_MotionConfidenceSet_free(pos_ptr->motionCfd);
@@ -1101,19 +1101,19 @@ int DF_FullPositionVector_free(FullPositionVector_t *pos_ptr)
 
     }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_FullPositionVector. */
 int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositionVector_st_ptr fullPos_ptr)
 {
-	int		result = 0;
-	
+    int        result = 0;
+    
     /* Error detect. */
     if((pos_ptr == NULL) || (fullPos_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1132,7 +1132,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }    
     }
@@ -1141,11 +1141,11 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         pos_ptr->utcTime = NULL;
     }
 
-	/* Positon 3D. */
-	if((result = DF_Position3D_allocate(&pos_ptr->pos, &fullPos_ptr->pos)) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    /* Positon 3D. */
+    if((result = DF_Position3D_allocate(&pos_ptr->pos, &fullPos_ptr->pos)) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* Heading. */
     if(fullPos_ptr->opt.FullPositionVector_opt_Heading == MSG_OPTIONAL_YES)
@@ -1156,7 +1156,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1170,11 +1170,11 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
     {
         if((pos_ptr->transmission = CALLOC(1, sizeof(*pos_ptr->transmission))) != NULL)
         {
-        	*pos_ptr->transmission = fullPos_ptr->transmission;
+            *pos_ptr->transmission = fullPos_ptr->transmission;
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1183,16 +1183,16 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         pos_ptr->transmission= NULL;
     }
 
-	/* speed. */
+    /* speed. */
     if(fullPos_ptr->opt.FullPositionVector_opt_Speed == MSG_OPTIONAL_YES)
     {
         if((pos_ptr->speed = CALLOC(1, sizeof(*pos_ptr->speed))) != NULL)
         {
-        	*pos_ptr->speed = bsctyp_encode(DE_Speed, fullPos_ptr->speed);
+            *pos_ptr->speed = bsctyp_encode(DE_Speed, fullPos_ptr->speed);
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1200,7 +1200,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
     {
         pos_ptr->speed = NULL;
     }
-	
+    
     /* PositionalAccuracy. */
     if(fullPos_ptr->opt.FullPositionVector_opt_posAccuracy == MSG_OPTIONAL_YES)
     {
@@ -1213,7 +1213,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1231,7 +1231,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1252,7 +1252,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1273,7 +1273,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1282,7 +1282,7 @@ int DF_FullPositionVector_allocate(FullPositionVector_t *pos_ptr, DF_FullPositio
         pos_ptr->motionCfd = NULL;
     }
     
-   	return result;
+       return result;
 ERR_EXIT:
     
     DF_FullPositionVector_free(pos_ptr);
@@ -1293,13 +1293,13 @@ ERR_EXIT:
 /* Parse routine for DF_FullPositionVector. */
 int DF_FullPositionVector_parse(FullPositionVector_t *pos_ptr, DF_FullPositionVector_st_ptr fullPos_ptr)
 {
-	int 	result = 0;
+    int     result = 0;
 
-	
+    
     /* Error detect. */
     if((pos_ptr == NULL) || (fullPos_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1316,11 +1316,11 @@ int DF_FullPositionVector_parse(FullPositionVector_t *pos_ptr, DF_FullPositionVe
         }   
     }
 
-	/*Position 3D. */
-	if((result = DF_Position3D_parse(&pos_ptr->pos, &fullPos_ptr->pos)) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    /*Position 3D. */
+    if((result = DF_Position3D_parse(&pos_ptr->pos, &fullPos_ptr->pos)) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* Heading. */
     if(pos_ptr->heading != NULL)
@@ -1329,7 +1329,7 @@ int DF_FullPositionVector_parse(FullPositionVector_t *pos_ptr, DF_FullPositionVe
         fullPos_ptr->heading = bsctyp_decode(DE_Heading, * pos_ptr->heading);
     }
 
-	/* Transmission*/
+    /* Transmission*/
     if(pos_ptr->transmission != NULL)
     {
         fullPos_ptr->opt.FullPositionVector_opt_Transmission = MSG_OPTIONAL_YES;
@@ -1340,7 +1340,7 @@ int DF_FullPositionVector_parse(FullPositionVector_t *pos_ptr, DF_FullPositionVe
     if(pos_ptr->speed != NULL)
     {
         fullPos_ptr->opt.FullPositionVector_opt_Speed = MSG_OPTIONAL_YES;
-		fullPos_ptr->speed = bsctyp_decode(DE_Speed, *pos_ptr->speed);
+        fullPos_ptr->speed = bsctyp_decode(DE_Speed, *pos_ptr->speed);
     }
    
     
@@ -1414,7 +1414,7 @@ int DF_IntersectionStateList_free(IntersectionStateList_t *list_ptr)
 /* Allocate routine for DF_IntersectionStateList. */
 int DF_IntersectionStateList_allocate(IntersectionStateList_t *list_ptr, DF_IntersectionStateList_st_ptr List_ptr)
 {
-	int	                     result = 0;
+    int                         result = 0;
     uint8_t             point_index = 0;
     IntersectionState_t  * elem_ptr = NULL;
   
@@ -1460,7 +1460,7 @@ int DF_IntersectionStateList_allocate(IntersectionStateList_t *list_ptr, DF_Inte
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -1495,8 +1495,8 @@ int DF_IntersectionStateList_parse(IntersectionStateList_t *list_ptr, DF_Interse
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_IntersectionState_parse(list_ptr->list.array[point_index], &(List_ptr->array[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->pointNum = point_index;
     
@@ -1537,14 +1537,14 @@ int DF_IntersectionState_free(IntersectionState_t *iss_ptr)
         /* DSecond. */
         if(iss_ptr->timeStamp != NULL)
         {
-        	FREEMEM(iss_ptr->timeStamp);
+            FREEMEM(iss_ptr->timeStamp);
         }
 
-		if((result = DF_PhaseList_free(&(iss_ptr->phases))) != 0)
-		{
-		    goto ERR_EXIT;
-		}
-			
+        if((result = DF_PhaseList_free(&(iss_ptr->phases))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+            
         /* Must clear all the zone and avoid repeat free operation. */
         memset(iss_ptr, 0, sizeof(*iss_ptr));
     }
@@ -1580,13 +1580,13 @@ int DF_IntersectionState_freeExt(IntersectionState_t *iss_ptr)
 /* Allocate routine for DF_IntersectionState. */
 int DF_IntersectionState_allocate(IntersectionState_t *iss_ptr, DF_IntersectionState_st_ptr Iss_ptr)
 {
-	int    result = 0;
+    int    result = 0;
 
 
     /* Error detect. */
     if((iss_ptr == NULL) || (Iss_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1624,29 +1624,29 @@ int DF_IntersectionState_allocate(IntersectionState_t *iss_ptr, DF_IntersectionS
     }
 
     /* Dsecond. */
-	if(Iss_ptr->opt.timeStamp == MSG_OPTIONAL_YES)
-	{
-		if((iss_ptr->timeStamp = CALLOC(1, sizeof(*(iss_ptr->timeStamp)))) != NULL)
-		{
+    if(Iss_ptr->opt.timeStamp == MSG_OPTIONAL_YES)
+    {
+        if((iss_ptr->timeStamp = CALLOC(1, sizeof(*(iss_ptr->timeStamp)))) != NULL)
+        {
             *(iss_ptr->timeStamp) = bsctyp_encode(DE_DSecond, Iss_ptr->timeStamp);
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		iss_ptr->timeStamp = NULL;
-	}
+        iss_ptr->timeStamp = NULL;
+    }
 
-	/* PhaseList. */
-	if((result = DF_PhaseList_allocate(&(iss_ptr->phases), &(Iss_ptr->phases))) != 0)
-	{
-		goto ERR_EXIT;
-	}
-		
+    /* PhaseList. */
+    if((result = DF_PhaseList_allocate(&(iss_ptr->phases), &(Iss_ptr->phases))) != 0)
+    {
+        goto ERR_EXIT;
+    }
+        
     return result;
 
 ERR_EXIT:
@@ -1659,7 +1659,7 @@ ERR_EXIT:
 /* Parse routine for DF_IntersectionState. */
 int DF_IntersectionState_parse(IntersectionState_t *iss_ptr, DF_IntersectionState_st_ptr Iss_ptr)
 {
-	int    result = 0;
+    int    result = 0;
 
 
     /* Error detect. */
@@ -1673,10 +1673,10 @@ int DF_IntersectionState_parse(IntersectionState_t *iss_ptr, DF_IntersectionStat
     memset(Iss_ptr, 0, sizeof(*Iss_ptr));
 
     /* NodeReferenceID. */
-	if((result = DF_NodeReferenceID_parse(&(iss_ptr->intersectionId), &(Iss_ptr->intersectionId))) != 0)
-	{
-	    goto ERR_EXIT;
-	}
+    if((result = DF_NodeReferenceID_parse(&(iss_ptr->intersectionId), &(Iss_ptr->intersectionId))) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* IntersectionStatusObject. */
     if((result = DE_IntersectionStatusObject_parse(&(iss_ptr->status), &(Iss_ptr->status))) != 0)
@@ -1685,24 +1685,24 @@ int DF_IntersectionState_parse(IntersectionState_t *iss_ptr, DF_IntersectionStat
     }
 
     /* Minute of year. */
-	if(iss_ptr->moy != NULL)
-	{
-		Iss_ptr->moy = bsctyp_decode(DE_MinuteOfTheYear, *(iss_ptr->moy));
-		Iss_ptr->opt.moy = MSG_OPTIONAL_YES;
-	}
+    if(iss_ptr->moy != NULL)
+    {
+        Iss_ptr->moy = bsctyp_decode(DE_MinuteOfTheYear, *(iss_ptr->moy));
+        Iss_ptr->opt.moy = MSG_OPTIONAL_YES;
+    }
 
     /* DSecond. */
-	if(iss_ptr->timeStamp != NULL)
-	{
-		Iss_ptr->timeStamp = bsctyp_decode(DE_DSecond, *(iss_ptr->timeStamp));
-		Iss_ptr->opt.timeStamp = MSG_OPTIONAL_YES;
-	}
+    if(iss_ptr->timeStamp != NULL)
+    {
+        Iss_ptr->timeStamp = bsctyp_decode(DE_DSecond, *(iss_ptr->timeStamp));
+        Iss_ptr->opt.timeStamp = MSG_OPTIONAL_YES;
+    }
 
-	/* PhaseList. */
-	if((result = DF_PhaseList_parse(&(iss_ptr->phases), &(Iss_ptr->phases))) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    /* PhaseList. */
+    if((result = DF_PhaseList_parse(&(iss_ptr->phases), &(Iss_ptr->phases))) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
 ERR_EXIT:
     
@@ -1712,44 +1712,44 @@ ERR_EXIT:
 /* Free routine for DF_LaneTypeAttributes. */
 int DF_LaneTypeAttributes_free(LaneTypeAttributes_t *attr_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     if(attr_ptr != NULL)
     {
         switch(attr_ptr->present)
         {
-        	case LaneTypeAttributes_PR_NOTHING:
-				break;
-			case LaneTypeAttributes_PR_vehicle:
-				result = DE_LaneAttributes_Vehicle_free(&(attr_ptr->choice.vehicle));
-				break;
-			case LaneTypeAttributes_PR_crosswalk:
-				result = DE_LaneAttributes_Crosswalk_free(&(attr_ptr->choice.crosswalk));
-				break;
-			case LaneTypeAttributes_PR_bikeLane:
-				result = DE_LaneAttributes_Bike_free(&(attr_ptr->choice.bikeLane));
-				break;
-			case LaneTypeAttributes_PR_sidewalk:
-				result = DE_LaneAttributes_Sidewalk_free(&(attr_ptr->choice.sidewalk));
-				break;
-			case LaneTypeAttributes_PR_median:
-				result = DE_LaneAttributes_Barrier_free(&(attr_ptr->choice.median));
-				break;
-			case LaneTypeAttributes_PR_striping:
-				result = DE_LaneAttributes_Striping_free(&(attr_ptr->choice.striping));
-				break;
-			case LaneTypeAttributes_PR_trackedVehicle:
-				result = DE_LaneAttributes_TrackedVehicle_free(&(attr_ptr->choice.trackedVehicle));
-				break;
-			case LaneTypeAttributes_PR_parking:
-				result = DE_LaneAttributes_Parking_free(&(attr_ptr->choice.parking));
-				break;
-			default:
-				break;
+            case LaneTypeAttributes_PR_NOTHING:
+                break;
+            case LaneTypeAttributes_PR_vehicle:
+                result = DE_LaneAttributes_Vehicle_free(&(attr_ptr->choice.vehicle));
+                break;
+            case LaneTypeAttributes_PR_crosswalk:
+                result = DE_LaneAttributes_Crosswalk_free(&(attr_ptr->choice.crosswalk));
+                break;
+            case LaneTypeAttributes_PR_bikeLane:
+                result = DE_LaneAttributes_Bike_free(&(attr_ptr->choice.bikeLane));
+                break;
+            case LaneTypeAttributes_PR_sidewalk:
+                result = DE_LaneAttributes_Sidewalk_free(&(attr_ptr->choice.sidewalk));
+                break;
+            case LaneTypeAttributes_PR_median:
+                result = DE_LaneAttributes_Barrier_free(&(attr_ptr->choice.median));
+                break;
+            case LaneTypeAttributes_PR_striping:
+                result = DE_LaneAttributes_Striping_free(&(attr_ptr->choice.striping));
+                break;
+            case LaneTypeAttributes_PR_trackedVehicle:
+                result = DE_LaneAttributes_TrackedVehicle_free(&(attr_ptr->choice.trackedVehicle));
+                break;
+            case LaneTypeAttributes_PR_parking:
+                result = DE_LaneAttributes_Parking_free(&(attr_ptr->choice.parking));
+                break;
+            default:
+                break;
         }
 
-		if(result)
-			goto ERR_EXIT;
-		
+        if(result)
+            goto ERR_EXIT;
+        
         /* Must clear all the zone and avoid repeat free operation. */
         memset(attr_ptr, 0, sizeof(*attr_ptr));
         
@@ -1758,20 +1758,20 @@ int DF_LaneTypeAttributes_free(LaneTypeAttributes_t *attr_ptr)
     {
         result = -ERR_INVAL;
     }
-	
+    
 ERR_EXIT:
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_LaneTypeAttributes. */
 int DF_LaneTypeAttributes_allocate(LaneTypeAttributes_t *attr_ptr, DF_LaneTypeAttributes_st_ptr Attr_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((attr_ptr == NULL) || (Attr_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -1780,38 +1780,38 @@ int DF_LaneTypeAttributes_allocate(LaneTypeAttributes_t *attr_ptr, DF_LaneTypeAt
     
     switch(Attr_ptr->present)
     {
-    	case LaneTypeAttributes_PR_NOTHING:
-			break;
-		case LaneTypeAttributes_PR_vehicle:
-			result = DE_LaneAttributes_Vehicle_allocate(&(attr_ptr->choice.vehicle), &(Attr_ptr->choice.vehicle));
-			break;
-		case LaneTypeAttributes_PR_crosswalk:
-			result = DE_LaneAttributes_Crosswalk_allocate(&(attr_ptr->choice.crosswalk), &(Attr_ptr->choice.crosswalk));
-			break;
-		case LaneTypeAttributes_PR_bikeLane:
-			result = DE_LaneAttributes_Bike_allocate(&(attr_ptr->choice.bikeLane), &(Attr_ptr->choice.bikeLane));
-			break;
-		case LaneTypeAttributes_PR_sidewalk:
-			result = DE_LaneAttributes_Sidewalk_allocate(&(attr_ptr->choice.sidewalk), &(Attr_ptr->choice.sidewalk));
-			break;
-		case LaneTypeAttributes_PR_median:
-			result = DE_LaneAttributes_Barrier_allocate(&(attr_ptr->choice.median), &(Attr_ptr->choice.median));
-			break;
-		case LaneTypeAttributes_PR_striping:
-			result = DE_LaneAttributes_Striping_allocate(&(attr_ptr->choice.striping), &(Attr_ptr->choice.striping));
-			break;
-		case LaneTypeAttributes_PR_trackedVehicle:
-			result = DE_LaneAttributes_TrackedVehicle_allocate(&(attr_ptr->choice.trackedVehicle), &(Attr_ptr->choice.trackedvehicle));
-			break;
-		case LaneTypeAttributes_PR_parking:
-			result = DE_LaneAttributes_Parking_allocate(&(attr_ptr->choice.parking), &(Attr_ptr->choice.parking));
-			break;
-		default:
-			break;
+        case LaneTypeAttributes_PR_NOTHING:
+            break;
+        case LaneTypeAttributes_PR_vehicle:
+            result = DE_LaneAttributes_Vehicle_allocate(&(attr_ptr->choice.vehicle), &(Attr_ptr->choice.vehicle));
+            break;
+        case LaneTypeAttributes_PR_crosswalk:
+            result = DE_LaneAttributes_Crosswalk_allocate(&(attr_ptr->choice.crosswalk), &(Attr_ptr->choice.crosswalk));
+            break;
+        case LaneTypeAttributes_PR_bikeLane:
+            result = DE_LaneAttributes_Bike_allocate(&(attr_ptr->choice.bikeLane), &(Attr_ptr->choice.bikeLane));
+            break;
+        case LaneTypeAttributes_PR_sidewalk:
+            result = DE_LaneAttributes_Sidewalk_allocate(&(attr_ptr->choice.sidewalk), &(Attr_ptr->choice.sidewalk));
+            break;
+        case LaneTypeAttributes_PR_median:
+            result = DE_LaneAttributes_Barrier_allocate(&(attr_ptr->choice.median), &(Attr_ptr->choice.median));
+            break;
+        case LaneTypeAttributes_PR_striping:
+            result = DE_LaneAttributes_Striping_allocate(&(attr_ptr->choice.striping), &(Attr_ptr->choice.striping));
+            break;
+        case LaneTypeAttributes_PR_trackedVehicle:
+            result = DE_LaneAttributes_TrackedVehicle_allocate(&(attr_ptr->choice.trackedVehicle), &(Attr_ptr->choice.trackedvehicle));
+            break;
+        case LaneTypeAttributes_PR_parking:
+            result = DE_LaneAttributes_Parking_allocate(&(attr_ptr->choice.parking), &(Attr_ptr->choice.parking));
+            break;
+        default:
+            break;
     }
 
-	if(result)
-		goto ERR_EXIT;
+    if(result)
+        goto ERR_EXIT;
     
     return result;
 
@@ -1825,11 +1825,11 @@ ERR_EXIT:
 /* Parse routine for DF_LaneTypeAttributes. */
 int DF_LaneTypeAttributes_parse(LaneTypeAttributes_t *attr_ptr, DF_LaneTypeAttributes_st_ptr Attr_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((attr_ptr == NULL) || (Attr_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
     
@@ -1838,38 +1838,38 @@ int DF_LaneTypeAttributes_parse(LaneTypeAttributes_t *attr_ptr, DF_LaneTypeAttri
     
     switch(Attr_ptr->present)
     {
-    	case LaneTypeAttributes_PR_NOTHING:
-			break;
-		case LaneTypeAttributes_PR_vehicle:
-			result = DE_LaneAttributes_Vehicle_parse(&(attr_ptr->choice.vehicle), &(Attr_ptr->choice.vehicle));
-			break;
-		case LaneTypeAttributes_PR_crosswalk:
-			result = DE_LaneAttributes_Crosswalk_parse(&(attr_ptr->choice.crosswalk), &(Attr_ptr->choice.crosswalk));
-			break;
-		case LaneTypeAttributes_PR_bikeLane:
-			result = DE_LaneAttributes_Bike_parse(&(attr_ptr->choice.bikeLane), &(Attr_ptr->choice.bikeLane));
-			break;
-		case LaneTypeAttributes_PR_sidewalk:
-			result = DE_LaneAttributes_Sidewalk_parse(&(attr_ptr->choice.sidewalk), &(Attr_ptr->choice.sidewalk));
-			break;
-		case LaneTypeAttributes_PR_median:
-			result = DE_LaneAttributes_Barrier_parse(&(attr_ptr->choice.median), &(Attr_ptr->choice.median));
-			break;
-		case LaneTypeAttributes_PR_striping:
-			result = DE_LaneAttributes_Striping_parse(&(attr_ptr->choice.striping), &(Attr_ptr->choice.striping));
-			break;
-		case LaneTypeAttributes_PR_trackedVehicle:
-			result = DE_LaneAttributes_TrackedVehicle_parse(&(attr_ptr->choice.trackedVehicle), &(Attr_ptr->choice.trackedvehicle));
-			break;
-		case LaneTypeAttributes_PR_parking:
-			result = DE_LaneAttributes_Parking_parse(&(attr_ptr->choice.parking), &(Attr_ptr->choice.parking));
-			break;
-		default:
-			break;
+        case LaneTypeAttributes_PR_NOTHING:
+            break;
+        case LaneTypeAttributes_PR_vehicle:
+            result = DE_LaneAttributes_Vehicle_parse(&(attr_ptr->choice.vehicle), &(Attr_ptr->choice.vehicle));
+            break;
+        case LaneTypeAttributes_PR_crosswalk:
+            result = DE_LaneAttributes_Crosswalk_parse(&(attr_ptr->choice.crosswalk), &(Attr_ptr->choice.crosswalk));
+            break;
+        case LaneTypeAttributes_PR_bikeLane:
+            result = DE_LaneAttributes_Bike_parse(&(attr_ptr->choice.bikeLane), &(Attr_ptr->choice.bikeLane));
+            break;
+        case LaneTypeAttributes_PR_sidewalk:
+            result = DE_LaneAttributes_Sidewalk_parse(&(attr_ptr->choice.sidewalk), &(Attr_ptr->choice.sidewalk));
+            break;
+        case LaneTypeAttributes_PR_median:
+            result = DE_LaneAttributes_Barrier_parse(&(attr_ptr->choice.median), &(Attr_ptr->choice.median));
+            break;
+        case LaneTypeAttributes_PR_striping:
+            result = DE_LaneAttributes_Striping_parse(&(attr_ptr->choice.striping), &(Attr_ptr->choice.striping));
+            break;
+        case LaneTypeAttributes_PR_trackedVehicle:
+            result = DE_LaneAttributes_TrackedVehicle_parse(&(attr_ptr->choice.trackedVehicle), &(Attr_ptr->choice.trackedvehicle));
+            break;
+        case LaneTypeAttributes_PR_parking:
+            result = DE_LaneAttributes_Parking_parse(&(attr_ptr->choice.parking), &(Attr_ptr->choice.parking));
+            break;
+        default:
+            break;
     }
 
-	if(result)
-		goto ERR_EXIT;
+    if(result)
+        goto ERR_EXIT;
     
     return result;
 
@@ -1881,158 +1881,158 @@ ERR_EXIT:
 /* Free routine for DF_LaneAttributes. */
 int DF_LaneAttributes_free(LaneAttributes_t *attr_ptr)
 {
-	int result = 0;
-	
-	if(attr_ptr != NULL)
-	{
-		if(attr_ptr->shareWith != NULL)
-		{
-			FREEMEM(attr_ptr->shareWith);
-		}
+    int result = 0;
+    
+    if(attr_ptr != NULL)
+    {
+        if(attr_ptr->shareWith != NULL)
+        {
+            FREEMEM(attr_ptr->shareWith);
+        }
 
-		result = DF_LaneTypeAttributes_free(&(attr_ptr->laneType));
-		if(result)
-			return result;
+        result = DF_LaneTypeAttributes_free(&(attr_ptr->laneType));
+        if(result)
+            return result;
 
-		memset(attr_ptr, 0x00, sizeof(*attr_ptr));
-	}
+        memset(attr_ptr, 0x00, sizeof(*attr_ptr));
+    }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_LaneAttributes.*/
 int DF_LaneAttributes_Allocate(LaneAttributes_t *attr_ptr, DF_LaneAttributes_st_ptr Attr_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((attr_ptr == NULL) || (Attr_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((attr_ptr == NULL) || (Attr_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(attr_ptr, 0x00, sizeof(*attr_ptr));
-		
-	if(Attr_ptr->opt.LaneAttributes_opt_sharewith == MSG_OPTIONAL_YES)
-	{
-		attr_ptr->shareWith = CALLOC(1, sizeof(*(attr_ptr->shareWith)));
-		if(attr_ptr->shareWith == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    /* Reset all the zone. */
+    memset(attr_ptr, 0x00, sizeof(*attr_ptr));
+        
+    if(Attr_ptr->opt.LaneAttributes_opt_sharewith == MSG_OPTIONAL_YES)
+    {
+        attr_ptr->shareWith = CALLOC(1, sizeof(*(attr_ptr->shareWith)));
+        if(attr_ptr->shareWith == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		result = DE_LaneSharing_allocate(attr_ptr->shareWith, &(Attr_ptr->shareWith));
-	}else{
-		attr_ptr->shareWith = NULL;
-	}
+        result = DE_LaneSharing_allocate(attr_ptr->shareWith, &(Attr_ptr->shareWith));
+    }else{
+        attr_ptr->shareWith = NULL;
+    }
 
-	result = DF_LaneTypeAttributes_allocate(&(attr_ptr->laneType), &(Attr_ptr->laneType));
-	if(result)
-		goto ERR_EXIT;
+    result = DF_LaneTypeAttributes_allocate(&(attr_ptr->laneType), &(Attr_ptr->laneType));
+    if(result)
+        goto ERR_EXIT;
 
-	return result;
+    return result;
 ERR_EXIT:
-	
-	DF_LaneAttributes_free(attr_ptr);
-	
-	return result;
+    
+    DF_LaneAttributes_free(attr_ptr);
+    
+    return result;
 }
 
 
 /* Parse routine for DF_LaneAttributes. */
 int DF_LaneAttributes_parse(LaneAttributes_t *attr_ptr, DF_LaneAttributes_st_ptr Attr_ptr)
 {
-	int result = 0;
-	
-	if((attr_ptr == NULL) || (Attr_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    int result = 0;
+    
+    if((attr_ptr == NULL) || (Attr_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear  Attr_ptr memory */
-	memset(Attr_ptr, 0x00, sizeof(*Attr_ptr));
-	
-	if(attr_ptr->shareWith != NULL)
-	{
-		result = DE_LaneSharing_parse(attr_ptr->shareWith, &(Attr_ptr->shareWith));
-		if(result)
-			goto ERR_EXIT;
-		
-		Attr_ptr->opt.LaneAttributes_opt_sharewith = MSG_OPTIONAL_YES;
-	}
-	else
-		Attr_ptr->opt.LaneAttributes_opt_sharewith = MSG_OPTIONAL_NO;
+    /* clear  Attr_ptr memory */
+    memset(Attr_ptr, 0x00, sizeof(*Attr_ptr));
+    
+    if(attr_ptr->shareWith != NULL)
+    {
+        result = DE_LaneSharing_parse(attr_ptr->shareWith, &(Attr_ptr->shareWith));
+        if(result)
+            goto ERR_EXIT;
+        
+        Attr_ptr->opt.LaneAttributes_opt_sharewith = MSG_OPTIONAL_YES;
+    }
+    else
+        Attr_ptr->opt.LaneAttributes_opt_sharewith = MSG_OPTIONAL_NO;
 
-	result = DF_LaneTypeAttributes_parse(&(attr_ptr->laneType), &(Attr_ptr->laneType));
-	if(result)
-			goto ERR_EXIT;
-	
+    result = DF_LaneTypeAttributes_parse(&(attr_ptr->laneType), &(Attr_ptr->laneType));
+    if(result)
+            goto ERR_EXIT;
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 /* Free routine for DF_Lane. */
 int DF_Lane_free(Lane_t *lane_ptr)
 {
-	int result = 0;
-	
-	if(lane_ptr != NULL)
-	{
-		if(lane_ptr->laneAttributes != NULL)
-		{
-			result = DF_LaneAttributes_free(lane_ptr->laneAttributes);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(lane_ptr->laneAttributes);
-		}
+    int result = 0;
+    
+    if(lane_ptr != NULL)
+    {
+        if(lane_ptr->laneAttributes != NULL)
+        {
+            result = DF_LaneAttributes_free(lane_ptr->laneAttributes);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(lane_ptr->laneAttributes);
+        }
 
-		if(lane_ptr->maneuvers != NULL)
-		{
-			result = DE_AllowedManeuvers_free(lane_ptr->maneuvers);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(lane_ptr->maneuvers);
-		}
+        if(lane_ptr->maneuvers != NULL)
+        {
+            result = DE_AllowedManeuvers_free(lane_ptr->maneuvers);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(lane_ptr->maneuvers);
+        }
 
-		if(lane_ptr->connectsTo != NULL)
-		{
-			result = DF_ConnectsToList_free(lane_ptr->connectsTo);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(lane_ptr->connectsTo);
-		}
+        if(lane_ptr->connectsTo != NULL)
+        {
+            result = DF_ConnectsToList_free(lane_ptr->connectsTo);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(lane_ptr->connectsTo);
+        }
 
-		if(lane_ptr->speedLimits != NULL)
-		{
-			result = DF_SpeedLimitList_free(lane_ptr->speedLimits);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(lane_ptr->speedLimits);
-		}
+        if(lane_ptr->speedLimits != NULL)
+        {
+            result = DF_SpeedLimitList_free(lane_ptr->speedLimits);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(lane_ptr->speedLimits);
+        }
 
-		if(lane_ptr->points != NULL)
-		{
-			result = DF_PointList_free(lane_ptr->points);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(lane_ptr->points);
-		}
-		
-		memset(lane_ptr, 0x00, sizeof(*lane_ptr));
-	}
+        if(lane_ptr->points != NULL)
+        {
+            result = DF_PointList_free(lane_ptr->points);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(lane_ptr->points);
+        }
+        
+        memset(lane_ptr, 0x00, sizeof(*lane_ptr));
+    }
 
 ERR_EXIT:
-	return result;
+    return result;
 }
 
 /* Free extention routine for DF_Lane. Diff with DF_Lane_free() and this will free the point itself. */
@@ -2056,167 +2056,167 @@ int DF_Lane_freeExt(Lane_t *lane_ptr)
 /* Allocate routine for DF_Lane.*/
 int DF_Lane_Allocate(Lane_t *lane_ptr, DF_Lane_st_ptr Lane_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((lane_ptr == NULL) || (Lane_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((lane_ptr == NULL) || (Lane_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(lane_ptr, 0x00, sizeof(*lane_ptr));
+    /* Reset all the zone. */
+    memset(lane_ptr, 0x00, sizeof(*lane_ptr));
 
-	lane_ptr->laneID = bsctyp_encode(DE_LaneID, Lane_ptr->laneID);
-		
-	if(Lane_ptr->opt.Lane_opt_lanAttributes == MSG_OPTIONAL_YES)
-	{
-		lane_ptr->laneAttributes = CALLOC(1, sizeof(*(lane_ptr->laneAttributes)));
-		if(lane_ptr->laneAttributes == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		result = DF_LaneAttributes_Allocate(lane_ptr->laneAttributes, &(Lane_ptr->laneAttributes));
-	}else{
-		lane_ptr->laneAttributes = NULL;
-	}
+    lane_ptr->laneID = bsctyp_encode(DE_LaneID, Lane_ptr->laneID);
+        
+    if(Lane_ptr->opt.Lane_opt_lanAttributes == MSG_OPTIONAL_YES)
+    {
+        lane_ptr->laneAttributes = CALLOC(1, sizeof(*(lane_ptr->laneAttributes)));
+        if(lane_ptr->laneAttributes == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        result = DF_LaneAttributes_Allocate(lane_ptr->laneAttributes, &(Lane_ptr->laneAttributes));
+    }else{
+        lane_ptr->laneAttributes = NULL;
+    }
 
-	if(Lane_ptr->opt.Lane_opt_maneuvers == MSG_OPTIONAL_YES)
-	{
-		lane_ptr->maneuvers = CALLOC(1, sizeof(*(lane_ptr->maneuvers)));
-		if(lane_ptr->maneuvers == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		result = DE_AllowedManeuvers_allocate(lane_ptr->maneuvers, &(Lane_ptr->maneuvers));
-	}else{
-		lane_ptr->maneuvers = NULL;
-	}
+    if(Lane_ptr->opt.Lane_opt_maneuvers == MSG_OPTIONAL_YES)
+    {
+        lane_ptr->maneuvers = CALLOC(1, sizeof(*(lane_ptr->maneuvers)));
+        if(lane_ptr->maneuvers == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        result = DE_AllowedManeuvers_allocate(lane_ptr->maneuvers, &(Lane_ptr->maneuvers));
+    }else{
+        lane_ptr->maneuvers = NULL;
+    }
 
-	if(Lane_ptr->opt.Lane_opt_connectsTo == MSG_OPTIONAL_YES)
-	{
-		lane_ptr->connectsTo = CALLOC(1, sizeof(*(lane_ptr->connectsTo)));
-		if(lane_ptr->connectsTo == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		result = DF_ConnectsToList_allocate(lane_ptr->connectsTo, &(Lane_ptr->connectsTo));
-	}else{
-		lane_ptr->connectsTo = NULL;
-	}
+    if(Lane_ptr->opt.Lane_opt_connectsTo == MSG_OPTIONAL_YES)
+    {
+        lane_ptr->connectsTo = CALLOC(1, sizeof(*(lane_ptr->connectsTo)));
+        if(lane_ptr->connectsTo == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        result = DF_ConnectsToList_allocate(lane_ptr->connectsTo, &(Lane_ptr->connectsTo));
+    }else{
+        lane_ptr->connectsTo = NULL;
+    }
 
-	if(Lane_ptr->opt.Lane_opt_speedLimits == MSG_OPTIONAL_YES)
-	{
-		lane_ptr->speedLimits = CALLOC(1, sizeof(*(lane_ptr->speedLimits)));
-		if(lane_ptr->speedLimits == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		result = DF_SpeedLimitList_allocate(lane_ptr->speedLimits, &(Lane_ptr->speedLimits));
-	}else{
-		lane_ptr->speedLimits = NULL;
-	}
+    if(Lane_ptr->opt.Lane_opt_speedLimits == MSG_OPTIONAL_YES)
+    {
+        lane_ptr->speedLimits = CALLOC(1, sizeof(*(lane_ptr->speedLimits)));
+        if(lane_ptr->speedLimits == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        result = DF_SpeedLimitList_allocate(lane_ptr->speedLimits, &(Lane_ptr->speedLimits));
+    }else{
+        lane_ptr->speedLimits = NULL;
+    }
 
-	if(Lane_ptr->opt.Lane_opt_points == MSG_OPTIONAL_YES)
-	{
-		lane_ptr->points = CALLOC(1, sizeof(*(lane_ptr->points)));
-		if(lane_ptr->points == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		result = DF_PointList_allocate(lane_ptr->points, &(Lane_ptr->points));
-	}else{
-		lane_ptr->points = NULL;
-	}
+    if(Lane_ptr->opt.Lane_opt_points == MSG_OPTIONAL_YES)
+    {
+        lane_ptr->points = CALLOC(1, sizeof(*(lane_ptr->points)));
+        if(lane_ptr->points == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        result = DF_PointList_allocate(lane_ptr->points, &(Lane_ptr->points));
+    }else{
+        lane_ptr->points = NULL;
+    }
 
-	return result;
+    return result;
 ERR_EXIT:
-	
-	DF_Lane_free(lane_ptr);
-	
-	return result;
+    
+    DF_Lane_free(lane_ptr);
+    
+    return result;
 }
 
 
 /* Parse routine for DF_Lane. */
 int DF_Lane_parse(Lane_t *lane_ptr, DF_Lane_st_ptr Lane_ptr)
 {
-	int result = 0;
-	
-	if((lane_ptr == NULL) || (Lane_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    int result = 0;
+    
+    if((lane_ptr == NULL) || (Lane_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear  Attr_ptr memory */
-	memset(Lane_ptr, 0x00, sizeof(*Lane_ptr));
+    /* clear  Attr_ptr memory */
+    memset(Lane_ptr, 0x00, sizeof(*Lane_ptr));
 
-	Lane_ptr->laneID = bsctyp_decode(DE_LaneID,lane_ptr->laneID);
-	
-	if(lane_ptr->laneAttributes != NULL)
-	{
-		result = DF_LaneAttributes_parse(lane_ptr->laneAttributes, &(Lane_ptr->laneAttributes));
-		if(result)
-			goto ERR_EXIT;
-		
-		Lane_ptr->opt.Lane_opt_lanAttributes = MSG_OPTIONAL_YES;
-	}
-	else
-		Lane_ptr->opt.Lane_opt_lanAttributes = MSG_OPTIONAL_NO;
+    Lane_ptr->laneID = bsctyp_decode(DE_LaneID,lane_ptr->laneID);
+    
+    if(lane_ptr->laneAttributes != NULL)
+    {
+        result = DF_LaneAttributes_parse(lane_ptr->laneAttributes, &(Lane_ptr->laneAttributes));
+        if(result)
+            goto ERR_EXIT;
+        
+        Lane_ptr->opt.Lane_opt_lanAttributes = MSG_OPTIONAL_YES;
+    }
+    else
+        Lane_ptr->opt.Lane_opt_lanAttributes = MSG_OPTIONAL_NO;
 
-	if(lane_ptr->maneuvers != NULL)
-	{
-		result = DE_AllowedManeuvers_parse(lane_ptr->maneuvers, &(Lane_ptr->maneuvers));
-		if(result)
-			goto ERR_EXIT;
-		
-		Lane_ptr->opt.Lane_opt_maneuvers = MSG_OPTIONAL_YES;
-	}
-	else
-		Lane_ptr->opt.Lane_opt_maneuvers = MSG_OPTIONAL_NO;
+    if(lane_ptr->maneuvers != NULL)
+    {
+        result = DE_AllowedManeuvers_parse(lane_ptr->maneuvers, &(Lane_ptr->maneuvers));
+        if(result)
+            goto ERR_EXIT;
+        
+        Lane_ptr->opt.Lane_opt_maneuvers = MSG_OPTIONAL_YES;
+    }
+    else
+        Lane_ptr->opt.Lane_opt_maneuvers = MSG_OPTIONAL_NO;
 
-	if(lane_ptr->connectsTo != NULL)
-	{
-		result = DF_ConnectsToList_parse(lane_ptr->connectsTo, &(Lane_ptr->connectsTo));
-		if(result)
-			goto ERR_EXIT;
-		
-		Lane_ptr->opt.Lane_opt_connectsTo = MSG_OPTIONAL_YES;
-	}
-	else
-		Lane_ptr->opt.Lane_opt_connectsTo = MSG_OPTIONAL_NO;
+    if(lane_ptr->connectsTo != NULL)
+    {
+        result = DF_ConnectsToList_parse(lane_ptr->connectsTo, &(Lane_ptr->connectsTo));
+        if(result)
+            goto ERR_EXIT;
+        
+        Lane_ptr->opt.Lane_opt_connectsTo = MSG_OPTIONAL_YES;
+    }
+    else
+        Lane_ptr->opt.Lane_opt_connectsTo = MSG_OPTIONAL_NO;
 
-	if(lane_ptr->speedLimits != NULL)
-	{
-		result = DF_SpeedLimitList_parse(lane_ptr->speedLimits, &(Lane_ptr->speedLimits));
-		if(result)
-			goto ERR_EXIT;
-		
-		Lane_ptr->opt.Lane_opt_speedLimits = MSG_OPTIONAL_YES;
-	}
-	else
-		Lane_ptr->opt.Lane_opt_speedLimits = MSG_OPTIONAL_NO;
+    if(lane_ptr->speedLimits != NULL)
+    {
+        result = DF_SpeedLimitList_parse(lane_ptr->speedLimits, &(Lane_ptr->speedLimits));
+        if(result)
+            goto ERR_EXIT;
+        
+        Lane_ptr->opt.Lane_opt_speedLimits = MSG_OPTIONAL_YES;
+    }
+    else
+        Lane_ptr->opt.Lane_opt_speedLimits = MSG_OPTIONAL_NO;
 
-	if(lane_ptr->points != NULL)
-	{
-		result = DF_PointList_parse(lane_ptr->points, &(Lane_ptr->points));
-		if(result)
-			goto ERR_EXIT;
-		
-		Lane_ptr->opt.Lane_opt_points = MSG_OPTIONAL_YES;
-	}
-	else
-		Lane_ptr->opt.Lane_opt_points = MSG_OPTIONAL_NO;
-	
+    if(lane_ptr->points != NULL)
+    {
+        result = DF_PointList_parse(lane_ptr->points, &(Lane_ptr->points));
+        if(result)
+            goto ERR_EXIT;
+        
+        Lane_ptr->opt.Lane_opt_points = MSG_OPTIONAL_YES;
+    }
+    else
+        Lane_ptr->opt.Lane_opt_points = MSG_OPTIONAL_NO;
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 /* Free routine for DF_LaneList. */
@@ -2242,7 +2242,7 @@ int DF_LaneList_free(LaneList_t *list_ptr)
 /* Allocate routine for DF_LaneList. */
 int DF_LaneList_allocate(LaneList_t *list_ptr, DF_LaneList_st_ptr List_ptr)
 {
-	int           result = 0;
+    int           result = 0;
     uint8_t  point_index = 0;
     Lane_t    * elem_ptr = NULL;
   
@@ -2286,7 +2286,7 @@ int DF_LaneList_allocate(LaneList_t *list_ptr, DF_LaneList_st_ptr List_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -2321,8 +2321,8 @@ int DF_LaneList_parse(LaneList_t *list_ptr, DF_LaneList_st_ptr List_ptr)
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_Lane_parse(list_ptr->list.array[point_index], &(List_ptr->laneList_data[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->LaneList_size = point_index;
     
@@ -2336,62 +2336,62 @@ ERR_EXIT:
 /* Free routine for DF_Link. */
 int DF_Link_free(Link_t *link_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if(link_ptr != NULL)
-	{
-		if(link_ptr->name != NULL)
-		{
-			result = DE_DescriptiveName_free(link_ptr->name);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(link_ptr->name);
-		}
+    if(link_ptr != NULL)
+    {
+        if(link_ptr->name != NULL)
+        {
+            result = DE_DescriptiveName_free(link_ptr->name);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(link_ptr->name);
+        }
 
-		result = DF_NodeReferenceID_free(&(link_ptr->upstreamNodeId));
-		if(result)
-			goto ERR_EXIT;
-		
-		if(link_ptr->speedLimits != NULL)
-		{
-			result = DF_SpeedLimitList_free(link_ptr->speedLimits);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(link_ptr->speedLimits);
-		}
+        result = DF_NodeReferenceID_free(&(link_ptr->upstreamNodeId));
+        if(result)
+            goto ERR_EXIT;
+        
+        if(link_ptr->speedLimits != NULL)
+        {
+            result = DF_SpeedLimitList_free(link_ptr->speedLimits);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(link_ptr->speedLimits);
+        }
 
-		if(link_ptr->points != NULL)
-		{
-			result = DF_PointList_free(link_ptr->points);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(link_ptr->points);
-		}
+        if(link_ptr->points != NULL)
+        {
+            result = DF_PointList_free(link_ptr->points);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(link_ptr->points);
+        }
 
-		if(link_ptr->movements != NULL)
-		{
-			result = DF_MovementList_free(link_ptr->movements);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(link_ptr->movements);
-		}
+        if(link_ptr->movements != NULL)
+        {
+            result = DF_MovementList_free(link_ptr->movements);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(link_ptr->movements);
+        }
 
-		result = DF_LaneList_free(&(link_ptr->lanes));
-		if(result)
-			goto ERR_EXIT;
+        result = DF_LaneList_free(&(link_ptr->lanes));
+        if(result)
+            goto ERR_EXIT;
 
-		memset(link_ptr, 0x00, sizeof(*link_ptr));
-	}
+        memset(link_ptr, 0x00, sizeof(*link_ptr));
+    }
     else
     {
         result = -ERR_INVAL;
     }
 ERR_EXIT:
-	return result;
+    return result;
 }
 
 /* Free extention routine for DF_Link. Diff with DF_Link_free() and this will free the point itself. */
@@ -2415,208 +2415,208 @@ int DF_Link_freeExt(Link_t *link_ptr)
 /* Allocate routine for DF_Link.*/
 int DF_Link_allocate(Link_t *link_ptr, DF_Link_st_ptr Link_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detection. */
-	if((link_ptr == NULL) || (Link_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((link_ptr == NULL) || (Link_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(link_ptr, 0x00, sizeof(*link_ptr));
+    /* Reset all the zone. */
+    memset(link_ptr, 0x00, sizeof(*link_ptr));
 
-	/*name*/
-	if(Link_ptr->opt.Link_opt_name == MSG_OPTIONAL_YES)
-	{
-		if((link_ptr->name = CALLOC(1, sizeof(*(link_ptr->name)))) != NULL)
-		{
-		     result = DE_DescriptiveName_allocate(link_ptr->name, &(Link_ptr->name));
-			 if(result)
-			 	goto ERR_EXIT;
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+    /*name*/
+    if(Link_ptr->opt.Link_opt_name == MSG_OPTIONAL_YES)
+    {
+        if((link_ptr->name = CALLOC(1, sizeof(*(link_ptr->name)))) != NULL)
+        {
+             result = DE_DescriptiveName_allocate(link_ptr->name, &(Link_ptr->name));
+             if(result)
+                 goto ERR_EXIT;
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
-	{
-		link_ptr->name = NULL;
-	}
-	
-	/*upstreamNodeId*/
-	result = DF_NodeReferenceID_allocate(&(link_ptr->upstreamNodeId), &(Link_ptr->upstreamNodeId));
-	if(result)
-		goto ERR_EXIT;
+    {
+        link_ptr->name = NULL;
+    }
+    
+    /*upstreamNodeId*/
+    result = DF_NodeReferenceID_allocate(&(link_ptr->upstreamNodeId), &(Link_ptr->upstreamNodeId));
+    if(result)
+        goto ERR_EXIT;
 
-	/*speedLimits*/
-	if(Link_ptr->opt.Link_opt_speedLimits == MSG_OPTIONAL_YES)
-	{
-		if((link_ptr->speedLimits = CALLOC(1, sizeof(*(link_ptr->speedLimits)))) != NULL)
-		{
-		     result = DF_SpeedLimitList_allocate(link_ptr->speedLimits, &(Link_ptr->speedLimits));
-			 if(result)
-			 	goto ERR_EXIT;
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+    /*speedLimits*/
+    if(Link_ptr->opt.Link_opt_speedLimits == MSG_OPTIONAL_YES)
+    {
+        if((link_ptr->speedLimits = CALLOC(1, sizeof(*(link_ptr->speedLimits)))) != NULL)
+        {
+             result = DF_SpeedLimitList_allocate(link_ptr->speedLimits, &(Link_ptr->speedLimits));
+             if(result)
+                 goto ERR_EXIT;
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
-	{
-		link_ptr->speedLimits = NULL;
-	}
-	
-	/*laneWidth*/
-	link_ptr->laneWidth = bsctyp_encode(DE_LaneWidth, Link_ptr->laneWidth);
+    {
+        link_ptr->speedLimits = NULL;
+    }
+    
+    /*laneWidth*/
+    link_ptr->laneWidth = bsctyp_encode(DE_LaneWidth, Link_ptr->laneWidth);
 
-	/*points*/
-	if(Link_ptr->opt.Link_opt_points == MSG_OPTIONAL_YES)
-	{
-		if((link_ptr->points = CALLOC(1, sizeof(*(link_ptr->points)))) != NULL)
-		{
-		     result = DF_PointList_allocate(link_ptr->points, &(Link_ptr->points));
-			 if(result)
-			 	goto ERR_EXIT;
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+    /*points*/
+    if(Link_ptr->opt.Link_opt_points == MSG_OPTIONAL_YES)
+    {
+        if((link_ptr->points = CALLOC(1, sizeof(*(link_ptr->points)))) != NULL)
+        {
+             result = DF_PointList_allocate(link_ptr->points, &(Link_ptr->points));
+             if(result)
+                 goto ERR_EXIT;
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
-	{
-		link_ptr->points = NULL;
-	}
+    {
+        link_ptr->points = NULL;
+    }
 
-	/*movements*/
-	if(Link_ptr->opt.Link_opt_movements == MSG_OPTIONAL_YES)
-	{
-		if((link_ptr->movements = CALLOC(1, sizeof(*(link_ptr->movements)))) != NULL)
-		{
-		     result = DF_MovementList_allocate(link_ptr->movements, &(Link_ptr->movements));
-			 if(result)
-			 	goto ERR_EXIT;
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+    /*movements*/
+    if(Link_ptr->opt.Link_opt_movements == MSG_OPTIONAL_YES)
+    {
+        if((link_ptr->movements = CALLOC(1, sizeof(*(link_ptr->movements)))) != NULL)
+        {
+             result = DF_MovementList_allocate(link_ptr->movements, &(Link_ptr->movements));
+             if(result)
+                 goto ERR_EXIT;
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
-	{
-		link_ptr->movements = NULL;
-	}
+    {
+        link_ptr->movements = NULL;
+    }
 
-	/*lanes*/
-	result = DF_LaneList_allocate(&(link_ptr->lanes), &(Link_ptr->lanes));
-	if(result)
-		goto ERR_EXIT;
-	
-	return result;
+    /*lanes*/
+    result = DF_LaneList_allocate(&(link_ptr->lanes), &(Link_ptr->lanes));
+    if(result)
+        goto ERR_EXIT;
+    
+    return result;
     
 ERR_EXIT:
-	
-	DF_Link_free(link_ptr);
-	return result;
+    
+    DF_Link_free(link_ptr);
+    return result;
 }
 
 
 /* Parse routine for DF_Link. */
 int DF_Link_parse(Link_t *link_ptr, DF_Link_st_ptr Link_ptr)
 {
-	int result = 0;
+    int result = 0;
    
     /* Error detection. */
-	if((link_ptr == NULL) || (Link_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((link_ptr == NULL) || (Link_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear  Movement_ptr memory */
-	memset(Link_ptr, 0x00, sizeof(*Link_ptr));
+    /* clear  Movement_ptr memory */
+    memset(Link_ptr, 0x00, sizeof(*Link_ptr));
 
-	/* name. */
-	if(link_ptr->name != NULL)
-	{
-		result = DE_DescriptiveName_parse(link_ptr->name, &(Link_ptr->name));
-		if(result)
-			goto ERR_EXIT;
-		
+    /* name. */
+    if(link_ptr->name != NULL)
+    {
+        result = DE_DescriptiveName_parse(link_ptr->name, &(Link_ptr->name));
+        if(result)
+            goto ERR_EXIT;
+        
         Link_ptr->opt.Link_opt_name = MSG_OPTIONAL_YES;
-	}
+    }
     else
-	{
+    {
         Link_ptr->opt.Link_opt_name = MSG_OPTIONAL_NO;
-	}
+    }
 
-	/*upstreamNodeId*/
-	result = DF_NodeReferenceID_parse(&(link_ptr->upstreamNodeId), &(Link_ptr->upstreamNodeId));
-	if(result)
-		goto ERR_EXIT;
+    /*upstreamNodeId*/
+    result = DF_NodeReferenceID_parse(&(link_ptr->upstreamNodeId), &(Link_ptr->upstreamNodeId));
+    if(result)
+        goto ERR_EXIT;
 
-	/*speedLimits. */
-	if(link_ptr->speedLimits != NULL)
-	{
-		result = DF_SpeedLimitList_parse(link_ptr->speedLimits, &(Link_ptr->speedLimits));
-		if(result)
-			goto ERR_EXIT;
-		
+    /*speedLimits. */
+    if(link_ptr->speedLimits != NULL)
+    {
+        result = DF_SpeedLimitList_parse(link_ptr->speedLimits, &(Link_ptr->speedLimits));
+        if(result)
+            goto ERR_EXIT;
+        
         Link_ptr->opt.Link_opt_speedLimits = MSG_OPTIONAL_YES;
-	}
+    }
     else
-	{
+    {
         Link_ptr->opt.Link_opt_speedLimits = MSG_OPTIONAL_NO;
-	}
-	
-	/*laneWidth*/
-	Link_ptr->laneWidth = bsctyp_decode(DE_LaneWidth, link_ptr->laneWidth);
+    }
+    
+    /*laneWidth*/
+    Link_ptr->laneWidth = bsctyp_decode(DE_LaneWidth, link_ptr->laneWidth);
 
-	/*points. */
-	if(link_ptr->points != NULL)
-	{
-		result = DF_PointList_parse(link_ptr->points, &(Link_ptr->points));
-		if(result)
-			goto ERR_EXIT;
-		
+    /*points. */
+    if(link_ptr->points != NULL)
+    {
+        result = DF_PointList_parse(link_ptr->points, &(Link_ptr->points));
+        if(result)
+            goto ERR_EXIT;
+        
         Link_ptr->opt.Link_opt_points = MSG_OPTIONAL_YES;
-	}
+    }
     else
-	{
+    {
         Link_ptr->opt.Link_opt_points = MSG_OPTIONAL_NO;
-	}
+    }
 
-	/*movements. */
-	if(link_ptr->movements != NULL)
-	{
-		result = DF_MovementList_parse(link_ptr->movements, &(Link_ptr->movements));
-		if(result)
-			goto ERR_EXIT;
-		
+    /*movements. */
+    if(link_ptr->movements != NULL)
+    {
+        result = DF_MovementList_parse(link_ptr->movements, &(Link_ptr->movements));
+        if(result)
+            goto ERR_EXIT;
+        
         Link_ptr->opt.Link_opt_movements = MSG_OPTIONAL_YES;
-	}
+    }
     else
-	{
+    {
         Link_ptr->opt.Link_opt_movements = MSG_OPTIONAL_NO;
-	}
+    }
 
-	/*lanes*/
-	result = DF_LaneList_parse(&(link_ptr->lanes), &(Link_ptr->lanes));
-	if(result)
-		goto ERR_EXIT;
-	
+    /*lanes*/
+    result = DF_LaneList_parse(&(link_ptr->lanes), &(Link_ptr->lanes));
+    if(result)
+        goto ERR_EXIT;
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 /* Free routine for DF_LinkList. */
@@ -2642,7 +2642,7 @@ int DF_LinkList_free(LinkList_t *list_ptr)
 /* Allocate routine for DF_LinkList. */
 int DF_LinkList_allocate(LinkList_t *list_ptr, DF_LinkList_st_ptr List_ptr)
 {
-	int           result = 0;
+    int           result = 0;
     uint8_t  point_index = 0;
     Link_t    * elem_ptr = NULL;
 
@@ -2685,7 +2685,7 @@ int DF_LinkList_allocate(LinkList_t *list_ptr, DF_LinkList_st_ptr List_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -2720,8 +2720,8 @@ int DF_LinkList_parse(LinkList_t *list_ptr, DF_LinkList_st_ptr List_ptr)
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_Link_parse(list_ptr->list.array[point_index], &(List_ptr->LinkList_data[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->LinkList_size = point_index;
     
@@ -2736,158 +2736,158 @@ ERR_EXIT:
 /* Free routine for DF_MotionConfidenceSet. */
 int DF_MotionConfidenceSet_free(MotionConfidenceSet_t *motion_ptr)
 {
-	int result = 0;
-	
-	if(motion_ptr != NULL)
-	{
-		if(motion_ptr->speedCfd != NULL)
-		{
-			FREEMEM(motion_ptr->speedCfd);
-		}
+    int result = 0;
+    
+    if(motion_ptr != NULL)
+    {
+        if(motion_ptr->speedCfd != NULL)
+        {
+            FREEMEM(motion_ptr->speedCfd);
+        }
 
-		if(motion_ptr->headingCfd != NULL)
-		{
-			FREEMEM(motion_ptr->headingCfd);
-		}
+        if(motion_ptr->headingCfd != NULL)
+        {
+            FREEMEM(motion_ptr->headingCfd);
+        }
 
-		if(motion_ptr->steerCfd != NULL)
-		{
-			FREEMEM(motion_ptr->steerCfd);
-		}
+        if(motion_ptr->steerCfd != NULL)
+        {
+            FREEMEM(motion_ptr->steerCfd);
+        }
 
-		memset(motion_ptr, 0x00, sizeof(*motion_ptr));
-	}
+        memset(motion_ptr, 0x00, sizeof(*motion_ptr));
+    }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_MotionConfidenceSet.*/
 int DF_MotionConfidenceSet_Allocate(MotionConfidenceSet_t *motion_ptr, DF_MotionConfidenceSet_st_ptr Motion_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if((motion_ptr == NULL) || (Motion_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((motion_ptr == NULL) || (Motion_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(motion_ptr, 0x00, sizeof(*motion_ptr));
-		
-	if(Motion_ptr->opt.MotionConfidenceSet_opt_speedcfd == MSG_OPTIONAL_YES)
-	{
-		motion_ptr->speedCfd = CALLOC(1, sizeof(*motion_ptr->speedCfd));
-		if(motion_ptr->speedCfd == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    /* Reset all the zone. */
+    memset(motion_ptr, 0x00, sizeof(*motion_ptr));
+        
+    if(Motion_ptr->opt.MotionConfidenceSet_opt_speedcfd == MSG_OPTIONAL_YES)
+    {
+        motion_ptr->speedCfd = CALLOC(1, sizeof(*motion_ptr->speedCfd));
+        if(motion_ptr->speedCfd == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*motion_ptr->speedCfd = Motion_ptr->speedcfd;
-	}else{
-		motion_ptr->speedCfd = NULL;
-	}
+        *motion_ptr->speedCfd = Motion_ptr->speedcfd;
+    }else{
+        motion_ptr->speedCfd = NULL;
+    }
 
-	if(Motion_ptr->opt.MotionConfidenceSet_opt_headingcfd == MSG_OPTIONAL_YES)
-	{
-		motion_ptr->headingCfd = CALLOC(1, sizeof(*motion_ptr->headingCfd));
-		if(motion_ptr->headingCfd == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Motion_ptr->opt.MotionConfidenceSet_opt_headingcfd == MSG_OPTIONAL_YES)
+    {
+        motion_ptr->headingCfd = CALLOC(1, sizeof(*motion_ptr->headingCfd));
+        if(motion_ptr->headingCfd == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*motion_ptr->headingCfd = Motion_ptr->headingcfd;
-	}else{
-		motion_ptr->headingCfd = NULL;
-	}
+        *motion_ptr->headingCfd = Motion_ptr->headingcfd;
+    }else{
+        motion_ptr->headingCfd = NULL;
+    }
 
-	if(Motion_ptr->opt.MotionConfidenceSet_opt_steercfd == MSG_OPTIONAL_YES)
-	{
-		motion_ptr->steerCfd = CALLOC(1, sizeof(*motion_ptr->steerCfd));
-		if(motion_ptr->steerCfd == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Motion_ptr->opt.MotionConfidenceSet_opt_steercfd == MSG_OPTIONAL_YES)
+    {
+        motion_ptr->steerCfd = CALLOC(1, sizeof(*motion_ptr->steerCfd));
+        if(motion_ptr->steerCfd == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*motion_ptr->steerCfd = Motion_ptr->steercfd;
-	}else{
-		motion_ptr->steerCfd = NULL;
-	}
+        *motion_ptr->steerCfd = Motion_ptr->steercfd;
+    }else{
+        motion_ptr->steerCfd = NULL;
+    }
 
-	return result;
+    return result;
 ERR_EXIT:
-	
-	DF_MotionConfidenceSet_free(motion_ptr);
-	
-	return result;
+    
+    DF_MotionConfidenceSet_free(motion_ptr);
+    
+    return result;
 }
 
 
 /* Parse routine for DF_MotionConfidenceSet. */
 int DF_MotionConfidenceSet_parse(MotionConfidenceSet_t *motion_ptr, DF_MotionConfidenceSet_st_ptr Motion_ptr)
 {
-	int result = 0;
-	
-	if((motion_ptr == NULL) || (Motion_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
-
-	/* clear  Motion_ptr memory */
-	memset(Motion_ptr, 0x00, sizeof(DF_MotionConfidenceSet_st));
-	
-	if(motion_ptr->speedCfd != NULL)
-	{
-		Motion_ptr->opt.MotionConfidenceSet_opt_speedcfd = MSG_OPTIONAL_YES;
-		Motion_ptr->speedcfd = *motion_ptr->speedCfd;
-	}
-
-	if(motion_ptr->headingCfd != NULL)
-	{
-    	Motion_ptr->opt.MotionConfidenceSet_opt_headingcfd = MSG_OPTIONAL_YES;
-    	Motion_ptr->headingcfd = *motion_ptr->headingCfd;
+    int result = 0;
+    
+    if((motion_ptr == NULL) || (Motion_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	if(motion_ptr->steerCfd != NULL)
-	{
-		Motion_ptr->opt.MotionConfidenceSet_opt_steercfd = MSG_OPTIONAL_YES;
-		Motion_ptr->steercfd = *motion_ptr->steerCfd;
-	}
-	
+    /* clear  Motion_ptr memory */
+    memset(Motion_ptr, 0x00, sizeof(DF_MotionConfidenceSet_st));
+    
+    if(motion_ptr->speedCfd != NULL)
+    {
+        Motion_ptr->opt.MotionConfidenceSet_opt_speedcfd = MSG_OPTIONAL_YES;
+        Motion_ptr->speedcfd = *motion_ptr->speedCfd;
+    }
+
+    if(motion_ptr->headingCfd != NULL)
+    {
+        Motion_ptr->opt.MotionConfidenceSet_opt_headingcfd = MSG_OPTIONAL_YES;
+        Motion_ptr->headingcfd = *motion_ptr->headingCfd;
+    }
+
+    if(motion_ptr->steerCfd != NULL)
+    {
+        Motion_ptr->opt.MotionConfidenceSet_opt_steercfd = MSG_OPTIONAL_YES;
+        Motion_ptr->steercfd = *motion_ptr->steerCfd;
+    }
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 /* Free routine for DF_Movement. */
 int DF_Movement_free(Movement_t *movement_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if(movement_ptr != NULL)
-	{
-		result = DF_NodeReferenceID_free(&(movement_ptr->remoteIntersection));
-		if(result)
-			return result;
-		
-		if(movement_ptr->phaseId != NULL)
-		{
-			FREEMEM(movement_ptr->phaseId);
-		}
+    if(movement_ptr != NULL)
+    {
+        result = DF_NodeReferenceID_free(&(movement_ptr->remoteIntersection));
+        if(result)
+            return result;
+        
+        if(movement_ptr->phaseId != NULL)
+        {
+            FREEMEM(movement_ptr->phaseId);
+        }
 
-		memset(movement_ptr, 0x00, sizeof(*movement_ptr));
-	}
+        memset(movement_ptr, 0x00, sizeof(*movement_ptr));
+    }
     else
     {
         result = -ERR_INVAL;
     }
 
-	return result;
+    return result;
 }
 
 /* Free extention routine for DF_Movement. Diff with DF_Movement_free() and this will free the point itself. */
@@ -2911,85 +2911,85 @@ int DF_Movement_freeExt(Movement_t *movement_ptr)
 /* Allocate routine for DF_Movement.*/
 int DF_Movement_allocate(Movement_t *movement_ptr, DF_Movement_st_ptr Movement_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detection. */
-	if((movement_ptr == NULL) || (Movement_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((movement_ptr == NULL) || (Movement_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(movement_ptr, 0x00, sizeof(*movement_ptr));
+    /* Reset all the zone. */
+    memset(movement_ptr, 0x00, sizeof(*movement_ptr));
 
-	/* remoteIntersection */
-	result = DF_NodeReferenceID_allocate(&(movement_ptr->remoteIntersection),&(Movement_ptr->remoteIntersection));
-	if(result)
-		goto ERR_EXIT;
+    /* remoteIntersection */
+    result = DF_NodeReferenceID_allocate(&(movement_ptr->remoteIntersection),&(Movement_ptr->remoteIntersection));
+    if(result)
+        goto ERR_EXIT;
 
     /* phaseid. */
-	if(Movement_ptr->opt.Movement_opt_phaseid == MSG_OPTIONAL_YES)
-	{
-		if((movement_ptr->phaseId = CALLOC(1, sizeof(*(movement_ptr->phaseId)))) != NULL)
-		{
-		     *(movement_ptr->phaseId) = bsctyp_encode(DE_PhaseID, Movement_ptr->phaseid);
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+    if(Movement_ptr->opt.Movement_opt_phaseid == MSG_OPTIONAL_YES)
+    {
+        if((movement_ptr->phaseId = CALLOC(1, sizeof(*(movement_ptr->phaseId)))) != NULL)
+        {
+             *(movement_ptr->phaseId) = bsctyp_encode(DE_PhaseID, Movement_ptr->phaseid);
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
-	{
-		movement_ptr->phaseId = NULL;
-	}
+    {
+        movement_ptr->phaseId = NULL;
+    }
 
-	return result;
+    return result;
     
 ERR_EXIT:
-	
-	DF_Movement_free(movement_ptr);
-	return result;
+    
+    DF_Movement_free(movement_ptr);
+    return result;
 }
 
 
 /* Parse routine for DF_Movement. */
 int DF_Movement_parse(Movement_t *movement_ptr, DF_Movement_st_ptr Movement_ptr)
 {
-	int result = 0;
+    int result = 0;
    
     /* Error detection. */
-	if((movement_ptr == NULL) || (Movement_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((movement_ptr == NULL) || (Movement_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear  Movement_ptr memory */
-	memset(Movement_ptr, 0x00, sizeof(*Movement_ptr));
+    /* clear  Movement_ptr memory */
+    memset(Movement_ptr, 0x00, sizeof(*Movement_ptr));
 
-	/*remoteIntersection*/
-	result = DF_NodeReferenceID_parse(&(movement_ptr->remoteIntersection), &(Movement_ptr->remoteIntersection));
-	if(result)
-		goto ERR_EXIT;
+    /*remoteIntersection*/
+    result = DF_NodeReferenceID_parse(&(movement_ptr->remoteIntersection), &(Movement_ptr->remoteIntersection));
+    if(result)
+        goto ERR_EXIT;
 
     /* phaseId. */
-	if(movement_ptr->phaseId != NULL)
-	{
-		Movement_ptr->phaseid = bsctyp_decode(DE_PhaseID, *(movement_ptr->phaseId));
+    if(movement_ptr->phaseId != NULL)
+    {
+        Movement_ptr->phaseid = bsctyp_decode(DE_PhaseID, *(movement_ptr->phaseId));
         Movement_ptr->opt.Movement_opt_phaseid = MSG_OPTIONAL_YES;
-	}
+    }
     else
-	{
+    {
         Movement_ptr->opt.Movement_opt_phaseid = MSG_OPTIONAL_NO;
-	}
-	
+    }
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 /* Free routine for DF_MovementList. */
@@ -3015,7 +3015,7 @@ int DF_MovementList_free(MovementList_t *list_ptr)
 /* Allocate routine for DF_MovementList. */
 int DF_MovementList_allocate(MovementList_t *list_ptr, DF_MovementList_st_ptr List_ptr)
 {
-	int	             result = 0;
+    int                 result = 0;
     uint8_t     point_index = 0;
     Movement_t   * elem_ptr = NULL;
   
@@ -3061,7 +3061,7 @@ int DF_MovementList_allocate(MovementList_t *list_ptr, DF_MovementList_st_ptr Li
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -3096,8 +3096,8 @@ int DF_MovementList_parse(MovementList_t *list_ptr, DF_MovementList_st_ptr List_
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_Movement_parse(list_ptr->list.array[point_index], &(List_ptr->MovementList_data[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->MovementList_size = point_index;
     
@@ -3112,154 +3112,154 @@ ERR_EXIT:
 /* Free routine for DF_NodeReferenceID. */
 int DF_NodeReferenceID_free(NodeReferenceID_t *id_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     
-	if(id_ptr != NULL)
-	{
-		if(id_ptr->region != NULL)
-		{
-			FREEMEM(id_ptr->region);
-		}
+    if(id_ptr != NULL)
+    {
+        if(id_ptr->region != NULL)
+        {
+            FREEMEM(id_ptr->region);
+        }
 
-		memset(id_ptr, 0x00, sizeof(*id_ptr));
-	}
+        memset(id_ptr, 0x00, sizeof(*id_ptr));
+    }
     else
     {
         result = -ERR_INVAL;
     }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_NodeReferenceID.*/
 int DF_NodeReferenceID_allocate(NodeReferenceID_t *id_ptr, DF_NodeReferenceID_st_ptr ID_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detection. */
-	if((id_ptr == NULL) || (ID_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((id_ptr == NULL) || (ID_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(id_ptr, 0x00, sizeof(*id_ptr));
+    /* Reset all the zone. */
+    memset(id_ptr, 0x00, sizeof(*id_ptr));
 
     /* Road regulator id. */
-	if(ID_ptr->opt.region == MSG_OPTIONAL_YES)
-	{
-		if((id_ptr->region = CALLOC(1, sizeof(*id_ptr->region))) != NULL)
-		{
-		     *(id_ptr->region) = bsctyp_encode(DE_RoadRegulatorID, ID_ptr->region);
-		}
-		else
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+    if(ID_ptr->opt.region == MSG_OPTIONAL_YES)
+    {
+        if((id_ptr->region = CALLOC(1, sizeof(*id_ptr->region))) != NULL)
+        {
+             *(id_ptr->region) = bsctyp_encode(DE_RoadRegulatorID, ID_ptr->region);
+        }
+        else
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
-	{
-		id_ptr->region = NULL;
-	}
+    {
+        id_ptr->region = NULL;
+    }
 
     /* Node id. */
     id_ptr->id = ID_ptr->id;
 
-	return result;
+    return result;
     
 ERR_EXIT:
-	
-	DF_NodeReferenceID_free(id_ptr);
-	return result;
+    
+    DF_NodeReferenceID_free(id_ptr);
+    return result;
 }
 
 
 /* Parse routine for DF_NodeReferenceID. */
 int DF_NodeReferenceID_parse(NodeReferenceID_t *id_ptr, DF_NodeReferenceID_st_ptr ID_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     
     /* Error detection. */
-	if((id_ptr == NULL) || (ID_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((id_ptr == NULL) || (ID_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear  Motion_ptr memory */
-	memset(ID_ptr, 0x00, sizeof(*ID_ptr));
+    /* clear  Motion_ptr memory */
+    memset(ID_ptr, 0x00, sizeof(*ID_ptr));
 
     /* Road regulator id. */
-	if(id_ptr->region != NULL)
-	{
-		ID_ptr->region = bsctyp_decode(DE_RoadRegulatorID, *(id_ptr->region));
+    if(id_ptr->region != NULL)
+    {
+        ID_ptr->region = bsctyp_decode(DE_RoadRegulatorID, *(id_ptr->region));
         ID_ptr->opt.region = MSG_OPTIONAL_YES;
-	}
+    }
     else
-	{
+    {
         ID_ptr->opt.region = MSG_OPTIONAL_NO;
-	}
+    }
 
     /* Node id. */
     ID_ptr->id = id_ptr->id;
-	
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 /* Free routine for DF_Node. */
 int DF_Node_free(Node_t *node_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	if(node_ptr != NULL)
-	{
-	    /* name. */
-		if(node_ptr->name != NULL)
-		{
-			result = DE_DescriptiveName_free(node_ptr->name);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(node_ptr->name);
-		}
+    if(node_ptr != NULL)
+    {
+        /* name. */
+        if(node_ptr->name != NULL)
+        {
+            result = DE_DescriptiveName_free(node_ptr->name);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(node_ptr->name);
+        }
 
-		/*id*/
-		result = DF_NodeReferenceID_free(&(node_ptr->id));
-		if(result)
-			goto ERR_EXIT;
+        /*id*/
+        result = DF_NodeReferenceID_free(&(node_ptr->id));
+        if(result)
+            goto ERR_EXIT;
 
-		/*refPos*/
-		result = DF_Position3D_free(&(node_ptr->refPos));
-		if(result)
-			goto ERR_EXIT;
+        /*refPos*/
+        result = DF_Position3D_free(&(node_ptr->refPos));
+        if(result)
+            goto ERR_EXIT;
 
-		/* inLinks. */
-		if(node_ptr->inLinks != NULL)
-		{
-			result = DF_LinkList_free(node_ptr->inLinks);
-			if(result)
-				goto ERR_EXIT;
-			
-			FREEMEM(node_ptr->inLinks);
-		}
-		
-		memset(node_ptr, 0x00, sizeof(*node_ptr));
+        /* inLinks. */
+        if(node_ptr->inLinks != NULL)
+        {
+            result = DF_LinkList_free(node_ptr->inLinks);
+            if(result)
+                goto ERR_EXIT;
+            
+            FREEMEM(node_ptr->inLinks);
+        }
+        
+        memset(node_ptr, 0x00, sizeof(*node_ptr));
         result = ERR_OK;
-	}
+    }
     else
     {
         result = -ERR_INVAL;
     }
 ERR_EXIT:
-	return result;
+    return result;
 }
 
 
@@ -3283,133 +3283,133 @@ int DF_Node_freeExt(Node_t *node_ptr)
 /* Allocate routine for DF_Node.*/
 int DF_Node_allocate(Node_t *node_ptr, DF_Node_st_ptr Node_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detection. */
-	if((node_ptr == NULL) || (Node_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((node_ptr == NULL) || (Node_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(node_ptr, 0x00, sizeof(*node_ptr));
+    /* Reset all the zone. */
+    memset(node_ptr, 0x00, sizeof(*node_ptr));
 
     /* name. */
-	if(Node_ptr->opt.Node_opt_name == MSG_OPTIONAL_YES)
-	{
-		if((node_ptr->name = CALLOC(1, sizeof(*(node_ptr->name)))) != NULL)
-		{
-    		if((result = DE_DescriptiveName_allocate(node_ptr->name, &(Node_ptr->name))) != 0)
-    		{
-    			goto ERR_EXIT;
-    		}
-		}
+    if(Node_ptr->opt.Node_opt_name == MSG_OPTIONAL_YES)
+    {
+        if((node_ptr->name = CALLOC(1, sizeof(*(node_ptr->name)))) != NULL)
+        {
+            if((result = DE_DescriptiveName_allocate(node_ptr->name, &(Node_ptr->name))) != 0)
+            {
+                goto ERR_EXIT;
+            }
+        }
         else
         {
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		node_ptr->name = NULL;
-	}
+        node_ptr->name = NULL;
+    }
 
-	/*id*/
-	result = DF_NodeReferenceID_allocate(&(node_ptr->id), &(Node_ptr->id));
-	if(result)
-		goto ERR_EXIT;
+    /*id*/
+    result = DF_NodeReferenceID_allocate(&(node_ptr->id), &(Node_ptr->id));
+    if(result)
+        goto ERR_EXIT;
 
-	/*refPos*/
-	result = DF_Position3D_allocate(&(node_ptr->refPos), &(Node_ptr->refPos));
-	if(result)
-		goto ERR_EXIT;
+    /*refPos*/
+    result = DF_Position3D_allocate(&(node_ptr->refPos), &(Node_ptr->refPos));
+    if(result)
+        goto ERR_EXIT;
 
-	/* inLinks. */
-	if(Node_ptr->opt.Node_opt_inLinks == MSG_OPTIONAL_YES)
-	{
-		if((node_ptr->inLinks = CALLOC(1, sizeof(*(node_ptr->inLinks)))) != NULL)
-		{
-    		if((result = DF_LinkList_allocate(node_ptr->inLinks, &(Node_ptr->inLinks))) != 0)
-    		{
-    			goto ERR_EXIT;
-    		}
-		}
+    /* inLinks. */
+    if(Node_ptr->opt.Node_opt_inLinks == MSG_OPTIONAL_YES)
+    {
+        if((node_ptr->inLinks = CALLOC(1, sizeof(*(node_ptr->inLinks)))) != NULL)
+        {
+            if((result = DF_LinkList_allocate(node_ptr->inLinks, &(Node_ptr->inLinks))) != 0)
+            {
+                goto ERR_EXIT;
+            }
+        }
         else
         {
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		node_ptr->inLinks = NULL;
-	}
-	
-	return result;
+        node_ptr->inLinks = NULL;
+    }
+    
+    return result;
     
 ERR_EXIT:
-	
-	DF_Node_free(node_ptr);
-	return result;
+    
+    DF_Node_free(node_ptr);
+    return result;
 }
 
 
 /* Parse routine for DF_Node. */
 int DF_Node_parse(Node_t *node_ptr, DF_Node_st_ptr Node_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detection. */
-	if((node_ptr == NULL) || (Node_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((node_ptr == NULL) || (Node_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear Node_ptr memory */
-	memset(Node_ptr, 0x00, sizeof(*Node_ptr));
+    /* clear Node_ptr memory */
+    memset(Node_ptr, 0x00, sizeof(*Node_ptr));
 
     /*name. */
-	if(node_ptr->name != NULL)
-	{
-		if((result = DE_DescriptiveName_parse(node_ptr->name, &(Node_ptr->name))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-		Node_ptr->opt.Node_opt_name = MSG_OPTIONAL_YES;
+    if(node_ptr->name != NULL)
+    {
+        if((result = DE_DescriptiveName_parse(node_ptr->name, &(Node_ptr->name))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+        Node_ptr->opt.Node_opt_name = MSG_OPTIONAL_YES;
     }
-	else
-		Node_ptr->opt.Node_opt_name = MSG_OPTIONAL_NO;
+    else
+        Node_ptr->opt.Node_opt_name = MSG_OPTIONAL_NO;
 
-	/*id*/
-	result = DF_NodeReferenceID_parse(&(node_ptr->id), &(Node_ptr->id));
-	if(result)
-		goto ERR_EXIT;
+    /*id*/
+    result = DF_NodeReferenceID_parse(&(node_ptr->id), &(Node_ptr->id));
+    if(result)
+        goto ERR_EXIT;
 
-	/*refPos*/
-	result = DF_Position3D_parse(&(node_ptr->refPos), &(Node_ptr->refPos));
-	if(result)
-		goto ERR_EXIT; 
+    /*refPos*/
+    result = DF_Position3D_parse(&(node_ptr->refPos), &(Node_ptr->refPos));
+    if(result)
+        goto ERR_EXIT; 
 
-	/*inLinks. */
-	if(node_ptr->inLinks != NULL)
-	{
-		if((result = DF_LinkList_parse(node_ptr->inLinks, &(Node_ptr->inLinks))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-		Node_ptr->opt.Node_opt_inLinks = MSG_OPTIONAL_YES;
+    /*inLinks. */
+    if(node_ptr->inLinks != NULL)
+    {
+        if((result = DF_LinkList_parse(node_ptr->inLinks, &(Node_ptr->inLinks))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+        Node_ptr->opt.Node_opt_inLinks = MSG_OPTIONAL_YES;
     }
-	else
-		Node_ptr->opt.Node_opt_inLinks = MSG_OPTIONAL_NO;
+    else
+        Node_ptr->opt.Node_opt_inLinks = MSG_OPTIONAL_NO;
 
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 /* Free routine for DF_NodeList. */
@@ -3434,7 +3434,7 @@ int DF_NodeList_free(NodeList_t *list_ptr)
 /* Allocate routine for DF_NodeList. */
 int DF_NodeList_allocate(NodeList_t *list_ptr, DF_NodeList_st_ptr List_ptr)
 {
-	int	         result = 0;
+    int             result = 0;
     uint8_t point_index = 0;
     Node_t   * elem_ptr = NULL;
   
@@ -3480,7 +3480,7 @@ int DF_NodeList_allocate(NodeList_t *list_ptr, DF_NodeList_st_ptr List_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -3515,8 +3515,8 @@ int DF_NodeList_parse(NodeList_t *list_ptr, DF_NodeList_st_ptr List_ptr)
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_Node_parse(list_ptr->list.array[point_index], &(List_ptr->NodeList_data[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->NodeList_size = point_index;
     
@@ -3613,13 +3613,13 @@ int DF_ParticipantData_freeExt(ParticipantData_t *ptc_ptr)
 /* Allocate routine for DF_ParticipantData. */
 int DF_ParticipantData_allocate(ParticipantData_t *ptc_ptr, DF_ParticipantData_st_ptr Ptc_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detect. */
     if((ptc_ptr == NULL) || (Ptc_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -3654,33 +3654,33 @@ int DF_ParticipantData_allocate(ParticipantData_t *ptc_ptr, DF_ParticipantData_s
         ptc_ptr->id = NULL;
     }
     
-	/* plateNo */
-	if(Ptc_ptr->opt.plateNo == MSG_OPTIONAL_YES)
-	{
-		if((ptc_ptr->plateNo = CALLOC(1, sizeof(*(ptc_ptr->plateNo)))) == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		
-		if((result = DE_PlateNo_allocate(ptc_ptr->plateNo, &(Ptc_ptr->plateNo))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}
+    /* plateNo */
+    if(Ptc_ptr->opt.plateNo == MSG_OPTIONAL_YES)
+    {
+        if((ptc_ptr->plateNo = CALLOC(1, sizeof(*(ptc_ptr->plateNo)))) == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        
+        if((result = DE_PlateNo_allocate(ptc_ptr->plateNo, &(Ptc_ptr->plateNo))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		ptc_ptr->plateNo = NULL;
-	}
+        ptc_ptr->plateNo = NULL;
+    }
 
     /* Dsecond. */
     ptc_ptr->secMark = bsctyp_encode(DE_DSecond, Ptc_ptr->secMark);
 
-	/* PositionOffset LLV*/
-	if((result = DF_PositionOffsetLLV_allocate(&ptc_ptr->pos, &Ptc_ptr->pos)) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    /* PositionOffset LLV*/
+    if((result = DF_PositionOffsetLLV_allocate(&ptc_ptr->pos, &Ptc_ptr->pos)) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* PositionConfidenceSet. */
     if((result = DF_PositionConfidenceSet_allocate(&(ptc_ptr->accuracy), &(Ptc_ptr->accuracy))) != 0)
@@ -3688,21 +3688,21 @@ int DF_ParticipantData_allocate(ParticipantData_t *ptc_ptr, DF_ParticipantData_s
         goto ERR_EXIT;
     }
 
-  	/* TransmissionState. */
-	if(Ptc_ptr->opt.transmission == MSG_OPTIONAL_YES)
-	{
-		if((ptc_ptr->transmission = CALLOC(1, sizeof(*(ptc_ptr->transmission)))) == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		
-		*(ptc_ptr->transmission) = Ptc_ptr->transmission;
-	}
+      /* TransmissionState. */
+    if(Ptc_ptr->opt.transmission == MSG_OPTIONAL_YES)
+    {
+        if((ptc_ptr->transmission = CALLOC(1, sizeof(*(ptc_ptr->transmission)))) == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        
+        *(ptc_ptr->transmission) = Ptc_ptr->transmission;
+    }
     else
     {
-		ptc_ptr->transmission = NULL;
-	}
+        ptc_ptr->transmission = NULL;
+    }
   
     /* Speed. */
     ptc_ptr->speed = bsctyp_encode(DE_Speed, Ptc_ptr->speed);
@@ -3710,65 +3710,65 @@ int DF_ParticipantData_allocate(ParticipantData_t *ptc_ptr, DF_ParticipantData_s
     /* Heading. */
     ptc_ptr->heading = bsctyp_encode(DE_Heading, Ptc_ptr->heading);
 
-  	/* SteeringWheelAngle. */
-	if(Ptc_ptr->opt.angle == MSG_OPTIONAL_YES)
-	{
-		if((ptc_ptr->angle = CALLOC(1, sizeof(*(ptc_ptr->angle)))) == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		
-		*(ptc_ptr->angle) = bsctyp_encode(DE_SteeringWheelAngle, Ptc_ptr->angle);
-	}
+      /* SteeringWheelAngle. */
+    if(Ptc_ptr->opt.angle == MSG_OPTIONAL_YES)
+    {
+        if((ptc_ptr->angle = CALLOC(1, sizeof(*(ptc_ptr->angle)))) == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        
+        *(ptc_ptr->angle) = bsctyp_encode(DE_SteeringWheelAngle, Ptc_ptr->angle);
+    }
     else
     {
-		ptc_ptr->angle = NULL;
-	}
+        ptc_ptr->angle = NULL;
+    }
   
-  	/* MotionConfidenceSet. */
-	if(Ptc_ptr->opt.motioncfd == MSG_OPTIONAL_YES)
-	{
-		if((ptc_ptr->motionCfd = CALLOC(1, sizeof(*(ptc_ptr->motionCfd)))) == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		
-		if((result = DF_MotionConfidenceSet_Allocate(ptc_ptr->motionCfd, &(Ptc_ptr->motioncfd))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}
+      /* MotionConfidenceSet. */
+    if(Ptc_ptr->opt.motioncfd == MSG_OPTIONAL_YES)
+    {
+        if((ptc_ptr->motionCfd = CALLOC(1, sizeof(*(ptc_ptr->motionCfd)))) == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        
+        if((result = DF_MotionConfidenceSet_Allocate(ptc_ptr->motionCfd, &(Ptc_ptr->motioncfd))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		ptc_ptr->motionCfd = NULL;
-	}
+        ptc_ptr->motionCfd = NULL;
+    }
   
-  	/* AccelerationSet4Way. */
-	if(Ptc_ptr->opt.accelset == MSG_OPTIONAL_YES)
-	{
-		if((ptc_ptr->accelSet = CALLOC(1, sizeof(*(ptc_ptr->accelSet)))) == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		
-		if((result = DF_AccelerationSet4Way_allocate(ptc_ptr->accelSet, &(Ptc_ptr->accelset))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}
+      /* AccelerationSet4Way. */
+    if(Ptc_ptr->opt.accelset == MSG_OPTIONAL_YES)
+    {
+        if((ptc_ptr->accelSet = CALLOC(1, sizeof(*(ptc_ptr->accelSet)))) == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        
+        if((result = DF_AccelerationSet4Way_allocate(ptc_ptr->accelSet, &(Ptc_ptr->accelset))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		ptc_ptr->accelSet = NULL;
-	}
+        ptc_ptr->accelSet = NULL;
+    }
 
     /* VehicleSize. */
-	if((result = DF_VehicleSize_allocate(&(ptc_ptr->size), &(Ptc_ptr->size))) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    if((result = DF_VehicleSize_allocate(&(ptc_ptr->size), &(Ptc_ptr->size))) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* VehicleClassification. */
     if(Ptc_ptr->opt.vehicleclass == MSG_OPTIONAL_YES)
@@ -3801,7 +3801,7 @@ ERR_EXIT:
 /* Parse routine for DF_ParticipantData. */
 int DF_ParticipantData_parse(ParticipantData_t *ptc_ptr, DF_ParticipantData_st_ptr Ptc_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detect. */
@@ -3837,28 +3837,28 @@ int DF_ParticipantData_parse(ParticipantData_t *ptc_ptr, DF_ParticipantData_st_p
         Ptc_ptr->opt.id = MSG_OPTIONAL_NO;
     }
 
-	/* plateNo */
-	if(ptc_ptr->plateNo != NULL)
-	{
-		Ptc_ptr->opt.plateNo = MSG_OPTIONAL_YES;
-		if((result = DE_PlateNo_parse(ptc_ptr->plateNo, &(Ptc_ptr->plateNo))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}
+    /* plateNo */
+    if(ptc_ptr->plateNo != NULL)
+    {
+        Ptc_ptr->opt.plateNo = MSG_OPTIONAL_YES;
+        if((result = DE_PlateNo_parse(ptc_ptr->plateNo, &(Ptc_ptr->plateNo))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		Ptc_ptr->opt.plateNo = MSG_OPTIONAL_NO;
-	}
+        Ptc_ptr->opt.plateNo = MSG_OPTIONAL_NO;
+    }
 
     /* Dsecond. */
     Ptc_ptr->secMark = bsctyp_decode(DE_DSecond, ptc_ptr->secMark);
 
-	/* PositionOffset LLV*/
-	if((result = DF_PositionOffsetLLV_parse(&ptc_ptr->pos, &Ptc_ptr->pos)) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    /* PositionOffset LLV*/
+    if((result = DF_PositionOffsetLLV_parse(&ptc_ptr->pos, &Ptc_ptr->pos)) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* PositionConfidenceSet. */
     if((result = DF_PositionConfidenceSet_parse(&(ptc_ptr->accuracy), &(Ptc_ptr->accuracy))) != 0)
@@ -3866,16 +3866,16 @@ int DF_ParticipantData_parse(ParticipantData_t *ptc_ptr, DF_ParticipantData_st_p
         goto ERR_EXIT;
     }
 
-  	/* TransmissionState. */
-	if(ptc_ptr->transmission != NULL)
-	{
-		Ptc_ptr->opt.transmission = MSG_OPTIONAL_YES;
-		Ptc_ptr->transmission = *(ptc_ptr->transmission);
-	}
+      /* TransmissionState. */
+    if(ptc_ptr->transmission != NULL)
+    {
+        Ptc_ptr->opt.transmission = MSG_OPTIONAL_YES;
+        Ptc_ptr->transmission = *(ptc_ptr->transmission);
+    }
     else
     {
         Ptc_ptr->opt.transmission = MSG_OPTIONAL_NO;
-	}
+    }
 
     /* Speed. */
     Ptc_ptr->speed = bsctyp_decode(DE_Speed, ptc_ptr->speed);
@@ -3883,50 +3883,50 @@ int DF_ParticipantData_parse(ParticipantData_t *ptc_ptr, DF_ParticipantData_st_p
     /* Heading. */
     Ptc_ptr->heading = bsctyp_decode(DE_Heading, ptc_ptr->heading);
 
-  	/* SteeringWheelAngle. */
-	if(ptc_ptr->angle != NULL)
-	{
-		Ptc_ptr->opt.angle = MSG_OPTIONAL_YES;
-		Ptc_ptr->angle = bsctyp_decode(DE_SteeringWheelAngle, *(ptc_ptr->angle));
-	}
+      /* SteeringWheelAngle. */
+    if(ptc_ptr->angle != NULL)
+    {
+        Ptc_ptr->opt.angle = MSG_OPTIONAL_YES;
+        Ptc_ptr->angle = bsctyp_decode(DE_SteeringWheelAngle, *(ptc_ptr->angle));
+    }
     else
     {
         Ptc_ptr->opt.angle = MSG_OPTIONAL_NO;
-	}
+    }
 
-  	/* MotionConfidenceSet. */
-	if(ptc_ptr->motionCfd != NULL)
-	{
-		Ptc_ptr->opt.motioncfd = MSG_OPTIONAL_YES;
-		if((result = DF_MotionConfidenceSet_parse(ptc_ptr->motionCfd, &(Ptc_ptr->motioncfd))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}
+      /* MotionConfidenceSet. */
+    if(ptc_ptr->motionCfd != NULL)
+    {
+        Ptc_ptr->opt.motioncfd = MSG_OPTIONAL_YES;
+        if((result = DF_MotionConfidenceSet_parse(ptc_ptr->motionCfd, &(Ptc_ptr->motioncfd))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
     else
     {
         Ptc_ptr->opt.motioncfd = MSG_OPTIONAL_NO;
-	}
+    }
   
-  	/* AccelerationSet4Way. */
-	if(ptc_ptr->accelSet != NULL)
-	{
-		Ptc_ptr->opt.accelset = MSG_OPTIONAL_YES;
-		if((result = DF_AccelerationSet4Way_parse(ptc_ptr->accelSet, &(Ptc_ptr->accelset))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-	}
+      /* AccelerationSet4Way. */
+    if(ptc_ptr->accelSet != NULL)
+    {
+        Ptc_ptr->opt.accelset = MSG_OPTIONAL_YES;
+        if((result = DF_AccelerationSet4Way_parse(ptc_ptr->accelSet, &(Ptc_ptr->accelset))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
     else
     {
         Ptc_ptr->opt.accelset = MSG_OPTIONAL_NO;
-	}
+    }
 
     /* VehicleSize. */
-	if((result = DF_VehicleSize_parse(&(ptc_ptr->size), &(Ptc_ptr->size))) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    if((result = DF_VehicleSize_parse(&(ptc_ptr->size), &(Ptc_ptr->size))) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* VehicleClassification. */
     if(ptc_ptr->vehicleClass != NULL)
@@ -3973,7 +3973,7 @@ int DF_ParticipantList_free(ParticipantList_t *list_ptr)
 /* Allocate routine for DF_ParticipantList. */
 int DF_ParticipantList_allocate(ParticipantList_t *list_ptr, DF_ParticipantList_st_ptr List_ptr)
 {
-	int                     result = 0;
+    int                     result = 0;
     uint8_t            point_index = 0;
     ParticipantData_t   * elem_ptr = NULL;
   
@@ -4017,7 +4017,7 @@ int DF_ParticipantList_allocate(ParticipantList_t *list_ptr, DF_ParticipantList_
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -4052,8 +4052,8 @@ int DF_ParticipantList_parse(ParticipantList_t *list_ptr, DF_ParticipantList_st_
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_ParticipantData_parse(list_ptr->list.array[point_index], &(List_ptr->array[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->pointNum = point_index;
     
@@ -4068,7 +4068,7 @@ ERR_EXIT:
 /* Free routine for DF_PathHistory. */
 int DF_PathHistory_free(PathHistory_t *path_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(path_ptr != NULL)
     {
@@ -4077,13 +4077,13 @@ int DF_PathHistory_free(PathHistory_t *path_ptr)
             DF_FullPositionVector_free(path_ptr->initialPosition);
             FREEMEM(path_ptr->initialPosition);
         }
-		
+        
         if(path_ptr->currGNSSstatus != NULL)
         {
             DE_GNSSstatus_free(path_ptr->currGNSSstatus);
             FREEMEM(path_ptr->currGNSSstatus);
         }
-		
+        
         DF_PathHistoryPointList_free(&(path_ptr->crumbData));
 
         /* Must clear all the zone and avoid repeat free operation. */
@@ -4091,20 +4091,20 @@ int DF_PathHistory_free(PathHistory_t *path_ptr)
         
     }
 
-  	return result;
+      return result;
 }
 
 
 /* Allocate routine for DF_PathHistory. */
 int DF_PathHistory_allocate(PathHistory_t *path_ptr, DF_PathHistory_st_ptr Path_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	
+    
     /* Error detect. */
     if((path_ptr == NULL) || (Path_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -4123,7 +4123,7 @@ int DF_PathHistory_allocate(PathHistory_t *path_ptr, DF_PathHistory_st_ptr Path_
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -4241,7 +4241,7 @@ int DF_PathHistoryPointList_free(PathHistoryPointList_t *list_ptr)
 /* Allocate routine for DF_PathHistoryPointList. */
 int DF_PathHistoryPointList_allocate(PathHistoryPointList_t *list_ptr, DF_PathHistoryPointList_st_ptr List_ptr)
 {
-	int	result = 0;
+    int    result = 0;
     uint8_t            point_index = 0;
     PathHistoryPoint_t  * elem_ptr = NULL;
   
@@ -4285,7 +4285,7 @@ int DF_PathHistoryPointList_allocate(PathHistoryPointList_t *list_ptr, DF_PathHi
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -4320,8 +4320,8 @@ int DF_PathHistoryPointList_parse(PathHistoryPointList_t *list_ptr, DF_PathHisto
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_PathHistoryPoint_parse(list_ptr->list.array[point_index], &(List_ptr->array[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->pointNum = point_index;
     
@@ -4338,19 +4338,19 @@ int DF_PathHistoryPoint_free(PathHistoryPoint_t *point_ptr)
 {
     if(point_ptr != NULL)
     {
-		DF_PositionOffsetLLV_free(&point_ptr->llvOffset);
-		
+        DF_PositionOffsetLLV_free(&point_ptr->llvOffset);
+        
         if(point_ptr->speed != NULL)
         {
             FREEMEM(point_ptr->speed);
         }
-		
+        
         if(point_ptr->posAccuracy != NULL)
         {
             DF_PositionConfidenceSet_free(point_ptr->posAccuracy);
             FREEMEM(point_ptr->posAccuracy);
         }
-		
+        
         if(point_ptr->heading != NULL)
         {
             FREEMEM(point_ptr->heading);
@@ -4389,22 +4389,22 @@ int DF_PathHistoryPoint_freeExt(PathHistoryPoint_t *point_ptr)
 /* Allocate routine for DF_PathHistoryPoint. */
 int DF_PathHistoryPoint_allocate(PathHistoryPoint_t *point_ptr, DF_PathHistoryPoint_st_ptr Point_ptr)
 {
-	int result = 0;
+    int result = 0;
     /* Error detect. */
     if((point_ptr == NULL) || (Point_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
     /* Reset all the zone. */
     memset(point_ptr, 0, sizeof(*point_ptr));
 
-	/* PositionOffset LLV*/
-	if((result = DF_PositionOffsetLLV_allocate(&point_ptr->llvOffset, &Point_ptr->llvOffset)) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    /* PositionOffset LLV*/
+    if((result = DF_PositionOffsetLLV_allocate(&point_ptr->llvOffset, &Point_ptr->llvOffset)) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* TimeOffset. */
     point_ptr->timeOffset = bsctyp_encode(DE_TimeOffset, Point_ptr->timeoffset);
@@ -4478,7 +4478,7 @@ ERR_EXIT:
 /* Parse routine for DF_PathHistoryPoint. */
 int DF_PathHistoryPoint_parse(PathHistoryPoint_t *point_ptr, DF_PathHistoryPoint_st_ptr Point_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detect. */
@@ -4491,11 +4491,11 @@ int DF_PathHistoryPoint_parse(PathHistoryPoint_t *point_ptr, DF_PathHistoryPoint
     /* Reset all the zone. */
     memset(Point_ptr, 0, sizeof(*Point_ptr));
 
-	/* PositionOffset LLV*/
-	if((result = DF_PositionOffsetLLV_parse(&point_ptr->llvOffset, &Point_ptr->llvOffset)) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    /* PositionOffset LLV*/
+    if((result = DF_PositionOffsetLLV_parse(&point_ptr->llvOffset, &Point_ptr->llvOffset)) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     /* TimeOffset. */
     Point_ptr->timeoffset = bsctyp_decode(DE_TimeOffset, point_ptr->timeOffset);
@@ -4555,7 +4555,7 @@ int DF_PathPointList_free(PathPointList_t *list_ptr)
 /* Allocate routine for DF_PathPointList. */
 int DF_PathPointList_allocate(PathPointList_t *list_ptr, DF_PathPointList_st_ptr List_ptr)
 {
-	int	                     result = 0;
+    int                         result = 0;
     uint8_t             point_index = 0;
     PositionOffsetLLV_t  * elem_ptr = NULL;
   
@@ -4599,7 +4599,7 @@ int DF_PathPointList_allocate(PathPointList_t *list_ptr, DF_PathPointList_st_ptr
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -4634,8 +4634,8 @@ int DF_PathPointList_parse(PathPointList_t *list_ptr, DF_PathPointList_st_ptr Li
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_PositionOffsetLLV_parse(list_ptr->list.array[point_index], &(List_ptr->array[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->pointNum = point_index;
 
@@ -4744,7 +4744,7 @@ int DF_PhaseList_free(PhaseList_t *list_ptr)
 /* Allocate routine for DF_PhaseList. */
 int DF_PhaseList_allocate(PhaseList_t *list_ptr, DF_PhaseList_st_ptr List_ptr)
 {
-	int               result = 0;
+    int               result = 0;
     uint8_t      point_index = 0;
     Phase_t       * elem_ptr = NULL;
   
@@ -4790,7 +4790,7 @@ int DF_PhaseList_allocate(PhaseList_t *list_ptr, DF_PhaseList_st_ptr List_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -4825,8 +4825,8 @@ int DF_PhaseList_parse(PhaseList_t *list_ptr, DF_PhaseList_st_ptr List_ptr)
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_Phase_parse(list_ptr->list.array[point_index], &(List_ptr->array[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->pointNum = point_index;
     
@@ -4841,27 +4841,27 @@ ERR_EXIT:
 /* Free routine for DF_PhaseState. */
 int DF_PhaseState_free(PhaseState_t *ps_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     
-	if(ps_ptr != NULL)
-	{
-	    /* TimeChangeDetails. */
-		if(ps_ptr->timing != NULL)
-		{
-			DF_TimeChangeDetails_free(ps_ptr->timing);
-			FREEMEM(ps_ptr->timing);
-		}
+    if(ps_ptr != NULL)
+    {
+        /* TimeChangeDetails. */
+        if(ps_ptr->timing != NULL)
+        {
+            DF_TimeChangeDetails_free(ps_ptr->timing);
+            FREEMEM(ps_ptr->timing);
+        }
         
-		memset(ps_ptr, 0x00, sizeof(*ps_ptr));
+        memset(ps_ptr, 0x00, sizeof(*ps_ptr));
         result = ERR_OK;
-	}
+    }
     else
     {
         result = -ERR_INVAL;
     }
 
-	return result;
+    return result;
 }
 
 
@@ -4886,84 +4886,84 @@ int DF_PhaseState_freeExt(PhaseState_t *ps_ptr)
 /* Allocate routine for DF_PhaseState.*/
 int DF_PhaseState_allocate(PhaseState_t *ps_ptr, DF_PhaseState_st_ptr Ps_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detection. */
-	if((ps_ptr == NULL) || (Ps_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((ps_ptr == NULL) || (Ps_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(ps_ptr, 0x00, sizeof(*ps_ptr));
+    /* Reset all the zone. */
+    memset(ps_ptr, 0x00, sizeof(*ps_ptr));
 
     /* Light. */
-	ps_ptr->light = Ps_ptr->light;
+    ps_ptr->light = Ps_ptr->light;
 
     /* Time change details. */
-	if(Ps_ptr->opt.PhaseState_opt_timing == MSG_OPTIONAL_YES)
-	{
-		if((ps_ptr->timing = CALLOC(1, sizeof(*(ps_ptr->timing)))) != NULL)
-		{
-    		if((result = DF_TimeChangeDetails_allocate(ps_ptr->timing, &(Ps_ptr->timing))) != 0)
-    		{
-    			goto ERR_EXIT;
-    		}
-		}
+    if(Ps_ptr->opt.PhaseState_opt_timing == MSG_OPTIONAL_YES)
+    {
+        if((ps_ptr->timing = CALLOC(1, sizeof(*(ps_ptr->timing)))) != NULL)
+        {
+            if((result = DF_TimeChangeDetails_allocate(ps_ptr->timing, &(Ps_ptr->timing))) != 0)
+            {
+                goto ERR_EXIT;
+            }
+        }
         else
         {
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		ps_ptr->timing = NULL;
-	}
+        ps_ptr->timing = NULL;
+    }
 
-	return result;
+    return result;
     
 ERR_EXIT:
-	
-	DF_PhaseState_free(ps_ptr);
-	return result;
+    
+    DF_PhaseState_free(ps_ptr);
+    return result;
 }
 
 
 /* Parse routine for DF_PhaseState. */
 int DF_PhaseState_parse(PhaseState_t *ps_ptr, DF_PhaseState_st_ptr Ps_ptr)
 {
-	int result = 0;
+    int result = 0;
 
 
     /* Error detection. */
-	if((ps_ptr == NULL) || (Ps_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((ps_ptr == NULL) || (Ps_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear Ps_ptr memory */
-	memset(Ps_ptr, 0x00, sizeof(*Ps_ptr));
+    /* clear Ps_ptr memory */
+    memset(Ps_ptr, 0x00, sizeof(*Ps_ptr));
 
     /* Light. */
-	Ps_ptr->light = ps_ptr->light;
+    Ps_ptr->light = ps_ptr->light;
 
     /* Time change details. */
-	if(ps_ptr->timing != NULL)
-	{
-		if((result = DF_TimeChangeDetails_parse(ps_ptr->timing, &(Ps_ptr->timing))) != 0)
-		{
-			goto ERR_EXIT;
-		}
-		Ps_ptr->opt.PhaseState_opt_timing = MSG_OPTIONAL_YES;
+    if(ps_ptr->timing != NULL)
+    {
+        if((result = DF_TimeChangeDetails_parse(ps_ptr->timing, &(Ps_ptr->timing))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+        Ps_ptr->opt.PhaseState_opt_timing = MSG_OPTIONAL_YES;
     }
 
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 
@@ -4990,7 +4990,7 @@ int DF_PhaseStateList_free(PhaseStateList_t *list_ptr)
 /* Allocate routine for DF_PhaseStateList. */
 int DF_PhaseStateList_allocate(PhaseStateList_t *list_ptr, DF_PhaseStateList_st_ptr List_ptr)
 {
-	int               result = 0;
+    int               result = 0;
     uint8_t      point_index = 0;
     PhaseState_t  * elem_ptr = NULL;
   
@@ -5036,7 +5036,7 @@ int DF_PhaseStateList_allocate(PhaseStateList_t *list_ptr, DF_PhaseStateList_st_
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -5071,8 +5071,8 @@ int DF_PhaseStateList_parse(PhaseStateList_t *list_ptr, DF_PhaseStateList_st_ptr
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_PhaseState_parse(list_ptr->list.array[point_index], &(List_ptr->array[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->pointNum = point_index;
     
@@ -5088,14 +5088,14 @@ ERR_EXIT:
 int DF_Phase_free(Phase_t *phase_ptr)
 {
     int result = 0;
-	
-	
+    
+    
     if(phase_ptr != NULL)
     {
         /* Phase state list. */
- 	    if((result = DF_PhaseStateList_free(&(phase_ptr->phaseStates))) != 0)
-	    {
-	        goto ERR_EXIT; 
+         if((result = DF_PhaseStateList_free(&(phase_ptr->phaseStates))) != 0)
+        {
+            goto ERR_EXIT; 
         }
 
         /* Must clear all the zone and avoid repeat free operation. */
@@ -5105,7 +5105,7 @@ int DF_Phase_free(Phase_t *phase_ptr)
     {
         result = -ERR_INVAL;
     }
-	
+    
 ERR_EXIT:
 
     return result;
@@ -5133,13 +5133,13 @@ int DF_Phase_freeExt(Phase_t *phase_ptr)
 /* Allocate routine for DF_Phase. */
 int DF_Phase_allocate(Phase_t *phase_ptr, DF_Phase_st_ptr Phase_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     
     /* Error detect. */
     if((phase_ptr == NULL) || (Phase_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5150,10 +5150,10 @@ int DF_Phase_allocate(Phase_t *phase_ptr, DF_Phase_st_ptr Phase_ptr)
     phase_ptr->id = bsctyp_encode(DE_PhaseID, Phase_ptr->id);
     
     /* Phase state list. */
- 	if((result = DF_PhaseStateList_allocate(&(phase_ptr->phaseStates), &(Phase_ptr->phaseStates))) != 0)
-	{
-	    goto ERR_EXIT; 
-	}
+     if((result = DF_PhaseStateList_allocate(&(phase_ptr->phaseStates), &(Phase_ptr->phaseStates))) != 0)
+    {
+        goto ERR_EXIT; 
+    }
 
     return result;
 
@@ -5167,7 +5167,7 @@ ERR_EXIT:
 /* Parse routine for DF_Phase. */
 int DF_Phase_parse(Phase_t *phase_ptr, DF_Phase_st_ptr Phase_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     /* Error detect. */
     if((phase_ptr == NULL) || (Phase_ptr == NULL))
@@ -5183,10 +5183,10 @@ int DF_Phase_parse(Phase_t *phase_ptr, DF_Phase_st_ptr Phase_ptr)
     Phase_ptr->id = bsctyp_decode(DE_PhaseID, phase_ptr->id);
     
     /* Phase state list. */
- 	if((result = DF_PhaseStateList_parse(&(phase_ptr->phaseStates), &(Phase_ptr->phaseStates))) != 0)
-	{
-	    goto ERR_EXIT; 
-	}
+     if((result = DF_PhaseStateList_parse(&(phase_ptr->phaseStates), &(Phase_ptr->phaseStates))) != 0)
+    {
+        goto ERR_EXIT; 
+    }
 
 ERR_EXIT:
     
@@ -5198,328 +5198,328 @@ ERR_EXIT:
 int DF_Position_LL_24B_allocate(Position_LL_24B_t *pos_ll_24b_ptr, DF_Position_LL_24B_st_ptr Pos_LL_24B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_24b_ptr == NULL) || (Pos_LL_24B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
-	
-	/* Reset all the zone. */
-	memset(pos_ll_24b_ptr, 0x00, sizeof(*pos_ll_24b_ptr));
+    
+    /* Reset all the zone. */
+    memset(pos_ll_24b_ptr, 0x00, sizeof(*pos_ll_24b_ptr));
 
-	pos_ll_24b_ptr->lat = bsctyp_encode(DE_OffsetLL_B12, Pos_LL_24B_ptr->lat);
-	
-	pos_ll_24b_ptr->lon = bsctyp_encode(DE_OffsetLL_B12, Pos_LL_24B_ptr->lon);
-	
+    pos_ll_24b_ptr->lat = bsctyp_encode(DE_OffsetLL_B12, Pos_LL_24B_ptr->lat);
+    
+    pos_ll_24b_ptr->lon = bsctyp_encode(DE_OffsetLL_B12, Pos_LL_24B_ptr->lon);
+    
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* parse routine for DF_Position_LL_24B. */
 int DF_Position_LL_24B_parse(Position_LL_24B_t *pos_ll_24b_ptr, DF_Position_LL_24B_st_ptr Pos_LL_24B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_24b_ptr == NULL) || (Pos_LL_24B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_24b_ptr, 0x00, sizeof(*pos_ll_24b_ptr));
+    /* Reset all the zone. */
+    memset(pos_ll_24b_ptr, 0x00, sizeof(*pos_ll_24b_ptr));
 
-	Pos_LL_24B_ptr->lat = bsctyp_decode(DE_OffsetLL_B12, pos_ll_24b_ptr->lat);
-	
-	Pos_LL_24B_ptr->lon = bsctyp_decode(DE_OffsetLL_B12, pos_ll_24b_ptr->lon);
+    Pos_LL_24B_ptr->lat = bsctyp_decode(DE_OffsetLL_B12, pos_ll_24b_ptr->lat);
+    
+    Pos_LL_24B_ptr->lon = bsctyp_decode(DE_OffsetLL_B12, pos_ll_24b_ptr->lon);
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* allocate routine for DF_Position_LL_28B. */
 int DF_Position_LL_28B_allocate(Position_LL_28B_t *pos_ll_28b_ptr, DF_Position_LL_28B_st_ptr Pos_LL_28B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_28b_ptr == NULL) || (Pos_LL_28B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_28b_ptr, 0x00, sizeof(*pos_ll_28b_ptr));
-	
-	pos_ll_28b_ptr->lat = bsctyp_encode(DE_OffsetLL_B14, Pos_LL_28B_ptr->lat);
-	
-	pos_ll_28b_ptr->lon = bsctyp_encode(DE_OffsetLL_B14, Pos_LL_28B_ptr->lon);
-	
+    /* Reset all the zone. */
+    memset(pos_ll_28b_ptr, 0x00, sizeof(*pos_ll_28b_ptr));
+    
+    pos_ll_28b_ptr->lat = bsctyp_encode(DE_OffsetLL_B14, Pos_LL_28B_ptr->lat);
+    
+    pos_ll_28b_ptr->lon = bsctyp_encode(DE_OffsetLL_B14, Pos_LL_28B_ptr->lon);
+    
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* parse routine for DF_Position_LL_28B. */
 int DF_Position_LL_28B_parse(Position_LL_28B_t *pos_ll_28b_ptr, DF_Position_LL_28B_st_ptr Pos_LL_28B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_28b_ptr == NULL) || (Pos_LL_28B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
-	
-	/* Reset all the zone. */
-	memset(pos_ll_28b_ptr, 0x00, sizeof(*pos_ll_28b_ptr));
-	
-	Pos_LL_28B_ptr->lat = bsctyp_decode(DE_OffsetLL_B14, pos_ll_28b_ptr->lat);
-		
-	Pos_LL_28B_ptr->lon = bsctyp_decode(DE_OffsetLL_B14, pos_ll_28b_ptr->lon);
+    
+    /* Reset all the zone. */
+    memset(pos_ll_28b_ptr, 0x00, sizeof(*pos_ll_28b_ptr));
+    
+    Pos_LL_28B_ptr->lat = bsctyp_decode(DE_OffsetLL_B14, pos_ll_28b_ptr->lat);
+        
+    Pos_LL_28B_ptr->lon = bsctyp_decode(DE_OffsetLL_B14, pos_ll_28b_ptr->lon);
 
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* allocate routine for DF_Position_LL_32B. */
 int DF_Position_LL_32B_allocate(Position_LL_32B_t *pos_ll_32b_ptr, DF_Position_LL_32B_st_ptr Pos_LL_32B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_32b_ptr == NULL) || (Pos_LL_32B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_32b_ptr, 0x00, sizeof(*pos_ll_32b_ptr));
-	
-	pos_ll_32b_ptr->lat = bsctyp_encode(DE_OffsetLL_B16, Pos_LL_32B_ptr->lat);
-	
-	pos_ll_32b_ptr->lon = bsctyp_encode(DE_OffsetLL_B16, Pos_LL_32B_ptr->lon);
-	
+    /* Reset all the zone. */
+    memset(pos_ll_32b_ptr, 0x00, sizeof(*pos_ll_32b_ptr));
+    
+    pos_ll_32b_ptr->lat = bsctyp_encode(DE_OffsetLL_B16, Pos_LL_32B_ptr->lat);
+    
+    pos_ll_32b_ptr->lon = bsctyp_encode(DE_OffsetLL_B16, Pos_LL_32B_ptr->lon);
+    
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* parse routine for DF_Position_LL_32B. */
 int DF_Position_LL_32B_parse(Position_LL_32B_t *pos_ll_32b_ptr, DF_Position_LL_32B_st_ptr Pos_LL_32B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_32b_ptr == NULL) || (Pos_LL_32B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_32b_ptr, 0x00, sizeof(*pos_ll_32b_ptr));
-	
-	Pos_LL_32B_ptr->lat = bsctyp_decode(DE_OffsetLL_B16, pos_ll_32b_ptr->lat);
-		
-	Pos_LL_32B_ptr->lon = bsctyp_decode(DE_OffsetLL_B16, pos_ll_32b_ptr->lon);
+    /* Reset all the zone. */
+    memset(pos_ll_32b_ptr, 0x00, sizeof(*pos_ll_32b_ptr));
+    
+    Pos_LL_32B_ptr->lat = bsctyp_decode(DE_OffsetLL_B16, pos_ll_32b_ptr->lat);
+        
+    Pos_LL_32B_ptr->lon = bsctyp_decode(DE_OffsetLL_B16, pos_ll_32b_ptr->lon);
 
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* allocate routine for DF_Position_LL_36B. */
 int DF_Position_LL_36B_allocate(Position_LL_36B_t *pos_ll_36b_ptr, DF_Position_LL_36B_st_ptr Pos_LL_36B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_36b_ptr == NULL) || (Pos_LL_36B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_36b_ptr, 0x00, sizeof(*pos_ll_36b_ptr));
-	
-	pos_ll_36b_ptr->lat = bsctyp_encode(DE_OffsetLL_B18, Pos_LL_36B_ptr->lat);
-	
-	pos_ll_36b_ptr->lon = bsctyp_encode(DE_OffsetLL_B18, Pos_LL_36B_ptr->lon);
-	
+    /* Reset all the zone. */
+    memset(pos_ll_36b_ptr, 0x00, sizeof(*pos_ll_36b_ptr));
+    
+    pos_ll_36b_ptr->lat = bsctyp_encode(DE_OffsetLL_B18, Pos_LL_36B_ptr->lat);
+    
+    pos_ll_36b_ptr->lon = bsctyp_encode(DE_OffsetLL_B18, Pos_LL_36B_ptr->lon);
+    
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* parse routine for DF_Position_LL_36B. */
 int DF_Position_LL_36B_parse(Position_LL_36B_t *pos_ll_36b_ptr, DF_Position_LL_36B_st_ptr Pos_LL_36B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_36b_ptr == NULL) || (Pos_LL_36B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_36b_ptr, 0x00, sizeof(*pos_ll_36b_ptr));
-	
-	Pos_LL_36B_ptr->lat = bsctyp_decode(DE_OffsetLL_B18, pos_ll_36b_ptr->lat);
-		
-	Pos_LL_36B_ptr->lon = bsctyp_decode(DE_OffsetLL_B18, pos_ll_36b_ptr->lon);
+    /* Reset all the zone. */
+    memset(pos_ll_36b_ptr, 0x00, sizeof(*pos_ll_36b_ptr));
+    
+    Pos_LL_36B_ptr->lat = bsctyp_decode(DE_OffsetLL_B18, pos_ll_36b_ptr->lat);
+        
+    Pos_LL_36B_ptr->lon = bsctyp_decode(DE_OffsetLL_B18, pos_ll_36b_ptr->lon);
 
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* allocate routine for DF_Position_LL_44B. */
 int DF_Position_LL_44B_allocate(Position_LL_44B_t *pos_ll_44b_ptr, DF_Position_LL_44B_st_ptr Pos_LL_44B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_44b_ptr == NULL) || (Pos_LL_44B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_44b_ptr, 0x00, sizeof(*pos_ll_44b_ptr));
-	
-	pos_ll_44b_ptr->lat = bsctyp_encode(DE_OffsetLL_B22, Pos_LL_44B_ptr->lat);
-	
-	pos_ll_44b_ptr->lon = bsctyp_encode(DE_OffsetLL_B22, Pos_LL_44B_ptr->lon);
-	
+    /* Reset all the zone. */
+    memset(pos_ll_44b_ptr, 0x00, sizeof(*pos_ll_44b_ptr));
+    
+    pos_ll_44b_ptr->lat = bsctyp_encode(DE_OffsetLL_B22, Pos_LL_44B_ptr->lat);
+    
+    pos_ll_44b_ptr->lon = bsctyp_encode(DE_OffsetLL_B22, Pos_LL_44B_ptr->lon);
+    
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* parse routine for DF_Position_LL_44B. */
 int DF_Position_LL_44B_parse(Position_LL_44B_t *pos_ll_44b_ptr, DF_Position_LL_44B_st_ptr Pos_LL_44B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_44b_ptr == NULL) || (Pos_LL_44B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_44b_ptr, 0x00, sizeof(*pos_ll_44b_ptr));
-	
-	Pos_LL_44B_ptr->lat = bsctyp_decode(DE_OffsetLL_B22, pos_ll_44b_ptr->lat);
-		
-	Pos_LL_44B_ptr->lon = bsctyp_decode(DE_OffsetLL_B22, pos_ll_44b_ptr->lon);
+    /* Reset all the zone. */
+    memset(pos_ll_44b_ptr, 0x00, sizeof(*pos_ll_44b_ptr));
+    
+    Pos_LL_44B_ptr->lat = bsctyp_decode(DE_OffsetLL_B22, pos_ll_44b_ptr->lat);
+        
+    Pos_LL_44B_ptr->lon = bsctyp_decode(DE_OffsetLL_B22, pos_ll_44b_ptr->lon);
 
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* allocate routine for DF_Position_LL_48B. */
 int DF_Position_LL_48B_allocate(Position_LL_48B_t *pos_ll_48b_ptr, DF_Position_LL_48B_st_ptr Pos_LL_48B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_48b_ptr == NULL) || (Pos_LL_48B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_48b_ptr, 0x00, sizeof(*pos_ll_48b_ptr));
-	
-	pos_ll_48b_ptr->lat = bsctyp_encode(DE_OffsetLL_B24, Pos_LL_48B_ptr->lat);
-	
-	pos_ll_48b_ptr->lon = bsctyp_encode(DE_OffsetLL_B24, Pos_LL_48B_ptr->lon);
-	
+    /* Reset all the zone. */
+    memset(pos_ll_48b_ptr, 0x00, sizeof(*pos_ll_48b_ptr));
+    
+    pos_ll_48b_ptr->lat = bsctyp_encode(DE_OffsetLL_B24, Pos_LL_48B_ptr->lat);
+    
+    pos_ll_48b_ptr->lon = bsctyp_encode(DE_OffsetLL_B24, Pos_LL_48B_ptr->lon);
+    
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* parse routine for DF_Position_LL_48B. */
 int DF_Position_LL_48B_parse(Position_LL_48B_t *pos_ll_48b_ptr, DF_Position_LL_48B_st_ptr Pos_LL_48B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_48b_ptr == NULL) || (Pos_LL_48B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_48b_ptr, 0x00, sizeof(*pos_ll_48b_ptr));
-	
-	Pos_LL_48B_ptr->lat = bsctyp_decode(DE_OffsetLL_B24, pos_ll_48b_ptr->lat);
-		
-	Pos_LL_48B_ptr->lon = bsctyp_decode(DE_OffsetLL_B24, pos_ll_48b_ptr->lon);
+    /* Reset all the zone. */
+    memset(pos_ll_48b_ptr, 0x00, sizeof(*pos_ll_48b_ptr));
+    
+    Pos_LL_48B_ptr->lat = bsctyp_decode(DE_OffsetLL_B24, pos_ll_48b_ptr->lat);
+        
+    Pos_LL_48B_ptr->lon = bsctyp_decode(DE_OffsetLL_B24, pos_ll_48b_ptr->lon);
 
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* allocate routine for DF_Position_LLmD_64B. */
 int DF_Position_LLmD_64B_allocate(Position_LLmD_64b_t *pos_ll_64b_ptr, DF_Position_LLmD_64b_st_ptr Pos_LL_64B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_64b_ptr == NULL) || (Pos_LL_64B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_64b_ptr, 0x00, sizeof(*pos_ll_64b_ptr));
-	
-	pos_ll_64b_ptr->lat = bsctyp_encode(DE_Latitude, Pos_LL_64B_ptr->lat);
-	
-	pos_ll_64b_ptr->lon = bsctyp_encode(DE_Longitude, Pos_LL_64B_ptr->lon);
-	
+    /* Reset all the zone. */
+    memset(pos_ll_64b_ptr, 0x00, sizeof(*pos_ll_64b_ptr));
+    
+    pos_ll_64b_ptr->lat = bsctyp_encode(DE_Latitude, Pos_LL_64B_ptr->lat);
+    
+    pos_ll_64b_ptr->lon = bsctyp_encode(DE_Longitude, Pos_LL_64B_ptr->lon);
+    
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 /* parse routine for DF_Position_LL_64B. */
 int DF_Position_LL_64B_parse(Position_LLmD_64b_t *pos_ll_64b_ptr, DF_Position_LLmD_64b_st_ptr Pos_LL_64B_ptr)
 {
     int result = 0;
-	
+    
     if((pos_ll_64b_ptr == NULL) || (Pos_LL_64B_ptr == NULL))
     {
-    	result = -ERR_INVAL;
-		goto ERR_EXIT;
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
     }
 
-	/* Reset all the zone. */
-	memset(pos_ll_64b_ptr, 0x00, sizeof(*pos_ll_64b_ptr));
-	
-	Pos_LL_64B_ptr->lat = bsctyp_decode(DE_Latitude, pos_ll_64b_ptr->lat);
-		
-	Pos_LL_64B_ptr->lon = bsctyp_decode(DE_Longitude, pos_ll_64b_ptr->lon);
+    /* Reset all the zone. */
+    memset(pos_ll_64b_ptr, 0x00, sizeof(*pos_ll_64b_ptr));
+    
+    Pos_LL_64B_ptr->lat = bsctyp_decode(DE_Latitude, pos_ll_64b_ptr->lat);
+        
+    Pos_LL_64B_ptr->lon = bsctyp_decode(DE_Longitude, pos_ll_64b_ptr->lon);
 
 
 ERR_EXIT:
-	
-	return result;
+    
+    return result;
 }
 
 
@@ -5532,92 +5532,92 @@ int DF_Position3D_free(Position3D_t *pos_ptr)
     if(pos_ptr != NULL)
     {
         if(pos_ptr->elevation != NULL)
-     	{
-     		FREEMEM(pos_ptr->elevation);
-     	}
+         {
+             FREEMEM(pos_ptr->elevation);
+         }
 
-		memset(pos_ptr, 0x00, sizeof(*pos_ptr));
+        memset(pos_ptr, 0x00, sizeof(*pos_ptr));
     }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_Position3D. */
 int DF_Position3D_allocate(Position3D_t *pos_ptr, DF_Position3D_st_ptr Pos_ptr)
 {
-	int 	result = 0;
+    int     result = 0;
 
-	
-	/* Error detect. */
-	if((pos_ptr == NULL) || (Pos_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    
+    /* Error detect. */
+    if((pos_ptr == NULL) || (Pos_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(pos_ptr, 0, sizeof(*pos_ptr));
+    /* Reset all the zone. */
+    memset(pos_ptr, 0, sizeof(*pos_ptr));
 
-	/* latitude . */
+    /* latitude . */
     pos_ptr->lat = bsctyp_encode(DE_Latitude, Pos_ptr->latitude);
     
-	/* longitude . */
+    /* longitude . */
     pos_ptr->Long = bsctyp_encode(DE_Longitude, Pos_ptr->longitude);
     
-	/* elevation . */
-	if(Pos_ptr->opt.Position3D_opt_elev == MSG_OPTIONAL_YES)
-	{
-		pos_ptr->elevation = CALLOC(1, sizeof(*pos_ptr->elevation));
-		if(pos_ptr->elevation == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-    	*(pos_ptr->elevation) = bsctyp_encode(DE_Elevation, Pos_ptr->elevation);
-	}else{
-		pos_ptr->elevation = NULL;
-	}
-	
-	return result;
+    /* elevation . */
+    if(Pos_ptr->opt.Position3D_opt_elev == MSG_OPTIONAL_YES)
+    {
+        pos_ptr->elevation = CALLOC(1, sizeof(*pos_ptr->elevation));
+        if(pos_ptr->elevation == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        *(pos_ptr->elevation) = bsctyp_encode(DE_Elevation, Pos_ptr->elevation);
+    }else{
+        pos_ptr->elevation = NULL;
+    }
+    
+    return result;
 
 ERR_EXIT:
 
-	DF_Position3D_free(pos_ptr);
-	
-	return result;
+    DF_Position3D_free(pos_ptr);
+    
+    return result;
 
 }
 
 /* Parse routine for DF_Position3D. */
 int DF_Position3D_parse(Position3D_t *pos_ptr, DF_Position3D_st_ptr Pos_ptr)
 {
-	int 	result = 0;
-	/* Error detect. */
-	if((pos_ptr == NULL) || (Pos_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    int     result = 0;
+    /* Error detect. */
+    if((pos_ptr == NULL) || (Pos_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(Pos_ptr, 0, sizeof(*Pos_ptr));
+    /* Reset all the zone. */
+    memset(Pos_ptr, 0, sizeof(*Pos_ptr));
 
-	/* latitude . */
+    /* latitude . */
     Pos_ptr->latitude = bsctyp_decode(DE_Latitude, pos_ptr->lat);
-	/* longitude . */
+    /* longitude . */
     Pos_ptr->longitude = bsctyp_decode(DE_Longitude, pos_ptr->Long);
-	/* elevation . */
-	if(pos_ptr->elevation != NULL)
-	{
-		Pos_ptr->opt.Position3D_opt_elev = MSG_OPTIONAL_YES;
-    	Pos_ptr->elevation = bsctyp_decode(DE_Elevation, *(pos_ptr->elevation));
-	}
-	
-	return result;
+    /* elevation . */
+    if(pos_ptr->elevation != NULL)
+    {
+        Pos_ptr->opt.Position3D_opt_elev = MSG_OPTIONAL_YES;
+        Pos_ptr->elevation = bsctyp_decode(DE_Elevation, *(pos_ptr->elevation));
+    }
+    
+    return result;
 ERR_EXIT:
 
-	return result;
+    return result;
 
 }
 
@@ -5641,11 +5641,11 @@ int DF_PositionalAccuracy_free(PositionalAccuracy_t *pos_ptr)
 /* Allocate routine for DF_PositionalAccuracy. */
 int DF_PositionalAccuracy_allocate(PositionalAccuracy_t *pos_ptr, DF_PositionalAccuracy_st_ptr Pos_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((pos_ptr == NULL) || (Pos_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5668,11 +5668,11 @@ ERR_EXIT:
 /* Parse routine for DF_PositionalAccuracy. */
 int DF_PositionalAccuracy_parse(PositionalAccuracy_t *pos_ptr, DF_PositionalAccuracy_st_ptr Pos_ptr)
 {
-	int			result = 0;
+    int            result = 0;
     /* Error detect. */
     if((pos_ptr == NULL) || (Pos_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5696,10 +5696,10 @@ int DF_PositionConfidenceSet_free(PositionConfidenceSet_t *pos_ptr)
 {
     if(pos_ptr != NULL)
     {
-    	if(pos_ptr->elevation != NULL)
-		{
-			FREEMEM(pos_ptr->elevation);
-		}
+        if(pos_ptr->elevation != NULL)
+        {
+            FREEMEM(pos_ptr->elevation);
+        }
         /* Must clear all the zone and avoid repeat free operation. */
         memset(pos_ptr, 0, sizeof(*pos_ptr));
         
@@ -5715,11 +5715,11 @@ int DF_PositionConfidenceSet_free(PositionConfidenceSet_t *pos_ptr)
 /* Allocate routine for DF_PositionConfidenceSet. */
 int DF_PositionConfidenceSet_allocate(PositionConfidenceSet_t *pos_ptr, DF_PositionConfidenceSet_st_ptr Pos_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((pos_ptr == NULL) || (Pos_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5727,14 +5727,14 @@ int DF_PositionConfidenceSet_allocate(PositionConfidenceSet_t *pos_ptr, DF_Posit
     memset(pos_ptr, 0, sizeof(*pos_ptr));
 
     pos_ptr->pos = Pos_ptr->pos;
-	if(Pos_ptr->opt.PositionConfidenceSet_opt_confidence_elev == MSG_OPTIONAL_YES)
-	{
-		pos_ptr->elevation = CALLOC(1, sizeof(*pos_ptr->elevation));
-		*(pos_ptr->elevation) = Pos_ptr->elevation;
-	}else{
-		pos_ptr->elevation = NULL;
-	}
-	
+    if(Pos_ptr->opt.PositionConfidenceSet_opt_confidence_elev == MSG_OPTIONAL_YES)
+    {
+        pos_ptr->elevation = CALLOC(1, sizeof(*pos_ptr->elevation));
+        *(pos_ptr->elevation) = Pos_ptr->elevation;
+    }else{
+        pos_ptr->elevation = NULL;
+    }
+    
     return result;
 
 ERR_EXIT:
@@ -5747,11 +5747,11 @@ ERR_EXIT:
 /* Parse routine for DF_PositionConfidenceSet. */
 int DF_PositionConfidenceSet_parse(PositionConfidenceSet_t *pos_ptr, DF_PositionConfidenceSet_st_ptr Pos_ptr)
 {
-	int			result = 0;
+    int            result = 0;
     /* Error detect. */
     if((pos_ptr == NULL) || (Pos_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5759,12 +5759,12 @@ int DF_PositionConfidenceSet_parse(PositionConfidenceSet_t *pos_ptr, DF_Position
     memset(Pos_ptr, 0, sizeof(*Pos_ptr));
 
     Pos_ptr->pos = pos_ptr->pos;
-	if(pos_ptr->elevation != NULL)
-	{
-		Pos_ptr->opt.PositionConfidenceSet_opt_confidence_elev = MSG_OPTIONAL_YES;
-		Pos_ptr->elevation = *pos_ptr->elevation;
-	}
-	
+    if(pos_ptr->elevation != NULL)
+    {
+        Pos_ptr->opt.PositionConfidenceSet_opt_confidence_elev = MSG_OPTIONAL_YES;
+        Pos_ptr->elevation = *pos_ptr->elevation;
+    }
+    
     return result;
 
 ERR_EXIT:
@@ -5776,13 +5776,13 @@ ERR_EXIT:
 /* Allocate routine for DF_PositionOffsetLL. */
 int DF_PositionOffsetLL_allocate(PositionOffsetLL_t *posoffsetll_ptr, DF_PositionOffsetLL_st_ptr PosOffsetLL_ptr)
 {
-	int		result = 0;
+    int        result = 0;
 
-	
+    
     /* Error detect. */
     if((posoffsetll_ptr == NULL) || (PosOffsetLL_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5790,56 +5790,56 @@ int DF_PositionOffsetLL_allocate(PositionOffsetLL_t *posoffsetll_ptr, DF_Positio
     memset(posoffsetll_ptr, 0, sizeof(*posoffsetll_ptr));
 
     /* PositionOffsetLL. */
-	switch(PosOffsetLL_ptr->choiceid)
-	{
-	case PositionOffsetLL_NOTHING:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_NOTHING;
-		break;
-	}
-	case PositionOffsetLL_position_LL1:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL1;
-		result = DF_Position_LL_24B_allocate(&posoffsetll_ptr->choice.position_LL1, &PosOffsetLL_ptr->choice.position_LL1);
-		break;
-	}
-	case PositionOffsetLL_position_LL2:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL2;
-		result = DF_Position_LL_28B_allocate(&posoffsetll_ptr->choice.position_LL2, &PosOffsetLL_ptr->choice.position_LL2);
-		break;
-	}
-	case PositionOffsetLL_position_LL3:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL3;
-		result = DF_Position_LL_32B_allocate(&posoffsetll_ptr->choice.position_LL3, &PosOffsetLL_ptr->choice.position_LL3);
-		break;
-	}
-	case PositionOffsetLL_position_LL4:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL4;
-		result = DF_Position_LL_36B_allocate(&posoffsetll_ptr->choice.position_LL4, &PosOffsetLL_ptr->choice.position_LL4);
-		break;
-	}
-	case PositionOffsetLL_position_LL5:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL5;
-		result = DF_Position_LL_44B_allocate(&posoffsetll_ptr->choice.position_LL5, &PosOffsetLL_ptr->choice.position_LL5);
-		break;
-	}
-	case PositionOffsetLL_position_LL6:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL6;
-		result = DF_Position_LL_48B_allocate(&posoffsetll_ptr->choice.position_LL6, &PosOffsetLL_ptr->choice.position_LL6);
-		break;
-	}
-	case PositionOffsetLL_position_LatLon:
-	{
-		posoffsetll_ptr->present = PositionOffsetLL_PR_position_LatLon;
-		result = DF_Position_LLmD_64B_allocate(&posoffsetll_ptr->choice.position_LatLon, &PosOffsetLL_ptr->choice.position_LatLon);
-		break;
-	}
-	}
+    switch(PosOffsetLL_ptr->choiceid)
+    {
+    case PositionOffsetLL_NOTHING:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_NOTHING;
+        break;
+    }
+    case PositionOffsetLL_position_LL1:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL1;
+        result = DF_Position_LL_24B_allocate(&posoffsetll_ptr->choice.position_LL1, &PosOffsetLL_ptr->choice.position_LL1);
+        break;
+    }
+    case PositionOffsetLL_position_LL2:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL2;
+        result = DF_Position_LL_28B_allocate(&posoffsetll_ptr->choice.position_LL2, &PosOffsetLL_ptr->choice.position_LL2);
+        break;
+    }
+    case PositionOffsetLL_position_LL3:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL3;
+        result = DF_Position_LL_32B_allocate(&posoffsetll_ptr->choice.position_LL3, &PosOffsetLL_ptr->choice.position_LL3);
+        break;
+    }
+    case PositionOffsetLL_position_LL4:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL4;
+        result = DF_Position_LL_36B_allocate(&posoffsetll_ptr->choice.position_LL4, &PosOffsetLL_ptr->choice.position_LL4);
+        break;
+    }
+    case PositionOffsetLL_position_LL5:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL5;
+        result = DF_Position_LL_44B_allocate(&posoffsetll_ptr->choice.position_LL5, &PosOffsetLL_ptr->choice.position_LL5);
+        break;
+    }
+    case PositionOffsetLL_position_LL6:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_position_LL6;
+        result = DF_Position_LL_48B_allocate(&posoffsetll_ptr->choice.position_LL6, &PosOffsetLL_ptr->choice.position_LL6);
+        break;
+    }
+    case PositionOffsetLL_position_LatLon:
+    {
+        posoffsetll_ptr->present = PositionOffsetLL_PR_position_LatLon;
+        result = DF_Position_LLmD_64B_allocate(&posoffsetll_ptr->choice.position_LatLon, &PosOffsetLL_ptr->choice.position_LatLon);
+        break;
+    }
+    }
     
     return result;
 
@@ -5852,13 +5852,13 @@ ERR_EXIT:
 /* Parse routine for DF_PositionOffsetLL. */
 int DF_PositionOffsetLL_parse(PositionOffsetLL_t *posoffsetll_ptr, DF_PositionOffsetLL_st_ptr PosOffsetLL_ptr)
 {  
-	int			result = 0;
+    int            result = 0;
 
-	
+    
     /* Error detect. */
     if((posoffsetll_ptr == NULL) || (PosOffsetLL_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5866,57 +5866,57 @@ int DF_PositionOffsetLL_parse(PositionOffsetLL_t *posoffsetll_ptr, DF_PositionOf
     memset(PosOffsetLL_ptr, 0, sizeof(*PosOffsetLL_ptr));
 
     /* PositonOffsetLL. */
-	/* PositionOffsetLL. */
-	switch(posoffsetll_ptr->present)
-	{
-	case PositionOffsetLL_PR_NOTHING:
-	{
-		PosOffsetLL_ptr->choiceid = PositionOffsetLL_NOTHING;
-		break;
-	}
-	case PositionOffsetLL_PR_position_LL1:
-	{
-		PosOffsetLL_ptr->choiceid= PositionOffsetLL_position_LL1;
-		result = DF_Position_LL_24B_parse(&posoffsetll_ptr->choice.position_LL1, &PosOffsetLL_ptr->choice.position_LL1);
-		break;
-	}
-	case PositionOffsetLL_PR_position_LL2:
-	{
-		PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL2;
-		result = DF_Position_LL_28B_parse(&posoffsetll_ptr->choice.position_LL2, &PosOffsetLL_ptr->choice.position_LL2);
-		break;
-	}
-	case PositionOffsetLL_PR_position_LL3:
-	{
-		PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL3;
-		result = DF_Position_LL_32B_parse(&posoffsetll_ptr->choice.position_LL3, &PosOffsetLL_ptr->choice.position_LL3);
-		break;
-	}
-	case PositionOffsetLL_PR_position_LL4:
-	{
-		PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL4;
-		result = DF_Position_LL_36B_parse(&posoffsetll_ptr->choice.position_LL4, &PosOffsetLL_ptr->choice.position_LL4);
-		break;
-	}
-	case PositionOffsetLL_PR_position_LL5:
-	{
-		PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL5;
-		result = DF_Position_LL_44B_parse(&posoffsetll_ptr->choice.position_LL5, &PosOffsetLL_ptr->choice.position_LL5);
-		break;
-	}
-	case PositionOffsetLL_PR_position_LL6:
-	{
-		PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL6;
-		result = DF_Position_LL_48B_parse(&posoffsetll_ptr->choice.position_LL6, &PosOffsetLL_ptr->choice.position_LL6);
-		break;
-	}
-	case PositionOffsetLL_PR_position_LatLon:
-	{
-		PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LatLon;
-		result = DF_Position_LL_64B_parse(&posoffsetll_ptr->choice.position_LatLon, &PosOffsetLL_ptr->choice.position_LatLon);
-		break;
-	}
-	}
+    /* PositionOffsetLL. */
+    switch(posoffsetll_ptr->present)
+    {
+    case PositionOffsetLL_PR_NOTHING:
+    {
+        PosOffsetLL_ptr->choiceid = PositionOffsetLL_NOTHING;
+        break;
+    }
+    case PositionOffsetLL_PR_position_LL1:
+    {
+        PosOffsetLL_ptr->choiceid= PositionOffsetLL_position_LL1;
+        result = DF_Position_LL_24B_parse(&posoffsetll_ptr->choice.position_LL1, &PosOffsetLL_ptr->choice.position_LL1);
+        break;
+    }
+    case PositionOffsetLL_PR_position_LL2:
+    {
+        PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL2;
+        result = DF_Position_LL_28B_parse(&posoffsetll_ptr->choice.position_LL2, &PosOffsetLL_ptr->choice.position_LL2);
+        break;
+    }
+    case PositionOffsetLL_PR_position_LL3:
+    {
+        PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL3;
+        result = DF_Position_LL_32B_parse(&posoffsetll_ptr->choice.position_LL3, &PosOffsetLL_ptr->choice.position_LL3);
+        break;
+    }
+    case PositionOffsetLL_PR_position_LL4:
+    {
+        PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL4;
+        result = DF_Position_LL_36B_parse(&posoffsetll_ptr->choice.position_LL4, &PosOffsetLL_ptr->choice.position_LL4);
+        break;
+    }
+    case PositionOffsetLL_PR_position_LL5:
+    {
+        PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL5;
+        result = DF_Position_LL_44B_parse(&posoffsetll_ptr->choice.position_LL5, &PosOffsetLL_ptr->choice.position_LL5);
+        break;
+    }
+    case PositionOffsetLL_PR_position_LL6:
+    {
+        PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LL6;
+        result = DF_Position_LL_48B_parse(&posoffsetll_ptr->choice.position_LL6, &PosOffsetLL_ptr->choice.position_LL6);
+        break;
+    }
+    case PositionOffsetLL_PR_position_LatLon:
+    {
+        PosOffsetLL_ptr->choiceid = PositionOffsetLL_position_LatLon;
+        result = DF_Position_LL_64B_parse(&posoffsetll_ptr->choice.position_LatLon, &PosOffsetLL_ptr->choice.position_LatLon);
+        break;
+    }
+    }
     
     return result;
 
@@ -5947,34 +5947,34 @@ int DF_PositionOffsetLLV_freeExt(PositionOffsetLLV_t *posoffsetllv_ptr)
 /* Free routine for DF_PositionOffsetLLV*/
 int DF_PositionOffsetLLV_free(PositionOffsetLLV_t *posoffsetllv_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	
+    
     if(posoffsetllv_ptr != NULL)
     {
         if(posoffsetllv_ptr->offsetV != NULL)
-    	{
-    		FREEMEM(posoffsetllv_ptr->offsetV);
-    	}
+        {
+            FREEMEM(posoffsetllv_ptr->offsetV);
+        }
 
         /* Must clear all the zone and avoid repeat free operation. */
         memset(posoffsetllv_ptr, 0, sizeof(*posoffsetllv_ptr));
     }
 
-  	return result;
+      return result;
 }
 
 
 /* Allocate routine for DF_PositionOffsetLLV. */
 int DF_PositionOffsetLLV_allocate(PositionOffsetLLV_t *posoffsetllv_ptr, DF_PositionOffsetLLV_st_ptr PosOffsetLLV_ptr)
 {
-	int		result = 0;
+    int        result = 0;
 
-	
+    
     /* Error detect. */
     if((posoffsetllv_ptr == NULL) || (PosOffsetLLV_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -5982,30 +5982,30 @@ int DF_PositionOffsetLLV_allocate(PositionOffsetLLV_t *posoffsetllv_ptr, DF_Posi
     memset(posoffsetllv_ptr, 0, sizeof(*posoffsetllv_ptr));
 
     /* position offset LL . */
-	if((result = DF_PositionOffsetLL_allocate(&posoffsetllv_ptr->offsetLL, &PosOffsetLLV_ptr->offsetLL)) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    if((result = DF_PositionOffsetLL_allocate(&posoffsetllv_ptr->offsetLL, &PosOffsetLLV_ptr->offsetLL)) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
-	/* vertical offset LL . */
-	if(PosOffsetLLV_ptr->opt.PositionOffsetLLV_opt_VerticalOffset == MSG_OPTIONAL_YES)
-	{
-	
-		posoffsetllv_ptr->offsetV = CALLOC(1, sizeof(*posoffsetllv_ptr->offsetV));
-		if(posoffsetllv_ptr->offsetV == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-		if((result = DF_VerticalOffset_allocate(posoffsetllv_ptr->offsetV, &PosOffsetLLV_ptr->offsetV)) != 0)
-		{
-			goto ERR_EXIT;
-		}
-		
+    /* vertical offset LL . */
+    if(PosOffsetLLV_ptr->opt.PositionOffsetLLV_opt_VerticalOffset == MSG_OPTIONAL_YES)
+    {
+    
+        posoffsetllv_ptr->offsetV = CALLOC(1, sizeof(*posoffsetllv_ptr->offsetV));
+        if(posoffsetllv_ptr->offsetV == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+        if((result = DF_VerticalOffset_allocate(posoffsetllv_ptr->offsetV, &PosOffsetLLV_ptr->offsetV)) != 0)
+        {
+            goto ERR_EXIT;
+        }
+        
     }
     else
     {
-		posoffsetllv_ptr->offsetV = NULL;
+        posoffsetllv_ptr->offsetV = NULL;
     }
     return result;
 
@@ -6019,13 +6019,13 @@ ERR_EXIT:
 /* Parse routine for DF_PositionOffsetLLV. */
 int DF_PositionOffsetLLV_parse(PositionOffsetLLV_t *posoffsetllv_ptr, DF_PositionOffsetLLV_st_ptr PosOffsetLLV_ptr)
 {  
-	int			result = 0;
+    int            result = 0;
 
-	
+    
     /* Error detect. */
     if((posoffsetllv_ptr == NULL) || (PosOffsetLLV_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6039,17 +6039,17 @@ int DF_PositionOffsetLLV_parse(PositionOffsetLLV_t *posoffsetllv_ptr, DF_Positio
     }
 
     /* Vertical Offset LL. */
-	if(posoffsetllv_ptr->offsetV != NULL)
-	{
-	
-		PosOffsetLLV_ptr->opt.PositionOffsetLLV_opt_VerticalOffset = MSG_OPTIONAL_YES;
-		
-	    if((result = DF_VerticalOffset_parse(posoffsetllv_ptr->offsetV, &(PosOffsetLLV_ptr->offsetV))) != 0)
-	    {
-	        goto ERR_EXIT;
-	    }
-	}
-	
+    if(posoffsetllv_ptr->offsetV != NULL)
+    {
+    
+        PosOffsetLLV_ptr->opt.PositionOffsetLLV_opt_VerticalOffset = MSG_OPTIONAL_YES;
+        
+        if((result = DF_VerticalOffset_parse(posoffsetllv_ptr->offsetV, &(PosOffsetLLV_ptr->offsetV))) != 0)
+        {
+            goto ERR_EXIT;
+        }
+    }
+    
     return result;
 
 ERR_EXIT:
@@ -6080,7 +6080,7 @@ int DF_PointList_free(PointList_t *list_ptr)
 /* Allocate routine for DF_PointList. */
 int DF_PointList_allocate(PointList_t *list_ptr, DF_PointList_st_ptr List_ptr)
 {
-	int               result = 0;
+    int               result = 0;
     uint8_t      point_index = 0;
     RoadPoint_t   * elem_ptr = NULL;
   
@@ -6126,7 +6126,7 @@ int DF_PointList_allocate(PointList_t *list_ptr, DF_PointList_st_ptr List_ptr)
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -6161,8 +6161,8 @@ int DF_PointList_parse(PointList_t *list_ptr, DF_PointList_st_ptr List_ptr)
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_RoadPoint_parse(list_ptr->list.array[point_index], &(List_ptr->PointList_data[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->PointList_size = point_index;
     
@@ -6176,15 +6176,15 @@ ERR_EXIT:
 /* Free routine for DF_RegulatorySpeedLimit*/
 int DF_RegulatorySpeedLimit_free(RegulatorySpeedLimit_t *speedlimit_ptr)
 {
-	int result = 0;
-	
+    int result = 0;
+    
     if(speedlimit_ptr != NULL)
     {
         /* Must clear all the zone and avoid repeat free operation. */
         memset(speedlimit_ptr, 0, sizeof(*speedlimit_ptr));
     }
 
-  	return result;
+      return result;
 }
 
 /* Free extention routine for DF_RegulatorySpeedLimit. Diff with DF_RegulatorySpeedLimit_free() and this will free the point itself. */
@@ -6207,13 +6207,13 @@ int DF_RegulatorySpeedLimit_freeExt(RegulatorySpeedLimit_t *speedlimit_ptr)
 /* Allocate routine for DF_RegulatorySpeedLimit. */
 int DF_RegulatorySpeedLimit_allocate(RegulatorySpeedLimit_t *speedlimit_ptr, DF_RegulatorySpeedLimit_st_ptr Speedlimit_ptr)
 {
-	int		result = 0;
+    int        result = 0;
 
-	
+    
     /* Error detect. */
     if((speedlimit_ptr == NULL) || (Speedlimit_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6222,7 +6222,7 @@ int DF_RegulatorySpeedLimit_allocate(RegulatorySpeedLimit_t *speedlimit_ptr, DF_
 
     speedlimit_ptr->type = Speedlimit_ptr->type;
 
-	speedlimit_ptr->speed = bsctyp_encode(DE_Speed, Speedlimit_ptr->speed);
+    speedlimit_ptr->speed = bsctyp_encode(DE_Speed, Speedlimit_ptr->speed);
 
     return result;
 
@@ -6236,12 +6236,12 @@ ERR_EXIT:
 /* Parse routine for DF_RegulatorySpeedLimit. */
 int DF_RegulatorySpeedLimit_parse(RegulatorySpeedLimit_t *speedlimit_ptr, DF_RegulatorySpeedLimit_st_ptr Speedlimit_ptr)
 {  
-	int			result = 0;
+    int            result = 0;
 
     /* Error detect. */
     if((speedlimit_ptr == NULL) || (Speedlimit_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6250,8 +6250,8 @@ int DF_RegulatorySpeedLimit_parse(RegulatorySpeedLimit_t *speedlimit_ptr, DF_Reg
 
     Speedlimit_ptr->type = speedlimit_ptr->type;
 
-	Speedlimit_ptr->speed = bsctyp_decode(DE_Speed, speedlimit_ptr->speed);
-	
+    Speedlimit_ptr->speed = bsctyp_decode(DE_Speed, speedlimit_ptr->speed);
+    
     return result;
 
 ERR_EXIT:
@@ -6263,20 +6263,20 @@ ERR_EXIT:
 /* Free routine for DF_RoadPoint*/
 int DF_RoadPoint_free(RoadPoint_t *roadpoint_ptr)
 {
-	int result = 0;
+    int result = 0;
 
-	
+    
     if(roadpoint_ptr != NULL)
     {
-    	result = DF_PositionOffsetLLV_free(&(roadpoint_ptr->posOffset));
-		if(result)
-			return result;
+        result = DF_PositionOffsetLLV_free(&(roadpoint_ptr->posOffset));
+        if(result)
+            return result;
 
         /* Must clear all the zone and avoid repeat free operation. */
         memset(roadpoint_ptr, 0, sizeof(*roadpoint_ptr));
     }
 
-  	return result;
+      return result;
 }
 
 /* Free extention routine for DF_RoadPoint. Diff with DF_RoadPoint_free() and this will free the point itself. */
@@ -6299,13 +6299,13 @@ int DF_RoadPoint_freeExt(RoadPoint_t *roadpoint_ptr)
 /* Allocate routine for DF_RoadPoint. */
 int DF_RoadPoint_allocate(RoadPoint_t *roadpoint_ptr, DF_RoadPoint_st_ptr Roadpoint_ptr)
 {
-	int		result = 0;
+    int        result = 0;
 
-	
+    
     /* Error detect. */
     if((roadpoint_ptr == NULL) || (Roadpoint_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6313,10 +6313,10 @@ int DF_RoadPoint_allocate(RoadPoint_t *roadpoint_ptr, DF_RoadPoint_st_ptr Roadpo
     memset(roadpoint_ptr, 0, sizeof(*roadpoint_ptr));
 
     /* PositionOffsetLLV. */
-	if((result = DF_PositionOffsetLLV_allocate(&(roadpoint_ptr->posOffset), &(Roadpoint_ptr->posOffset))) != 0)
-	{
-		goto ERR_EXIT;
-	}
+    if((result = DF_PositionOffsetLLV_allocate(&(roadpoint_ptr->posOffset), &(Roadpoint_ptr->posOffset))) != 0)
+    {
+        goto ERR_EXIT;
+    }
 
     return result;
 
@@ -6330,12 +6330,12 @@ ERR_EXIT:
 /* Parse routine for DF_RoadPoint. */
 int DF_RoadPoint_parse(RoadPoint_t *roadpoint_ptr, DF_RoadPoint_st_ptr Roadpoint_ptr)
 {  
-	int			result = 0;
+    int            result = 0;
 
     /* Error detect. */
     if((roadpoint_ptr == NULL) || (Roadpoint_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6347,7 +6347,7 @@ int DF_RoadPoint_parse(RoadPoint_t *roadpoint_ptr, DF_RoadPoint_st_ptr Roadpoint
     {
         goto ERR_EXIT;
     }
-	
+    
     return result;
 
 ERR_EXIT:
@@ -6377,7 +6377,7 @@ int DF_SpeedLimitList_free(SpeedLimitList_t *list_ptr)
 /* Allocate routine for DF_SpeedLimitList. */
 int DF_SpeedLimitList_allocate(SpeedLimitList_t *list_ptr, DF_SpeedLimitList_st_ptr List_ptr)
 {
-	int                          result = 0;
+    int                          result = 0;
     uint8_t                 point_index = 0;
     RegulatorySpeedLimit_t   * elem_ptr = NULL;
   
@@ -6423,7 +6423,7 @@ int DF_SpeedLimitList_allocate(SpeedLimitList_t *list_ptr, DF_SpeedLimitList_st_
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -6458,8 +6458,8 @@ int DF_SpeedLimitList_parse(SpeedLimitList_t *list_ptr, DF_SpeedLimitList_st_ptr
     for(point_index = 0; point_index < list_ptr->list.count; point_index ++)
     {
         result = DF_RegulatorySpeedLimit_parse(list_ptr->list.array[point_index], &(List_ptr->SpeedLimitList_data[point_index]));
-		if(result)
-			goto ERR_EXIT;
+        if(result)
+            goto ERR_EXIT;
     }
     List_ptr->SpeedLimitList_size = point_index;
     
@@ -6494,11 +6494,11 @@ int DF_RTCMheader_free(RTCMheader_t *header_ptr)
 /* Allocate routine for DF_RTCMheader. */
 int DF_RTCMheader_allocate(RTCMheader_t *header_ptr, DF_RTCMheader_st_ptr Header_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((header_ptr == NULL) || (Header_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6506,14 +6506,14 @@ int DF_RTCMheader_allocate(RTCMheader_t *header_ptr, DF_RTCMheader_st_ptr Header
     memset(header_ptr, 0, sizeof(*header_ptr));
 
     /* GNSSstatus. */
-	result = DE_GNSSstatus_allocate(&(header_ptr->status), &(Header_ptr->status));
+    result = DE_GNSSstatus_allocate(&(header_ptr->status), &(Header_ptr->status));
     if(result!= 0)
     {
         goto ERR_EXIT;
     }
 
     /* AntennaOffsetSet. */
-	result = DF_AntennaOffsetSet_allocate(&(header_ptr->offsetSet), &(Header_ptr->offsetSet));
+    result = DF_AntennaOffsetSet_allocate(&(header_ptr->offsetSet), &(Header_ptr->offsetSet));
     if(result!= 0)
     {
         goto ERR_EXIT;
@@ -6531,11 +6531,11 @@ ERR_EXIT:
 /* Parse routine for DF_RTCMheader. */
 int DF_RTCMheader_parse(RTCMheader_t *header_ptr, DF_RTCMheader_st_ptr Header_ptr)
 {  
-	int			result = 0;
+    int            result = 0;
     /* Error detect. */
     if((header_ptr == NULL) || (Header_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6543,14 +6543,14 @@ int DF_RTCMheader_parse(RTCMheader_t *header_ptr, DF_RTCMheader_st_ptr Header_pt
     memset(Header_ptr, 0, sizeof(*Header_ptr));
 
     /* GNSSstatus. */
-	result = DE_GNSSstatus_parse(&(header_ptr->status), &(Header_ptr->status));
+    result = DE_GNSSstatus_parse(&(header_ptr->status), &(Header_ptr->status));
     if(result!= 0)
     {
         goto ERR_EXIT;
     }
 
     /* PathHistoryPointList. */
-	result = DF_AntennaOffsetSet_parse(&(header_ptr->offsetSet), &(Header_ptr->offsetSet));
+    result = DF_AntennaOffsetSet_parse(&(header_ptr->offsetSet), &(Header_ptr->offsetSet));
     if(result != 0)
     {
         goto ERR_EXIT;
@@ -6587,7 +6587,7 @@ int DF_RTCMmessageList_free(RTCMmessageList_t *list_ptr)
 /* Allocate routine for DF_RTCMmessageList. */
 int DF_RTCMmessageList_allocate(RTCMmessageList_t *list_ptr, DF_RTCMmessageList_st_ptr List_ptr)
 {
-	int			result = 0;
+    int            result = 0;
     uint8_t       point_index = 0;
     RTCMmessage_t  * elem_ptr = NULL;
   
@@ -6596,7 +6596,7 @@ int DF_RTCMmessageList_allocate(RTCMmessageList_t *list_ptr, DF_RTCMmessageList_
     if((list_ptr == NULL) || (List_ptr == NULL) 
     || ((sizeof(List_ptr->array) / sizeof(List_ptr->array[0])) < List_ptr->messageNum))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6610,11 +6610,11 @@ int DF_RTCMmessageList_allocate(RTCMmessageList_t *list_ptr, DF_RTCMmessageList_
     {
         if((elem_ptr = CALLOC(1, sizeof(*elem_ptr))) != NULL)
         {
-        	result = DE_RTCMmessage_allocate(elem_ptr, &(List_ptr->array[point_index]));
+            result = DE_RTCMmessage_allocate(elem_ptr, &(List_ptr->array[point_index]));
             if(result == 0)
             {
                 /* Add point element to sequence. */
-				result = asn_sequence_add(&(list_ptr->list), elem_ptr);
+                result = asn_sequence_add(&(list_ptr->list), elem_ptr);
                 if(result != 0)
                 {
                     /* Free the point's content and point itself when add failure. */
@@ -6634,7 +6634,7 @@ int DF_RTCMmessageList_allocate(RTCMmessageList_t *list_ptr, DF_RTCMmessageList_
         }
         else
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
     }
@@ -6651,7 +6651,7 @@ ERR_EXIT:
 /* Parse routine for DF_RTCMmessageList. */
 int DF_RTCMmessageList_parse(RTCMmessageList_t *list_ptr, DF_RTCMmessageList_st_ptr List_ptr)
 {  
-	int		result = 0;
+    int        result = 0;
     uint8_t  point_index = 0;
   
 
@@ -6659,7 +6659,7 @@ int DF_RTCMmessageList_parse(RTCMmessageList_t *list_ptr, DF_RTCMmessageList_st_
     if((list_ptr == NULL) || (List_ptr == NULL) 
     || ((sizeof(List_ptr->array) / sizeof(List_ptr->array[0])) < list_ptr->list.count))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6721,11 +6721,11 @@ int DF_SpeedHeadingThrottleConfidence_free(SpeedandHeadingandThrottleConfidence_
 /* Allocate routine for DF_SpeedHeadingThrottleConfidence. */
 int DF_SpeedHeadingThrottleConfidence_allocate(SpeedandHeadingandThrottleConfidence_t *conf_ptr, DF_SpeedHeadingThrottleConf_st_ptr Conf_ptr)
 {
-	int result = 0;
+    int result = 0;
     /* Error detect. */
     if((conf_ptr == NULL) || (Conf_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6748,11 +6748,11 @@ ERR_EXIT:
 /* Parse routine for DF_SpeedHeadingThrottleConfidence. */
 int DF_SpeedHeadingThrottleConfidence_parse(SpeedandHeadingandThrottleConfidence_t *conf_ptr, DF_SpeedHeadingThrottleConf_st_ptr Conf_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((conf_ptr == NULL) || (Conf_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6813,11 +6813,11 @@ int DF_TransmissionAndSpeed_free(TransmissionAndSpeed_t *trans_ptr)
 /* Allocate routine for DF_TransmissionAndSpeed. */
 int DF_TransmissionAndSpeed_allocate(TransmissionAndSpeed_t *trans_ptr, DF_TransmissionAndSpeed_st_ptr Trans_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((trans_ptr == NULL) || (Trans_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6839,11 +6839,11 @@ ERR_EXIT:
 /* Parse routine for DF_TransmissionAndSpeed. */
 int DF_TransmissionAndSpeed_parse(TransmissionAndSpeed_t *trans_ptr, DF_TransmissionAndSpeed_st_ptr Trans_ptr)
 {
-	int		result = 0;
+    int        result = 0;
     /* Error detect. */
     if((trans_ptr == NULL) || (Trans_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -6865,231 +6865,231 @@ ERR_EXIT:
 /* Free routine for DF_TimeChangeDetails. */
 int DF_TimeChangeDetails_free(TimeChangeDetails_t *tcd_ptr)
 {
-	int    result = 0;
+    int    result = 0;
 
 
-	if(tcd_ptr != NULL)
-	{
-		if(tcd_ptr->minEndTime != NULL)
-		{
-			FREEMEM(tcd_ptr->minEndTime);
-		}
+    if(tcd_ptr != NULL)
+    {
+        if(tcd_ptr->minEndTime != NULL)
+        {
+            FREEMEM(tcd_ptr->minEndTime);
+        }
 
-		if(tcd_ptr->maxEndTime != NULL)
-		{
-			FREEMEM(tcd_ptr->maxEndTime);
-		}
+        if(tcd_ptr->maxEndTime != NULL)
+        {
+            FREEMEM(tcd_ptr->maxEndTime);
+        }
 
-		if(tcd_ptr->timeConfidence != NULL)
-		{
-			FREEMEM(tcd_ptr->timeConfidence);
-		}
+        if(tcd_ptr->timeConfidence != NULL)
+        {
+            FREEMEM(tcd_ptr->timeConfidence);
+        }
 
-		if(tcd_ptr->nextStartTime != NULL)
-		{
-			FREEMEM(tcd_ptr->nextStartTime);
-		}
+        if(tcd_ptr->nextStartTime != NULL)
+        {
+            FREEMEM(tcd_ptr->nextStartTime);
+        }
 
-		if(tcd_ptr->nextDuration != NULL)
-		{
-			FREEMEM(tcd_ptr->nextDuration);
-		}
+        if(tcd_ptr->nextDuration != NULL)
+        {
+            FREEMEM(tcd_ptr->nextDuration);
+        }
 
-		memset(tcd_ptr, 0x00, sizeof(*tcd_ptr));
+        memset(tcd_ptr, 0x00, sizeof(*tcd_ptr));
 
         result = 0;
-	}
+    }
     else
     {
         result = 1;
     }
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_TimeChangeDetails.*/
 int DF_TimeChangeDetails_allocate(TimeChangeDetails_t *tcd_ptr, DF_TimeChangeDetials_st_ptr Tcd_ptr)
 {
-	int    result = 0;
+    int    result = 0;
 
 
     /* Error detection. */
-	if((tcd_ptr == NULL) || (Tcd_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((tcd_ptr == NULL) || (Tcd_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* Reset all the zone. */
-	memset(tcd_ptr, 0x00, sizeof(*tcd_ptr));
+    /* Reset all the zone. */
+    memset(tcd_ptr, 0x00, sizeof(*tcd_ptr));
 
     /* Start time. */
-	tcd_ptr->startTime = bsctyp_encode(DE_TimeMark, Tcd_ptr->startTime);
+    tcd_ptr->startTime = bsctyp_encode(DE_TimeMark, Tcd_ptr->startTime);
 
     /* Min end time. */
-	if(Tcd_ptr->opt.minEndTime == MSG_OPTIONAL_YES)
-	{
-		if((tcd_ptr->minEndTime = CALLOC(1, sizeof(*(tcd_ptr->minEndTime)))) != NULL)
-		{
-		    *(tcd_ptr->minEndTime) = bsctyp_encode(DE_TimeMark, Tcd_ptr->minEndTime);
-		}
+    if(Tcd_ptr->opt.minEndTime == MSG_OPTIONAL_YES)
+    {
+        if((tcd_ptr->minEndTime = CALLOC(1, sizeof(*(tcd_ptr->minEndTime)))) != NULL)
+        {
+            *(tcd_ptr->minEndTime) = bsctyp_encode(DE_TimeMark, Tcd_ptr->minEndTime);
+        }
         else
         {
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		tcd_ptr->minEndTime = NULL;
-	}
+        tcd_ptr->minEndTime = NULL;
+    }
 
     /* Max end time. */
-	if(Tcd_ptr->opt.maxEndTime == MSG_OPTIONAL_YES)
-	{
-		if((tcd_ptr->maxEndTime = CALLOC(1, sizeof(*(tcd_ptr->maxEndTime)))) != NULL)
-		{
-		    *(tcd_ptr->maxEndTime) = bsctyp_encode(DE_TimeMark, Tcd_ptr->maxEndTime);
-		}
+    if(Tcd_ptr->opt.maxEndTime == MSG_OPTIONAL_YES)
+    {
+        if((tcd_ptr->maxEndTime = CALLOC(1, sizeof(*(tcd_ptr->maxEndTime)))) != NULL)
+        {
+            *(tcd_ptr->maxEndTime) = bsctyp_encode(DE_TimeMark, Tcd_ptr->maxEndTime);
+        }
         else
         {
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-	}
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+    }
     else
     {
-		tcd_ptr->maxEndTime = NULL;
-	}
+        tcd_ptr->maxEndTime = NULL;
+    }
 
     /* Likely end time. */
-	tcd_ptr->likelyEndTime = bsctyp_encode(DE_TimeMark, Tcd_ptr->likelyEndTime);
+    tcd_ptr->likelyEndTime = bsctyp_encode(DE_TimeMark, Tcd_ptr->likelyEndTime);
 
     /* Time confidence. */
-	if(Tcd_ptr->opt.TimeConfidence == MSG_OPTIONAL_YES)
-	{
-		if((tcd_ptr->timeConfidence = CALLOC(1, sizeof(*(tcd_ptr->timeConfidence)))) == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+    if(Tcd_ptr->opt.TimeConfidence == MSG_OPTIONAL_YES)
+    {
+        if((tcd_ptr->timeConfidence = CALLOC(1, sizeof(*(tcd_ptr->timeConfidence)))) == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
 
-		*(tcd_ptr->timeConfidence) = bsctyp_encode(DE_Confidence, Tcd_ptr->timeConfidence);
-	}
-    else
-	{
-		tcd_ptr->timeConfidence = NULL;
-	}
-
-    /* Next start time. */
-	if(Tcd_ptr->opt.nextStartTime == MSG_OPTIONAL_YES)
-	{
-		if((tcd_ptr->nextStartTime = CALLOC(1, sizeof(*(tcd_ptr->nextStartTime)))) == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-
-		*(tcd_ptr->nextStartTime) = bsctyp_encode(DE_TimeMark, Tcd_ptr->nextStartTime);
-	}
-    else
-	{
-		tcd_ptr->nextStartTime = NULL;
-	}
-
-    /* Next duration. */
-	if(Tcd_ptr->opt.nextDuration == MSG_OPTIONAL_YES)
-	{
-		if((tcd_ptr->nextDuration = CALLOC(1, sizeof(*(tcd_ptr->nextDuration)))) != NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
-
-		*(tcd_ptr->nextDuration) = bsctyp_encode(DE_TimeMark, Tcd_ptr->nextDuration);
-	}
+        *(tcd_ptr->timeConfidence) = bsctyp_encode(DE_Confidence, Tcd_ptr->timeConfidence);
+    }
     else
     {
-		tcd_ptr->nextDuration = NULL;
-	}
+        tcd_ptr->timeConfidence = NULL;
+    }
+
+    /* Next start time. */
+    if(Tcd_ptr->opt.nextStartTime == MSG_OPTIONAL_YES)
+    {
+        if((tcd_ptr->nextStartTime = CALLOC(1, sizeof(*(tcd_ptr->nextStartTime)))) == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+
+        *(tcd_ptr->nextStartTime) = bsctyp_encode(DE_TimeMark, Tcd_ptr->nextStartTime);
+    }
+    else
+    {
+        tcd_ptr->nextStartTime = NULL;
+    }
+
+    /* Next duration. */
+    if(Tcd_ptr->opt.nextDuration == MSG_OPTIONAL_YES)
+    {
+        if((tcd_ptr->nextDuration = CALLOC(1, sizeof(*(tcd_ptr->nextDuration)))) != NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
+
+        *(tcd_ptr->nextDuration) = bsctyp_encode(DE_TimeMark, Tcd_ptr->nextDuration);
+    }
+    else
+    {
+        tcd_ptr->nextDuration = NULL;
+    }
     
-	return result;
+    return result;
     
 ERR_EXIT:
-	
-	DF_TimeChangeDetails_free(tcd_ptr);
-	return result;
+    
+    DF_TimeChangeDetails_free(tcd_ptr);
+    return result;
 }
 
 
 /* Parse routine for DF_TimeChangeDetails. */
 int DF_TimeChangeDetails_parse(TimeChangeDetails_t *tcd_ptr, DF_TimeChangeDetials_st_ptr Tcd_ptr)
 {
-	int    result = 0;
+    int    result = 0;
 
 
     /* Error detection. */
-	if((tcd_ptr == NULL) || (Tcd_ptr == NULL))
-	{
-		result = -ERR_INVAL;
-		goto ERR_EXIT;
-	}
+    if((tcd_ptr == NULL) || (Tcd_ptr == NULL))
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
 
-	/* clear  Tcd_ptr memory */
-	memset(Tcd_ptr, 0x00, sizeof(*Tcd_ptr));
+    /* clear  Tcd_ptr memory */
+    memset(Tcd_ptr, 0x00, sizeof(*Tcd_ptr));
 
     /* Start time. */
-	Tcd_ptr->startTime = bsctyp_decode(DE_TimeMark, tcd_ptr->startTime);
+    Tcd_ptr->startTime = bsctyp_decode(DE_TimeMark, tcd_ptr->startTime);
 
     /* Min end time. */
-	if(tcd_ptr->minEndTime != NULL)
-	{
-		Tcd_ptr->opt.minEndTime = MSG_OPTIONAL_YES;
-		Tcd_ptr->minEndTime = bsctyp_decode(DE_TimeMark, *(tcd_ptr->minEndTime));
+    if(tcd_ptr->minEndTime != NULL)
+    {
+        Tcd_ptr->opt.minEndTime = MSG_OPTIONAL_YES;
+        Tcd_ptr->minEndTime = bsctyp_decode(DE_TimeMark, *(tcd_ptr->minEndTime));
     }
 
     /* Max end time. */
-	if(tcd_ptr->maxEndTime != NULL)
-	{
-		Tcd_ptr->opt.maxEndTime = MSG_OPTIONAL_YES;
-		Tcd_ptr->maxEndTime = bsctyp_decode(DE_TimeMark, *(tcd_ptr->maxEndTime));
+    if(tcd_ptr->maxEndTime != NULL)
+    {
+        Tcd_ptr->opt.maxEndTime = MSG_OPTIONAL_YES;
+        Tcd_ptr->maxEndTime = bsctyp_decode(DE_TimeMark, *(tcd_ptr->maxEndTime));
     }
 
     /* Likely end time. */
-	Tcd_ptr->likelyEndTime = bsctyp_decode(DE_TimeMark, tcd_ptr->likelyEndTime);
+    Tcd_ptr->likelyEndTime = bsctyp_decode(DE_TimeMark, tcd_ptr->likelyEndTime);
 
     /* Time confidence. */
-	if(tcd_ptr->timeConfidence != NULL)
-	{
-		Tcd_ptr->opt.TimeConfidence = MSG_OPTIONAL_YES;
-		Tcd_ptr->timeConfidence = bsctyp_decode(DE_Confidence, *(tcd_ptr->timeConfidence));	
+    if(tcd_ptr->timeConfidence != NULL)
+    {
+        Tcd_ptr->opt.TimeConfidence = MSG_OPTIONAL_YES;
+        Tcd_ptr->timeConfidence = bsctyp_decode(DE_Confidence, *(tcd_ptr->timeConfidence));    
     }
 
     /* Next start time. */
-	if(tcd_ptr->nextStartTime != NULL)
-	{
-		Tcd_ptr->opt.nextStartTime = MSG_OPTIONAL_YES;
-		Tcd_ptr->nextStartTime = bsctyp_decode(DE_TimeMark, *(tcd_ptr->nextStartTime));	
+    if(tcd_ptr->nextStartTime != NULL)
+    {
+        Tcd_ptr->opt.nextStartTime = MSG_OPTIONAL_YES;
+        Tcd_ptr->nextStartTime = bsctyp_decode(DE_TimeMark, *(tcd_ptr->nextStartTime));    
     }
 
     /* Next duration. */
-	if(tcd_ptr->nextDuration != NULL)
-	{
-		Tcd_ptr->opt.nextDuration = MSG_OPTIONAL_YES;
-		Tcd_ptr->nextDuration = bsctyp_decode(DE_TimeMark, *(tcd_ptr->nextDuration));
+    if(tcd_ptr->nextDuration != NULL)
+    {
+        Tcd_ptr->opt.nextDuration = MSG_OPTIONAL_YES;
+        Tcd_ptr->nextDuration = bsctyp_decode(DE_TimeMark, *(tcd_ptr->nextDuration));
     }
-	
+    
 ERR_EXIT:
 
-	return result;
+    return result;
 }
 
 
 /* Free routine for DF_VehicleClassification. */
 int DF_VehicleClassification_free(VehicleClassification_t* vehicleclass_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     
     if(vehicleclass_ptr != NULL)
@@ -7098,20 +7098,20 @@ int DF_VehicleClassification_free(VehicleClassification_t* vehicleclass_ptr)
         memset(vehicleclass_ptr, 0, sizeof(*vehicleclass_ptr));    
     }  
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_VehicleClassification. */
 int DF_VehicleClassification_allocate(VehicleClassification_t* vehicleclass_ptr , DF_VehicleClassification_st_ptr VehicleClass_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     
     /* Error detect. */
     if((vehicleclass_ptr == NULL) || (VehicleClass_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -7119,7 +7119,7 @@ int DF_VehicleClassification_allocate(VehicleClassification_t* vehicleclass_ptr 
     memset(vehicleclass_ptr, 0, sizeof(*vehicleclass_ptr));
 
     /* BasicVehicleClass. */
-	vehicleclass_ptr->classification = VehicleClass_ptr->classification;
+    vehicleclass_ptr->classification = VehicleClass_ptr->classification;
 
     return result;
     
@@ -7134,7 +7134,7 @@ ERR_EXIT:
 /* Parse routine for DF_VehicleClassification. */
 int DF_VehicleClassification_parse(VehicleClassification_t* vehicleclass_ptr , DF_VehicleClassification_st_ptr VehicleClass_ptr)
 {  
-	int result = 0;
+    int result = 0;
 
     
     /* Error detect. */
@@ -7148,7 +7148,7 @@ int DF_VehicleClassification_parse(VehicleClassification_t* vehicleclass_ptr , D
     memset(VehicleClass_ptr, 0, sizeof(*VehicleClass_ptr));
 
     /* BasicVehicleClass. */
-	VehicleClass_ptr->classification = vehicleclass_ptr->classification;
+    VehicleClass_ptr->classification = vehicleclass_ptr->classification;
     
 ERR_EXIT:
 
@@ -7159,7 +7159,7 @@ ERR_EXIT:
 /* Free routine for DF_VehicleSafetyExtensions. */
 int DF_VehicleSafetyExtensions_free(VehicleSafetyExtensions_t * vecsafety_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     if(vecsafety_ptr != NULL)
     {
@@ -7197,7 +7197,7 @@ int DF_VehicleSafetyExtensions_free(VehicleSafetyExtensions_t * vecsafety_ptr)
        
     }  
 
-  	return result;
+      return result;
 }
 
 
@@ -7205,8 +7205,8 @@ int DF_VehicleSafetyExtensions_free(VehicleSafetyExtensions_t * vecsafety_ptr)
 /* Allocate routine for DF_VehicleSafetyExtensions. */
 int DF_VehicleSafetyExtensions_allocate(VehicleSafetyExtensions_t * vecsafety_ptr, DF_VehicleSafetyExtensions_st_ptr vecSafety_ptr)
 {
-	int result = 0;
-	
+    int result = 0;
+    
     /* Error detect. */
     if((vecsafety_ptr == NULL) || (vecSafety_ptr == NULL))
     {
@@ -7222,7 +7222,7 @@ int DF_VehicleSafetyExtensions_allocate(VehicleSafetyExtensions_t * vecsafety_pt
     {
         if((vecsafety_ptr->events = CALLOC(1, sizeof(* vecsafety_ptr->events))) == NULL)
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
         if((result = DE_VehicleEventFlags_allocate(vecsafety_ptr->events, &(vecSafety_ptr->events))) != 0)
@@ -7240,7 +7240,7 @@ int DF_VehicleSafetyExtensions_allocate(VehicleSafetyExtensions_t * vecsafety_pt
     {
         if((vecsafety_ptr->pathHistory = CALLOC(1, sizeof(* vecsafety_ptr->pathHistory))) == NULL)
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
         if((result = DF_PathHistory_allocate(vecsafety_ptr->pathHistory, &(vecSafety_ptr->pathHistory))) != 0)
@@ -7258,7 +7258,7 @@ int DF_VehicleSafetyExtensions_allocate(VehicleSafetyExtensions_t * vecsafety_pt
     {
         if((vecsafety_ptr->pathPrediction = CALLOC(1, sizeof(* vecsafety_ptr->pathPrediction))) == NULL)
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
         if((result = DF_PathPrediction_allocate(vecsafety_ptr->pathPrediction, &(vecSafety_ptr->pathPrediction))) != 0)
@@ -7276,7 +7276,7 @@ int DF_VehicleSafetyExtensions_allocate(VehicleSafetyExtensions_t * vecsafety_pt
     {
         if((vecsafety_ptr->lights = CALLOC(1, sizeof(* vecsafety_ptr->lights))) == NULL)
         {
-        	result = -ERR_NOMEM;
+            result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
         if((result = DE_ExteriorLights_allocate(vecsafety_ptr->lights, &(vecSafety_ptr->lights))) != 0)
@@ -7302,12 +7302,12 @@ ERR_EXIT:
 /* Parse routine for DF_VehicleSafetyExtensions. */
 int DF_VehicleSafetyExtensions_parse(VehicleSafetyExtensions_t * vecsafety_ptr, DF_VehicleSafetyExtensions_st_ptr vecSafety_ptr)
 {  
-	int result = 0;
-		
+    int result = 0;
+        
     /* Error detect. */
     if((vecsafety_ptr == NULL) || (vecSafety_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -7381,7 +7381,7 @@ ERR_EXIT:
 /* Free routine for DF_VehicleSize. */
 int DF_VehicleSize_free(VehicleSize_t* vehiclesize_ptr)
 {
-	int result = 0;
+    int result = 0;
 
     
     if(vehiclesize_ptr != NULL)
@@ -7396,36 +7396,36 @@ int DF_VehicleSize_free(VehicleSize_t* vehiclesize_ptr)
         memset(vehiclesize_ptr, 0, sizeof(*vehiclesize_ptr));    
     }  
 
-	return result;
+    return result;
 }
 
 
 /* Allocate routine for DF_VehicleSize. */
 int DF_VehicleSize_allocate(VehicleSize_t* vehiclesize_ptr , DF_VehicleSize_st_ptr VehicleSize_ptr)
 {
-	int result = 0;
+    int result = 0;
     /* Error detect. */
     if((vehiclesize_ptr == NULL) || (VehicleSize_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
     /* Reset all the zone. */
     memset(vehiclesize_ptr, 0, sizeof(*vehiclesize_ptr));
 
-	vehiclesize_ptr->width = bsctyp_encode(DE_VehicleWidth, VehicleSize_ptr->width);
-	vehiclesize_ptr->length = bsctyp_encode(DE_VehicleLength, VehicleSize_ptr->length);
+    vehiclesize_ptr->width = bsctyp_encode(DE_VehicleWidth, VehicleSize_ptr->width);
+    vehiclesize_ptr->length = bsctyp_encode(DE_VehicleLength, VehicleSize_ptr->length);
 
     /* Events. */
     if(VehicleSize_ptr->opt.vehiclesize_opt_height == MSG_OPTIONAL_YES)
     {
-    	vehiclesize_ptr->height = CALLOC(1, sizeof(*vehiclesize_ptr->height));
-		if(vehiclesize_ptr->height == NULL)
-		{
-			result = -ERR_NOMEM;
-			goto ERR_EXIT;
-		}
+        vehiclesize_ptr->height = CALLOC(1, sizeof(*vehiclesize_ptr->height));
+        if(vehiclesize_ptr->height == NULL)
+        {
+            result = -ERR_NOMEM;
+            goto ERR_EXIT;
+        }
         *vehiclesize_ptr->height = bsctyp_encode(DE_VehicleHeight, VehicleSize_ptr->height);
     }
     else
@@ -7446,7 +7446,7 @@ ERR_EXIT:
 /* Parse routine for DF_VehicleSize. */
 int DF_VehicleSize_parse(VehicleSize_t* vehiclesize_ptr , DF_VehicleSize_st_ptr VehicleSize_ptr)
 {  
-	int result = 0;
+    int result = 0;
 
     
     /* Error detect. */
@@ -7458,14 +7458,14 @@ int DF_VehicleSize_parse(VehicleSize_t* vehiclesize_ptr , DF_VehicleSize_st_ptr 
 
     /* Reset all the zone. */
     memset(VehicleSize_ptr, 0, sizeof(*VehicleSize_ptr));
-	
-	VehicleSize_ptr->width = bsctyp_decode(DE_VehicleWidth, vehiclesize_ptr->width);
-	VehicleSize_ptr->length = bsctyp_decode(DE_VehicleLength, vehiclesize_ptr->length);
+    
+    VehicleSize_ptr->width = bsctyp_decode(DE_VehicleWidth, vehiclesize_ptr->width);
+    VehicleSize_ptr->length = bsctyp_decode(DE_VehicleLength, vehiclesize_ptr->length);
     /* Events. */
     if(vehiclesize_ptr->height != NULL)
     {
-    	VehicleSize_ptr->opt.vehiclesize_opt_height = MSG_OPTIONAL_YES;
-		VehicleSize_ptr->height = bsctyp_decode(DE_VehicleHeight, *vehiclesize_ptr->height);
+        VehicleSize_ptr->opt.vehiclesize_opt_height = MSG_OPTIONAL_YES;
+        VehicleSize_ptr->height = bsctyp_decode(DE_VehicleHeight, *vehiclesize_ptr->height);
     }
 
     
@@ -7494,13 +7494,13 @@ int DF_VerticalOffset_free(VerticalOffset_t *vecoffset_ptr)
 /* Allocate routine for DF_VerticalOffset. */
 int DF_VerticalOffset_allocate(VerticalOffset_t *vecoffset_ptr, DF_VerticalOffset_st_ptr VecOffset_ptr)
 {
-	int		result = 0;
+    int        result = 0;
 
-	
+    
     /* Error detect. */
     if((vecoffset_ptr == NULL) || (VecOffset_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -7508,56 +7508,56 @@ int DF_VerticalOffset_allocate(VerticalOffset_t *vecoffset_ptr, DF_VerticalOffse
     memset(vecoffset_ptr, 0, sizeof(*vecoffset_ptr));
 
     /* VehicleOffset. */
-	switch(VecOffset_ptr->choiceid)
-	{
-    	case VerticalOffset_NOTHING:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_NOTHING;
-    		break;
-    	}
-    	case VerticalOffset_offset1:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_offset1;
-    		vecoffset_ptr->choice.offset1 = bsctyp_encode(DE_VertOffset_B07, VecOffset_ptr->choice.offset1);
-    		break;
-    	}
-    	case VerticalOffset_offset2:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_offset2;
-    		vecoffset_ptr->choice.offset2 = bsctyp_encode(DE_VertOffset_B08, VecOffset_ptr->choice.offset2);
-    		break;
-    	}
-    	case VerticalOffset_offset3:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_offset3;
-    		vecoffset_ptr->choice.offset3 = bsctyp_encode(DE_VertOffset_B09, VecOffset_ptr->choice.offset3);
-    		break;
-    	}
-    	case VerticalOffset_offset4:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_offset4;
-    		vecoffset_ptr->choice.offset4 = bsctyp_encode(DE_VertOffset_B10, VecOffset_ptr->choice.offset4);
-    		break;
-    	}
-    	case VerticalOffset_offset5:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_offset5;
-    		vecoffset_ptr->choice.offset5 = bsctyp_encode(DE_VertOffset_B11, VecOffset_ptr->choice.offset5);
-    		break;
-    	}
-    	case VerticalOffset_offset6:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_offset6;
-    		vecoffset_ptr->choice.offset6 = bsctyp_encode(DE_VertOffset_B12, VecOffset_ptr->choice.offset6);
-    		break;
-    	}
-    	case VerticalOffset_elevation:
-    	{
-    		vecoffset_ptr->present = VerticalOffset_PR_elevation;
+    switch(VecOffset_ptr->choiceid)
+    {
+        case VerticalOffset_NOTHING:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_NOTHING;
+            break;
+        }
+        case VerticalOffset_offset1:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_offset1;
+            vecoffset_ptr->choice.offset1 = bsctyp_encode(DE_VertOffset_B07, VecOffset_ptr->choice.offset1);
+            break;
+        }
+        case VerticalOffset_offset2:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_offset2;
+            vecoffset_ptr->choice.offset2 = bsctyp_encode(DE_VertOffset_B08, VecOffset_ptr->choice.offset2);
+            break;
+        }
+        case VerticalOffset_offset3:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_offset3;
+            vecoffset_ptr->choice.offset3 = bsctyp_encode(DE_VertOffset_B09, VecOffset_ptr->choice.offset3);
+            break;
+        }
+        case VerticalOffset_offset4:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_offset4;
+            vecoffset_ptr->choice.offset4 = bsctyp_encode(DE_VertOffset_B10, VecOffset_ptr->choice.offset4);
+            break;
+        }
+        case VerticalOffset_offset5:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_offset5;
+            vecoffset_ptr->choice.offset5 = bsctyp_encode(DE_VertOffset_B11, VecOffset_ptr->choice.offset5);
+            break;
+        }
+        case VerticalOffset_offset6:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_offset6;
+            vecoffset_ptr->choice.offset6 = bsctyp_encode(DE_VertOffset_B12, VecOffset_ptr->choice.offset6);
+            break;
+        }
+        case VerticalOffset_elevation:
+        {
+            vecoffset_ptr->present = VerticalOffset_PR_elevation;
             vecoffset_ptr->choice.elevation = bsctyp_encode(DE_Elevation, VecOffset_ptr->choice.elevation);
-    		break;
-    	}
-	}
+            break;
+        }
+    }
     
     return result;
 
@@ -7571,70 +7571,70 @@ ERR_EXIT:
 /* Parse routine for DF_VerticalOffset. */
 int DF_VerticalOffset_parse(VerticalOffset_t *vecoffset_ptr, DF_VerticalOffset_st_ptr VecOffset_ptr)
 {  
-	int			result = 0;
+    int            result = 0;
 
-	
+    
     /* Error detect. */
     if((vecoffset_ptr == NULL) || (VecOffset_ptr == NULL))
     {
-    	result = -ERR_INVAL;
+        result = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
     /* Reset all the zone. */
     memset(VecOffset_ptr, 0, sizeof(*VecOffset_ptr));
 
-	/* VehicleOffset. */
-	switch(vecoffset_ptr->present)
-	{
-    	case VerticalOffset_PR_NOTHING:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_NOTHING;
-    		break;
-    	}
-    	case VerticalOffset_PR_offset1:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_offset1;
-    		VecOffset_ptr->choice.offset1 = bsctyp_decode(DE_VertOffset_B07, vecoffset_ptr->choice.offset1);
-    		break;
-    	}
-    	case VerticalOffset_PR_offset2:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_offset2;
-    		VecOffset_ptr->choice.offset2 = bsctyp_decode(DE_VertOffset_B08, vecoffset_ptr->choice.offset2);
-    		break;
-    	}
-    	case VerticalOffset_PR_offset3:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_offset3;
-    		VecOffset_ptr->choice.offset3 = bsctyp_decode(DE_VertOffset_B09, vecoffset_ptr->choice.offset3);
-    		break;
-    	}
-    	case VerticalOffset_PR_offset4:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_offset4;
-    		VecOffset_ptr->choice.offset4 = bsctyp_decode(DE_VertOffset_B10, vecoffset_ptr->choice.offset4);
-    		break;
-    	}
-    	case VerticalOffset_PR_offset5:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_offset5;
-    		VecOffset_ptr->choice.offset5 = bsctyp_decode(DE_VertOffset_B11, vecoffset_ptr->choice.offset5);
-    		break;
-    	}
-    	case VerticalOffset_PR_offset6:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_offset6;
-    		VecOffset_ptr->choice.offset6 = bsctyp_decode(DE_VertOffset_B12, vecoffset_ptr->choice.offset6);
-    		break;
-    	}
-    	case VerticalOffset_PR_elevation:
-    	{
-    		VecOffset_ptr->choiceid = VerticalOffset_elevation;
+    /* VehicleOffset. */
+    switch(vecoffset_ptr->present)
+    {
+        case VerticalOffset_PR_NOTHING:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_NOTHING;
+            break;
+        }
+        case VerticalOffset_PR_offset1:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_offset1;
+            VecOffset_ptr->choice.offset1 = bsctyp_decode(DE_VertOffset_B07, vecoffset_ptr->choice.offset1);
+            break;
+        }
+        case VerticalOffset_PR_offset2:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_offset2;
+            VecOffset_ptr->choice.offset2 = bsctyp_decode(DE_VertOffset_B08, vecoffset_ptr->choice.offset2);
+            break;
+        }
+        case VerticalOffset_PR_offset3:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_offset3;
+            VecOffset_ptr->choice.offset3 = bsctyp_decode(DE_VertOffset_B09, vecoffset_ptr->choice.offset3);
+            break;
+        }
+        case VerticalOffset_PR_offset4:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_offset4;
+            VecOffset_ptr->choice.offset4 = bsctyp_decode(DE_VertOffset_B10, vecoffset_ptr->choice.offset4);
+            break;
+        }
+        case VerticalOffset_PR_offset5:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_offset5;
+            VecOffset_ptr->choice.offset5 = bsctyp_decode(DE_VertOffset_B11, vecoffset_ptr->choice.offset5);
+            break;
+        }
+        case VerticalOffset_PR_offset6:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_offset6;
+            VecOffset_ptr->choice.offset6 = bsctyp_decode(DE_VertOffset_B12, vecoffset_ptr->choice.offset6);
+            break;
+        }
+        case VerticalOffset_PR_elevation:
+        {
+            VecOffset_ptr->choiceid = VerticalOffset_elevation;
             VecOffset_ptr->choice.elevation = bsctyp_decode(DE_Elevation, vecoffset_ptr->choice.elevation);
-    		break;
-    	}
-	}
+            break;
+        }
+    }
     
     return result;
 

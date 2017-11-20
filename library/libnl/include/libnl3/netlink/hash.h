@@ -41,25 +41,25 @@
  * See also: hash64, hash_stable.
  *
  * Example:
- *	#include <ccan/hash/hash.h>
- *	#include <err.h>
- *	#include <stdio.h>
- *	#include <string.h>
+ *    #include <ccan/hash/hash.h>
+ *    #include <err.h>
+ *    #include <stdio.h>
+ *    #include <string.h>
  *
- *	// Simple demonstration: idential strings will have the same hash, but
- *	// two different strings will probably not.
- *	int main(int argc, char *argv[])
- *	{
- *		uint32_t hash1, hash2;
+ *    // Simple demonstration: idential strings will have the same hash, but
+ *    // two different strings will probably not.
+ *    int main(int argc, char *argv[])
+ *    {
+ *        uint32_t hash1, hash2;
  *
- *		if (argc != 3)
- *			err(1, "Usage: %s <string1> <string2>", argv[0]);
+ *        if (argc != 3)
+ *            err(1, "Usage: %s <string1> <string2>", argv[0]);
  *
- *		hash1 = __nl_hash(argv[1], strlen(argv[1]), 0);
- *		hash2 = __nl_hash(argv[2], strlen(argv[2]), 0);
- *		printf("Hash is %s\n", hash1 == hash2 ? "same" : "different");
- *		return 0;
- *	}
+ *        hash1 = __nl_hash(argv[1], strlen(argv[1]), 0);
+ *        hash2 = __nl_hash(argv[2], strlen(argv[2]), 0);
+ *        printf("Hash is %s\n", hash1 == hash2 ? "same" : "different");
+ *        return 0;
+ *    }
  */
 #define __nl_hash(p, num, base) nl_hash_any((p), (num)*sizeof(*(p)), (base))
 

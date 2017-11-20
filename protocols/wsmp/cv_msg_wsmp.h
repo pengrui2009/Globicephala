@@ -25,7 +25,7 @@
 
 
 /* WSMP buffer structure. */
-typedef	struct _wsmp_buf_st
+typedef    struct _wsmp_buf_st
 {
     /* Buffer start address for user data. */
     uint8_t  * buffer_ptr;

@@ -62,7 +62,7 @@ int osal_task_create(osal_task_t *taskfd_ptr, const char * name, void *(*start_r
     int ret = 0;
     
     ret = os_pthread_create(taskfd_ptr, name, prio, stack_size, start_routine, arg);
-	
+    
     return ret;
 }
 
@@ -102,6 +102,6 @@ int osal_task_create_joinable(osal_task_t *taskfd_ptr, const char * name, int pr
 ******************************************************************************/
 int osal_task_del(osal_task_t task)
 {
-	
+    
     return 0; 
 }

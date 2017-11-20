@@ -52,15 +52,15 @@
 #include "error.h"
 
 #define OSAL_NO_WAIT            0x0000
-#define OSAL_WAIT_FOREVER	0xFFFF
+#define OSAL_WAIT_FOREVER    0xFFFF
 
 #define OSAL_NOBLOCK            0x0
 #define OSAL_BLOCK              0xFFFFFFFF
 
 
-#define MSGBUF_SIZE		256
+#define MSGBUF_SIZE        256
 
-//typedef long long		int64_t;
+//typedef long long        int64_t;
 //typedef unsigned long long uint64_t;
 
 typedef pthread_t             osal_task_t;
@@ -81,19 +81,19 @@ typedef int                   osal_shm_t;
 typedef long os_time_t;
 
 struct os_time {
-	os_time_t sec;
-	os_time_t usec;
+    os_time_t sec;
+    os_time_t usec;
 };
 
 struct os_reltime {
-	os_time_t sec;
-	os_time_t usec;
+    os_time_t sec;
+    os_time_t usec;
 };
 
 struct msg_buf
 {
-	long msgtype;
-	char msgdata[MSGBUF_SIZE];
+    long msgtype;
+    char msgdata[MSGBUF_SIZE];
 };
 
 /******************************************************************************

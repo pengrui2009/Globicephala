@@ -15,76 +15,76 @@ SEQUENCE_OF_encode_der(const asn_TYPE_descriptor_t *td, const void *ptr,
                        int tag_mode, ber_tlv_tag_t tag,
                        asn_app_consume_bytes_f *cb, void *app_key) {
     asn_TYPE_member_t *elm = td->elements;
-	const asn_anonymous_sequence_ *list = _A_CSEQUENCE_FROM_VOID(ptr);
-	size_t computed_size = 0;
-	ssize_t encoding_size = 0;
-	asn_enc_rval_t erval;
-	int edx;
+    const asn_anonymous_sequence_ *list = _A_CSEQUENCE_FROM_VOID(ptr);
+    size_t computed_size = 0;
+    ssize_t encoding_size = 0;
+    asn_enc_rval_t erval;
+    int edx;
 
-	ASN_DEBUG("Estimating size of SEQUENCE OF %s", td->name);
+    ASN_DEBUG("Estimating size of SEQUENCE OF %s", td->name);
 
-	/*
-	 * Gather the length of the underlying members sequence.
-	 */
-	for(edx = 0; edx < list->count; edx++) {
-		void *memb_ptr = list->array[edx];
-		if(!memb_ptr) continue;
-		erval = elm->type->op->der_encoder(elm->type, memb_ptr,
-			0, elm->tag,
-			0, 0);
-		if(erval.encoded == -1)
-			return erval;
-		computed_size += erval.encoded;
-	}
+    /*
+     * Gather the length of the underlying members sequence.
+     */
+    for(edx = 0; edx < list->count; edx++) {
+        void *memb_ptr = list->array[edx];
+        if(!memb_ptr) continue;
+        erval = elm->type->op->der_encoder(elm->type, memb_ptr,
+            0, elm->tag,
+            0, 0);
+        if(erval.encoded == -1)
+            return erval;
+        computed_size += erval.encoded;
+    }
 
-	/*
-	 * Encode the TLV for the sequence itself.
-	 */
-	encoding_size = der_write_tags(td, computed_size, tag_mode, 1, tag,
-		cb, app_key);
-	if(encoding_size == -1) {
-		erval.encoded = -1;
-		erval.failed_type = td;
-		erval.structure_ptr = ptr;
-		return erval;
-	}
+    /*
+     * Encode the TLV for the sequence itself.
+     */
+    encoding_size = der_write_tags(td, computed_size, tag_mode, 1, tag,
+        cb, app_key);
+    if(encoding_size == -1) {
+        erval.encoded = -1;
+        erval.failed_type = td;
+        erval.structure_ptr = ptr;
+        return erval;
+    }
 
-	computed_size += encoding_size;
-	if(!cb) {
-		erval.encoded = computed_size;
-		ASN__ENCODED_OK(erval);
-	}
+    computed_size += encoding_size;
+    if(!cb) {
+        erval.encoded = computed_size;
+        ASN__ENCODED_OK(erval);
+    }
 
-	ASN_DEBUG("Encoding members of SEQUENCE OF %s", td->name);
+    ASN_DEBUG("Encoding members of SEQUENCE OF %s", td->name);
 
-	/*
-	 * Encode all members.
-	 */
-	for(edx = 0; edx < list->count; edx++) {
-		void *memb_ptr = list->array[edx];
-		if(!memb_ptr) continue;
-		erval = elm->type->op->der_encoder(elm->type, memb_ptr,
-			0, elm->tag,
-			cb, app_key);
-		if(erval.encoded == -1)
-			return erval;
-		encoding_size += erval.encoded;
-	}
+    /*
+     * Encode all members.
+     */
+    for(edx = 0; edx < list->count; edx++) {
+        void *memb_ptr = list->array[edx];
+        if(!memb_ptr) continue;
+        erval = elm->type->op->der_encoder(elm->type, memb_ptr,
+            0, elm->tag,
+            cb, app_key);
+        if(erval.encoded == -1)
+            return erval;
+        encoding_size += erval.encoded;
+    }
 
-	if(computed_size != (size_t)encoding_size) {
-		/*
-		 * Encoded size is not equal to the computed size.
-		 */
-		erval.encoded = -1;
-		erval.failed_type = td;
-		erval.structure_ptr = ptr;
-	} else {
-		erval.encoded = computed_size;
-		erval.structure_ptr = 0;
-		erval.failed_type = 0;
-	}
+    if(computed_size != (size_t)encoding_size) {
+        /*
+         * Encoded size is not equal to the computed size.
+         */
+        erval.encoded = -1;
+        erval.failed_type = td;
+        erval.structure_ptr = ptr;
+    } else {
+        erval.encoded = computed_size;
+        erval.structure_ptr = 0;
+        erval.failed_type = 0;
+    }
 
-	return erval;
+    return erval;
 }
 
 asn_enc_rval_t
@@ -146,17 +146,17 @@ SEQUENCE_OF_encode_uper(const asn_TYPE_descriptor_t *td,
                         const asn_per_constraints_t *constraints,
                         const void *sptr, asn_per_outp_t *po) {
     const asn_anonymous_sequence_ *list;
-	const asn_per_constraint_t *ct;
-	asn_enc_rval_t er;
-	const asn_TYPE_member_t *elm = td->elements;
-	size_t encoded_edx;
+    const asn_per_constraint_t *ct;
+    asn_enc_rval_t er;
+    const asn_TYPE_member_t *elm = td->elements;
+    size_t encoded_edx;
 
-	if(!sptr) ASN__ENCODE_FAILED;
+    if(!sptr) ASN__ENCODE_FAILED;
     list = _A_CSEQUENCE_FROM_VOID(sptr);
 
     er.encoded = 0;
 
-	ASN_DEBUG("Encoding %s as SEQUENCE OF (%d)", td->name, list->count);
+    ASN_DEBUG("Encoding %s as SEQUENCE OF (%d)", td->name, list->count);
 
     if(constraints) ct = &constraints->size;
     else if(td->encoding_constraints.per_constraints)
@@ -222,7 +222,7 @@ SEQUENCE_OF_encode_uper(const asn_TYPE_descriptor_t *td,
         encoded_edx += may_encode;
     }
 
-	ASN__ENCODED_OK(er);
+    ASN__ENCODED_OK(er);
 }
 
 #endif  /* ASN_DISABLE_PER_SUPPORT */
@@ -257,28 +257,28 @@ SEQUENCE_OF_compare(const asn_TYPE_descriptor_t *td, const void *aptr,
 
 
 asn_TYPE_operation_t asn_OP_SEQUENCE_OF = {
-	SEQUENCE_OF_free,
-	SEQUENCE_OF_print,
-	SEQUENCE_OF_compare,
-	SEQUENCE_OF_decode_ber,
-	SEQUENCE_OF_encode_der,
-	SEQUENCE_OF_decode_xer,
-	SEQUENCE_OF_encode_xer,
-#ifdef	ASN_DISABLE_OER_SUPPORT
-	0,
-	0,
+    SEQUENCE_OF_free,
+    SEQUENCE_OF_print,
+    SEQUENCE_OF_compare,
+    SEQUENCE_OF_decode_ber,
+    SEQUENCE_OF_encode_der,
+    SEQUENCE_OF_decode_xer,
+    SEQUENCE_OF_encode_xer,
+#ifdef    ASN_DISABLE_OER_SUPPORT
+    0,
+    0,
 #else
-	SEQUENCE_OF_decode_oer, /* Same as SET OF decoder. */
-	SEQUENCE_OF_encode_oer, /* Same as SET OF encoder */
+    SEQUENCE_OF_decode_oer, /* Same as SET OF decoder. */
+    SEQUENCE_OF_encode_oer, /* Same as SET OF encoder */
 #endif  /* ASN_DISABLE_OER_SUPPORT */
 #ifdef ASN_DISABLE_PER_SUPPORT
-	0,
-	0,
+    0,
+    0,
 #else
-	SEQUENCE_OF_decode_uper, /* Same as SET OF decoder */
-	SEQUENCE_OF_encode_uper,
+    SEQUENCE_OF_decode_uper, /* Same as SET OF decoder */
+    SEQUENCE_OF_encode_uper,
 #endif /* ASN_DISABLE_PER_SUPPORT */
-	SEQUENCE_OF_random_fill,
-	0	/* Use generic outmost tag fetcher */
+    SEQUENCE_OF_random_fill,
+    0    /* Use generic outmost tag fetcher */
 };
 

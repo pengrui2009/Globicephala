@@ -25,17 +25,17 @@ typedef struct _osal_queue {
 } osal_queue_t;
 
 /******************************************************************************
-*	Function: osal_queue_create
-*	Descriptions: open the queue.
-*	Paramters:
-			queue_ptr			- the handle of the queue
-			qname 				- the name of queue.
-			max_msgs			- the max msgs of the queue can coming in.
-			msg_size			- the max msg size of each queue.
-*	Return:
-			NOT NULL			- the handle of queue
-			NULL				- failed
-*	Comments: 
+*    Function: osal_queue_create
+*    Descriptions: open the queue.
+*    Paramters:
+            queue_ptr            - the handle of the queue
+            qname                 - the name of queue.
+            max_msgs            - the max msgs of the queue can coming in.
+            msg_size            - the max msg size of each queue.
+*    Return:
+            NOT NULL            - the handle of queue
+            NULL                - failed
+*    Comments: 
 ******************************************************************************/
 int osal_queue_create(osal_queue_t *queue_ptr, const char *qname, uint32_t max_msgs, uint32_t msg_size);
 
@@ -53,33 +53,33 @@ int osal_queue_delete(osal_queue_t  queuefd);
 
 
 /******************************************************************************
-*	Function: osal_queue_recv
-*	Descriptions: recv msg from queue.
-*	Paramters:
-			queuefd  			- the handle of the queue.
-			data				- the data recv from queue.
-			len					- the len of the data.
-			timeout				- wait time
-*	Return:
-			= 0					- success
-			< 0					- failed
-*	Comments: 
+*    Function: osal_queue_recv
+*    Descriptions: recv msg from queue.
+*    Paramters:
+            queuefd              - the handle of the queue.
+            data                - the data recv from queue.
+            len                    - the len of the data.
+            timeout                - wait time
+*    Return:
+            = 0                    - success
+            < 0                    - failed
+*    Comments: 
 ******************************************************************************/
 int osal_queue_recv(osal_queue_t queuefd, void *data, uint32_t *len, uint32_t timeout);
 
 /******************************************************************************
-*	Function: osal_queue_send
-*	Descriptions: send msg to the queue.
-*	Paramters:
-			queuefd 				- the handle of the queue.
-			data					- the data send to the queue.
-			len						- the length of the data.
-			priority				- the priority 
-			timeout					- the wait time: -1 wait forever 
-*	Return:
-			= 0						- success
-			< 0						- failed
-*	Comments: 
+*    Function: osal_queue_send
+*    Descriptions: send msg to the queue.
+*    Paramters:
+            queuefd                 - the handle of the queue.
+            data                    - the data send to the queue.
+            len                        - the length of the data.
+            priority                - the priority 
+            timeout                    - the wait time: -1 wait forever 
+*    Return:
+            = 0                        - success
+            < 0                        - failed
+*    Comments: 
 ******************************************************************************/
 int osal_queue_send(osal_queue_t queuefd, void *data, uint32_t len, uint32_t priority, uint32_t timeout);
 

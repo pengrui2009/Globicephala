@@ -35,36 +35,36 @@ extern "C" {
 
 #define TK_NAME_PREFIX          "tk_"
 
-#define THREAD_MODE_NORMAL 			0			//普通线程
-#define THREAD_MODE_REALTIME		1			//实时线程
+#define THREAD_MODE_NORMAL             0            //普通线程
+#define THREAD_MODE_REALTIME        1            //实时线程
 /*************************************************
   API
 *************************************************/
 
 
 /******************************************************************************
-*	 Function: thread_cancel
-*	 Descriptions: cancel the pthread through the pid.
-*	 Paramters:
-			tid 			   - the pid of the thread
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: thread_cancel
+*     Descriptions: cancel the pthread through the pid.
+*     Paramters:
+            tid                - the pid of the thread
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
 ******************************************************************************/
 int thread_cancel(pthread_t tid);
 
 
 /******************************************************************************
-*	 Function: thread_setpriority_base
-*	 Descriptions: set the pthread priority.
-*	 Paramters:
-			tid 			   - the pid of the thread
-			prio			   - the priority of the thread
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: thread_setpriority_base
+*     Descriptions: set the pthread priority.
+*     Paramters:
+            tid                - the pid of the thread
+            prio               - the priority of the thread
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
 ******************************************************************************/
 int thread_setpriority(pthread_t tid, uint8_t prio);
 
@@ -86,15 +86,15 @@ int thread_setpriority(pthread_t tid, uint8_t prio);
 int thread_create_base(pthread_t *tid, void *(*function)(void *), void *arg, uint8_t mode, uint8_t prio);
 
 /******************************************************************************
-*	 Function: thread_setpriority_base
-*	 Descriptions: set the pthread priority.
-*	 Paramters:
-			tid 			   - the pid of the thread
-			prio			   - the priority of the thread
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: thread_setpriority_base
+*     Descriptions: set the pthread priority.
+*     Paramters:
+            tid                - the pid of the thread
+            prio               - the priority of the thread
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
 ******************************************************************************/
 int thread_setpriority_base(pthread_t tid, uint8_t prio);
 
@@ -111,9 +111,9 @@ int thread_setpriority_base(pthread_t tid, uint8_t prio);
 int thread_gettid_base(void);
 
 /******************************************************************************
-*	Function: os_blockallsigs
-*	Descriptions: block all the signal.
-*	Paramters:
+*    Function: os_blockallsigs
+*    Descriptions: block all the signal.
+*    Paramters:
             void               - 
 *    Return:
             void               - 

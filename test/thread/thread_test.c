@@ -16,29 +16,29 @@
 
 void *thread_entry(void *arg)
 {
-	while(1)
-	{
-		sleep(1);
-		fprintf(stderr, "%s %d\n", __FUNCTION__, __LINE__);
-	}
+    while(1)
+    {
+        sleep(1);
+        fprintf(stderr, "%s %d\n", __FUNCTION__, __LINE__);
+    }
 
-	return (void *)NULL;
+    return (void *)NULL;
 }
 
 int main()
 {
-	int ret = 0;
-	osal_task_t task_test;
+    int ret = 0;
+    osal_task_t task_test;
 
-	ret = osal_task_create(&task_test, "tk-test", thread_entry, NULL, TASK_TEST_STACK_SIZE, TASK_TEST_PRIORITY);
-	if(ret)
-	{
-		fprintf(stderr, "osal_task_create() error\n");
-	}
-	
-	while(1)
-	{
-		sleep(1000);
-	}
+    ret = osal_task_create(&task_test, "tk-test", thread_entry, NULL, TASK_TEST_STACK_SIZE, TASK_TEST_PRIORITY);
+    if(ret)
+    {
+        fprintf(stderr, "osal_task_create() error\n");
+    }
+    
+    while(1)
+    {
+        sleep(1000);
+    }
 }
 

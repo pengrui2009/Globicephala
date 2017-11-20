@@ -6,20 +6,20 @@
 #include <osal_thread.h>
 #include <os_pthread.h>
 
-#define GPS_PPS_DEV		"/dev/ps"   //pps device node
-#define GPS_PPS_THREAD_STACK_SIZE	(1024*8192)  //PPS thread stack size  8K
-#define GPS_PPS_THREAD_PRIORITY		(TK_PRIO_DEFAULT + 21)  //PPS thread priority
+#define GPS_PPS_DEV        "/dev/ps"   //pps device node
+#define GPS_PPS_THREAD_STACK_SIZE    (1024*8192)  //PPS thread stack size  8K
+#define GPS_PPS_THREAD_PRIORITY        (TK_PRIO_DEFAULT + 21)  //PPS thread priority
 
 typedef void (*pps_isr_callback_fun)(void);  //PPS callback function type
 
 /*pps driver config type*/
 typedef struct _drv_pps_st
 {
-	int  pps_fd; //pps device file descriptor
-	osal_task_t task_pps; //pps deal task
-	uint8_t task_pps_valid; /*Whether it is a valid sign,0:invalid,1:valid*/
-	pps_isr_callback_fun pps_callback; //pps callback function
-	uint8_t pps_start_flag;  // pps start or stop flag
+    int  pps_fd; //pps device file descriptor
+    osal_task_t task_pps; //pps deal task
+    uint8_t task_pps_valid; /*Whether it is a valid sign,0:invalid,1:valid*/
+    pps_isr_callback_fun pps_callback; //pps callback function
+    uint8_t pps_start_flag;  // pps start or stop flag
 }drv_pps_st;
 
 

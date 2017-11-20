@@ -9,8 +9,8 @@
  * will do).
  * This type may be used when integer range is limited by subtype constraints.
  */
-#ifndef	_NativeEnumerated_H_
-#define	_NativeEnumerated_H_
+#ifndef    _NativeEnumerated_H_
+#define    _NativeEnumerated_H_
 
 #include <NativeInteger.h>
 
@@ -40,4 +40,4 @@ per_type_encoder_f NativeEnumerated_encode_uper;
 }
 #endif
 
-#endif	/* _NativeEnumerated_H_ */
+#endif    /* _NativeEnumerated_H_ */

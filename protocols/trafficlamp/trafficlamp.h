@@ -17,12 +17,14 @@ extern "C" {
 #endif
 
 #define RUN_OK                  0x00
-#define RUN_ERR                  0x01
+#define RUN_ERR                 0x01
 
 #define FRAME_HEADER            0xEE
 #define FRAME_ENCODE            0xAA
 #define FRAME_DECODE            0xBB
-#define FRAME_ERROR                0xBE
+#define FRAME_ERROR             0xBE
+
+#define MAX_TRAFFIC_MSG_SIZE    256
 
 typedef enum
 {

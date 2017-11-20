@@ -2,8 +2,8 @@
  * Copyright (c) 2006-2017 Lev Walkin <vlm@lionet.info>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
-#ifndef	_PER_ENCODER_H_
-#define	_PER_ENCODER_H_
+#ifndef    _PER_ENCODER_H_
+#define    _PER_ENCODER_H_
 
 #include <asn_application.h>
 #include <per_support.h>
@@ -12,13 +12,13 @@
 extern "C" {
 #endif
 
-struct asn_TYPE_descriptor_s;	/* Forward declaration */
+struct asn_TYPE_descriptor_s;    /* Forward declaration */
 
 /*
  * Unaligned PER encoder of any ASN.1 type. May be invoked by the application.
  * WARNING: This function returns the number of encoded bits in the .encoded
  * field of the return value. Use the following formula to convert to bytes:
- * 	bytes = ((.encoded + 7) / 8)
+ *     bytes = ((.encoded + 7) / 8)
  */
 asn_enc_rval_t uper_encode(
     const struct asn_TYPE_descriptor_s *type_descriptor,
@@ -67,4 +67,4 @@ typedef asn_enc_rval_t(per_type_encoder_f)(
 }
 #endif
 
-#endif	/* _PER_ENCODER_H_ */
+#endif    /* _PER_ENCODER_H_ */

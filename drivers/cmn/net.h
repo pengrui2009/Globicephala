@@ -56,69 +56,69 @@ typedef struct _net_st
 
 
 /******************************************************************************
-*	Function: net_config
-*	Descriptions: config the specific net fd driver.
-*	Paramters:
-			fd		        -	the file descriptor.
-			cfg_ptr			-	the config paramters pointer.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: net_config
+*    Descriptions: config the specific net fd driver.
+*    Paramters:
+            fd                -    the file descriptor.
+            cfg_ptr            -    the config paramters pointer.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int net_config(int fd, net_config_st_ptr cfg_ptr);
 
 /******************************************************************************
-*	Function: net_send
-*	Descriptions: Send data to the specific net driver.
-*	Paramters:
-			fd		        -	the file descriptor.
-			buff_ptr        -   buffer head address for data storage.
-			data_len        -   the data length that user want to send.
-*	Return:
-			>= 0			-	the data count that have received.
-			< 0				-	failed
-*	Comments: 
+*    Function: net_send
+*    Descriptions: Send data to the specific net driver.
+*    Paramters:
+            fd                -    the file descriptor.
+            buff_ptr        -   buffer head address for data storage.
+            data_len        -   the data length that user want to send.
+*    Return:
+            >= 0            -    the data count that have received.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int net_send(int fd, uint8_t *buff_ptr, uint16_t data_len);
 
 /******************************************************************************
-*	Function: net_receive
-*	Descriptions: Receive data from the specific net driver.
-*	Paramters:
-			fd		        -	the file descriptor.
-			buff_ptr        -   buffer head address for data storage.
-			data_len        -   the data count that user want to receive.
-*	Return:
-			>= 0			-	the data count that have received.
-			< 0				-	failed
-*	Comments: 
+*    Function: net_receive
+*    Descriptions: Receive data from the specific net driver.
+*    Paramters:
+            fd                -    the file descriptor.
+            buff_ptr        -   buffer head address for data storage.
+            data_len        -   the data count that user want to receive.
+*    Return:
+            >= 0            -    the data count that have received.
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len);
 
 /******************************************************************************
-*	Function: net_init
-*	Descriptions: open the specific net device.
-*	Paramters:
+*    Function: net_init
+*    Descriptions: open the specific net device.
+*    Paramters:
             fd_ptr          -   the pointer that hold net file descriptor.
-			name_ptr	    -	the device character pointer.
-			cfg_ptr			-	the config paramters pointer.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+            name_ptr        -    the device character pointer.
+            cfg_ptr            -    the config paramters pointer.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int net_init(int *fd_ptr, const char *name_ptr, net_config_st_ptr cfg_ptr);
 
 /******************************************************************************
-*	Function: net_deinit
-*	Descriptions: Deinit the net fd device.
-*	Paramters:
-			fd		        -	the file descriptor.
-*	Return:
-			= 0				-	success
-			< 0				-	failed
-*	Comments: 
+*    Function: net_deinit
+*    Descriptions: Deinit the net fd device.
+*    Paramters:
+            fd                -    the file descriptor.
+*    Return:
+            = 0                -    success
+            < 0                -    failed
+*    Comments: 
 ******************************************************************************/
 extern int net_deinit(int fd);
 

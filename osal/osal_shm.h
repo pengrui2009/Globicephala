@@ -31,7 +31,7 @@
 ******************************************************************************/
 int osal_shm_init(osal_shm_t *shmfd_ptr, void ** shmaddr_ptr,int size,const char * key_name_ptr,int key_id);
 
-	
+    
 /******************************************************************************
 *    Function: osal_shm_deinit
 *    Descriptions: close the share memory.

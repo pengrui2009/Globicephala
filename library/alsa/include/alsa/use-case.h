@@ -96,15 +96,15 @@ extern "C" {
  * case verb will configure the audio hardware for HiFi Music playback
  * and capture.
  */
-#define SND_USE_CASE_VERB_INACTIVE		"Inactive"
-#define SND_USE_CASE_VERB_HIFI			"HiFi"
-#define SND_USE_CASE_VERB_HIFI_LOW_POWER	"HiFi Low Power"
-#define SND_USE_CASE_VERB_VOICE			"Voice"
-#define SND_USE_CASE_VERB_VOICE_LOW_POWER	"Voice Low Power"
-#define SND_USE_CASE_VERB_VOICECALL		"Voice Call"
-#define SND_USE_CASE_VERB_IP_VOICECALL		"Voice Call IP"
-#define SND_USE_CASE_VERB_ANALOG_RADIO		"FM Analog Radio"
-#define SND_USE_CASE_VERB_DIGITAL_RADIO		"FM Digital Radio"
+#define SND_USE_CASE_VERB_INACTIVE        "Inactive"
+#define SND_USE_CASE_VERB_HIFI            "HiFi"
+#define SND_USE_CASE_VERB_HIFI_LOW_POWER    "HiFi Low Power"
+#define SND_USE_CASE_VERB_VOICE            "Voice"
+#define SND_USE_CASE_VERB_VOICE_LOW_POWER    "Voice Low Power"
+#define SND_USE_CASE_VERB_VOICECALL        "Voice Call"
+#define SND_USE_CASE_VERB_IP_VOICECALL        "Voice Call IP"
+#define SND_USE_CASE_VERB_ANALOG_RADIO        "FM Analog Radio"
+#define SND_USE_CASE_VERB_DIGITAL_RADIO        "FM Digital Radio"
 /* add new verbs to end of list */
 
 
@@ -114,16 +114,16 @@ extern "C" {
  * Physical system devices the render and capture audio. Devices can be OR'ed
  * together to support audio on simultaneous devices.
  */
-#define SND_USE_CASE_DEV_NONE		"None"
-#define SND_USE_CASE_DEV_SPEAKER	"Speaker"
-#define SND_USE_CASE_DEV_LINE		"Line"
-#define SND_USE_CASE_DEV_HEADPHONES	"Headphones"
-#define SND_USE_CASE_DEV_HEADSET	"Headset"
-#define SND_USE_CASE_DEV_HANDSET	"Handset"
-#define SND_USE_CASE_DEV_BLUETOOTH	"Bluetooth"
-#define SND_USE_CASE_DEV_EARPIECE	"Earpiece"
-#define SND_USE_CASE_DEV_SPDIF		"SPDIF"
-#define SND_USE_CASE_DEV_HDMI		"HDMI"
+#define SND_USE_CASE_DEV_NONE        "None"
+#define SND_USE_CASE_DEV_SPEAKER    "Speaker"
+#define SND_USE_CASE_DEV_LINE        "Line"
+#define SND_USE_CASE_DEV_HEADPHONES    "Headphones"
+#define SND_USE_CASE_DEV_HEADSET    "Headset"
+#define SND_USE_CASE_DEV_HANDSET    "Handset"
+#define SND_USE_CASE_DEV_BLUETOOTH    "Bluetooth"
+#define SND_USE_CASE_DEV_EARPIECE    "Earpiece"
+#define SND_USE_CASE_DEV_SPDIF        "SPDIF"
+#define SND_USE_CASE_DEV_HDMI        "HDMI"
 /* add new devices to end of list */
 
 
@@ -145,12 +145,12 @@ extern "C" {
  *  3. Call snd_use_case_get("PlaybackPCM") to get ALSA PCM sink name for
  *     ringtone pcm data.
  */
-#define SND_USE_CASE_MOD_CAPTURE_VOICE		"Capture Voice"
-#define SND_USE_CASE_MOD_CAPTURE_MUSIC		"Capture Music"
-#define SND_USE_CASE_MOD_PLAY_MUSIC		"Play Music"
-#define SND_USE_CASE_MOD_PLAY_VOICE		"Play Voice"
-#define SND_USE_CASE_MOD_PLAY_TONE		"Play Tone"
-#define SND_USE_CASE_MOD_ECHO_REF		"Echo Reference"
+#define SND_USE_CASE_MOD_CAPTURE_VOICE        "Capture Voice"
+#define SND_USE_CASE_MOD_CAPTURE_MUSIC        "Capture Music"
+#define SND_USE_CASE_MOD_PLAY_MUSIC        "Play Music"
+#define SND_USE_CASE_MOD_PLAY_VOICE        "Play Voice"
+#define SND_USE_CASE_MOD_PLAY_TONE        "Play Tone"
+#define SND_USE_CASE_MOD_ECHO_REF        "Echo Reference"
 /* add new modifiers to end of list */
 
 
@@ -162,9 +162,9 @@ extern "C" {
  * audio driver in order to lower power consumption.
  *
  */
-#define SND_USE_CASE_TQ_MUSIC		"Music"
-#define SND_USE_CASE_TQ_VOICE		"Voice"
-#define SND_USE_CASE_TQ_TONES		"Tones"
+#define SND_USE_CASE_TQ_MUSIC        "Music"
+#define SND_USE_CASE_TQ_VOICE        "Voice"
+#define SND_USE_CASE_TQ_TONES        "Tones"
 
 /** use case container */
 typedef struct snd_use_case_mgr snd_use_case_mgr_t;
@@ -193,17 +193,17 @@ int snd_use_case_free_list(const char *list[], int items);
  * \return Number of list entries if success, otherwise a negative error code
  *
  * Defined identifiers:
- *   NULL 		- get card list
- *			  (in pair cardname+comment)
- *   _verbs		- get verb list
- *			  (in pair verb+comment)
- *   _devices[/<verb>]	- get list of supported devices
- *			  (in pair device+comment)
+ *   NULL         - get card list
+ *              (in pair cardname+comment)
+ *   _verbs        - get verb list
+ *              (in pair verb+comment)
+ *   _devices[/<verb>]    - get list of supported devices
+ *              (in pair device+comment)
  *   _modifiers[/<verb>]- get list of supported modifiers
- *			  (in pair modifier+comment)
- *   TQ[/<verb>]	- get list of TQ identifiers
- *   _enadevs		- get list of enabled devices
- *   _enamods		- get list of enabled modifiers
+ *              (in pair modifier+comment)
+ *   TQ[/<verb>]    - get list of TQ identifiers
+ *   _enadevs        - get list of enabled devices
+ *   _enamods        - get list of enabled modifiers
  *
  *   _supporteddevs/<modifier>|<device>[/<verb>]   - list of supported devices
  *   _conflictingdevs/<modifier>|<device>[/<verb>] - list of conflicting devices
@@ -227,8 +227,8 @@ int snd_use_case_get_list(snd_use_case_mgr_t *uc_mgr,
  * deallocate this string.
  *
  * Known identifiers:
- *   NULL 		- return current card
- *   _verb		- return current verb
+ *   NULL         - return current card
+ *   _verb        - return current verb
  *
  *   [=]<NAME>[/[<modifier>|</device>][/<verb>]]
  *                      - value identifier <NAME>
@@ -255,19 +255,19 @@ int snd_use_case_get_list(snd_use_case_mgr_t *uc_mgr,
  *                          "=Variable/Modifier/Verb"
  *
  * Recommended names for values:
- *   TQ			- Tone Quality
- *   PlaybackPCM	- full PCM playback device name
- *   CapturePCM		- full PCM capture device name
- *   PlaybackCTL	- playback control device name
- *   PlaybackVolume	- playback control volume ID string
- *   PlaybackSwitch	- playback control switch ID string
- *   CaptureCTL		- capture control device name
- *   CaptureVolume	- capture control volume ID string
- *   CaptureSwitch	- capture control switch ID string
- *   PlaybackMixer	- name of playback mixer
- *   PlaybackMixerID	- mixer playback ID
- *   CaptureMixer	- name of capture mixer
- *   CaptureMixerID	- mixer capture ID
+ *   TQ            - Tone Quality
+ *   PlaybackPCM    - full PCM playback device name
+ *   CapturePCM        - full PCM capture device name
+ *   PlaybackCTL    - playback control device name
+ *   PlaybackVolume    - playback control volume ID string
+ *   PlaybackSwitch    - playback control switch ID string
+ *   CaptureCTL        - capture control device name
+ *   CaptureVolume    - capture control volume ID string
+ *   CaptureSwitch    - capture control switch ID string
+ *   PlaybackMixer    - name of playback mixer
+ *   PlaybackMixerID    - mixer playback ID
+ *   CaptureMixer    - name of capture mixer
+ *   CaptureMixerID    - mixer capture ID
  */
 int snd_use_case_get(snd_use_case_mgr_t *uc_mgr,
                      const char *identifier,
@@ -281,12 +281,12 @@ int snd_use_case_get(snd_use_case_mgr_t *uc_mgr,
  * \return Zero if success, otherwise a negative error code
  *
  * Known identifiers:
- *   _devstatus/<device>	- return status for given device
- *   _modstatus/<modifier>	- return status for given modifier
+ *   _devstatus/<device>    - return status for given device
+ *   _modstatus/<modifier>    - return status for given modifier
  */
 int snd_use_case_geti(snd_use_case_mgr_t *uc_mgr,
-		      const char *identifier,
-		      long *value);
+              const char *identifier,
+              long *value);
 
 /**
  * \brief Set new
@@ -296,19 +296,19 @@ int snd_use_case_geti(snd_use_case_mgr_t *uc_mgr,
  * \return Zero if success, otherwise a negative error code
  *
  * Known identifiers:
- *   _verb 		- set current verb = value
- *   _enadev		- enable given device = value
- *   _disdev		- disable given device = value
+ *   _verb         - set current verb = value
+ *   _enadev        - enable given device = value
+ *   _disdev        - disable given device = value
  *   _swdev/<old_device> - new_device = value
- *			- disable old_device and then enable new_device
- *			- if old_device is not enabled just return
- *			- check transmit sequence firstly
- *   _enamod		- enable given modifier = value
- *   _dismod		- disable given modifier = value
+ *            - disable old_device and then enable new_device
+ *            - if old_device is not enabled just return
+ *            - check transmit sequence firstly
+ *   _enamod        - enable given modifier = value
+ *   _dismod        - disable given modifier = value
  *   _swmod/<old_modifier> - new_modifier = value
- *			- disable old_modifier and then enable new_modifier
- *			- if old_modifier is not enabled just return
- *			- check transmit sequence firstly
+ *            - disable old_modifier and then enable new_modifier
+ *            - if old_modifier is not enabled just return
+ *            - check transmit sequence firstly
  */
 int snd_use_case_set(snd_use_case_mgr_t *uc_mgr,
                      const char *identifier,
@@ -355,7 +355,7 @@ int snd_use_case_mgr_reset(snd_use_case_mgr_t *uc_mgr);
  */
 static inline int snd_use_case_card_list(const char **list[])
 {
-	return snd_use_case_get_list(NULL, NULL, list);
+    return snd_use_case_get_list(NULL, NULL, list);
 }
 
 /**
@@ -365,9 +365,9 @@ static inline int snd_use_case_card_list(const char **list[])
  * \return Number of list entries if success, otherwise a negative error code
  */
 static inline int snd_use_case_verb_list(snd_use_case_mgr_t *uc_mgr,
-					 const char **list[])
+                     const char **list[])
 {
-	return snd_use_case_get_list(uc_mgr, "_verbs", list);
+    return snd_use_case_get_list(uc_mgr, "_verbs", list);
 }
 
 /**

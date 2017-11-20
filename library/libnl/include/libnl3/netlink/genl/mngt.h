@@ -1,10 +1,10 @@
 /*
- * netlink/genl/mngt.h		Generic Netlink Management
+ * netlink/genl/mngt.h        Generic Netlink Management
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation version 2.1
- *	of the License.
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation version 2.1
+ *    of the License.
  *
  * Copyright (c) 2003-2012 Thomas Graf <tgraf@suug.ch>
  */
@@ -36,20 +36,20 @@ struct nl_cache_ops;
  */
 struct genl_info
 {
-	/** Socket address of sender */
-	struct sockaddr_nl *    who;
+    /** Socket address of sender */
+    struct sockaddr_nl *    who;
 
-	/** Pointer to Netlink message header */
-	struct nlmsghdr *       nlh;
+    /** Pointer to Netlink message header */
+    struct nlmsghdr *       nlh;
 
-	/** Pointer to Generic Netlink message header */
-	struct genlmsghdr *     genlhdr;
+    /** Pointer to Generic Netlink message header */
+    struct genlmsghdr *     genlhdr;
 
-	/** Pointer to user header */
-	void *                  userhdr;
+    /** Pointer to user header */
+    void *                  userhdr;
 
-	/** Pointer to array of parsed attributes */
-	struct nlattr **        attrs;
+    /** Pointer to array of parsed attributes */
+    struct nlattr **        attrs;
 };
 
 /**
@@ -64,44 +64,44 @@ struct genl_info
  * @par Example:
  * @code
  * static struct genl_cmd foo_cmds[] = {
- * 	{
- * 		.c_id		= FOO_CMD_NEW,
- * 		.c_name		= "NEWFOO" ,
- * 		.c_maxattr	= FOO_ATTR_MAX,
- * 		.c_attr_policy	= foo_policy,
- * 		.c_msg_parser	= foo_msg_parser,
- * 	},
- * 	{
- * 		.c_id		= FOO_CMD_DEL,
- * 		.c_name		= "DELFOO" ,
- * 	},
+ *     {
+ *         .c_id        = FOO_CMD_NEW,
+ *         .c_name        = "NEWFOO" ,
+ *         .c_maxattr    = FOO_ATTR_MAX,
+ *         .c_attr_policy    = foo_policy,
+ *         .c_msg_parser    = foo_msg_parser,
+ *     },
+ *     {
+ *         .c_id        = FOO_CMD_DEL,
+ *         .c_name        = "DELFOO" ,
+ *     },
  * };
  *
  * static struct genl_ops my_genl_ops = {
- * 	[...]
- * 	.o_cmds			= foo_cmds,
- * 	.o_ncmds		= ARRAY_SIZE(foo_cmds),
+ *     [...]
+ *     .o_cmds            = foo_cmds,
+ *     .o_ncmds        = ARRAY_SIZE(foo_cmds),
  * };
  * @endcode
  */
 struct genl_cmd
 {
-	/** Numeric command identifier (required) */
-	int			c_id;
+    /** Numeric command identifier (required) */
+    int            c_id;
 
-	/** Human readable name  (required) */
-	char *			c_name;
+    /** Human readable name  (required) */
+    char *            c_name;
 
-	/** Maximum attribute identifier that the command is prepared to handle. */
-	int			c_maxattr;
+    /** Maximum attribute identifier that the command is prepared to handle. */
+    int            c_maxattr;
 
-	/** Called whenever a message for this command is received */
-	int		      (*c_msg_parser)(struct nl_cache_ops *,
-					      struct genl_cmd *,
-					      struct genl_info *, void *);
+    /** Called whenever a message for this command is received */
+    int              (*c_msg_parser)(struct nl_cache_ops *,
+                          struct genl_cmd *,
+                          struct genl_info *, void *);
 
-	/** Attribute validation policy, enforced before the callback is called */
-	struct nla_policy *	c_attr_policy;
+    /** Attribute validation policy, enforced before the callback is called */
+    struct nla_policy *    c_attr_policy;
 };
 
 /**
@@ -113,61 +113,61 @@ struct genl_cmd
  * @par Example:
  * @code
  * static struct genl_cmd foo_cmds[] = {
- * 	[...]
+ *     [...]
  * };
  *
  * static struct genl_ops my_genl_ops = {
- * 	.o_name			= "foo",
- * 	.o_hdrsize		= sizeof(struct my_hdr),
- * 	.o_cmds			= foo_cmds,
- * 	.o_ncmds		= ARRAY_SIZE(foo_cmds),
+ *     .o_name            = "foo",
+ *     .o_hdrsize        = sizeof(struct my_hdr),
+ *     .o_cmds            = foo_cmds,
+ *     .o_ncmds        = ARRAY_SIZE(foo_cmds),
  * };
  *
  * if ((err = genl_register_family(&my_genl_ops)) < 0)
- * 	// ERROR
+ *     // ERROR
  * @endcode
  *
  * @see genl_cmd
  */
 struct genl_ops
 {
-	/** Length of user header */
-	unsigned int		o_hdrsize;
+    /** Length of user header */
+    unsigned int        o_hdrsize;
 
-	/** Numeric identifier, automatically filled in by genl_ops_resolve() */
-	int			o_id;
+    /** Numeric identifier, automatically filled in by genl_ops_resolve() */
+    int            o_id;
 
-	/** Human readable name, used by genl_ops_resolve() to resolve numeric id */
-	char *			o_name;
+    /** Human readable name, used by genl_ops_resolve() to resolve numeric id */
+    char *            o_name;
 
-	/**
-	 * If registered via genl_register(), will point to the related
-	 * cache operations.
-	 */
-	struct nl_cache_ops *	o_cache_ops;
+    /**
+     * If registered via genl_register(), will point to the related
+     * cache operations.
+     */
+    struct nl_cache_ops *    o_cache_ops;
 
-	/** Optional array defining the available Generic Netlink commands */
-	struct genl_cmd	*	o_cmds;
+    /** Optional array defining the available Generic Netlink commands */
+    struct genl_cmd    *    o_cmds;
 
-	/** Number of elements in \c o_cmds array */
-	int			o_ncmds;
+    /** Number of elements in \c o_cmds array */
+    int            o_ncmds;
 
-	/**
-	 * @private
-	 * Used internally to link together all registered operations.
-	 */
-	struct nl_list_head	o_list;
+    /**
+     * @private
+     * Used internally to link together all registered operations.
+     */
+    struct nl_list_head    o_list;
 };
 
-extern int		genl_register_family(struct genl_ops *);
-extern int		genl_unregister_family(struct genl_ops *);
-extern int		genl_handle_msg(struct nl_msg *, void *);
+extern int        genl_register_family(struct genl_ops *);
+extern int        genl_unregister_family(struct genl_ops *);
+extern int        genl_handle_msg(struct nl_msg *, void *);
 
-extern int		genl_register(struct nl_cache_ops *);
-extern void		genl_unregister(struct nl_cache_ops *);
+extern int        genl_register(struct nl_cache_ops *);
+extern void        genl_unregister(struct nl_cache_ops *);
 
-extern int		genl_ops_resolve(struct nl_sock *, struct genl_ops *);
-extern int		genl_mngt_resolve(struct nl_sock *);
+extern int        genl_ops_resolve(struct nl_sock *, struct genl_ops *);
+extern int        genl_mngt_resolve(struct nl_sock *);
 
 #ifdef __cplusplus
 }

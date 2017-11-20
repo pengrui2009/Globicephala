@@ -53,8 +53,8 @@ typedef struct _snd_mixer_elem snd_mixer_elem_t;
  * \return 0 on success otherwise a negative error code
  */
 typedef int (*snd_mixer_callback_t)(snd_mixer_t *ctl,
-				    unsigned int mask,
-				    snd_mixer_elem_t *elem);
+                    unsigned int mask,
+                    snd_mixer_elem_t *elem);
 
 /** 
  * \brief Mixer element callback function
@@ -63,7 +63,7 @@ typedef int (*snd_mixer_callback_t)(snd_mixer_t *ctl,
  * \return 0 on success otherwise a negative error code
  */
 typedef int (*snd_mixer_elem_callback_t)(snd_mixer_elem_t *elem,
-					 unsigned int mask);
+                     unsigned int mask);
 
 /**
  * \brief Compare function for sorting mixer elements
@@ -72,7 +72,7 @@ typedef int (*snd_mixer_elem_callback_t)(snd_mixer_elem_t *elem,
  * \return -1 if e1 < e2, 0 if e1 == e2, 1 if e1 > e2
  */
 typedef int (*snd_mixer_compare_t)(const snd_mixer_elem_t *e1,
-				   const snd_mixer_elem_t *e2);
+                   const snd_mixer_elem_t *e2);
 
 /**
  * \brief Event callback for the mixer class
@@ -83,14 +83,14 @@ typedef int (*snd_mixer_compare_t)(const snd_mixer_elem_t *e1,
  * \return zero if success, otherwise a negative error value
  */
 typedef int (*snd_mixer_event_t)(snd_mixer_class_t *class_, unsigned int mask,
-				 snd_hctl_elem_t *helem, snd_mixer_elem_t *melem);
+                 snd_hctl_elem_t *helem, snd_mixer_elem_t *melem);
 
 
 /** Mixer element type */
 typedef enum _snd_mixer_elem_type {
-	/* Simple mixer elements */
-	SND_MIXER_ELEM_SIMPLE,
-	SND_MIXER_ELEM_LAST = SND_MIXER_ELEM_SIMPLE
+    /* Simple mixer elements */
+    SND_MIXER_ELEM_SIMPLE,
+    SND_MIXER_ELEM_LAST = SND_MIXER_ELEM_SIMPLE
 } snd_mixer_elem_type_t;
 
 int snd_mixer_open(snd_mixer_t **mixer, int mode);
@@ -125,10 +125,10 @@ snd_mixer_elem_type_t snd_mixer_elem_get_type(const snd_mixer_elem_t *obj);
 
 int snd_mixer_class_register(snd_mixer_class_t *class_, snd_mixer_t *mixer);
 int snd_mixer_elem_new(snd_mixer_elem_t **elem,
-		       snd_mixer_elem_type_t type,
-		       int compare_weight,
-		       void *private_data,
-		       void (*private_free)(snd_mixer_elem_t *elem));
+               snd_mixer_elem_type_t type,
+               int compare_weight,
+               void *private_data,
+               void (*private_free)(snd_mixer_elem_t *elem));
 int snd_mixer_elem_add(snd_mixer_elem_t *elem, snd_mixer_class_t *class_);
 int snd_mixer_elem_remove(snd_mixer_elem_t *elem);
 void snd_mixer_elem_free(snd_mixer_elem_t *elem);
@@ -168,51 +168,51 @@ int snd_mixer_class_set_compare(snd_mixer_class_t *class_, snd_mixer_compare_t c
 
 /** Mixer simple element channel identifier */
 typedef enum _snd_mixer_selem_channel_id {
-	/** Unknown */
-	SND_MIXER_SCHN_UNKNOWN = -1,
-	/** Front left */
-	SND_MIXER_SCHN_FRONT_LEFT = 0,
-	/** Front right */
-	SND_MIXER_SCHN_FRONT_RIGHT,
-	/** Rear left */
-	SND_MIXER_SCHN_REAR_LEFT,
-	/** Rear right */
-	SND_MIXER_SCHN_REAR_RIGHT,
-	/** Front center */
-	SND_MIXER_SCHN_FRONT_CENTER,
-	/** Woofer */
-	SND_MIXER_SCHN_WOOFER,
-	/** Side Left */
-	SND_MIXER_SCHN_SIDE_LEFT,
-	/** Side Right */
-	SND_MIXER_SCHN_SIDE_RIGHT,
-	/** Rear Center */
-	SND_MIXER_SCHN_REAR_CENTER,
-	SND_MIXER_SCHN_LAST = 31,
-	/** Mono (Front left alias) */
-	SND_MIXER_SCHN_MONO = SND_MIXER_SCHN_FRONT_LEFT
+    /** Unknown */
+    SND_MIXER_SCHN_UNKNOWN = -1,
+    /** Front left */
+    SND_MIXER_SCHN_FRONT_LEFT = 0,
+    /** Front right */
+    SND_MIXER_SCHN_FRONT_RIGHT,
+    /** Rear left */
+    SND_MIXER_SCHN_REAR_LEFT,
+    /** Rear right */
+    SND_MIXER_SCHN_REAR_RIGHT,
+    /** Front center */
+    SND_MIXER_SCHN_FRONT_CENTER,
+    /** Woofer */
+    SND_MIXER_SCHN_WOOFER,
+    /** Side Left */
+    SND_MIXER_SCHN_SIDE_LEFT,
+    /** Side Right */
+    SND_MIXER_SCHN_SIDE_RIGHT,
+    /** Rear Center */
+    SND_MIXER_SCHN_REAR_CENTER,
+    SND_MIXER_SCHN_LAST = 31,
+    /** Mono (Front left alias) */
+    SND_MIXER_SCHN_MONO = SND_MIXER_SCHN_FRONT_LEFT
 } snd_mixer_selem_channel_id_t;
 
 /** Mixer simple element - register options - abstraction level */
 enum snd_mixer_selem_regopt_abstract {
-	/** no abstraction - try use all universal controls from driver */
-	SND_MIXER_SABSTRACT_NONE = 0,
-	/** basic abstraction - Master,PCM,CD,Aux,Record-Gain etc. */
-	SND_MIXER_SABSTRACT_BASIC,
+    /** no abstraction - try use all universal controls from driver */
+    SND_MIXER_SABSTRACT_NONE = 0,
+    /** basic abstraction - Master,PCM,CD,Aux,Record-Gain etc. */
+    SND_MIXER_SABSTRACT_BASIC,
 };
 
 /** Mixer simple element - register options */
 struct snd_mixer_selem_regopt {
-	/** structure version */
-	int ver;
-	/** v1: abstract layer selection */
-	enum snd_mixer_selem_regopt_abstract abstract;
-	/** v1: device name (must be NULL when playback_pcm or capture_pcm != NULL) */
-	const char *device;
-	/** v1: playback PCM connected to mixer device (NULL == none) */
-	snd_pcm_t *playback_pcm;
-	/** v1: capture PCM connected to mixer device (NULL == none) */
-	snd_pcm_t *capture_pcm;
+    /** structure version */
+    int ver;
+    /** v1: abstract layer selection */
+    enum snd_mixer_selem_regopt_abstract abstract;
+    /** v1: device name (must be NULL when playback_pcm or capture_pcm != NULL) */
+    const char *device;
+    /** v1: playback PCM connected to mixer device (NULL == none) */
+    snd_pcm_t *playback_pcm;
+    /** v1: capture PCM connected to mixer device (NULL == none) */
+    snd_pcm_t *capture_pcm;
 };
 
 /** Mixer simple element identifier */
@@ -221,14 +221,14 @@ typedef struct _snd_mixer_selem_id snd_mixer_selem_id_t;
 const char *snd_mixer_selem_channel_name(snd_mixer_selem_channel_id_t channel);
 
 int snd_mixer_selem_register(snd_mixer_t *mixer,
-			     struct snd_mixer_selem_regopt *options,
-			     snd_mixer_class_t **classp);
+                 struct snd_mixer_selem_regopt *options,
+                 snd_mixer_class_t **classp);
 void snd_mixer_selem_get_id(snd_mixer_elem_t *element,
-			    snd_mixer_selem_id_t *id);
+                snd_mixer_selem_id_t *id);
 const char *snd_mixer_selem_get_name(snd_mixer_elem_t *elem);
 unsigned int snd_mixer_selem_get_index(snd_mixer_elem_t *elem);
 snd_mixer_elem_t *snd_mixer_find_selem(snd_mixer_t *mixer,
-				       const snd_mixer_selem_id_t *id);
+                       const snd_mixer_selem_id_t *id);
 
 int snd_mixer_selem_is_active(snd_mixer_elem_t *elem);
 int snd_mixer_selem_is_playback_mono(snd_mixer_elem_t *elem);
@@ -271,17 +271,17 @@ int snd_mixer_selem_set_capture_switch(snd_mixer_elem_t *elem, snd_mixer_selem_c
 int snd_mixer_selem_set_playback_switch_all(snd_mixer_elem_t *elem, int value);
 int snd_mixer_selem_set_capture_switch_all(snd_mixer_elem_t *elem, int value);
 int snd_mixer_selem_get_playback_volume_range(snd_mixer_elem_t *elem, 
-					      long *min, long *max);
+                          long *min, long *max);
 int snd_mixer_selem_get_playback_dB_range(snd_mixer_elem_t *elem, 
-					  long *min, long *max);
+                      long *min, long *max);
 int snd_mixer_selem_set_playback_volume_range(snd_mixer_elem_t *elem, 
-					      long min, long max);
+                          long min, long max);
 int snd_mixer_selem_get_capture_volume_range(snd_mixer_elem_t *elem, 
-					     long *min, long *max);
+                         long *min, long *max);
 int snd_mixer_selem_get_capture_dB_range(snd_mixer_elem_t *elem, 
-					 long *min, long *max);
+                     long *min, long *max);
 int snd_mixer_selem_set_capture_volume_range(snd_mixer_elem_t *elem, 
-					     long min, long max);
+                         long min, long max);
 
 int snd_mixer_selem_is_enumerated(snd_mixer_elem_t *elem);
 int snd_mixer_selem_is_enum_playback(snd_mixer_elem_t *elem);

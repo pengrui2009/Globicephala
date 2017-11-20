@@ -1,10 +1,10 @@
 /*
- * netlink/route/link/veth.h		VETH interface
+ * netlink/route/link/veth.h        VETH interface
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation version 2.1
- *	of the License.
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the GNU Lesser General Public
+ *    License as published by the Free Software Foundation version 2.1
+ *    of the License.
  *
  * Copyright (c) 2013 Cong Wang <xiyou.wangcong@gmail.com>
  */
@@ -27,7 +27,7 @@ extern int rtnl_link_is_veth(struct rtnl_link *);
 
 extern struct rtnl_link *rtnl_link_veth_get_peer(struct rtnl_link *);
 extern int rtnl_link_veth_add(struct nl_sock *sock, const char *name,
-			      const char *peer, pid_t pid);
+                  const char *peer, pid_t pid);
 
 #ifdef __cplusplus
 }

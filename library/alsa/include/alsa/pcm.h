@@ -40,7 +40,7 @@ extern "C" {
  */
 
 /** dlsym version for interface entry callback */
-#define SND_PCM_DLSYM_VERSION		_dlsym_pcm_001
+#define SND_PCM_DLSYM_VERSION        _dlsym_pcm_001
 
 /** PCM generic info container */
 typedef struct _snd_pcm_info snd_pcm_info_t;
@@ -74,171 +74,171 @@ typedef struct _snd_pcm_subformat_mask snd_pcm_subformat_mask_t;
 
 /** PCM class */
 typedef enum _snd_pcm_class {
-	/** standard device */
+    /** standard device */
 
-	SND_PCM_CLASS_GENERIC = 0,
-	/** multichannel device */
-	SND_PCM_CLASS_MULTI,
-	/** software modem device */
-	SND_PCM_CLASS_MODEM,
-	/** digitizer device */
-	SND_PCM_CLASS_DIGITIZER,
-	SND_PCM_CLASS_LAST = SND_PCM_CLASS_DIGITIZER
+    SND_PCM_CLASS_GENERIC = 0,
+    /** multichannel device */
+    SND_PCM_CLASS_MULTI,
+    /** software modem device */
+    SND_PCM_CLASS_MODEM,
+    /** digitizer device */
+    SND_PCM_CLASS_DIGITIZER,
+    SND_PCM_CLASS_LAST = SND_PCM_CLASS_DIGITIZER
 } snd_pcm_class_t;
 
 /** PCM subclass */
 typedef enum _snd_pcm_subclass {
-	/** subdevices are mixed together */
-	SND_PCM_SUBCLASS_GENERIC_MIX = 0,
-	/** multichannel subdevices are mixed together */
-	SND_PCM_SUBCLASS_MULTI_MIX,
-	SND_PCM_SUBCLASS_LAST = SND_PCM_SUBCLASS_MULTI_MIX
+    /** subdevices are mixed together */
+    SND_PCM_SUBCLASS_GENERIC_MIX = 0,
+    /** multichannel subdevices are mixed together */
+    SND_PCM_SUBCLASS_MULTI_MIX,
+    SND_PCM_SUBCLASS_LAST = SND_PCM_SUBCLASS_MULTI_MIX
 } snd_pcm_subclass_t;
 
 /** PCM stream (direction) */
 typedef enum _snd_pcm_stream {
-	/** Playback stream */
-	SND_PCM_STREAM_PLAYBACK = 0,
-	/** Capture stream */
-	SND_PCM_STREAM_CAPTURE,
-	SND_PCM_STREAM_LAST = SND_PCM_STREAM_CAPTURE
+    /** Playback stream */
+    SND_PCM_STREAM_PLAYBACK = 0,
+    /** Capture stream */
+    SND_PCM_STREAM_CAPTURE,
+    SND_PCM_STREAM_LAST = SND_PCM_STREAM_CAPTURE
 } snd_pcm_stream_t;
 
 /** PCM access type */
 typedef enum _snd_pcm_access {
-	/** mmap access with simple interleaved channels */
-	SND_PCM_ACCESS_MMAP_INTERLEAVED = 0,
-	/** mmap access with simple non interleaved channels */
-	SND_PCM_ACCESS_MMAP_NONINTERLEAVED,
-	/** mmap access with complex placement */
-	SND_PCM_ACCESS_MMAP_COMPLEX,
-	/** snd_pcm_readi/snd_pcm_writei access */
-	SND_PCM_ACCESS_RW_INTERLEAVED,
-	/** snd_pcm_readn/snd_pcm_writen access */
-	SND_PCM_ACCESS_RW_NONINTERLEAVED,
-	SND_PCM_ACCESS_LAST = SND_PCM_ACCESS_RW_NONINTERLEAVED
+    /** mmap access with simple interleaved channels */
+    SND_PCM_ACCESS_MMAP_INTERLEAVED = 0,
+    /** mmap access with simple non interleaved channels */
+    SND_PCM_ACCESS_MMAP_NONINTERLEAVED,
+    /** mmap access with complex placement */
+    SND_PCM_ACCESS_MMAP_COMPLEX,
+    /** snd_pcm_readi/snd_pcm_writei access */
+    SND_PCM_ACCESS_RW_INTERLEAVED,
+    /** snd_pcm_readn/snd_pcm_writen access */
+    SND_PCM_ACCESS_RW_NONINTERLEAVED,
+    SND_PCM_ACCESS_LAST = SND_PCM_ACCESS_RW_NONINTERLEAVED
 } snd_pcm_access_t;
 
 /** PCM sample format */
 typedef enum _snd_pcm_format {
-	/** Unknown */
-	SND_PCM_FORMAT_UNKNOWN = -1,
-	/** Signed 8 bit */
-	SND_PCM_FORMAT_S8 = 0,
-	/** Unsigned 8 bit */
-	SND_PCM_FORMAT_U8,
-	/** Signed 16 bit Little Endian */
-	SND_PCM_FORMAT_S16_LE,
-	/** Signed 16 bit Big Endian */
-	SND_PCM_FORMAT_S16_BE,
-	/** Unsigned 16 bit Little Endian */
-	SND_PCM_FORMAT_U16_LE,
-	/** Unsigned 16 bit Big Endian */
-	SND_PCM_FORMAT_U16_BE,
-	/** Signed 24 bit Little Endian using low three bytes in 32-bit word */
-	SND_PCM_FORMAT_S24_LE,
-	/** Signed 24 bit Big Endian using low three bytes in 32-bit word */
-	SND_PCM_FORMAT_S24_BE,
-	/** Unsigned 24 bit Little Endian using low three bytes in 32-bit word */
-	SND_PCM_FORMAT_U24_LE,
-	/** Unsigned 24 bit Big Endian using low three bytes in 32-bit word */
-	SND_PCM_FORMAT_U24_BE,
-	/** Signed 32 bit Little Endian */
-	SND_PCM_FORMAT_S32_LE,
-	/** Signed 32 bit Big Endian */
-	SND_PCM_FORMAT_S32_BE,
-	/** Unsigned 32 bit Little Endian */
-	SND_PCM_FORMAT_U32_LE,
-	/** Unsigned 32 bit Big Endian */
-	SND_PCM_FORMAT_U32_BE,
-	/** Float 32 bit Little Endian, Range -1.0 to 1.0 */
-	SND_PCM_FORMAT_FLOAT_LE,
-	/** Float 32 bit Big Endian, Range -1.0 to 1.0 */
-	SND_PCM_FORMAT_FLOAT_BE,
-	/** Float 64 bit Little Endian, Range -1.0 to 1.0 */
-	SND_PCM_FORMAT_FLOAT64_LE,
-	/** Float 64 bit Big Endian, Range -1.0 to 1.0 */
-	SND_PCM_FORMAT_FLOAT64_BE,
-	/** IEC-958 Little Endian */
-	SND_PCM_FORMAT_IEC958_SUBFRAME_LE,
-	/** IEC-958 Big Endian */
-	SND_PCM_FORMAT_IEC958_SUBFRAME_BE,
-	/** Mu-Law */
-	SND_PCM_FORMAT_MU_LAW,
-	/** A-Law */
-	SND_PCM_FORMAT_A_LAW,
-	/** Ima-ADPCM */
-	SND_PCM_FORMAT_IMA_ADPCM,
-	/** MPEG */
-	SND_PCM_FORMAT_MPEG,
-	/** GSM */
-	SND_PCM_FORMAT_GSM,
-	/** Special */
-	SND_PCM_FORMAT_SPECIAL = 31,
-	/** Signed 24bit Little Endian in 3bytes format */
-	SND_PCM_FORMAT_S24_3LE = 32,
-	/** Signed 24bit Big Endian in 3bytes format */
-	SND_PCM_FORMAT_S24_3BE,
-	/** Unsigned 24bit Little Endian in 3bytes format */
-	SND_PCM_FORMAT_U24_3LE,
-	/** Unsigned 24bit Big Endian in 3bytes format */
-	SND_PCM_FORMAT_U24_3BE,
-	/** Signed 20bit Little Endian in 3bytes format */
-	SND_PCM_FORMAT_S20_3LE,
-	/** Signed 20bit Big Endian in 3bytes format */
-	SND_PCM_FORMAT_S20_3BE,
-	/** Unsigned 20bit Little Endian in 3bytes format */
-	SND_PCM_FORMAT_U20_3LE,
-	/** Unsigned 20bit Big Endian in 3bytes format */
-	SND_PCM_FORMAT_U20_3BE,
-	/** Signed 18bit Little Endian in 3bytes format */
-	SND_PCM_FORMAT_S18_3LE,
-	/** Signed 18bit Big Endian in 3bytes format */
-	SND_PCM_FORMAT_S18_3BE,
-	/** Unsigned 18bit Little Endian in 3bytes format */
-	SND_PCM_FORMAT_U18_3LE,
-	/** Unsigned 18bit Big Endian in 3bytes format */
-	SND_PCM_FORMAT_U18_3BE,
-	SND_PCM_FORMAT_LAST = SND_PCM_FORMAT_U18_3BE,
+    /** Unknown */
+    SND_PCM_FORMAT_UNKNOWN = -1,
+    /** Signed 8 bit */
+    SND_PCM_FORMAT_S8 = 0,
+    /** Unsigned 8 bit */
+    SND_PCM_FORMAT_U8,
+    /** Signed 16 bit Little Endian */
+    SND_PCM_FORMAT_S16_LE,
+    /** Signed 16 bit Big Endian */
+    SND_PCM_FORMAT_S16_BE,
+    /** Unsigned 16 bit Little Endian */
+    SND_PCM_FORMAT_U16_LE,
+    /** Unsigned 16 bit Big Endian */
+    SND_PCM_FORMAT_U16_BE,
+    /** Signed 24 bit Little Endian using low three bytes in 32-bit word */
+    SND_PCM_FORMAT_S24_LE,
+    /** Signed 24 bit Big Endian using low three bytes in 32-bit word */
+    SND_PCM_FORMAT_S24_BE,
+    /** Unsigned 24 bit Little Endian using low three bytes in 32-bit word */
+    SND_PCM_FORMAT_U24_LE,
+    /** Unsigned 24 bit Big Endian using low three bytes in 32-bit word */
+    SND_PCM_FORMAT_U24_BE,
+    /** Signed 32 bit Little Endian */
+    SND_PCM_FORMAT_S32_LE,
+    /** Signed 32 bit Big Endian */
+    SND_PCM_FORMAT_S32_BE,
+    /** Unsigned 32 bit Little Endian */
+    SND_PCM_FORMAT_U32_LE,
+    /** Unsigned 32 bit Big Endian */
+    SND_PCM_FORMAT_U32_BE,
+    /** Float 32 bit Little Endian, Range -1.0 to 1.0 */
+    SND_PCM_FORMAT_FLOAT_LE,
+    /** Float 32 bit Big Endian, Range -1.0 to 1.0 */
+    SND_PCM_FORMAT_FLOAT_BE,
+    /** Float 64 bit Little Endian, Range -1.0 to 1.0 */
+    SND_PCM_FORMAT_FLOAT64_LE,
+    /** Float 64 bit Big Endian, Range -1.0 to 1.0 */
+    SND_PCM_FORMAT_FLOAT64_BE,
+    /** IEC-958 Little Endian */
+    SND_PCM_FORMAT_IEC958_SUBFRAME_LE,
+    /** IEC-958 Big Endian */
+    SND_PCM_FORMAT_IEC958_SUBFRAME_BE,
+    /** Mu-Law */
+    SND_PCM_FORMAT_MU_LAW,
+    /** A-Law */
+    SND_PCM_FORMAT_A_LAW,
+    /** Ima-ADPCM */
+    SND_PCM_FORMAT_IMA_ADPCM,
+    /** MPEG */
+    SND_PCM_FORMAT_MPEG,
+    /** GSM */
+    SND_PCM_FORMAT_GSM,
+    /** Special */
+    SND_PCM_FORMAT_SPECIAL = 31,
+    /** Signed 24bit Little Endian in 3bytes format */
+    SND_PCM_FORMAT_S24_3LE = 32,
+    /** Signed 24bit Big Endian in 3bytes format */
+    SND_PCM_FORMAT_S24_3BE,
+    /** Unsigned 24bit Little Endian in 3bytes format */
+    SND_PCM_FORMAT_U24_3LE,
+    /** Unsigned 24bit Big Endian in 3bytes format */
+    SND_PCM_FORMAT_U24_3BE,
+    /** Signed 20bit Little Endian in 3bytes format */
+    SND_PCM_FORMAT_S20_3LE,
+    /** Signed 20bit Big Endian in 3bytes format */
+    SND_PCM_FORMAT_S20_3BE,
+    /** Unsigned 20bit Little Endian in 3bytes format */
+    SND_PCM_FORMAT_U20_3LE,
+    /** Unsigned 20bit Big Endian in 3bytes format */
+    SND_PCM_FORMAT_U20_3BE,
+    /** Signed 18bit Little Endian in 3bytes format */
+    SND_PCM_FORMAT_S18_3LE,
+    /** Signed 18bit Big Endian in 3bytes format */
+    SND_PCM_FORMAT_S18_3BE,
+    /** Unsigned 18bit Little Endian in 3bytes format */
+    SND_PCM_FORMAT_U18_3LE,
+    /** Unsigned 18bit Big Endian in 3bytes format */
+    SND_PCM_FORMAT_U18_3BE,
+    SND_PCM_FORMAT_LAST = SND_PCM_FORMAT_U18_3BE,
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-	/** Signed 16 bit CPU endian */
-	SND_PCM_FORMAT_S16 = SND_PCM_FORMAT_S16_LE,
-	/** Unsigned 16 bit CPU endian */
-	SND_PCM_FORMAT_U16 = SND_PCM_FORMAT_U16_LE,
-	/** Signed 24 bit CPU endian */
-	SND_PCM_FORMAT_S24 = SND_PCM_FORMAT_S24_LE,
-	/** Unsigned 24 bit CPU endian */
-	SND_PCM_FORMAT_U24 = SND_PCM_FORMAT_U24_LE,
-	/** Signed 32 bit CPU endian */
-	SND_PCM_FORMAT_S32 = SND_PCM_FORMAT_S32_LE,
-	/** Unsigned 32 bit CPU endian */
-	SND_PCM_FORMAT_U32 = SND_PCM_FORMAT_U32_LE,
-	/** Float 32 bit CPU endian */
-	SND_PCM_FORMAT_FLOAT = SND_PCM_FORMAT_FLOAT_LE,
-	/** Float 64 bit CPU endian */
-	SND_PCM_FORMAT_FLOAT64 = SND_PCM_FORMAT_FLOAT64_LE,
-	/** IEC-958 CPU Endian */
-	SND_PCM_FORMAT_IEC958_SUBFRAME = SND_PCM_FORMAT_IEC958_SUBFRAME_LE
+    /** Signed 16 bit CPU endian */
+    SND_PCM_FORMAT_S16 = SND_PCM_FORMAT_S16_LE,
+    /** Unsigned 16 bit CPU endian */
+    SND_PCM_FORMAT_U16 = SND_PCM_FORMAT_U16_LE,
+    /** Signed 24 bit CPU endian */
+    SND_PCM_FORMAT_S24 = SND_PCM_FORMAT_S24_LE,
+    /** Unsigned 24 bit CPU endian */
+    SND_PCM_FORMAT_U24 = SND_PCM_FORMAT_U24_LE,
+    /** Signed 32 bit CPU endian */
+    SND_PCM_FORMAT_S32 = SND_PCM_FORMAT_S32_LE,
+    /** Unsigned 32 bit CPU endian */
+    SND_PCM_FORMAT_U32 = SND_PCM_FORMAT_U32_LE,
+    /** Float 32 bit CPU endian */
+    SND_PCM_FORMAT_FLOAT = SND_PCM_FORMAT_FLOAT_LE,
+    /** Float 64 bit CPU endian */
+    SND_PCM_FORMAT_FLOAT64 = SND_PCM_FORMAT_FLOAT64_LE,
+    /** IEC-958 CPU Endian */
+    SND_PCM_FORMAT_IEC958_SUBFRAME = SND_PCM_FORMAT_IEC958_SUBFRAME_LE
 #elif __BYTE_ORDER == __BIG_ENDIAN
-	/** Signed 16 bit CPU endian */
-	SND_PCM_FORMAT_S16 = SND_PCM_FORMAT_S16_BE,
-	/** Unsigned 16 bit CPU endian */
-	SND_PCM_FORMAT_U16 = SND_PCM_FORMAT_U16_BE,
-	/** Signed 24 bit CPU endian */
-	SND_PCM_FORMAT_S24 = SND_PCM_FORMAT_S24_BE,
-	/** Unsigned 24 bit CPU endian */
-	SND_PCM_FORMAT_U24 = SND_PCM_FORMAT_U24_BE,
-	/** Signed 32 bit CPU endian */
-	SND_PCM_FORMAT_S32 = SND_PCM_FORMAT_S32_BE,
-	/** Unsigned 32 bit CPU endian */
-	SND_PCM_FORMAT_U32 = SND_PCM_FORMAT_U32_BE,
-	/** Float 32 bit CPU endian */
-	SND_PCM_FORMAT_FLOAT = SND_PCM_FORMAT_FLOAT_BE,
-	/** Float 64 bit CPU endian */
-	SND_PCM_FORMAT_FLOAT64 = SND_PCM_FORMAT_FLOAT64_BE,
-	/** IEC-958 CPU Endian */
-	SND_PCM_FORMAT_IEC958_SUBFRAME = SND_PCM_FORMAT_IEC958_SUBFRAME_BE
+    /** Signed 16 bit CPU endian */
+    SND_PCM_FORMAT_S16 = SND_PCM_FORMAT_S16_BE,
+    /** Unsigned 16 bit CPU endian */
+    SND_PCM_FORMAT_U16 = SND_PCM_FORMAT_U16_BE,
+    /** Signed 24 bit CPU endian */
+    SND_PCM_FORMAT_S24 = SND_PCM_FORMAT_S24_BE,
+    /** Unsigned 24 bit CPU endian */
+    SND_PCM_FORMAT_U24 = SND_PCM_FORMAT_U24_BE,
+    /** Signed 32 bit CPU endian */
+    SND_PCM_FORMAT_S32 = SND_PCM_FORMAT_S32_BE,
+    /** Unsigned 32 bit CPU endian */
+    SND_PCM_FORMAT_U32 = SND_PCM_FORMAT_U32_BE,
+    /** Float 32 bit CPU endian */
+    SND_PCM_FORMAT_FLOAT = SND_PCM_FORMAT_FLOAT_BE,
+    /** Float 64 bit CPU endian */
+    SND_PCM_FORMAT_FLOAT64 = SND_PCM_FORMAT_FLOAT64_BE,
+    /** IEC-958 CPU Endian */
+    SND_PCM_FORMAT_IEC958_SUBFRAME = SND_PCM_FORMAT_IEC958_SUBFRAME_BE
 #else
 #error "Unknown endian"
 #endif
@@ -246,63 +246,63 @@ typedef enum _snd_pcm_format {
 
 /** PCM sample subformat */
 typedef enum _snd_pcm_subformat {
-	/** Standard */
-	SND_PCM_SUBFORMAT_STD = 0,
-	SND_PCM_SUBFORMAT_LAST = SND_PCM_SUBFORMAT_STD
+    /** Standard */
+    SND_PCM_SUBFORMAT_STD = 0,
+    SND_PCM_SUBFORMAT_LAST = SND_PCM_SUBFORMAT_STD
 } snd_pcm_subformat_t;
 
 /** PCM state */
 typedef enum _snd_pcm_state {
-	/** Open */
-	SND_PCM_STATE_OPEN = 0,
-	/** Setup installed */ 
-	SND_PCM_STATE_SETUP,
-	/** Ready to start */
-	SND_PCM_STATE_PREPARED,
-	/** Running */
-	SND_PCM_STATE_RUNNING,
-	/** Stopped: underrun (playback) or overrun (capture) detected */
-	SND_PCM_STATE_XRUN,
-	/** Draining: running (playback) or stopped (capture) */
-	SND_PCM_STATE_DRAINING,
-	/** Paused */
-	SND_PCM_STATE_PAUSED,
-	/** Hardware is suspended */
-	SND_PCM_STATE_SUSPENDED,
-	/** Hardware is disconnected */
-	SND_PCM_STATE_DISCONNECTED,
-	SND_PCM_STATE_LAST = SND_PCM_STATE_DISCONNECTED
+    /** Open */
+    SND_PCM_STATE_OPEN = 0,
+    /** Setup installed */ 
+    SND_PCM_STATE_SETUP,
+    /** Ready to start */
+    SND_PCM_STATE_PREPARED,
+    /** Running */
+    SND_PCM_STATE_RUNNING,
+    /** Stopped: underrun (playback) or overrun (capture) detected */
+    SND_PCM_STATE_XRUN,
+    /** Draining: running (playback) or stopped (capture) */
+    SND_PCM_STATE_DRAINING,
+    /** Paused */
+    SND_PCM_STATE_PAUSED,
+    /** Hardware is suspended */
+    SND_PCM_STATE_SUSPENDED,
+    /** Hardware is disconnected */
+    SND_PCM_STATE_DISCONNECTED,
+    SND_PCM_STATE_LAST = SND_PCM_STATE_DISCONNECTED
 } snd_pcm_state_t;
 
 /** PCM start mode */
 typedef enum _snd_pcm_start {
-	/** Automatic start on data read/write */
-	SND_PCM_START_DATA = 0,
-	/** Explicit start */
-	SND_PCM_START_EXPLICIT,
-	SND_PCM_START_LAST = SND_PCM_START_EXPLICIT
+    /** Automatic start on data read/write */
+    SND_PCM_START_DATA = 0,
+    /** Explicit start */
+    SND_PCM_START_EXPLICIT,
+    SND_PCM_START_LAST = SND_PCM_START_EXPLICIT
 } snd_pcm_start_t;
 
 /** PCM xrun mode */
 typedef enum _snd_pcm_xrun {
-	/** Xrun detection disabled */
-	SND_PCM_XRUN_NONE = 0,
-	/** Stop on xrun detection */
-	SND_PCM_XRUN_STOP,
-	SND_PCM_XRUN_LAST = SND_PCM_XRUN_STOP
+    /** Xrun detection disabled */
+    SND_PCM_XRUN_NONE = 0,
+    /** Stop on xrun detection */
+    SND_PCM_XRUN_STOP,
+    SND_PCM_XRUN_LAST = SND_PCM_XRUN_STOP
 } snd_pcm_xrun_t;
 
 /** PCM timestamp mode */
 typedef enum _snd_pcm_tstamp {
-	/** No timestamp */
-	SND_PCM_TSTAMP_NONE = 0,
-	/** Update timestamp at every hardware position update */
-	SND_PCM_TSTAMP_ENABLE,
-	/** Equivalent with #SND_PCM_TSTAMP_ENABLE,
-	 * just for compatibility with older versions
-	 */
-	SND_PCM_TSTAMP_MMAP = SND_PCM_TSTAMP_ENABLE,
-	SND_PCM_TSTAMP_LAST = SND_PCM_TSTAMP_ENABLE
+    /** No timestamp */
+    SND_PCM_TSTAMP_NONE = 0,
+    /** Update timestamp at every hardware position update */
+    SND_PCM_TSTAMP_ENABLE,
+    /** Equivalent with #SND_PCM_TSTAMP_ENABLE,
+     * just for compatibility with older versions
+     */
+    SND_PCM_TSTAMP_MMAP = SND_PCM_TSTAMP_ENABLE,
+    SND_PCM_TSTAMP_LAST = SND_PCM_TSTAMP_ENABLE
 } snd_pcm_tstamp_t;
 
 /** Unsigned frames quantity */
@@ -311,87 +311,87 @@ typedef unsigned long snd_pcm_uframes_t;
 typedef long snd_pcm_sframes_t;
 
 /** Non blocking mode (flag for open mode) \hideinitializer */
-#define SND_PCM_NONBLOCK		0x00000001
+#define SND_PCM_NONBLOCK        0x00000001
 /** Async notification (flag for open mode) \hideinitializer */
-#define SND_PCM_ASYNC			0x00000002
+#define SND_PCM_ASYNC            0x00000002
 /** Disable automatic (but not forced!) rate resamplinig */
-#define SND_PCM_NO_AUTO_RESAMPLE	0x00010000
+#define SND_PCM_NO_AUTO_RESAMPLE    0x00010000
 /** Disable automatic (but not forced!) channel conversion */
-#define SND_PCM_NO_AUTO_CHANNELS	0x00020000
+#define SND_PCM_NO_AUTO_CHANNELS    0x00020000
 /** Disable automatic (but not forced!) format conversion */
-#define SND_PCM_NO_AUTO_FORMAT		0x00040000
+#define SND_PCM_NO_AUTO_FORMAT        0x00040000
 /** Disable soft volume control */
-#define SND_PCM_NO_SOFTVOL		0x00080000
+#define SND_PCM_NO_SOFTVOL        0x00080000
 
 /** PCM handle */
 typedef struct _snd_pcm snd_pcm_t;
 
 /** PCM type */
 enum _snd_pcm_type {
-	/** Kernel level PCM */
-	SND_PCM_TYPE_HW = 0,
-	/** Hooked PCM */
-	SND_PCM_TYPE_HOOKS,
-	/** One or more linked PCM with exclusive access to selected
-	    channels */
-	SND_PCM_TYPE_MULTI,
-	/** File writing plugin */
-	SND_PCM_TYPE_FILE,
-	/** Null endpoint PCM */
-	SND_PCM_TYPE_NULL,
-	/** Shared memory client PCM */
-	SND_PCM_TYPE_SHM,
-	/** INET client PCM (not yet implemented) */
-	SND_PCM_TYPE_INET,
-	/** Copying plugin */
-	SND_PCM_TYPE_COPY,
-	/** Linear format conversion PCM */
-	SND_PCM_TYPE_LINEAR,
-	/** A-Law format conversion PCM */
-	SND_PCM_TYPE_ALAW,
-	/** Mu-Law format conversion PCM */
-	SND_PCM_TYPE_MULAW,
-	/** IMA-ADPCM format conversion PCM */
-	SND_PCM_TYPE_ADPCM,
-	/** Rate conversion PCM */
-	SND_PCM_TYPE_RATE,
-	/** Attenuated static route PCM */
-	SND_PCM_TYPE_ROUTE,
-	/** Format adjusted PCM */
-	SND_PCM_TYPE_PLUG,
-	/** Sharing PCM */
-	SND_PCM_TYPE_SHARE,
-	/** Meter plugin */
-	SND_PCM_TYPE_METER,
-	/** Mixing PCM */
-	SND_PCM_TYPE_MIX,
-	/** Attenuated dynamic route PCM (not yet implemented) */
-	SND_PCM_TYPE_DROUTE,
-	/** Loopback server plugin (not yet implemented) */
-	SND_PCM_TYPE_LBSERVER,
-	/** Linear Integer <-> Linear Float format conversion PCM */
-	SND_PCM_TYPE_LINEAR_FLOAT,
-	/** LADSPA integration plugin */
-	SND_PCM_TYPE_LADSPA,
-	/** Direct Mixing plugin */
-	SND_PCM_TYPE_DMIX,
-	/** Jack Audio Connection Kit plugin */
-	SND_PCM_TYPE_JACK,
-	/** Direct Snooping plugin */
-	SND_PCM_TYPE_DSNOOP,
-	/** Direct Sharing plugin */
-	SND_PCM_TYPE_DSHARE,
-	/** IEC958 subframe plugin */
-	SND_PCM_TYPE_IEC958,
-	/** Soft volume plugin */
-	SND_PCM_TYPE_SOFTVOL,
-	/** External I/O plugin */
-	SND_PCM_TYPE_IOPLUG,
-	/** External filter plugin */
-	SND_PCM_TYPE_EXTPLUG,
-	/** Mmap-emulation plugin */
-	SND_PCM_TYPE_MMAP_EMUL,
-	SND_PCM_TYPE_LAST = SND_PCM_TYPE_MMAP_EMUL
+    /** Kernel level PCM */
+    SND_PCM_TYPE_HW = 0,
+    /** Hooked PCM */
+    SND_PCM_TYPE_HOOKS,
+    /** One or more linked PCM with exclusive access to selected
+        channels */
+    SND_PCM_TYPE_MULTI,
+    /** File writing plugin */
+    SND_PCM_TYPE_FILE,
+    /** Null endpoint PCM */
+    SND_PCM_TYPE_NULL,
+    /** Shared memory client PCM */
+    SND_PCM_TYPE_SHM,
+    /** INET client PCM (not yet implemented) */
+    SND_PCM_TYPE_INET,
+    /** Copying plugin */
+    SND_PCM_TYPE_COPY,
+    /** Linear format conversion PCM */
+    SND_PCM_TYPE_LINEAR,
+    /** A-Law format conversion PCM */
+    SND_PCM_TYPE_ALAW,
+    /** Mu-Law format conversion PCM */
+    SND_PCM_TYPE_MULAW,
+    /** IMA-ADPCM format conversion PCM */
+    SND_PCM_TYPE_ADPCM,
+    /** Rate conversion PCM */
+    SND_PCM_TYPE_RATE,
+    /** Attenuated static route PCM */
+    SND_PCM_TYPE_ROUTE,
+    /** Format adjusted PCM */
+    SND_PCM_TYPE_PLUG,
+    /** Sharing PCM */
+    SND_PCM_TYPE_SHARE,
+    /** Meter plugin */
+    SND_PCM_TYPE_METER,
+    /** Mixing PCM */
+    SND_PCM_TYPE_MIX,
+    /** Attenuated dynamic route PCM (not yet implemented) */
+    SND_PCM_TYPE_DROUTE,
+    /** Loopback server plugin (not yet implemented) */
+    SND_PCM_TYPE_LBSERVER,
+    /** Linear Integer <-> Linear Float format conversion PCM */
+    SND_PCM_TYPE_LINEAR_FLOAT,
+    /** LADSPA integration plugin */
+    SND_PCM_TYPE_LADSPA,
+    /** Direct Mixing plugin */
+    SND_PCM_TYPE_DMIX,
+    /** Jack Audio Connection Kit plugin */
+    SND_PCM_TYPE_JACK,
+    /** Direct Snooping plugin */
+    SND_PCM_TYPE_DSNOOP,
+    /** Direct Sharing plugin */
+    SND_PCM_TYPE_DSHARE,
+    /** IEC958 subframe plugin */
+    SND_PCM_TYPE_IEC958,
+    /** Soft volume plugin */
+    SND_PCM_TYPE_SOFTVOL,
+    /** External I/O plugin */
+    SND_PCM_TYPE_IOPLUG,
+    /** External filter plugin */
+    SND_PCM_TYPE_EXTPLUG,
+    /** Mmap-emulation plugin */
+    SND_PCM_TYPE_MMAP_EMUL,
+    SND_PCM_TYPE_LAST = SND_PCM_TYPE_MMAP_EMUL
 };
 
 /** PCM type */
@@ -399,35 +399,35 @@ typedef enum _snd_pcm_type snd_pcm_type_t;
 
 /** PCM area specification */
 typedef struct _snd_pcm_channel_area {
-	/** base address of channel samples */
-	void *addr;
-	/** offset to first sample in bits */
-	unsigned int first;
-	/** samples distance in bits */
-	unsigned int step;
+    /** base address of channel samples */
+    void *addr;
+    /** offset to first sample in bits */
+    unsigned int first;
+    /** samples distance in bits */
+    unsigned int step;
 } snd_pcm_channel_area_t;
 
 /** PCM synchronization ID */
 typedef union _snd_pcm_sync_id {
-	/** 8-bit ID */
-	unsigned char id[16];
-	/** 16-bit ID */
-	unsigned short id16[8];
-	/** 32-bit ID */
-	unsigned int id32[4];
+    /** 8-bit ID */
+    unsigned char id[16];
+    /** 16-bit ID */
+    unsigned short id16[8];
+    /** 32-bit ID */
+    unsigned int id32[4];
 } snd_pcm_sync_id_t;
 
 /** #SND_PCM_TYPE_METER scope handle */
 typedef struct _snd_pcm_scope snd_pcm_scope_t;
 
 int snd_pcm_open(snd_pcm_t **pcm, const char *name, 
-		 snd_pcm_stream_t stream, int mode);
+         snd_pcm_stream_t stream, int mode);
 int snd_pcm_open_lconf(snd_pcm_t **pcm, const char *name, 
-		       snd_pcm_stream_t stream, int mode,
-		       snd_config_t *lconf);
+               snd_pcm_stream_t stream, int mode,
+               snd_config_t *lconf);
 int snd_pcm_open_fallback(snd_pcm_t **pcm, snd_config_t *root,
-			  const char *name, const char *orig_name,
-			  snd_pcm_stream_t stream, int mode);
+              const char *name, const char *orig_name,
+              snd_pcm_stream_t stream, int mode);
 
 int snd_pcm_close(snd_pcm_t *pcm);
 const char *snd_pcm_name(snd_pcm_t *pcm);
@@ -438,7 +438,7 @@ int snd_pcm_poll_descriptors(snd_pcm_t *pcm, struct pollfd *pfds, unsigned int s
 int snd_pcm_poll_descriptors_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsigned int nfds, unsigned short *revents);
 int snd_pcm_nonblock(snd_pcm_t *pcm, int nonblock);
 int snd_async_add_pcm_handler(snd_async_handler_t **handler, snd_pcm_t *pcm, 
-			      snd_async_callback_t callback, void *private_data);
+                  snd_async_callback_t callback, void *private_data);
 snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler);
 int snd_pcm_info(snd_pcm_t *pcm, snd_pcm_info_t *info);
 int snd_pcm_hw_params_current(snd_pcm_t *pcm, snd_pcm_hw_params_t *params);
@@ -551,8 +551,8 @@ int snd_pcm_hw_params_is_joint_duplex(const snd_pcm_hw_params_t *params);
 int snd_pcm_hw_params_can_sync_start(const snd_pcm_hw_params_t *params);
 int snd_pcm_hw_params_can_disable_period_wakeup(const snd_pcm_hw_params_t *params);
 int snd_pcm_hw_params_get_rate_numden(const snd_pcm_hw_params_t *params,
-				      unsigned int *rate_num,
-				      unsigned int *rate_den);
+                      unsigned int *rate_num,
+                      unsigned int *rate_den);
 int snd_pcm_hw_params_get_sbits(const snd_pcm_hw_params_t *params);
 int snd_pcm_hw_params_get_fifo_size(const snd_pcm_hw_params_t *params);
 
@@ -561,24 +561,24 @@ typedef struct _snd_pcm_hw_strategy snd_pcm_hw_strategy_t;
 
 /* choices need to be sorted on ascending badness */
 typedef struct _snd_pcm_hw_strategy_simple_choices_list {
-	unsigned int value;
-	unsigned int badness;
+    unsigned int value;
+    unsigned int badness;
 } snd_pcm_hw_strategy_simple_choices_list_t;
 
 int snd_pcm_hw_params_strategy(snd_pcm_t *pcm, snd_pcm_hw_params_t *params,
-			       const snd_pcm_hw_strategy_t *strategy,
-			       unsigned int badness_min,
-			       unsigned int badness_max);
+                   const snd_pcm_hw_strategy_t *strategy,
+                   unsigned int badness_min,
+                   unsigned int badness_max);
 
 void snd_pcm_hw_strategy_free(snd_pcm_hw_strategy_t *strategy);
 int snd_pcm_hw_strategy_simple(snd_pcm_hw_strategy_t **strategyp,
-			       unsigned int badness_min,
-			       unsigned int badness_max);
+                   unsigned int badness_min,
+                   unsigned int badness_max);
 int snd_pcm_hw_params_try_explain_failure(snd_pcm_t *pcm,
-					  snd_pcm_hw_params_t *fail,
-					  snd_pcm_hw_params_t *success,
-					  unsigned int depth,
-					  snd_output_t *out);
+                      snd_pcm_hw_params_t *fail,
+                      snd_pcm_hw_params_t *success,
+                      unsigned int depth,
+                      snd_output_t *out);
 
 #endif
 
@@ -910,12 +910,12 @@ int snd_pcm_status_dump(snd_pcm_status_t *status, snd_output_t *out);
  */
 
 int snd_pcm_mmap_begin(snd_pcm_t *pcm,
-		       const snd_pcm_channel_area_t **areas,
-		       snd_pcm_uframes_t *offset,
-		       snd_pcm_uframes_t *frames);
+               const snd_pcm_channel_area_t **areas,
+               snd_pcm_uframes_t *offset,
+               snd_pcm_uframes_t *frames);
 snd_pcm_sframes_t snd_pcm_mmap_commit(snd_pcm_t *pcm,
-				      snd_pcm_uframes_t offset,
-				      snd_pcm_uframes_t frames);
+                      snd_pcm_uframes_t offset,
+                      snd_pcm_uframes_t frames);
 snd_pcm_sframes_t snd_pcm_mmap_writei(snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size);
 snd_pcm_sframes_t snd_pcm_mmap_readi(snd_pcm_t *pcm, void *buffer, snd_pcm_uframes_t size);
 snd_pcm_sframes_t snd_pcm_mmap_writen(snd_pcm_t *pcm, void **bufs, snd_pcm_uframes_t size);
@@ -937,8 +937,8 @@ int snd_pcm_format_float(snd_pcm_format_t format);
 int snd_pcm_format_little_endian(snd_pcm_format_t format);
 int snd_pcm_format_big_endian(snd_pcm_format_t format);
 int snd_pcm_format_cpu_endian(snd_pcm_format_t format);
-int snd_pcm_format_width(snd_pcm_format_t format);			/* in bits */
-int snd_pcm_format_physical_width(snd_pcm_format_t format);		/* in bits */
+int snd_pcm_format_width(snd_pcm_format_t format);            /* in bits */
+int snd_pcm_format_physical_width(snd_pcm_format_t format);        /* in bits */
 snd_pcm_format_t snd_pcm_build_linear_format(int width, int pwidth, int unsignd, int big_endian);
 ssize_t snd_pcm_format_size(snd_pcm_format_t format, size_t samples);
 u_int8_t snd_pcm_format_silence(snd_pcm_format_t format);
@@ -953,15 +953,15 @@ long snd_pcm_bytes_to_samples(snd_pcm_t *pcm, ssize_t bytes);
 ssize_t snd_pcm_samples_to_bytes(snd_pcm_t *pcm, long samples);
 
 int snd_pcm_area_silence(const snd_pcm_channel_area_t *dst_channel, snd_pcm_uframes_t dst_offset,
-			 unsigned int samples, snd_pcm_format_t format);
+             unsigned int samples, snd_pcm_format_t format);
 int snd_pcm_areas_silence(const snd_pcm_channel_area_t *dst_channels, snd_pcm_uframes_t dst_offset,
-			  unsigned int channels, snd_pcm_uframes_t frames, snd_pcm_format_t format);
+              unsigned int channels, snd_pcm_uframes_t frames, snd_pcm_format_t format);
 int snd_pcm_area_copy(const snd_pcm_channel_area_t *dst_channel, snd_pcm_uframes_t dst_offset,
-		      const snd_pcm_channel_area_t *src_channel, snd_pcm_uframes_t src_offset,
-		      unsigned int samples, snd_pcm_format_t format);
+              const snd_pcm_channel_area_t *src_channel, snd_pcm_uframes_t src_offset,
+              unsigned int samples, snd_pcm_format_t format);
 int snd_pcm_areas_copy(const snd_pcm_channel_area_t *dst_channels, snd_pcm_uframes_t dst_offset,
-		       const snd_pcm_channel_area_t *src_channels, snd_pcm_uframes_t src_offset,
-		       unsigned int channels, snd_pcm_uframes_t frames, snd_pcm_format_t format);
+               const snd_pcm_channel_area_t *src_channels, snd_pcm_uframes_t src_offset,
+               unsigned int channels, snd_pcm_uframes_t frames, snd_pcm_format_t format);
 
 /** \} */
 
@@ -974,10 +974,10 @@ int snd_pcm_areas_copy(const snd_pcm_channel_area_t *dst_channels, snd_pcm_ufram
 
 /** type of pcm hook */
 typedef enum _snd_pcm_hook_type {
-	SND_PCM_HOOK_TYPE_HW_PARAMS = 0,
-	SND_PCM_HOOK_TYPE_HW_FREE,
-	SND_PCM_HOOK_TYPE_CLOSE,
-	SND_PCM_HOOK_TYPE_LAST = SND_PCM_HOOK_TYPE_CLOSE
+    SND_PCM_HOOK_TYPE_HW_PARAMS = 0,
+    SND_PCM_HOOK_TYPE_HW_FREE,
+    SND_PCM_HOOK_TYPE_CLOSE,
+    SND_PCM_HOOK_TYPE_LAST = SND_PCM_HOOK_TYPE_CLOSE
 } snd_pcm_hook_type_t;
 
 /** PCM hook container */
@@ -988,8 +988,8 @@ snd_pcm_t *snd_pcm_hook_get_pcm(snd_pcm_hook_t *hook);
 void *snd_pcm_hook_get_private(snd_pcm_hook_t *hook);
 void snd_pcm_hook_set_private(snd_pcm_hook_t *hook, void *private_data);
 int snd_pcm_hook_add(snd_pcm_hook_t **hookp, snd_pcm_t *pcm,
-		     snd_pcm_hook_type_t type,
-		     snd_pcm_hook_func_t func, void *private_data);
+             snd_pcm_hook_type_t type,
+             snd_pcm_hook_func_t func, void *private_data);
 int snd_pcm_hook_remove(snd_pcm_hook_t *hook);
 
 /** \} */
@@ -1003,34 +1003,34 @@ int snd_pcm_hook_remove(snd_pcm_hook_t *hook);
 
 /** #SND_PCM_TYPE_METER scope functions */
 typedef struct _snd_pcm_scope_ops {
-	/** \brief Enable and prepare it using current params
-	 * \param scope scope handle
-	 */
-	int (*enable)(snd_pcm_scope_t *scope);
-	/** \brief Disable
-	 * \param scope scope handle
-	 */
-	void (*disable)(snd_pcm_scope_t *scope);
-	/** \brief PCM has been started
-	 * \param scope scope handle
-	 */
-	void (*start)(snd_pcm_scope_t *scope);
-	/** \brief PCM has been stopped
-	 * \param scope scope handle
-	 */
-	void (*stop)(snd_pcm_scope_t *scope);
-	/** \brief New frames are present
-	 * \param scope scope handle
-	 */
-	void (*update)(snd_pcm_scope_t *scope);
-	/** \brief Reset status
-	 * \param scope scope handle
-	 */
-	void (*reset)(snd_pcm_scope_t *scope);
-	/** \brief PCM is closing
-	 * \param scope scope handle
-	 */
-	void (*close)(snd_pcm_scope_t *scope);
+    /** \brief Enable and prepare it using current params
+     * \param scope scope handle
+     */
+    int (*enable)(snd_pcm_scope_t *scope);
+    /** \brief Disable
+     * \param scope scope handle
+     */
+    void (*disable)(snd_pcm_scope_t *scope);
+    /** \brief PCM has been started
+     * \param scope scope handle
+     */
+    void (*start)(snd_pcm_scope_t *scope);
+    /** \brief PCM has been stopped
+     * \param scope scope handle
+     */
+    void (*stop)(snd_pcm_scope_t *scope);
+    /** \brief New frames are present
+     * \param scope scope handle
+     */
+    void (*update)(snd_pcm_scope_t *scope);
+    /** \brief Reset status
+     * \param scope scope handle
+     */
+    void (*reset)(snd_pcm_scope_t *scope);
+    /** \brief PCM is closing
+     * \param scope scope handle
+     */
+    void (*close)(snd_pcm_scope_t *scope);
 } snd_pcm_scope_ops_t;
 
 snd_pcm_uframes_t snd_pcm_meter_get_bufsize(snd_pcm_t *pcm);
@@ -1042,15 +1042,15 @@ int snd_pcm_meter_add_scope(snd_pcm_t *pcm, snd_pcm_scope_t *scope);
 snd_pcm_scope_t *snd_pcm_meter_search_scope(snd_pcm_t *pcm, const char *name);
 int snd_pcm_scope_malloc(snd_pcm_scope_t **ptr);
 void snd_pcm_scope_set_ops(snd_pcm_scope_t *scope,
-			   const snd_pcm_scope_ops_t *val);
+               const snd_pcm_scope_ops_t *val);
 void snd_pcm_scope_set_name(snd_pcm_scope_t *scope, const char *val);
 const char *snd_pcm_scope_get_name(snd_pcm_scope_t *scope);
 void *snd_pcm_scope_get_callback_private(snd_pcm_scope_t *scope);
 void snd_pcm_scope_set_callback_private(snd_pcm_scope_t *scope, void *val);
 int snd_pcm_scope_s16_open(snd_pcm_t *pcm, const char *name,
-			   snd_pcm_scope_t **scopep);
+               snd_pcm_scope_t **scopep);
 int16_t *snd_pcm_scope_s16_get_channel_buffer(snd_pcm_scope_t *scope,
-					      unsigned int channel);
+                          unsigned int channel);
 
 /** \} */
 
@@ -1063,57 +1063,57 @@ int16_t *snd_pcm_scope_s16_get_channel_buffer(snd_pcm_scope_t *scope,
 
 /** Simple PCM latency type */
 typedef enum _snd_spcm_latency {
-	/** standard latency - for standard playback or capture
+    /** standard latency - for standard playback or capture
             (estimated latency in one direction 350ms) */
-	SND_SPCM_LATENCY_STANDARD = 0,
-	/** medium latency - software phones etc.
-	    (estimated latency in one direction maximally 25ms */
-	SND_SPCM_LATENCY_MEDIUM,
-	/** realtime latency - realtime applications (effect processors etc.)
-	    (estimated latency in one direction 5ms and better) */
-	SND_SPCM_LATENCY_REALTIME
+    SND_SPCM_LATENCY_STANDARD = 0,
+    /** medium latency - software phones etc.
+        (estimated latency in one direction maximally 25ms */
+    SND_SPCM_LATENCY_MEDIUM,
+    /** realtime latency - realtime applications (effect processors etc.)
+        (estimated latency in one direction 5ms and better) */
+    SND_SPCM_LATENCY_REALTIME
 } snd_spcm_latency_t;
 
 /** Simple PCM xrun type */
 typedef enum _snd_spcm_xrun_type {
-	/** driver / library will ignore all xruns, the stream runs forever */
-	SND_SPCM_XRUN_IGNORE = 0,
-	/** driver / library stops the stream when an xrun occurs */
-	SND_SPCM_XRUN_STOP
+    /** driver / library will ignore all xruns, the stream runs forever */
+    SND_SPCM_XRUN_IGNORE = 0,
+    /** driver / library stops the stream when an xrun occurs */
+    SND_SPCM_XRUN_STOP
 } snd_spcm_xrun_type_t;
 
 /** Simple PCM duplex type */
 typedef enum _snd_spcm_duplex_type {
-	/** liberal duplex - the buffer and period sizes might not match */
-	SND_SPCM_DUPLEX_LIBERAL = 0,
-	/** pedantic duplex - the buffer and period sizes MUST match */
-	SND_SPCM_DUPLEX_PEDANTIC
+    /** liberal duplex - the buffer and period sizes might not match */
+    SND_SPCM_DUPLEX_LIBERAL = 0,
+    /** pedantic duplex - the buffer and period sizes MUST match */
+    SND_SPCM_DUPLEX_PEDANTIC
 } snd_spcm_duplex_type_t;
 
 int snd_spcm_init(snd_pcm_t *pcm,
-		  unsigned int rate,
-		  unsigned int channels,
-		  snd_pcm_format_t format,
-		  snd_pcm_subformat_t subformat,
-		  snd_spcm_latency_t latency,
-		  snd_pcm_access_t _access,
-		  snd_spcm_xrun_type_t xrun_type);
+          unsigned int rate,
+          unsigned int channels,
+          snd_pcm_format_t format,
+          snd_pcm_subformat_t subformat,
+          snd_spcm_latency_t latency,
+          snd_pcm_access_t _access,
+          snd_spcm_xrun_type_t xrun_type);
 
 int snd_spcm_init_duplex(snd_pcm_t *playback_pcm,
-			 snd_pcm_t *capture_pcm,
-			 unsigned int rate,
-			 unsigned int channels,
-			 snd_pcm_format_t format,
-			 snd_pcm_subformat_t subformat,
-			 snd_spcm_latency_t latency,
-			 snd_pcm_access_t _access,
-			 snd_spcm_xrun_type_t xrun_type,
-			 snd_spcm_duplex_type_t duplex_type);
+             snd_pcm_t *capture_pcm,
+             unsigned int rate,
+             unsigned int channels,
+             snd_pcm_format_t format,
+             snd_pcm_subformat_t subformat,
+             snd_spcm_latency_t latency,
+             snd_pcm_access_t _access,
+             snd_spcm_xrun_type_t xrun_type,
+             snd_spcm_duplex_type_t duplex_type);
 
 int snd_spcm_init_get_params(snd_pcm_t *pcm,
-			     unsigned int *rate,
-			     snd_pcm_uframes_t *buffer_size,
-			     snd_pcm_uframes_t *period_size);
+                 unsigned int *rate,
+                 snd_pcm_uframes_t *buffer_size,
+                 snd_pcm_uframes_t *period_size);
 
 /** \} */
 

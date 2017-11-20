@@ -737,7 +737,7 @@ ERR_EXIT:
 static int decode_delaytime(uint8_t *delay_time_ptr, uint8_t *buffer_ptr, uint16_t buffer_len)
 {
     int result = 0;
-    if((NULL == delay_time_ptr) || (NULL == buffer_ptr) || (WORK_TIME_INFO_ST_LEN > buffer_len))
+    if((NULL == delay_time_ptr) || (NULL == buffer_ptr))
     {
         result = -ERR_INVAL;
         goto ERR_EXIT;
@@ -765,7 +765,7 @@ ERR_EXIT:
 static int decode_control_status(control_status_info_st *control_status_info_ptr, uint8_t *buffer_ptr, uint16_t buffer_len)
 {
     int result = 0;
-    if((NULL == control_status_info_ptr) || (NULL == buffer_ptr) || (WORK_TIME_INFO_ST_LEN > buffer_len))
+    if((NULL == control_status_info_ptr) || (NULL == buffer_ptr))
     {
         result = -ERR_INVAL;
         goto ERR_EXIT;

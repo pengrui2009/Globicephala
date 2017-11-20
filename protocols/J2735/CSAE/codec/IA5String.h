@@ -2,8 +2,8 @@
  * Copyright (c) 2003-2017 Lev Walkin <vlm@lionet.info>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
-#ifndef	_IA5String_H_
-#define	_IA5String_H_
+#ifndef    _IA5String_H_
+#define    _IA5String_H_
 
 #include <OCTET_STRING.h>
 
@@ -35,4 +35,4 @@ asn_constr_check_f IA5String_constraint;
 }
 #endif
 
-#endif	/* _IA5String_H_ */
+#endif    /* _IA5String_H_ */

@@ -20,15 +20,15 @@
  */
 
 struct alisp_cfg {
-	int verbose: 1,
-	    warning: 1,
-	    debug: 1;
-	snd_input_t *in;	/* program code */
-	snd_output_t *out;	/* program output */
-	snd_output_t *eout;	/* error output */
-	snd_output_t *vout;	/* verbose output */
-	snd_output_t *wout;	/* warning output */
-	snd_output_t *dout;	/* debug output */
+    int verbose: 1,
+        warning: 1,
+        debug: 1;
+    snd_input_t *in;    /* program code */
+    snd_output_t *out;    /* program output */
+    snd_output_t *eout;    /* error output */
+    snd_output_t *vout;    /* verbose output */
+    snd_output_t *wout;    /* warning output */
+    snd_output_t *dout;    /* debug output */
 };
 
 struct alisp_instance;
@@ -40,15 +40,15 @@ void alsa_lisp_default_cfg_free(struct alisp_cfg *cfg);
 int alsa_lisp(struct alisp_cfg *cfg, struct alisp_instance **instance);
 void alsa_lisp_free(struct alisp_instance *instance);
 int alsa_lisp_function(struct alisp_instance *instance, struct alisp_seq_iterator **result,
-		       const char *id, const char *args, ...)
+               const char *id, const char *args, ...)
 #ifndef DOC_HIDDEN
-		       __attribute__ ((format (printf, 4, 5)))
+               __attribute__ ((format (printf, 4, 5)))
 #endif
-		       ;
+               ;
 void alsa_lisp_result_free(struct alisp_instance *instance,
-			   struct alisp_seq_iterator *result);
+               struct alisp_seq_iterator *result);
 int alsa_lisp_seq_first(struct alisp_instance *instance, const char *id,
-			struct alisp_seq_iterator **seq);
+            struct alisp_seq_iterator **seq);
 int alsa_lisp_seq_next(struct alisp_seq_iterator **seq);
 int alsa_lisp_seq_count(struct alisp_seq_iterator *seq);
 int alsa_lisp_seq_integer(struct alisp_seq_iterator *seq, long *val);

@@ -5,11 +5,11 @@
 /*
  * Application-level ASN.1 callbacks.
  */
-#ifndef	ASN_APPLICATION_H
-#define	ASN_APPLICATION_H
+#ifndef    ASN_APPLICATION_H
+#define    ASN_APPLICATION_H
 
-#include "asn_system.h"		/* for platform-dependent types */
-#include "asn_codecs.h"		/* for ASN.1 codecs specifics */
+#include "asn_system.h"        /* for platform-dependent types */
+#include "asn_codecs.h"        /* for ASN.1 codecs specifics */
 
 #ifdef __cplusplus
 extern "C" {
@@ -155,15 +155,15 @@ asn_dec_rval_t asn_decode(
  * particular constraint has failed.
  */
 typedef void (asn_app_constraint_failed_f)(void *application_specific_key,
-	const struct asn_TYPE_descriptor_s *type_descriptor_which_failed,
-	const void *structure_which_failed_ptr,
-	const char *error_message_format, ...) CC_PRINTFLIKE(4, 5);
+    const struct asn_TYPE_descriptor_s *type_descriptor_which_failed,
+    const void *structure_which_failed_ptr,
+    const char *error_message_format, ...) CC_PRINTFLIKE(4, 5);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#include "constr_TYPE.h"	/* for asn_TYPE_descriptor_t */
+#include "constr_TYPE.h"    /* for asn_TYPE_descriptor_t */
 
-#endif	/* ASN_APPLICATION_H */
+#endif    /* ASN_APPLICATION_H */

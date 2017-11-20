@@ -10,7 +10,7 @@
            ...
 ******************************************************************************/
 #ifndef _OSAL_SEMA_H_
-#define	_OSAL_SEMA_H_
+#define    _OSAL_SEMA_H_
 
 #include "os_core.h"
 #include "osal_cmn.h"

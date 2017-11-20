@@ -7,7 +7,7 @@
  @author : wangxianwen
  @history:
            2016-09-12    wangxianwen    Created file
-           2017-10-12	 pengrui		Modify for CSAE
+           2017-10-12     pengrui        Modify for CSAE
            ...
 ******************************************************************************/
 #ifndef __CV_DATA_FRAME_H__
@@ -49,7 +49,7 @@ typedef struct _DF_AccelerationSet4Way_st
 
     /* Alone the vehicle vertical axis. Unit: m/s^2. */
     DE_VerticalAcceleration_t          vertical;
-	
+    
     /* Vehicle's yaw rate. Unit: degrees per second. */
     DE_YawRate_t                       yaw_rate;
     
@@ -76,23 +76,23 @@ typedef struct _DF_AntennaOffsetSet_st
 /* DF_BrakeSystemStatus structure*/
 typedef struct _DF_BrakeSystemStatus_opt_st
 {
-	uint8_t BrakeSystemStatus_opt_brakepadel                :1;
-	uint8_t BrakeSystemStatus_opt_wheelBrakes               :1;
-	uint8_t	BrakeSystemStatus_opt_traction                  :1;
-	uint8_t BrakeSystemStatus_opt_abs                       :1;
-	uint8_t BrakeSystemStatus_opt_scs                       :1;
-	uint8_t	BrakeSystemStatus_opt_brakeBoost                :1;
-	uint8_t	BrakeSystemStatus_opt_auxBrakes                 :1;
-	uint8_t	BrakeSystemStatus_opt_reserved                  :1;
+    uint8_t BrakeSystemStatus_opt_brakepadel                :1;
+    uint8_t BrakeSystemStatus_opt_wheelBrakes               :1;
+    uint8_t    BrakeSystemStatus_opt_traction                  :1;
+    uint8_t BrakeSystemStatus_opt_abs                       :1;
+    uint8_t BrakeSystemStatus_opt_scs                       :1;
+    uint8_t    BrakeSystemStatus_opt_brakeBoost                :1;
+    uint8_t    BrakeSystemStatus_opt_auxBrakes                 :1;
+    uint8_t    BrakeSystemStatus_opt_reserved                  :1;
 }DF_BrakeSystemStatus_opt_st, *DF_BrakeSystemStatus_opt_st_ptr;
 
 /*DF_BrakeSystemStatus. */
 typedef struct _DF_BrakeSystemStatus_st
 {
-	/* Optional */
-	DF_BrakeSystemStatus_opt_st        opt;
-	/* Data */
-	DE_BrakePedalStatus_en      brakepedal;
+    /* Optional */
+    DF_BrakeSystemStatus_opt_st        opt;
+    /* Data */
+    DE_BrakePedalStatus_en      brakepedal;
     DE_BrakeAppliedStatus_st   wheelBrakes;
     DE_TractionControlStatus_en   traction;
     DE_AntiLockBrakeStatus_en          abs;
@@ -106,74 +106,74 @@ typedef struct _DF_BrakeSystemStatus_st
 /*DF_ConnectingLane_opt structure */
 typedef struct _DF_ConnectingLane_opt_st
 {
-	uint8_t DF_ConnectingLane_opt_maneuver        :1;
-	uint8_t DF_ConnectingLane_opt_reserved        :7;
+    uint8_t DF_ConnectingLane_opt_maneuver        :1;
+    uint8_t DF_ConnectingLane_opt_reserved        :7;
 }DF_ConnectingLane_opt_st, *DF_ConnectingLane_opt_st_ptr;
 
 /*DF_ConnectingLane structure */
 typedef struct _DF_ConnectingLane_st
 {
-	/* optional */
-	DF_ConnectingLane_opt_st                     opt;
+    /* optional */
+    DF_ConnectingLane_opt_st                     opt;
 
-	/* data */
-	DE_LaneID_t                                 lane;
-	DE_AllowedManeuvers_un                  maneuver;
-	
+    /* data */
+    DE_LaneID_t                                 lane;
+    DE_AllowedManeuvers_un                  maneuver;
+    
 }DF_ConnectingLane_st, *DF_ConnectingLane_st_ptr;
 
-#define DF_ConnectingLane_st_len		(sizeof(DF_ConnectingLane_st))
+#define DF_ConnectingLane_st_len        (sizeof(DF_ConnectingLane_st))
 
 /*DF_NodeReferenceID_opt structure */
 typedef struct _DF_NodeReferenceID_opt_st
 {
-	uint8_t		region		:1;
-	uint8_t		reserved	:7;
+    uint8_t        region        :1;
+    uint8_t        reserved    :7;
 }DF_NodeReferenceID_opt_st, *DF_NodeReferenceID_opt_st_ptr;
 
 /*DF_NodeReferenceID_st */
 typedef struct _DF_NodeReferenceID_st
 {
-	/* optional */
-	DF_NodeReferenceID_opt_st         opt;
+    /* optional */
+    DF_NodeReferenceID_opt_st         opt;
 
-	/* Data */
-	DE_RoadRegulatorID_t           region;
-	DE_NodeID_t                        id; /*  The values zero through 255 are allocated for testing purposes */
+    /* Data */
+    DE_RoadRegulatorID_t           region;
+    DE_NodeID_t                        id; /*  The values zero through 255 are allocated for testing purposes */
 }DF_NodeReferenceID_st, *DF_NodeReferenceID_st_ptr;
 
-#define DF_NodeReferenceID_st_len		(sizeof(DF_NodeReferenceID_st))
+#define DF_NodeReferenceID_st_len        (sizeof(DF_NodeReferenceID_st))
 
 /*DF_Connection_opt structure*/
 typedef struct _DE_Connection_opt_st
 {
-	uint8_t Connection_opt_connectingLane           :1;
-	uint8_t Connection_opt_phaseId                  :1;
-	uint8_t Connection_opt_reserved                 :6;
+    uint8_t Connection_opt_connectingLane           :1;
+    uint8_t Connection_opt_phaseId                  :1;
+    uint8_t Connection_opt_reserved                 :6;
 }DE_Connection_opt_st, *DE_Connection_opt_st_ptr;
 
 /*DF_Connection structure */
 typedef struct _DF_Connection_st
 {
-	/* optional */
-	DE_Connection_opt_st                          opt;
+    /* optional */
+    DE_Connection_opt_st                          opt;
 
-	/* Data */
-	DF_NodeReferenceID_st          remoteIntersection;
-	DF_ConnectingLane_st               connectingLane;
-	DE_PhaseID_t                              phaseid;
+    /* Data */
+    DF_NodeReferenceID_st          remoteIntersection;
+    DF_ConnectingLane_st               connectingLane;
+    DE_PhaseID_t                              phaseid;
 }DF_Connection_st, *DF_Connection_st_ptr;
 
-#define DF_Connection_st_len		(sizeof(DF_Connection_st))
+#define DF_Connection_st_len        (sizeof(DF_Connection_st))
 
 /*DF_ConnectsToList structure */
 typedef struct _DF_ConnectsToList_st
 {
-	uint8_t                ConnectionToList_size;
-	DF_Connection_st    ConnectionToList_data[8];
+    uint8_t                ConnectionToList_size;
+    DF_Connection_st    ConnectionToList_data[8];
 }DF_ConnectsToList_st, *DF_ConnectsToList_st_ptr;
 
-#define DF_ConnectsToList_st_len		(sizeof(DF_ConnectsToList_st))
+#define DF_ConnectsToList_st_len        (sizeof(DF_ConnectsToList_st))
 
 /* DF_DDateTime optional configuration. */
 typedef struct _DF_DDateTime_opt_st
@@ -185,7 +185,7 @@ typedef struct _DF_DDateTime_opt_st
     uint8_t DDateTime_opt_DMinute          :1;
     uint8_t DDateTime_opt_DSecond          :1;
     uint8_t DDateTime_opt_DOffset          :1;
-	uint8_t DDateTime_opt_reserved         :1;
+    uint8_t DDateTime_opt_reserved         :1;
 }DF_DDateTime_opt_st, *DF_DDateTime_opt_st_ptr;
 
 /*DF_DDateTime. */
@@ -210,225 +210,225 @@ typedef struct _DF_DDateTime_st
 /*DE_TimeChangeDetials_opt structure */
 typedef struct _DE_TimeChangeDetails_opt_st
 {
-	uint8_t		minEndTime		:1;
-	uint8_t		maxEndTime		:1;
-	uint8_t		TimeConfidence	:1;
-	uint8_t		nextStartTime	:1;
-	uint8_t		nextDuration	:1;
-	uint8_t		reserved		:3;
+    uint8_t        minEndTime        :1;
+    uint8_t        maxEndTime        :1;
+    uint8_t        TimeConfidence    :1;
+    uint8_t        nextStartTime    :1;
+    uint8_t        nextDuration    :1;
+    uint8_t        reserved        :3;
     
 }DF_TimeChangeDetials_opt_st, *DF_TimeChangeDetials_opt_st_ptr;
 
 /*DF_TimeChangeDetials structure */
 typedef struct _DF_TimeChangeDetials_st
 {
-	/* Optional */
-	DF_TimeChangeDetials_opt_st		             opt;
+    /* Optional */
+    DF_TimeChangeDetials_opt_st                     opt;
 
-	/* Data */
-	DE_TimeMark_t                          startTime;
-	DE_TimeMark_t                         minEndTime;
-	DE_TimeMark_t                         maxEndTime;
-	DE_TimeMark_t                      likelyEndTime;
-	DE_Confidence_t                   timeConfidence;
-	DE_TimeMark_t                      nextStartTime;
-	DE_TimeMark_t                       nextDuration;
+    /* Data */
+    DE_TimeMark_t                          startTime;
+    DE_TimeMark_t                         minEndTime;
+    DE_TimeMark_t                         maxEndTime;
+    DE_TimeMark_t                      likelyEndTime;
+    DE_Confidence_t                   timeConfidence;
+    DE_TimeMark_t                      nextStartTime;
+    DE_TimeMark_t                       nextDuration;
 }DF_TimeChangeDetials_st, *DF_TimeChangeDetials_st_ptr;
 
-#define DF_TimeChangeDetials_st_len		(sizeof(DF_TimeChangeDetials_st))
+#define DF_TimeChangeDetials_st_len        (sizeof(DF_TimeChangeDetials_st))
 
 /*DF_PhaseState_opt structure*/
 typedef struct _DF_PhaseState_opt_st
 {
-	uint8_t	PhaseState_opt_timing		:1;
-	uint8_t	PhaseState_opt_reserved		:7;
+    uint8_t    PhaseState_opt_timing        :1;
+    uint8_t    PhaseState_opt_reserved        :7;
 }DF_PhaseState_opt_st, *DF_PhaseState_opt_st_ptr;
 
 /*DF_PhaseState structure */
 typedef struct _DF_PhaseState_st
 {
-	/* Optional */
-	DF_PhaseState_opt_st                opt;
-	
-	/* Data */
-	DE_LightState_en                  light;
-	DF_TimeChangeDetials_st          timing;
+    /* Optional */
+    DF_PhaseState_opt_st                opt;
+    
+    /* Data */
+    DE_LightState_en                  light;
+    DF_TimeChangeDetials_st          timing;
 }DF_PhaseState_st, *DF_PhaseState_st_ptr;
 
-#define DF_PhaseState_st_len		(sizeof(DF_PhaseState_st))
+#define DF_PhaseState_st_len        (sizeof(DF_PhaseState_st))
 
 /*DF_PhaseStateList */
 typedef struct _DF_PhaseStateList_st
 {
-	uint8_t                pointNum;
-	DF_PhaseState_st      array[16];
+    uint8_t                pointNum;
+    DF_PhaseState_st      array[16];
     
 }DF_PhaseStateList_st, *DF_PhaseStateList_st_ptr;
 
-#define DF_PhaseStateList_st_len			(sizeof(DF_PhaseStateList_st))
+#define DF_PhaseStateList_st_len            (sizeof(DF_PhaseStateList_st))
 
 /*DF_Phase structure */
 typedef struct _DF_Phase_st
 {
-	uint8_t					id;
-	DF_PhaseStateList_st	phaseStates;
+    uint8_t                    id;
+    DF_PhaseStateList_st    phaseStates;
 }DF_Phase_st, *DF_Phase_st_ptr;
 
-#define DF_Phase_st_len			(sizeof(DF_Phase_st))
+#define DF_Phase_st_len            (sizeof(DF_Phase_st))
 
 /* DF_PhaseList structure */
 typedef struct _DF_PhaseList_st
 {
-	uint8_t		 pointNum;
-	DF_Phase_st	array[16];
+    uint8_t         pointNum;
+    DF_Phase_st    array[16];
     
 }DF_PhaseList_st, *DF_PhaseList_st_ptr;
 
-#define DF_PhastList_st_len		(sizeof(DF_PhastList_st))
+#define DF_PhastList_st_len        (sizeof(DF_PhastList_st))
 
 /*DF_IntersectionState_opt structure */
 typedef struct _DF_IntersectionState_opt_st
 {
-	uint8_t moy              :1;
-	uint8_t	timeStamp        :1;
-	uint8_t	reserved         :6;
+    uint8_t moy              :1;
+    uint8_t    timeStamp        :1;
+    uint8_t    reserved         :6;
     
 }DF_IntersectionState_opt_st, *DF_IntersectionState_opt_st_ptr;
 
 /*DF_IntersectionState */
 typedef struct _DF_IntersectionState_st
 {
-	/* Optional */
-	DF_IntersectionState_opt_st				         opt;
-	
-	/* Data */
-	DF_NodeReferenceID_st                 intersectionId;
-	DE_IntersectionStatusObject_un			      status;
-	DE_MinuteOfTheYear_t                             moy;
-	DE_DSecond_t                               timeStamp;
-	DF_PhaseList_st							      phases;
+    /* Optional */
+    DF_IntersectionState_opt_st                         opt;
+    
+    /* Data */
+    DF_NodeReferenceID_st                 intersectionId;
+    DE_IntersectionStatusObject_un                  status;
+    DE_MinuteOfTheYear_t                             moy;
+    DE_DSecond_t                               timeStamp;
+    DF_PhaseList_st                                  phases;
 }DF_IntersectionState_st, *DF_IntersectionState_st_ptr;
 
-#define DF_IntersectionState_st_len		(sizeof(DF_IntersectionState_st))
+#define DF_IntersectionState_st_len        (sizeof(DF_IntersectionState_st))
 
 /*DF_IntersectionStateList */
 typedef struct _DF_IntersectionStateList_st
 {
-	uint8_t                       pointNum;
-	DF_IntersectionState_st      array[32];
+    uint8_t                       pointNum;
+    DF_IntersectionState_st      array[32];
     
 }DF_IntersectionStateList_st, *DF_IntersectionStateList_st_ptr;
 
-#define DF_IntersectionStateList_st_len			(sizeof(DF_IntersectionStateList_st))
+#define DF_IntersectionStateList_st_len            (sizeof(DF_IntersectionStateList_st))
 
 /*DF_LaneTypeAttributes*/
 typedef struct _DF_LaneTypeAttributes_st
 {
-	LaneTypeAttributes_PR					      present;
-	union {
-	DE_LaneAttributes_Vehicle_un                  vehicle;
-	DE_LaneAttributes_Crosswalk_un              crosswalk;
-	DE_LaneAttributes_Bike_un                    bikeLane;
-	DE_LaneAttributes_Sidewalk_un                sidewalk;
-	DE_LaneAttributes_Barrier_un                   median;
-	DE_LaneAttributes_Striping_un                striping;
-	DE_LaneAttributes_TrackedVehicle_un    trackedvehicle;	
-	DE_LaneAttributes_Parking_un                  parking;		
-	}choice;
+    LaneTypeAttributes_PR                          present;
+    union {
+    DE_LaneAttributes_Vehicle_un                  vehicle;
+    DE_LaneAttributes_Crosswalk_un              crosswalk;
+    DE_LaneAttributes_Bike_un                    bikeLane;
+    DE_LaneAttributes_Sidewalk_un                sidewalk;
+    DE_LaneAttributes_Barrier_un                   median;
+    DE_LaneAttributes_Striping_un                striping;
+    DE_LaneAttributes_TrackedVehicle_un    trackedvehicle;    
+    DE_LaneAttributes_Parking_un                  parking;        
+    }choice;
 }DF_LaneTypeAttributes_st, * DF_LaneTypeAttributes_st_ptr;
 
-#define DF_LaneTypeAttributes_st_len		(sizeof(DF_LaneTypeAttributes_st))
+#define DF_LaneTypeAttributes_st_len        (sizeof(DF_LaneTypeAttributes_st))
 
 /*DF_LaneAttributes_opt structure */
 typedef struct _DF_LaneAttributes_opt_st
 {
-	uint8_t	LaneAttributes_opt_sharewith       :1;
-	uint8_t	LaneAttributes_opt_reserved        :7;
+    uint8_t    LaneAttributes_opt_sharewith       :1;
+    uint8_t    LaneAttributes_opt_reserved        :7;
 }DF_LaneAttributes_opt_st, * DF_LaneAttributes_opt_st_ptr;
 
 /*DF_LaneAttributes structure */
 typedef struct _DF_LaneAttributes_st
 {
-	/* optional */
-	DF_LaneAttributes_opt_st              opt;
-	
-	/* Data */
-	DE_LaneSharing_un               shareWith;
-	DF_LaneTypeAttributes_st         laneType;
+    /* optional */
+    DF_LaneAttributes_opt_st              opt;
+    
+    /* Data */
+    DE_LaneSharing_un               shareWith;
+    DF_LaneTypeAttributes_st         laneType;
 
 }DF_LaneAttributes_st, *DF_LaneAttributes_st_ptr;
 
-#define DF_LaneAttributes_st_len		(sizeof(DF_LaneAttributes_st))
+#define DF_LaneAttributes_st_len        (sizeof(DF_LaneAttributes_st))
 
 /*DF_RegulatorySpeedLimit structure*/
 typedef struct _DF_RegulatorySpeedLimit_st
 {
-	DE_SpeedLimitType_en        type;
-	DE_Speed_t                 speed;
+    DE_SpeedLimitType_en        type;
+    DE_Speed_t                 speed;
 }DF_RegulatorySpeedLimit_st, *DF_RegulatorySpeedLimit_st_ptr;
 
-#define DF_RegulatorySpeedLimit_st_len		(sizeof(DF_RegulatorySpeedLimit_st))
+#define DF_RegulatorySpeedLimit_st_len        (sizeof(DF_RegulatorySpeedLimit_st))
 
 
 /*DF_SpeedLimitList structure */
 typedef struct _DF_SpeedLimitList_st
 {
-	uint8_t                        SpeedLimitList_size;
-	DF_RegulatorySpeedLimit_st   SpeedLimitList_data[9];
+    uint8_t                        SpeedLimitList_size;
+    DF_RegulatorySpeedLimit_st   SpeedLimitList_data[9];
 }DF_SpeedLimitList_st, * DF_SpeedLimitList_st_ptr;
 
-#define DF_SpeedLimitList_st_len		(sizeof(DF_SpeedLimitList_st))
+#define DF_SpeedLimitList_st_len        (sizeof(DF_SpeedLimitList_st))
 
 /*DF_Position_LL_24B structure */
 typedef struct _DF_Position_LL_24B_st
 {
-	DE_OffsetLL_B12_t     lon; /* OffsetLL-B12 A range of +- 0.0002047 degrees */
-	DE_OffsetLL_B12_t     lat; /* OffsetLL-B12 A range of +- 0.0002047 degrees */
+    DE_OffsetLL_B12_t     lon; /* OffsetLL-B12 A range of +- 0.0002047 degrees */
+    DE_OffsetLL_B12_t     lat; /* OffsetLL-B12 A range of +- 0.0002047 degrees */
 }DF_Position_LL_24B_st, *DF_Position_LL_24B_st_ptr;
 
-#define DF_Position_LL_24B_st_len		(sizeof(DF_Position_LL_24B_st))
+#define DF_Position_LL_24B_st_len        (sizeof(DF_Position_LL_24B_st))
 
 /*DF_Position_LL_28B structure */
 typedef struct _DF_Position_LL_28B_st
 {
-	DE_OffsetLL_B14_t     lon; /* OffsetLL-B14 A range of +- 0.0008191 degrees */
-	DE_OffsetLL_B14_t     lat; /* OffsetLL-B14 A range of +- 0.0008191 degrees */
-}DF_Position_LL_28B_st, *DF_Position_LL_28B_st_ptr;	
+    DE_OffsetLL_B14_t     lon; /* OffsetLL-B14 A range of +- 0.0008191 degrees */
+    DE_OffsetLL_B14_t     lat; /* OffsetLL-B14 A range of +- 0.0008191 degrees */
+}DF_Position_LL_28B_st, *DF_Position_LL_28B_st_ptr;    
 
-#define DF_Position_LL_28B_st_len	(sizeof(DF_Position_LL_28B_st))
+#define DF_Position_LL_28B_st_len    (sizeof(DF_Position_LL_28B_st))
 
 /*DF_Position_LL_32B */
 typedef struct _DF_Position_LL_32B_st
 {
-	DE_OffsetLL_B16_t	   lon; /* OffsetLL-B16 A range of +- 0.0032767 degrees */
-	DE_OffsetLL_B16_t      lat; /* OffsetLL-B16 A range of +- 0.0032767 degrees */
+    DE_OffsetLL_B16_t       lon; /* OffsetLL-B16 A range of +- 0.0032767 degrees */
+    DE_OffsetLL_B16_t      lat; /* OffsetLL-B16 A range of +- 0.0032767 degrees */
 }DF_Position_LL_32B_st, *DF_Position_LL_32B_st_ptr;
 
-#define	DF_Position_LL_32B_st_len	(sizeof(DF_Position_LL_32B_st))
+#define    DF_Position_LL_32B_st_len    (sizeof(DF_Position_LL_32B_st))
 
 /*DF_Position_LL_36B */
 typedef struct _DF_Position_LL_36B_st
 {
-	DE_OffsetLL_B18_t      lon; /* OffsetLL-B18 A range of +- 0.0131071 degrees */
-	DE_OffsetLL_B18_t      lat; /* OffsetLL-B18 A range of +- 0.0131071 degrees */
+    DE_OffsetLL_B18_t      lon; /* OffsetLL-B18 A range of +- 0.0131071 degrees */
+    DE_OffsetLL_B18_t      lat; /* OffsetLL-B18 A range of +- 0.0131071 degrees */
 }DF_Position_LL_36B_st, *DF_Position_LL_36B_st_ptr;
 
-#define DF_Position_LL_36_st_len	(sizeof(DF_Position_LL_36_st))
+#define DF_Position_LL_36_st_len    (sizeof(DF_Position_LL_36_st))
 
-/*DF_Position_LL_44B */	
+/*DF_Position_LL_44B */    
 typedef struct _DF_Position_LL_44B_st
 {
-	DE_OffsetLL_B22_t      lon; /* OffsetLL-B22 A range of +- 0.2097151 degrees */
-	DE_OffsetLL_B22_t      lat; /* OffsetLL-B22 A range of +- 0.2097151 degrees */
+    DE_OffsetLL_B22_t      lon; /* OffsetLL-B22 A range of +- 0.2097151 degrees */
+    DE_OffsetLL_B22_t      lat; /* OffsetLL-B22 A range of +- 0.2097151 degrees */
 }DF_Position_LL_44B_st, *DF_Position_LL_44B_st_ptr;
 
-#define DF_Position_LL_44B_st_len	(sizeof(DF_Position_LL_44B_st))
-	
-/*DF_Position-LL-48B	*/
+#define DF_Position_LL_44B_st_len    (sizeof(DF_Position_LL_44B_st))
+    
+/*DF_Position-LL-48B    */
 typedef struct _DF_Position_LL_48B_st
 {
-	DE_OffsetLL_B24_t      lon; /* OffsetLL-B24 A range of +- 0.8388607 degrees */
-	DE_OffsetLL_B24_t      lat; /* OffsetLL-B24 A range of +- 0.8388607 degrees */
+    DE_OffsetLL_B24_t      lon; /* OffsetLL-B24 A range of +- 0.8388607 degrees */
+    DE_OffsetLL_B24_t      lat; /* OffsetLL-B24 A range of +- 0.8388607 degrees */
 }DF_Position_LL_48B_st, *DF_Position_LL_48B_st_ptr;
 
 #define DF_Position_LL_48B_st_len (sizeof(DF_Position_LL_48B_st))
@@ -436,215 +436,215 @@ typedef struct _DF_Position_LL_48B_st
 /*DF_Position-LLmD-64b */
 typedef struct _DF_Position_LLmD_64b_st
 {
-	DE_Longitude_t         lon; /* Longitude */
-	DE_Latitude_t          lat; /* Latitude */
-}DF_Position_LLmD_64b_st, *DF_Position_LLmD_64b_st_ptr;		
+    DE_Longitude_t         lon; /* Longitude */
+    DE_Latitude_t          lat; /* Latitude */
+}DF_Position_LLmD_64b_st, *DF_Position_LLmD_64b_st_ptr;        
 
-#define	DF_Position_LLmD_64b_st_len		(sizeof(DF_Position_LLmD_64b_st))
+#define    DF_Position_LLmD_64b_st_len        (sizeof(DF_Position_LLmD_64b_st))
 
 
 /*DF_PositionOffsetLL structure */
 typedef struct _DF_PositionOffsetLL_st
 {
-	DE_PositionOffsetLL_en             choiceid;
+    DE_PositionOffsetLL_en             choiceid;
     union posoffset_un{
-		DF_Position_LL_24B_st      position_LL1;
-		DF_Position_LL_28B_st      position_LL2;
-		DF_Position_LL_32B_st      position_LL3;
-		DF_Position_LL_36B_st      position_LL4;
-		DF_Position_LL_44B_st      position_LL5;
-		DF_Position_LL_48B_st      position_LL6;
-		DF_Position_LLmD_64b_st position_LatLon;
+        DF_Position_LL_24B_st      position_LL1;
+        DF_Position_LL_28B_st      position_LL2;
+        DF_Position_LL_32B_st      position_LL3;
+        DF_Position_LL_36B_st      position_LL4;
+        DF_Position_LL_44B_st      position_LL5;
+        DF_Position_LL_48B_st      position_LL6;
+        DF_Position_LLmD_64b_st position_LatLon;
     }choice;
 }DF_PositionOffsetLL_st, *DF_PositionOffsetLL_st_ptr;
 
-#define DF_PositionOffsetLL_st_len		(sizeof(DF_PositionOffsetLL_st))
+#define DF_PositionOffsetLL_st_len        (sizeof(DF_PositionOffsetLL_st))
 
 /*DF_VerticalOffset structure */
 typedef struct _DF_VerticalOffset_st
 {
-	DE_VerticalOffset_en          choiceid;
-	union vertoffset_un{
-		/* All below in steps of 10cm above or below the reference ellipsoid */
-		DE_VertOffset_B07_t         offset1; /* with a range of +- 6.3 meters vertical */
-		DE_VertOffset_B08_t         offset2; /* with a range of +- 12.7 meters vertical */
-		DE_VertOffset_B09_t         offset3; /* with a range of +- 25.5 meters vertical */
-		DE_VertOffset_B10_t         offset4; /* with a range of +- 51.1 meters vertical */
-		DE_VertOffset_B11_t         offset5; /* with a range of +- 102.3 meters vertical */
-		DE_VertOffset_B12_t	        offset6; /* with a range of +- 204.7 meters vertical */
-		DE_Elevation_t            elevation; /* with a range of -409.5 to + 6143.9 meters */
-	}choice;
+    DE_VerticalOffset_en          choiceid;
+    union vertoffset_un{
+        /* All below in steps of 10cm above or below the reference ellipsoid */
+        DE_VertOffset_B07_t         offset1; /* with a range of +- 6.3 meters vertical */
+        DE_VertOffset_B08_t         offset2; /* with a range of +- 12.7 meters vertical */
+        DE_VertOffset_B09_t         offset3; /* with a range of +- 25.5 meters vertical */
+        DE_VertOffset_B10_t         offset4; /* with a range of +- 51.1 meters vertical */
+        DE_VertOffset_B11_t         offset5; /* with a range of +- 102.3 meters vertical */
+        DE_VertOffset_B12_t            offset6; /* with a range of +- 204.7 meters vertical */
+        DE_Elevation_t            elevation; /* with a range of -409.5 to + 6143.9 meters */
+    }choice;
 }DF_VerticalOffset_st, *DF_VerticalOffset_st_ptr;
 
-#define DF_VerticalOffset_st_len		(sizeof(DF_VerticalOffset_st))
+#define DF_VerticalOffset_st_len        (sizeof(DF_VerticalOffset_st))
 
 /*DF_PositionOffsetLLV_opt structure*/
 typedef struct _DF_PositionOffsetLLV_opt_st
 {
-	uint8_t PositionOffsetLLV_opt_VerticalOffset     :1;
-	uint8_t PositionOffsetLLV_opt_reserved           :7;
+    uint8_t PositionOffsetLLV_opt_VerticalOffset     :1;
+    uint8_t PositionOffsetLLV_opt_reserved           :7;
 }DF_PositionOffsetLLV_opt_st, *DF_PositionOffsetLLV_opt_st_ptr;
 
 /*DF_PositionOffsetLLV structure*/
 typedef struct _DF_PositionOffsetLLV_st
 {
-	/* Optional */
-	DF_PositionOffsetLLV_opt_st              opt;
+    /* Optional */
+    DF_PositionOffsetLLV_opt_st              opt;
 
-	/* Data */
-	DF_PositionOffsetLL_st              offsetLL; /* offset in lon/lat */
-	DF_VerticalOffset_st                 offsetV; /* offset in elevation OPTIONAL */
+    /* Data */
+    DF_PositionOffsetLL_st              offsetLL; /* offset in lon/lat */
+    DF_VerticalOffset_st                 offsetV; /* offset in elevation OPTIONAL */
 }DF_PositionOffsetLLV_st, *DF_PositionOffsetLLV_st_ptr;
 
-#define DF_PositionOffsetLLV_st_len		(sizeof(DF_PositionOffsetLLV_st))
+#define DF_PositionOffsetLLV_st_len        (sizeof(DF_PositionOffsetLLV_st))
 
 /*DF_RoadPoint structure */
 typedef struct _DF_RoadPoint_st
 {
-	DF_PositionOffsetLLV_st                         posOffset;
+    DF_PositionOffsetLLV_st                         posOffset;
 }DF_RoadPoint_st, *DF_RoadPoint_st_ptr;
 
-#define DF_RoadPoint_st_len		(sizeof(DF_RoadPoint_st))
+#define DF_RoadPoint_st_len        (sizeof(DF_RoadPoint_st))
 
 /*DF_PointList structure */
 typedef struct _DF_PointList_st
 {
-	uint8_t                     PointList_size;
-	DF_RoadPoint_st         PointList_data[31];	
+    uint8_t                     PointList_size;
+    DF_RoadPoint_st         PointList_data[31];    
 }DF_PointList_st, *DF_PointList_st_ptr;
 
-#define DF_PointList_st_len		(sizeof(DF_PointList_st))
+#define DF_PointList_st_len        (sizeof(DF_PointList_st))
 
 /*DF_Lane_opt structure*/
 typedef struct _DF_Lane_opt_st
 {
-	uint8_t Lane_opt_lanAttributes          :1;
-	uint8_t Lane_opt_maneuvers              :1;
-	uint8_t Lane_opt_connectsTo             :1;
-	uint8_t Lane_opt_speedLimits            :1;
-	uint8_t Lane_opt_points                 :1;
-	uint8_t Lane_opt_reserved               :3;
+    uint8_t Lane_opt_lanAttributes          :1;
+    uint8_t Lane_opt_maneuvers              :1;
+    uint8_t Lane_opt_connectsTo             :1;
+    uint8_t Lane_opt_speedLimits            :1;
+    uint8_t Lane_opt_points                 :1;
+    uint8_t Lane_opt_reserved               :3;
 }DF_Lane_opt_st, * DF_Lane_opt_st_ptr;
 
 /*DF_Lane structure */
 typedef struct _DF_Lane_st
 {
-	/* optional */
-	DF_Lane_opt_st                    opt;
+    /* optional */
+    DF_Lane_opt_st                    opt;
 
-	/* data */
-	DE_LaneID_t                    laneID;
-	DF_LaneAttributes_st   laneAttributes;
-	DE_AllowedManeuvers_un      maneuvers;
-	DF_ConnectsToList_st       connectsTo;
-	DF_SpeedLimitList_st      speedLimits;
-	DF_PointList_st                points;
+    /* data */
+    DE_LaneID_t                    laneID;
+    DF_LaneAttributes_st   laneAttributes;
+    DE_AllowedManeuvers_un      maneuvers;
+    DF_ConnectsToList_st       connectsTo;
+    DF_SpeedLimitList_st      speedLimits;
+    DF_PointList_st                points;
 }DF_Lane_st, * DF_Lane_st_ptr;
 
-#define DF_Lane_st_len		(sizeof(DF_Lane_st))
+#define DF_Lane_st_len        (sizeof(DF_Lane_st))
 
 /*DF_LaneList structure*/
 typedef struct _DF_LaneList_st
 {
-	uint8_t          LaneList_size;
-	DF_Lane_st   laneList_data[32];
+    uint8_t          LaneList_size;
+    DF_Lane_st   laneList_data[32];
 }DF_LaneList_st, * DF_LaneList_st_ptr;
 
-#define DF_LaneList_st_len		(sizeof(DF_LaneList_st))
+#define DF_LaneList_st_len        (sizeof(DF_LaneList_st))
 
 /*DF_Movement_opt structure */
 typedef struct _DF_Movement_opt_st
 {
-	uint8_t Movement_opt_phaseid           :1;
-	uint8_t Movement_opt_reserved          :7;
+    uint8_t Movement_opt_phaseid           :1;
+    uint8_t Movement_opt_reserved          :7;
 }DF_Movement_opt_st, * DF_Movement_opt_st_ptr;
 
 /*DF_Movement structure */
 typedef struct _DF_Movement_st
 {
-	/* optional */
-	DF_Movement_opt_st                         opt;
+    /* optional */
+    DF_Movement_opt_st                         opt;
 
-	/* Data */
-	DF_NodeReferenceID_st       remoteIntersection;
-	DE_PhaseID_t                           phaseid;
+    /* Data */
+    DF_NodeReferenceID_st       remoteIntersection;
+    DE_PhaseID_t                           phaseid;
 }DF_Movement_st, *DF_Movement_st_ptr;
 
 /*DF_MovementList structure */
 typedef struct _DF_MovementList_st
 {
-	uint8_t                MovementList_size;
-	DF_Movement_st     MovementList_data[32];
+    uint8_t                MovementList_size;
+    DF_Movement_st     MovementList_data[32];
 }DF_MovementList_st, * DF_MovementList_st_ptr;
 
-#define	DF_MovementList_st_len		(sizeof(DF_MovementList_st))
+#define    DF_MovementList_st_len        (sizeof(DF_MovementList_st))
 
 /*DF_Link_opt_st */
 typedef struct _DF_Link_opt_st
 {
-	uint8_t	 Link_opt_name               :1;
-	uint8_t	 Link_opt_speedLimits        :1;
-	uint8_t	 Link_opt_points             :1;
-	uint8_t	 Link_opt_movements          :1;
-	uint8_t	 Link_opt_reserved           :4;
+    uint8_t     Link_opt_name               :1;
+    uint8_t     Link_opt_speedLimits        :1;
+    uint8_t     Link_opt_points             :1;
+    uint8_t     Link_opt_movements          :1;
+    uint8_t     Link_opt_reserved           :4;
 }DF_Link_opt_st, *DF_Link_opt_st_ptr;
 
 /*DF_Link structure */
 typedef struct _DF_Link_st
 {
-	/* Optional */
-	DF_Link_opt_st                      opt;
+    /* Optional */
+    DF_Link_opt_st                      opt;
 
-	/* Data */
-	DE_DescriptiveName_st              name;
-	DF_NodeReferenceID_st	 upstreamNodeId;
-	DF_SpeedLimitList_st	    speedLimits;
-	DE_LaneWidth_t                laneWidth;
-	DF_PointList_st                  points;
-	DF_MovementList_st            movements;
-	DF_LaneList_st                    lanes;
+    /* Data */
+    DE_DescriptiveName_st              name;
+    DF_NodeReferenceID_st     upstreamNodeId;
+    DF_SpeedLimitList_st        speedLimits;
+    DE_LaneWidth_t                laneWidth;
+    DF_PointList_st                  points;
+    DF_MovementList_st            movements;
+    DF_LaneList_st                    lanes;
 }DF_Link_st, *DF_Link_st_ptr;
 
-#define DF_Link_st_len		(sizeof(DF_Link_st))
+#define DF_Link_st_len        (sizeof(DF_Link_st))
 
 /*DF_LinkList structure */
 typedef struct _DF_LinkList_st
 {
-	uint8_t         LinkList_size;
-	DF_Link_st  LinkList_data[32];
+    uint8_t         LinkList_size;
+    DF_Link_st  LinkList_data[32];
 }DF_LinkList_st, *DF_LinkList_st_ptr;
 
-#define	DF_LinkList_st_len		(sizeof(DF_LinkList_st))
+#define    DF_LinkList_st_len        (sizeof(DF_LinkList_st))
 
 
 /*DE_MotionConfidenceSet_opt structure */
 typedef struct _DF_MotionConfidenceSet_opt_st
 {
-	uint8_t	MotionConfidenceSet_opt_speedcfd                        :1;
-	uint8_t	MotionConfidenceSet_opt_headingcfd                      :1;
-	uint8_t	MotionConfidenceSet_opt_steercfd                        :1;
-	uint8_t	MotionConfidenceSet_opt_reserved                        :5;
+    uint8_t    MotionConfidenceSet_opt_speedcfd                        :1;
+    uint8_t    MotionConfidenceSet_opt_headingcfd                      :1;
+    uint8_t    MotionConfidenceSet_opt_steercfd                        :1;
+    uint8_t    MotionConfidenceSet_opt_reserved                        :5;
 }DF_MotionConfidenceSet_opt_st, *DF_MotionConfidenceSet_opt_st_ptr;
 
-#define DF_MotionConfidenceSet_opt_st_len	sizeof(DF_MotionConfidenceSet_opt_st)
+#define DF_MotionConfidenceSet_opt_st_len    sizeof(DF_MotionConfidenceSet_opt_st)
 
 /*DF_MotionConfidenceSet strucuture */
 typedef struct _DF_MotionConfidenceSet_st
 {
-	/* Optional */
-	DF_MotionConfidenceSet_opt_st             opt;
-	
-	/* Data */
-	DE_SpeedConfidence_en                speedcfd;
-	DE_HeadingConfidence_en            headingcfd;
-	DE_SteeringWheelAngleConfidence_en   steercfd;
+    /* Optional */
+    DF_MotionConfidenceSet_opt_st             opt;
+    
+    /* Data */
+    DE_SpeedConfidence_en                speedcfd;
+    DE_HeadingConfidence_en            headingcfd;
+    DE_SteeringWheelAngleConfidence_en   steercfd;
 
 }DF_MotionConfidenceSet_st, *DF_MotionConfidenceSet_st_ptr;
 
 /*DF_Position3D optional structure. */
 typedef struct _DF_Position3D_opt_st
 {
-	uint8_t Position3D_opt_elev                 :1;			
+    uint8_t Position3D_opt_elev                 :1;            
     uint8_t Position3D_optreserved              :7;
     
 }DF_Position3D_opt_st, *DF_Position3D_opt_st_ptr;
@@ -652,11 +652,11 @@ typedef struct _DF_Position3D_opt_st
 /* DF_Position3D */
 typedef struct _DF_Position3D_st
 {
-	/* Optional */
-	DF_Position3D_opt_st                 opt; /* optional configure */
-	
-	/* Data */
-	DE_Latitude_t                   latitude; /* Geographic latitude. Unit: degree. */
+    /* Optional */
+    DF_Position3D_opt_st                 opt; /* optional configure */
+    
+    /* Data */
+    DE_Latitude_t                   latitude; /* Geographic latitude. Unit: degree. */
     DE_Longitude_t                 longitude; /* Geographic longitude. Unit: degree. */
     DE_Elevation_t                 elevation; /* Geographic position above or below the reference ellipsoid. Unit: meter. */
 }DF_Position3D_st, *DF_Position3D_st_ptr;
@@ -664,57 +664,57 @@ typedef struct _DF_Position3D_st
 /*DF_Node_opt_st */
 typedef struct _DF_Node_opt_st 
 {
-	uint8_t Node_opt_name            :1;
-	uint8_t	Node_opt_inLinks         :1;
-	uint8_t	Node_opt_reserved        :6;
+    uint8_t Node_opt_name            :1;
+    uint8_t    Node_opt_inLinks         :1;
+    uint8_t    Node_opt_reserved        :6;
 }DF_Node_opt_st, *DF_Node_opt_st_ptr;
 
 /*DF_Node structure */
 typedef struct _DF_Node_st
 {
-	/*Optional*/
-	DF_Node_opt_st                opt;
+    /*Optional*/
+    DF_Node_opt_st                opt;
 
-	/*Data*/
-	DE_DescriptiveName_st        name;	
-	DF_NodeReferenceID_st          id;
-	DF_Position3D_st           refPos;
-	DF_LinkList_st            inLinks;
+    /*Data*/
+    DE_DescriptiveName_st        name;    
+    DF_NodeReferenceID_st          id;
+    DF_Position3D_st           refPos;
+    DF_LinkList_st            inLinks;
 }DF_Node_st, *DF_Node_st_ptr;
 
-#define DF_Node_st_len		(sizeof(DF_Node_st))
+#define DF_Node_st_len        (sizeof(DF_Node_st))
 
 /*DF_NodeList */
 typedef struct _DF_NodeList_st
 {
-	uint8_t         NodeList_size;
-	DF_Node_st  NodeList_data[16];
+    uint8_t         NodeList_size;
+    DF_Node_st  NodeList_data[16];
 }DF_NodeList_st, *DF_NodeList_st_ptr;
 
-#define DF_NodeList_st_len		(sizeof(DF_NodeList_st))
+#define DF_NodeList_st_len        (sizeof(DF_NodeList_st))
 
 
 /*DF_VehicleSize_opt tructure */
 typedef struct _DF_VehicleSize_opt_st
 {
-	uint8_t	vehiclesize_opt_height                      :1;
-	uint8_t	vehiclesize_opt_reserverd                   :7;
+    uint8_t    vehiclesize_opt_height                      :1;
+    uint8_t    vehiclesize_opt_reserverd                   :7;
     
 }DF_VehicleSize_opt_st, *DF_VehicleSize_opt_st_ptr;
 
-#define	DE_VehicleSize_opt_st_len		(sizeof(DE_VehicleSize_opt_st))
+#define    DE_VehicleSize_opt_st_len        (sizeof(DE_VehicleSize_opt_st))
 
 /* Vehicle size structure. */
 typedef struct _DF_VehicleSize_st
 {
-	/* Optional */
-	DF_VehicleSize_opt_st          opt;
-	
-	/* Data */
+    /* Optional */
+    DF_VehicleSize_opt_st          opt;
+    
+    /* Data */
     /* Vehicle size unit: m. */
     DE_VehicleWidth_t            width;
     DE_VehicleLength_t          length;
-	DE_VehicleHeight_t          height;
+    DE_VehicleHeight_t          height;
 }DF_VehicleSize_st, * DF_VehicleSize_st_ptr;
 
 #define DF_VehicleSize_st_len    (sizeof(DF_VehicleSize_st))
@@ -723,26 +723,26 @@ typedef struct _DF_VehicleSize_st
 /* DF_VehicleSafetyExternsions optional. */
 typedef struct _DF_VehicleClassification_st
 {
-	DE_BasicVehicleClass_en            classification;
+    DE_BasicVehicleClass_en            classification;
 }DF_VehicleClassification_st, *DF_VehicleClassification_st_ptr;
 
-#define DF_VehicleClassification_st_len	(sizeof(DF_VehicleClassification_st));
+#define DF_VehicleClassification_st_len    (sizeof(DF_VehicleClassification_st));
 
 /*DF_PositionConfidenceSet optional configuration. */
 typedef struct _DF_MSG_PositionConfidenceSet_opt_st
 {
-	uint8_t	PositionConfidenceSet_opt_confidence_elev           :1;
+    uint8_t    PositionConfidenceSet_opt_confidence_elev           :1;
     uint8_t PositionConfidenceSet_opt_reserved                  :7;
 }DF_PositionConfidenceSet_opt_st, *DF_MSG_PositionConfidenceSet_opt_st_ptr;
 
 /* DF_PositionConfidenceSet. */
 typedef struct _DF_PositionConfidenceSet_st
 {
-	/* Optional */
-	DF_PositionConfidenceSet_opt_st       opt; /* optional configure */
-	/* Data */
-	
-	DE_PositionConfidence_en              pos; /* position confidence */
+    /* Optional */
+    DF_PositionConfidenceSet_opt_st       opt; /* optional configure */
+    /* Data */
+    
+    DE_PositionConfidence_en              pos; /* position confidence */
     DE_ElevationConfidence_en       elevation; /* elevation confidence */
 
 }DF_PositionConfidenceSet_st, * DF_PositionConfidenceSet_st_ptr;
@@ -753,14 +753,14 @@ typedef struct _DF_PositionConfidenceSet_st
 /*DF_ParticipantData_opt structure */
 typedef struct _DF_ParticipantData_opt_st
 {
-	uint8_t	id                  :1;
-	uint8_t	plateNo             :1;
-	uint8_t	transmission        :1;
-	uint8_t	angle               :1;
-	uint8_t	motioncfd           :1;
-	uint8_t	accelset            :1;
-	uint8_t	vehicleclass        :1;
-	uint8_t	reserved            :1;
+    uint8_t    id                  :1;
+    uint8_t    plateNo             :1;
+    uint8_t    transmission        :1;
+    uint8_t    angle               :1;
+    uint8_t    motioncfd           :1;
+    uint8_t    accelset            :1;
+    uint8_t    vehicleclass        :1;
+    uint8_t    reserved            :1;
     
 }DF_ParticipantData_opt_st, *DF_ParticipantData_opt_st_ptr;
 
@@ -768,41 +768,41 @@ typedef struct _DF_ParticipantData_opt_st
 /*DF_ParticipantData structure */
 typedef struct _DF_ParticipantData_st
 {
-	/* Optional */
-	DF_ParticipantData_opt_st                  opt;
-	
-	/* Data */
-	DE_ParticipantType_en                  ptcType;
-	DE_PTCID_t                               ptcId;  /* temporary ID set by RSU. 0 is RSU itself  1..65535 represent participants detected by RSU*/
-	DE_SourceType_en                    sourceType;
-	DE_TemporaryID_st                           id;
-	DE_PlateNo_st			               plateNo;
-	DE_DSecond_t                           secMark;
-	DF_PositionOffsetLLV_st                    pos;
-	DF_PositionConfidenceSet_st           accuracy;
-	DE_TransmissionState_en           transmission;
-	DE_Speed_t                               speed;
-	DE_Heading_t                           heading;
-	DE_SteeringWheelAngle_t                  angle;
-	DF_MotionConfidenceSet_st            motioncfd;
-	DF_AccelerationSet4Way_st             accelset;
-	DF_VehicleSize_st                         size;
-	DF_VehicleClassification_st       vehicleclass;
+    /* Optional */
+    DF_ParticipantData_opt_st                  opt;
+    
+    /* Data */
+    DE_ParticipantType_en                  ptcType;
+    DE_PTCID_t                               ptcId;  /* temporary ID set by RSU. 0 is RSU itself  1..65535 represent participants detected by RSU*/
+    DE_SourceType_en                    sourceType;
+    DE_TemporaryID_st                           id;
+    DE_PlateNo_st                           plateNo;
+    DE_DSecond_t                           secMark;
+    DF_PositionOffsetLLV_st                    pos;
+    DF_PositionConfidenceSet_st           accuracy;
+    DE_TransmissionState_en           transmission;
+    DE_Speed_t                               speed;
+    DE_Heading_t                           heading;
+    DE_SteeringWheelAngle_t                  angle;
+    DF_MotionConfidenceSet_st            motioncfd;
+    DF_AccelerationSet4Way_st             accelset;
+    DF_VehicleSize_st                         size;
+    DF_VehicleClassification_st       vehicleclass;
     
 }DF_ParticipantData_st, *DF_ParticipantData_st_ptr;
 
-#define DF_ParticipantData_st_len		(sizeof(DF_ParticipantData_st))
+#define DF_ParticipantData_st_len        (sizeof(DF_ParticipantData_st))
 
 
 /*DF_ParticipantList structure */
 typedef struct _DF_ParticipantList_st
 {
-	uint8_t                   pointNum;
-	DF_ParticipantData_st    array[16];
+    uint8_t                   pointNum;
+    DF_ParticipantData_st    array[16];
     
 }DF_ParticipantList_st, *DF_ParticipantList_st_ptr;
 
-#define DF_ParticipantList_st_len			(sizeof(DF_ParticipantList_st))
+#define DF_ParticipantList_st_len            (sizeof(DF_ParticipantList_st))
 
 
 /*DF_PathHistoryPoint optional. */
@@ -811,7 +811,7 @@ typedef struct _DF_PathHistoryPoint_opt_st
     uint8_t PathHistoryPoint_opt_speed       :1;
     uint8_t PathHistoryPoint_opt_posAccuracy :1;
     uint8_t PathHistoryPoint_opt_heading     :1;
-	uint8_t	PathHistoryPoint_opt_reserved    :5;
+    uint8_t    PathHistoryPoint_opt_reserved    :5;
     
 }DF_PathHistoryPoint_opt_st, * DF_PathHistoryPoint_opt_st_ptr;
 
@@ -821,12 +821,12 @@ typedef struct _DF_PathHistoryPoint_st
 {
     /* Optional. */
     DF_PathHistoryPoint_opt_st          opt;
-	
-	DF_PositionOffsetLLV_st       llvOffset;
-	DE_TimeOffset_t              timeoffset;
-	DE_Speed_t                        speed; /* Speed over the reported period */
-	DF_PositionConfidenceSet_st posaccuracy;
-	DE_Heading_t                    heading;
+    
+    DF_PositionOffsetLLV_st       llvOffset;
+    DE_TimeOffset_t              timeoffset;
+    DE_Speed_t                        speed; /* Speed over the reported period */
+    DF_PositionConfidenceSet_st posaccuracy;
+    DE_Heading_t                    heading;
 }DF_PathHistoryPoint_st, * DF_PathHistoryPoint_st_ptr;
 
 #define DF_PathHistoryPoint_st_len    (sizeof(DF_PathHistoryPoint_st))
@@ -857,12 +857,12 @@ typedef struct _DF_PathPrediction_st
 /*DF_PathPointList structure */
 typedef struct _DF_PathPointList_st
 {
-	uint8_t				        pointNum;
-	DF_PositionOffsetLLV_st	array[DF_PathPointList_pointNum_MAX];
+    uint8_t                        pointNum;
+    DF_PositionOffsetLLV_st    array[DF_PathPointList_pointNum_MAX];
     
 }DF_PathPointList_st, *DF_PathPointList_st_ptr;
 
-#define DF_PathPointList_st_len		(sizeof(DF_PathPointList_st))
+#define DF_PathPointList_st_len        (sizeof(DF_PathPointList_st))
 
 /*DF_Position accuracy structure. */
 typedef struct _DF_PositionAccuracy_st
@@ -973,8 +973,8 @@ typedef struct _DF_FullPositionVector_opt_st
 {
     uint8_t FullPositionVector_opt_DDateTime              :1;
     uint8_t FullPositionVector_opt_Heading                :1;
-    uint8_t FullPositionVector_opt_Transmission           :1;	
-	uint8_t	FullPositionVector_opt_Speed                  :1;
+    uint8_t FullPositionVector_opt_Transmission           :1;    
+    uint8_t    FullPositionVector_opt_Speed                  :1;
     uint8_t FullPositionVector_opt_posAccuracy            :1;
     uint8_t FullPositionVector_opt_timeConfidence         :1;
     uint8_t FullPositionVector_opt_posConfidence          :1;
@@ -989,14 +989,14 @@ typedef struct _DF_FullPositionVector_st
 
     /* Data. */
     DF_DDateTime_st                   utcTime;
-	DF_Position3D_st                      pos;
+    DF_Position3D_st                      pos;
     DE_Heading_t                      heading; /* Driving direction. Unit degree. */
     DE_TransmissionState_en      transmission;
-	DE_Speed_t                          speed;
+    DE_Speed_t                          speed;
     DF_PositionConfidenceSet_st   posAccuracy;
     DE_TimeConfidence_en             timeConf;
     DF_PositionConfidenceSet_st posConfidence;
-	DF_MotionConfidenceSet_st       motioncfd;
+    DF_MotionConfidenceSet_st       motioncfd;
 }DF_FullPositionVector_st, * DF_FullPositionVector_st_ptr;
 
 #define DF_FullPositionVector_st_len    (sizeof(DF_FullPositionVector_st))
@@ -1036,7 +1036,7 @@ typedef struct _DF_VehicleSafetyExternsions_opt_st
     uint8_t VehicleSafetyExternsions_opt_pathHistory                     :1;
     uint8_t VehicleSafetyExternsions_opt_pathPrediction                  :1;
     uint8_t VehicleSafetyExternsions_opt_lights                          :1;
-	uint8_t VehicleSafetyExternsions_opt_reserved                        :4;
+    uint8_t VehicleSafetyExternsions_opt_reserved                        :4;
 }DF_VehicleSafetyExternsions_opt_st, * DF_VehicleSafetyExternsions_opt_st_ptr;
 
 /*DF_VehicleSafetyExtensions. */
@@ -1093,8 +1093,8 @@ typedef struct _DF_BSMpartIIExtension_st
 /* . */
 typedef struct _DF_BSMRegionalExtension_st
 {
-	
-	
+    
+    
 }DF_BSMRegionalExtension_st, * DF_BSMRegionalExtension_st_ptr;
 
 #if 0

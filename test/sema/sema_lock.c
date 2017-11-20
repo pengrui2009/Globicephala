@@ -13,33 +13,33 @@
 
 int main()
 {
-	int ret = 0;
-	osal_sema_t semafd;
-	int init_count = 1;
+    int ret = 0;
+    osal_sema_t semafd;
+    int init_count = 1;
 
-	ret = osal_sema_open(&semafd, ".", 'A', init_count);
-	if(ret)
-	{
-		fprintf(stderr, "osal_sema_open error\n");
-		goto ERR_EXIT;
-	}
+    ret = osal_sema_open(&semafd, ".", 'A', init_count);
+    if(ret)
+    {
+        fprintf(stderr, "osal_sema_open error\n");
+        goto ERR_EXIT;
+    }
 
-	ret =osal_sema_lock(semafd);
-	if(ret)
-	{
-		fprintf(stderr, "osal_sema_open error\n");
-		goto ERR_EXIT;
-	}
+    ret =osal_sema_lock(semafd);
+    if(ret)
+    {
+        fprintf(stderr, "osal_sema_open error\n");
+        goto ERR_EXIT;
+    }
 
-	ret =osal_sema_lock(semafd);
-	if(ret)
-	{
-		fprintf(stderr, "osal_sema_open error\n");
-		goto ERR_EXIT;
-	}
+    ret =osal_sema_lock(semafd);
+    if(ret)
+    {
+        fprintf(stderr, "osal_sema_open error\n");
+        goto ERR_EXIT;
+    }
 
 ERR_EXIT:
 
-	return ret;
+    return ret;
 }
 

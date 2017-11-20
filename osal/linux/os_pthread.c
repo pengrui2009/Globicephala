@@ -28,8 +28,8 @@
 /*************************************************
   宏定义
 *************************************************/
-#define TASK_COMM_LEN 				16
-#define CFG_THREAD_MAX				32			//最大支持线程数
+#define TASK_COMM_LEN                 16
+#define CFG_THREAD_MAX                32            //最大支持线程数
 /*************************************************
   静态全局变量定义
 *************************************************/
@@ -43,9 +43,9 @@ typedef struct
 } thread_info_t;
 
 /******************************************************************************
-*	Function: os_blockallsigs
-*	Descriptions: block all the signal.
-*	Paramters:
+*    Function: os_blockallsigs
+*    Descriptions: block all the signal.
+*    Paramters:
             void               - 
 *    Return:
             void               - 
@@ -71,13 +71,13 @@ void os_blockallsigs(void)
 void os_unblocksig(int sig)
 {
     sigset_t set;
-	
+    
     (void) sigemptyset(&set);
-	
+    
     (void) sigaddset(&set, sig);
-	
+    
     (void) pthread_sigmask(SIG_UNBLOCK, &set, NULL);
-	
+    
 }
 
 /******************************************************************************
@@ -242,7 +242,7 @@ static int pthread_create_internel(pthread_t * thread, const char * name, int pr
     {
         (void) fprintf(stderr, "pthread_attr_init(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
 //    if (stack_size != 0) {
@@ -266,7 +266,7 @@ static int pthread_create_internel(pthread_t * thread, const char * name, int pr
     {
         (void) fprintf(stderr, "pthread_attr_setdetachstate(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
-		goto ERR_EXIT1;
+        goto ERR_EXIT1;
 
     }
 
@@ -277,7 +277,7 @@ static int pthread_create_internel(pthread_t * thread, const char * name, int pr
     {
         (void) fprintf(stderr, "pthread_attr_setinheritsched(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
-		goto ERR_EXIT1;
+        goto ERR_EXIT1;
     }
 
     ret = pthread_attr_setschedpolicy(&attr, SCHED_RR);
@@ -285,7 +285,7 @@ static int pthread_create_internel(pthread_t * thread, const char * name, int pr
     {
         (void) fprintf(stderr, "pthread_attr_setschedpolicy(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
-		goto ERR_EXIT1;
+        goto ERR_EXIT1;
     }  
 
     /* sched_priority(1-99): sched_get_priority_min(SCHED_RR)-sched_get_priority_max(SCHED_RR) */  
@@ -295,7 +295,7 @@ static int pthread_create_internel(pthread_t * thread, const char * name, int pr
     {
         (void) fprintf(stderr, "pthread_attr_setschedparam(): %s\r\n", strerror(ret));
         ret = -ERR_SYS;
-		goto ERR_EXIT1;
+        goto ERR_EXIT1;
     }
 
     info = malloc(sizeof(*info));
@@ -303,7 +303,7 @@ static int pthread_create_internel(pthread_t * thread, const char * name, int pr
     {
         (void) fprintf(stderr, "malloc(): No enough memory\r\n");
         ret = -ERR_SYS;
-		goto ERR_EXIT1;
+        goto ERR_EXIT1;
     }
 
     info->name = NULL;
@@ -325,7 +325,7 @@ static int pthread_create_internel(pthread_t * thread, const char * name, int pr
     {
         (void) fprintf(stderr, "pthread_create(): %s\r\n", strerror(ret));  
         ret = -ERR_SYS;
-		goto ERR_EXIT1;
+        goto ERR_EXIT1;
     }
 ERR_EXIT1:
 
@@ -333,22 +333,22 @@ ERR_EXIT1:
 
 ERR_EXIT:
 
-	if(info)
+    if(info)
     {
-	    free_thread_info(info);
+        free_thread_info(info);
     }
     return ret;
 }
 
 /******************************************************************************
-*	 Function: thread_cancel
-*	 Descriptions: cancel the pthread through the pid.
-*	 Paramters:
-			tid 			   - the pid of the thread
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: thread_cancel
+*     Descriptions: cancel the pthread through the pid.
+*     Paramters:
+            tid                - the pid of the thread
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
 ******************************************************************************/
 int thread_cancel(pthread_t tid)
 {
@@ -366,15 +366,15 @@ error:
 }
 
 /******************************************************************************
-*	 Function: thread_setpriority_base
-*	 Descriptions: set the pthread priority.
-*	 Paramters:
-			tid 			   - the pid of the thread
-			prio			   - the priority of the thread
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: thread_setpriority_base
+*     Descriptions: set the pthread priority.
+*     Paramters:
+            tid                - the pid of the thread
+            prio               - the priority of the thread
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
 ******************************************************************************/
 int thread_setpriority(pthread_t tid, uint8_t prio)
 {
@@ -436,7 +436,7 @@ int thread_create_base(pthread_t *tid, void *(*function)(void *), void *arg, uin
     }else if (THREAD_MODE_REALTIME == mode) {
         if ((prio < 1) || (prio > 99))           //1是实时线程最低优先级，99是最高优先级
         { 
-		    ret = -ERR_INVAL;
+            ret = -ERR_INVAL;
             goto error;
         }
         ret = pthread_attr_setschedpolicy(&attr, SCHED_RR);

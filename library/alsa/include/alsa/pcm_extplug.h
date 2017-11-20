@@ -40,11 +40,11 @@
 
 /** hw constraints for extplug */
 enum {
-	SND_PCM_EXTPLUG_HW_FORMAT,	/**< format */
-	SND_PCM_EXTPLUG_HW_CHANNELS,	/**< channels */
-	SND_PCM_EXTPLUG_HW_PARAMS	/**< max number of hw constraints */
+    SND_PCM_EXTPLUG_HW_FORMAT,    /**< format */
+    SND_PCM_EXTPLUG_HW_CHANNELS,    /**< channels */
+    SND_PCM_EXTPLUG_HW_PARAMS    /**< max number of hw constraints */
 };
-	
+    
 /** Handle of external filter plugin */
 typedef struct snd_pcm_extplug snd_pcm_extplug_t;
 /** Callback table of extplug */
@@ -53,110 +53,110 @@ typedef struct snd_pcm_extplug_callback snd_pcm_extplug_callback_t;
 /*
  * Protocol version
  */
-#define SND_PCM_EXTPLUG_VERSION_MAJOR	1	/**< Protocol major version */
-#define SND_PCM_EXTPLUG_VERSION_MINOR	0	/**< Protocol minor version */
-#define SND_PCM_EXTPLUG_VERSION_TINY	1	/**< Protocol tiny version */
+#define SND_PCM_EXTPLUG_VERSION_MAJOR    1    /**< Protocol major version */
+#define SND_PCM_EXTPLUG_VERSION_MINOR    0    /**< Protocol minor version */
+#define SND_PCM_EXTPLUG_VERSION_TINY    1    /**< Protocol tiny version */
 /**
  * Filter-plugin protocol version
  */
-#define SND_PCM_EXTPLUG_VERSION		((SND_PCM_EXTPLUG_VERSION_MAJOR<<16) |\
-					 (SND_PCM_EXTPLUG_VERSION_MINOR<<8) |\
-					 (SND_PCM_EXTPLUG_VERSION_TINY))
+#define SND_PCM_EXTPLUG_VERSION        ((SND_PCM_EXTPLUG_VERSION_MAJOR<<16) |\
+                     (SND_PCM_EXTPLUG_VERSION_MINOR<<8) |\
+                     (SND_PCM_EXTPLUG_VERSION_TINY))
 
 /** Handle of extplug */
 struct snd_pcm_extplug {
-	/**
-	 * protocol version; #SND_PCM_EXTPLUG_VERSION must be filled here
-	 * before calling #snd_pcm_extplug_create()
-	 */
-	unsigned int version;
-	/**
-	 * name of this plugin; must be filled before calling #snd_pcm_extplug_create()
-	 */
-	const char *name;
-	/**
-	 * callbacks of this plugin; must be filled before calling #snd_pcm_extplug_create()
-	 */
-	const snd_pcm_extplug_callback_t *callback;
-	/**
-	 * private data, which can be used freely in the driver callbacks
-	 */
-	void *private_data;
-	/**
-	 * PCM handle filled by #snd_pcm_extplug_create()
-	 */
-	snd_pcm_t *pcm;
-	/**
-	 * stream direction; read-only status
-	 */
-	snd_pcm_stream_t stream;
-	/**
-	 * format hw parameter; filled after hw_params is caled
-	 */
-	snd_pcm_format_t format;
-	/**
-	 * subformat hw parameter; filled after hw_params is caled
-	 */
-	snd_pcm_subformat_t subformat;
-	/**
-	 * channels hw parameter; filled after hw_params is caled
-	 */
-	unsigned int channels;
-	/**
-	 * rate hw parameter; filled after hw_params is caled
-	 */
-	unsigned int rate;
-	/**
-	 * slave_format hw parameter; filled after hw_params is caled
-	 */
-	snd_pcm_format_t slave_format;
-	/**
-	 * slave_subformat hw parameter; filled after hw_params is caled
-	 */
-	snd_pcm_subformat_t slave_subformat;
-	/**
-	 * slave_channels hw parameter; filled after hw_params is caled
-	 */
-	unsigned int slave_channels;
+    /**
+     * protocol version; #SND_PCM_EXTPLUG_VERSION must be filled here
+     * before calling #snd_pcm_extplug_create()
+     */
+    unsigned int version;
+    /**
+     * name of this plugin; must be filled before calling #snd_pcm_extplug_create()
+     */
+    const char *name;
+    /**
+     * callbacks of this plugin; must be filled before calling #snd_pcm_extplug_create()
+     */
+    const snd_pcm_extplug_callback_t *callback;
+    /**
+     * private data, which can be used freely in the driver callbacks
+     */
+    void *private_data;
+    /**
+     * PCM handle filled by #snd_pcm_extplug_create()
+     */
+    snd_pcm_t *pcm;
+    /**
+     * stream direction; read-only status
+     */
+    snd_pcm_stream_t stream;
+    /**
+     * format hw parameter; filled after hw_params is caled
+     */
+    snd_pcm_format_t format;
+    /**
+     * subformat hw parameter; filled after hw_params is caled
+     */
+    snd_pcm_subformat_t subformat;
+    /**
+     * channels hw parameter; filled after hw_params is caled
+     */
+    unsigned int channels;
+    /**
+     * rate hw parameter; filled after hw_params is caled
+     */
+    unsigned int rate;
+    /**
+     * slave_format hw parameter; filled after hw_params is caled
+     */
+    snd_pcm_format_t slave_format;
+    /**
+     * slave_subformat hw parameter; filled after hw_params is caled
+     */
+    snd_pcm_subformat_t slave_subformat;
+    /**
+     * slave_channels hw parameter; filled after hw_params is caled
+     */
+    unsigned int slave_channels;
 };
 
 /** Callback table of extplug */
 struct snd_pcm_extplug_callback {
-	/**
-	 * transfer between source and destination; this is a required callback
-	 */
-	snd_pcm_sframes_t (*transfer)(snd_pcm_extplug_t *ext,
-				      const snd_pcm_channel_area_t *dst_areas,
-				      snd_pcm_uframes_t dst_offset,
-				      const snd_pcm_channel_area_t *src_areas,
-				      snd_pcm_uframes_t src_offset,
-				      snd_pcm_uframes_t size);
-	/**
-	 * close the PCM; optional
-	 */
-	int (*close)(snd_pcm_extplug_t *ext);
-	/**
-	 * hw_params; optional
-	 */
-	int (*hw_params)(snd_pcm_extplug_t *ext, snd_pcm_hw_params_t *params);
-	/**
-	 * hw_free; optional
-	 */
-	int (*hw_free)(snd_pcm_extplug_t *ext);
-	/**
-	 * dump; optional
-	 */
-	void (*dump)(snd_pcm_extplug_t *ext, snd_output_t *out);
-	/**
-	 * init; optional initialization called at prepare or reset
-	 */
-	int (*init)(snd_pcm_extplug_t *ext);
+    /**
+     * transfer between source and destination; this is a required callback
+     */
+    snd_pcm_sframes_t (*transfer)(snd_pcm_extplug_t *ext,
+                      const snd_pcm_channel_area_t *dst_areas,
+                      snd_pcm_uframes_t dst_offset,
+                      const snd_pcm_channel_area_t *src_areas,
+                      snd_pcm_uframes_t src_offset,
+                      snd_pcm_uframes_t size);
+    /**
+     * close the PCM; optional
+     */
+    int (*close)(snd_pcm_extplug_t *ext);
+    /**
+     * hw_params; optional
+     */
+    int (*hw_params)(snd_pcm_extplug_t *ext, snd_pcm_hw_params_t *params);
+    /**
+     * hw_free; optional
+     */
+    int (*hw_free)(snd_pcm_extplug_t *ext);
+    /**
+     * dump; optional
+     */
+    void (*dump)(snd_pcm_extplug_t *ext, snd_output_t *out);
+    /**
+     * init; optional initialization called at prepare or reset
+     */
+    int (*init)(snd_pcm_extplug_t *ext);
 };
 
 
 int snd_pcm_extplug_create(snd_pcm_extplug_t *ext, const char *name,
-			   snd_config_t *root, snd_config_t *slave_conf,
-			   snd_pcm_stream_t stream, int mode);
+               snd_config_t *root, snd_config_t *slave_conf,
+               snd_pcm_stream_t stream, int mode);
 int snd_pcm_extplug_delete(snd_pcm_extplug_t *ext);
 
 /* clear hw_parameter setting */
@@ -173,7 +173,7 @@ int snd_pcm_extplug_set_slave_param_minmax(snd_pcm_extplug_t *extplug, int type,
  */
 static inline int snd_pcm_extplug_set_param(snd_pcm_extplug_t *extplug, int type, unsigned int val)
 {
-	return snd_pcm_extplug_set_param_list(extplug, type, 1, &val);
+    return snd_pcm_extplug_set_param_list(extplug, type, 1, &val);
 }
 
 /**
@@ -181,7 +181,7 @@ static inline int snd_pcm_extplug_set_param(snd_pcm_extplug_t *extplug, int type
  */
 static inline int snd_pcm_extplug_set_slave_param(snd_pcm_extplug_t *extplug, int type, unsigned int val)
 {
-	return snd_pcm_extplug_set_slave_param_list(extplug, type, 1, &val);
+    return snd_pcm_extplug_set_slave_param_list(extplug, type, 1, &val);
 }
 
 /** \} */

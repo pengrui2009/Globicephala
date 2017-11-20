@@ -79,71 +79,71 @@ int os_timer_add(int prio, int millisec, int flag, void (*handler)(void *), void
 
 
 /******************************************************************************
-*	 Function: os_timer_del
-*	 Descriptions: delete the time.
-*	 Paramters:
-			timerid 		   - the handle of the timer
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
-	 Before we delete the timer, we must set the timerid 0
+*     Function: os_timer_del
+*     Descriptions: delete the time.
+*     Paramters:
+            timerid            - the handle of the timer
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
+     Before we delete the timer, we must set the timerid 0
 ******************************************************************************/
 int os_timer_del(timer_t timerid);
 
 
 /******************************************************************************
-*	 Function: os_timer_start
-*	 Descriptions: start the time.
-*	 Paramters:
-			timerid 		   - the handle of the timer
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
-	 if the timer was started, then it will reset the timer,like os_timer_reset
+*     Function: os_timer_start
+*     Descriptions: start the time.
+*     Paramters:
+            timerid            - the handle of the timer
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
+     if the timer was started, then it will reset the timer,like os_timer_reset
      if the timer was timeout, then it will call the function and restart the time count.
 ******************************************************************************/
 int os_timer_start(timer_t timerid);
 
 
 /******************************************************************************
-*	 Function: os_timer_stop
-*	 Descriptions: stop the time.
-*	 Paramters:
-			timerid  	       - the handle of the timer
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: os_timer_stop
+*     Descriptions: stop the time.
+*     Paramters:
+            timerid             - the handle of the timer
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
      we can stop the timer many times at the same moment
 ******************************************************************************/
 int os_timer_stop(timer_t timerid);
 
 /******************************************************************************
-*	 Function: os_timer_reset
-*	 Descriptions: reset the time.
-*	 Paramters:
-			timerid  	       - the handle of the timer
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: os_timer_reset
+*     Descriptions: reset the time.
+*     Paramters:
+            timerid             - the handle of the timer
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
      it has the same effect with the function of os_timer_start
 ******************************************************************************/
 int os_timer_reset(timer_t timerid);
 
 
 /******************************************************************************
-*	 Function: os_timer_settime
-*	 Descriptions: modify the time period of timer.
-*	 Paramters:
-			timerid  	       - the handle of the timer
-			millisec		   - the msec time of the time
-*	 Return:
-			= 0 			   - success
-			< 0 			   - failed
-*	 Comments: 
+*     Function: os_timer_settime
+*     Descriptions: modify the time period of timer.
+*     Paramters:
+            timerid             - the handle of the timer
+            millisec           - the msec time of the time
+*     Return:
+            = 0                - success
+            < 0                - failed
+*     Comments: 
      Before we modify the timer, we had better used os_timer_stop stop the timer;
      After we modify the timer, we can take it effect after os_timer_start
      Example: 

@@ -197,7 +197,7 @@ static inline int __attribute ((always_inline)) timespec_compare (const struct t
 
     if (left->tv_nsec < right->tv_nsec)
         return -1;
-	
+    
     if (left->tv_nsec > right->tv_nsec)
         return 1;
 
@@ -505,7 +505,7 @@ static void * thread_func(void * arg)
                     timer->overrun_count = 0;
                     timespec_add(&timer->expirytime, &timer->expirytime, &timer->value.it_interval);
                     while (timespec_compare(&timer->expirytime, &now) < 0)
-					{
+                    {
                         timespec_add(&timer->expirytime, &timer->expirytime, &timer->value.it_interval);
                         if (timer->overrun_count < DELAYTIMER_MAX) 
                         {
@@ -574,7 +574,7 @@ static int __timer_thread_start (struct thread_node *thread)
     {
         thread->exists = 0;
         fprintf(stderr, "pthread_create() error:%s\r\n", strerror(retval));
-		retval = -ERR_SYS;
+        retval = -ERR_SYS;
     }
 
     return retval;
@@ -703,7 +703,7 @@ static int __timer_create (clockid_t clock_id,struct sigevent *evp,timer_t *time
     {
         /* We don't allow timers for CPU clocks.  At least not in the moment.  */
         __set_errno (ENOTSUP);
-	    retval = -ERR_INVAL;
+        retval = -ERR_INVAL;
         goto ERR_EXIT;
     }
 
@@ -712,15 +712,15 @@ static int __timer_create (clockid_t clock_id,struct sigevent *evp,timer_t *time
     {
         __set_errno (ENOMEM);
         retval = -ERR_SYS;
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
     retval = pthread_mutex_lock (&__timer_mutex);
     if(retval)
     {
         retval = -ERR_SYS;
-		fprintf(stderr, "pthread_mutex_lock() error:%s\r\n", strerror(errno));
-		goto ERR_EXIT;
+        fprintf(stderr, "pthread_mutex_lock() error:%s\r\n", strerror(errno));
+        goto ERR_EXIT;
     }
 
     newtimer = __timer_alloc ();
@@ -784,16 +784,16 @@ static int __timer_create (clockid_t clock_id,struct sigevent *evp,timer_t *time
         {
             __set_errno (EAGAIN);
             retval = -ERR_NOMEM;
-			fprintf(stderr, "__timer_thread_alloc() error\r\n");
+            fprintf(stderr, "__timer_thread_alloc() error\r\n");
             goto unlock_bail;
         }
 
         /* If the thread is not running already, try to start it.  */
-		retval = __timer_thread_start(thread);
+        retval = __timer_thread_start(thread);
         if (!thread->exists && (retval < 0))
         {
             __set_errno (EAGAIN);
-			fprintf(stderr, "__timer_thread_start() error\r\n");
+            fprintf(stderr, "__timer_thread_start() error\r\n");
             goto unlock_bail;
         }
         break;
@@ -832,7 +832,7 @@ unlock_bail:
     }
 ERR_EXIT:
 
-	__timer_init_failed = 0;
+    __timer_init_failed = 0;
     return retval;
 }
 
@@ -846,8 +846,8 @@ static int __timer_delete(timer_t timerid)
     if(retval)
     {
         retval = -ERR_SYS;
-		fprintf(stderr, "pthread_mutex_unlock() error:%s\r\n", strerror(errno));
-		goto ERR_EXIT;
+        fprintf(stderr, "pthread_mutex_unlock() error:%s\r\n", strerror(errno));
+        goto ERR_EXIT;
     }
 
     timer = timer_id2ptr (timerid);
@@ -885,8 +885,8 @@ static int __timer_delete(timer_t timerid)
     if(retval)
     {
         retval = -ERR_SYS;
-		fprintf(stderr, "pthread_mutex_unlock() error:%s\r\n", strerror(errno));
-		goto ERR_EXIT;
+        fprintf(stderr, "pthread_mutex_unlock() error:%s\r\n", strerror(errno));
+        goto ERR_EXIT;
     }
 
 ERR_EXIT:
@@ -982,7 +982,7 @@ static int __timer_settime (timer_t timerid, int flags, const struct itimerspec 
     if (timer == NULL)
     {
         __set_errno (EINVAL);
-	    retval = -ERR_SYS;
+        retval = -ERR_SYS;
         goto bail;
     }
 
@@ -992,7 +992,7 @@ static int __timer_settime (timer_t timerid, int flags, const struct itimerspec 
       || value->it_value.tv_nsec >= 1000000000)
     {
         __set_errno (EINVAL);
-	    retval = -ERR_SYS;
+        retval = -ERR_SYS;
         goto bail;
     }
 
@@ -1005,29 +1005,29 @@ static int __timer_settime (timer_t timerid, int flags, const struct itimerspec 
         if(retval)
         {
             retval = -ERR_SYS;
-			fprintf(stderr, "clock_gettime() error:%s\r\n", strerror(errno));
+            fprintf(stderr, "clock_gettime() error:%s\r\n", strerror(errno));
             goto bail;
         }
         have_now = 1;
     }
 
     retval = pthread_mutex_lock (&__timer_mutex);
-	if(retval)
+    if(retval)
     {
         fprintf(stderr, "pthread_mutex_lock() error:%s\r\n", strerror(errno));
         retval = -ERR_SYS;
-	    goto bail;
+        goto bail;
     }
     timer_addref (timer);
 
     /* One final check of timer validity; this one is possible only
      until we have the mutex, because it accesses the inuse flag. */
 
-	retval = timer_valid(timer);
+    retval = timer_valid(timer);
     if (!retval )
     {
         __set_errno (EINVAL);
-	    retval = -ERR_INVAL;
+        retval = -ERR_INVAL;
         goto unlock_bail;
     }
 
@@ -1063,7 +1063,7 @@ static int __timer_settime (timer_t timerid, int flags, const struct itimerspec 
                     retval = -ERR_SYS;
                     goto bail;
                 }
-				
+                
                 timer_addref (timer);
             }
 
@@ -1105,11 +1105,11 @@ unlock_bail:
     timer_delref (timer);
 
     retval = pthread_mutex_unlock (&__timer_mutex);
-	if(retval)
-	{
-		fprintf(stderr, "pthread_mutex_unlock() error:%s\r\n", strerror(errno));
-		retval = -ERR_SYS;
-	}
+    if(retval)
+    {
+        fprintf(stderr, "pthread_mutex_unlock() error:%s\r\n", strerror(errno));
+        retval = -ERR_SYS;
+    }
 
 bail:
     if (thread != NULL && need_wakeup)
@@ -1180,16 +1180,16 @@ int os_timer_add(int prio, int millisec, int flag, void (*handler)(void *), void
     result = pthread_attr_init(&attr);
     if(result)
     {
-		(void) fprintf(stderr, "pthread_attr_init(): %s\r\n", strerror(result));
-		result = -ERR_SYS;
+        (void) fprintf(stderr, "pthread_attr_init(): %s\r\n", strerror(result));
+        result = -ERR_SYS;
         goto ERR_EXIT;
     }
 
     result = pthread_attr_setschedpolicy(&attr, SCHED_RR);
     if(result)
     {
-		(void) fprintf(stderr, "pthread_attr_init(): %s\r\n", strerror(result));
-		result = -ERR_SYS;
+        (void) fprintf(stderr, "pthread_attr_init(): %s\r\n", strerror(result));
+        result = -ERR_SYS;
         goto ERR_EXIT;
     }
 
@@ -1197,8 +1197,8 @@ int os_timer_add(int prio, int millisec, int flag, void (*handler)(void *), void
     result = pthread_attr_setschedparam(&attr, &sched);
     if(result)
     {
-		(void) fprintf(stderr, "pthread_attr_init(): %s\r\n", strerror(result));
-		result = -ERR_SYS;
+        (void) fprintf(stderr, "pthread_attr_init(): %s\r\n", strerror(result));
+        result = -ERR_SYS;
         goto ERR_EXIT;
     }
 
@@ -1215,38 +1215,38 @@ int os_timer_add(int prio, int millisec, int flag, void (*handler)(void *), void
     }
 
     result = pthread_mutex_lock(&__timer_mutex);
-	if(result)
+    if(result)
     {
-		(void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
-		result = -ERR_SYS;
+        (void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
+        result = -ERR_SYS;
         goto ERR_EXIT;
     }
     timer = timer_id2ptr(tid);
-	
-	result = timer_valid(timer);
+    
+    result = timer_valid(timer);
     if (!result) 
     {
         int ret = 0;
         ret = pthread_mutex_unlock(&__timer_mutex);
         if(ret)
         {
-		    (void) fprintf(stderr, "pthread_mutex_unlock(): %s\r\n", strerror(errno));
-		    result = -ERR_SYS;
+            (void) fprintf(stderr, "pthread_mutex_unlock(): %s\r\n", strerror(errno));
+            result = -ERR_SYS;
             goto ERR_EXIT;
         }
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
-	
+    
     timer->type = (flag & TIMER_ONESHOT) ? TIMER_ONESHOT : TIMER_INTERVAL;
     timer->millisec = millisec;
     result = pthread_mutex_unlock(&__timer_mutex);
     if(result)
     {
-		(void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
-		result = -ERR_SYS;
+        (void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
+        result = -ERR_SYS;
         goto ERR_EXIT;
     }
-	
+    
     if (flag & TIMER_STOPPED) {
         its.it_value.tv_sec = 0;
         its.it_value.tv_nsec = 0;
@@ -1313,25 +1313,25 @@ int os_timer_start(timer_t timerid)
     if(result)
     {
         result = -ERR_SYS;
-	    (void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
+        (void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
         goto ERR_EXIT;
     }
-	
+    
     timer = timer_id2ptr(timerid);
 
     result = timer_valid(timer);
-	if (!result) 
+    if (!result) 
     {
         int ret = 0;
         ret = pthread_mutex_unlock(&__timer_mutex);
-	    if(ret)
+        if(ret)
         {
             result = -ERR_SYS;
-	        (void) fprintf(stderr, "pthread_mutex_unlock(): %s\r\n", strerror(errno));
+            (void) fprintf(stderr, "pthread_mutex_unlock(): %s\r\n", strerror(errno));
             goto ERR_EXIT;
         }
         
-	    goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
     ms2ts(timer->millisec, &its.it_value);
@@ -1347,14 +1347,14 @@ int os_timer_start(timer_t timerid)
     if(result)
     {
         result = -ERR_SYS;
-	    (void) fprintf(stderr, "pthread_mutex_unlock(): %s\r\n", strerror(errno));
+        (void) fprintf(stderr, "pthread_mutex_unlock(): %s\r\n", strerror(errno));
         goto ERR_EXIT;
     }
-	
+    
     result = __timer_settime(timerid, 0, &its, NULL);
 
 ERR_EXIT:
-	
+    
     return result;
 }
 
@@ -1379,7 +1379,7 @@ int os_timer_stop(timer_t timerid)
 
     result = __timer_settime(timerid, 0, &its, NULL);
 
-    return result;	
+    return result;    
 }
 
 /******************************************************************************
@@ -1432,7 +1432,7 @@ int os_timer_settime(timer_t timerid, int millisec)
     {
         result = -ERR_SYS;
         (void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 
     timer = timer_id2ptr(timerid);
@@ -1442,11 +1442,11 @@ int os_timer_settime(timer_t timerid, int millisec)
     {
         int ret = 0;
         ret = pthread_mutex_unlock(&__timer_mutex);
-	    if(ret)
+        if(ret)
         {
             result = -ERR_SYS;
             (void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
-		    goto ERR_EXIT;
+            goto ERR_EXIT;
         }
         
         goto ERR_EXIT;
@@ -1458,7 +1458,7 @@ int os_timer_settime(timer_t timerid, int millisec)
     {
         result = -ERR_SYS;
         (void) fprintf(stderr, "pthread_mutex_lock(): %s\r\n", strerror(errno));
-		goto ERR_EXIT;
+        goto ERR_EXIT;
     }
 ERR_EXIT:
 
