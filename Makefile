@@ -16,6 +16,7 @@ IMGNAME=$(DEVICENAME)_$(VER)_$(NOW)
 SUBDIRS = \
           $(TOPDIR)/osal/linux \
 	  $(TOPDIR)/osal \
+	  $(TOPDIR)/drivers \
 	  $(TOPDIR)/drivers/audio \
 	  $(TOPDIR)/drivers/barometer \
 	  $(TOPDIR)/drivers/cmn \

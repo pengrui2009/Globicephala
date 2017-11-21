@@ -1,4 +1,4 @@
-#! /bin/sh
+# !/bin/sh
 #comments
 #replace all the  to whitespace and replace all the tab to 4's whitespace
 find ./ -name "*.h"|xargs sed -i 's///g'

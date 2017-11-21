@@ -399,10 +399,18 @@ ERR_EXIT:
 /* Free routine for DF_ConnectingLane. */
 int DF_ConnectingLane_free(ConnectingLane_t *connlane_ptr)
 {
+    int result = 0;
     if(connlane_ptr != NULL)
     {
         if(connlane_ptr->maneuver != NULL)
+        {
+            result = DE_AllowedManeuvers_free(connlane_ptr->maneuver);
+            if(result)
+                return result;
+            
             FREEMEM(connlane_ptr->maneuver);
+        }
+            
         /* Must clear all the zone and avoid repeat free operation. */
         memset(connlane_ptr, 0, sizeof(*connlane_ptr));
         return 0;
@@ -1925,6 +1933,8 @@ int DF_LaneAttributes_Allocate(LaneAttributes_t *attr_ptr, DF_LaneAttributes_st_
         }
 
         result = DE_LaneSharing_allocate(attr_ptr->shareWith, &(Attr_ptr->shareWith));
+        if(result)
+            goto ERR_EXIT;
     }else{
         attr_ptr->shareWith = NULL;
     }
@@ -2078,6 +2088,8 @@ int DF_Lane_Allocate(Lane_t *lane_ptr, DF_Lane_st_ptr Lane_ptr)
             goto ERR_EXIT;
         }
         result = DF_LaneAttributes_Allocate(lane_ptr->laneAttributes, &(Lane_ptr->laneAttributes));
+        if(result)
+            goto ERR_EXIT;
     }else{
         lane_ptr->laneAttributes = NULL;
     }
@@ -2091,6 +2103,8 @@ int DF_Lane_Allocate(Lane_t *lane_ptr, DF_Lane_st_ptr Lane_ptr)
             goto ERR_EXIT;
         }
         result = DE_AllowedManeuvers_allocate(lane_ptr->maneuvers, &(Lane_ptr->maneuvers));
+        if(result)
+            goto ERR_EXIT;
     }else{
         lane_ptr->maneuvers = NULL;
     }
@@ -2104,6 +2118,8 @@ int DF_Lane_Allocate(Lane_t *lane_ptr, DF_Lane_st_ptr Lane_ptr)
             goto ERR_EXIT;
         }
         result = DF_ConnectsToList_allocate(lane_ptr->connectsTo, &(Lane_ptr->connectsTo));
+        if(result)
+            goto ERR_EXIT;
     }else{
         lane_ptr->connectsTo = NULL;
     }
@@ -2117,6 +2133,8 @@ int DF_Lane_Allocate(Lane_t *lane_ptr, DF_Lane_st_ptr Lane_ptr)
             goto ERR_EXIT;
         }
         result = DF_SpeedLimitList_allocate(lane_ptr->speedLimits, &(Lane_ptr->speedLimits));
+        if(result)
+            goto ERR_EXIT;
     }else{
         lane_ptr->speedLimits = NULL;
     }
@@ -2130,6 +2148,8 @@ int DF_Lane_Allocate(Lane_t *lane_ptr, DF_Lane_st_ptr Lane_ptr)
             goto ERR_EXIT;
         }
         result = DF_PointList_allocate(lane_ptr->points, &(Lane_ptr->points));
+        if(result)
+            goto ERR_EXIT;
     }else{
         lane_ptr->points = NULL;
     }
@@ -5954,6 +5974,10 @@ int DF_PositionOffsetLLV_free(PositionOffsetLLV_t *posoffsetllv_ptr)
     {
         if(posoffsetllv_ptr->offsetV != NULL)
         {
+            result = DF_VerticalOffset_free(posoffsetllv_ptr->offsetV);
+            if(result)
+                return result;
+            
             FREEMEM(posoffsetllv_ptr->offsetV);
         }
 
@@ -6276,7 +6300,7 @@ int DF_RoadPoint_free(RoadPoint_t *roadpoint_ptr)
         memset(roadpoint_ptr, 0, sizeof(*roadpoint_ptr));
     }
 
-      return result;
+    return result;
 }
 
 /* Free extention routine for DF_RoadPoint. Diff with DF_RoadPoint_free() and this will free the point itself. */
@@ -7001,7 +7025,7 @@ int DF_TimeChangeDetails_allocate(TimeChangeDetails_t *tcd_ptr, DF_TimeChangeDet
     /* Next duration. */
     if(Tcd_ptr->opt.nextDuration == MSG_OPTIONAL_YES)
     {
-        if((tcd_ptr->nextDuration = CALLOC(1, sizeof(*(tcd_ptr->nextDuration)))) != NULL)
+        if((tcd_ptr->nextDuration = CALLOC(1, sizeof(*(tcd_ptr->nextDuration)))) == NULL)
         {
             result = -ERR_NOMEM;
             goto ERR_EXIT;

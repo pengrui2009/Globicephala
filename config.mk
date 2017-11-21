@@ -55,12 +55,14 @@ INCLUDEFLAGS +=	-I$(TOPDIR)/include \
 		-I$(TOPDIR)/library/alsa/include \
 		-I$(TOPDIR)/library/libnl/include/libnl3 \
 		-I$(TOPDIR)/library/curl/include \
+		-I$(TOPDIR)/drivers \
 		-I$(TOPDIR)/drivers/audio \
 		-I$(TOPDIR)/drivers/barometer \
 		-I$(TOPDIR)/drivers/cmn \
 		-I$(TOPDIR)/drivers/gps \
 		-I$(TOPDIR)/drivers/gsensor \
 		-I$(TOPDIR)/drivers/led \
+		-I$(TOPDIR)/drivers/ltev \
 		-I$(TOPDIR)/drivers/pps \
 		-I$(TOPDIR)/drivers/tbox \
 		-I$(TOPDIR)/drivers/vguest \
