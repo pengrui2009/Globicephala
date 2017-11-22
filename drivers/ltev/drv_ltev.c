@@ -360,7 +360,7 @@ static int drv_ltev_socket_receive_data(drv_ltev_st_ptr ltev_ptr, ltev_infor_st_
         printf("[%s %d]: Data payload length over then user buffer. Payload = %d, Userbuff = %d. \n", \
                                                     __FUNCTION__, __LINE__, payload_len, data_len);
 
-        ret = ERR_NODISK;
+        ret = -ERR_NODISK;
         goto ERR_EXIT;
     }
     

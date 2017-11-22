@@ -13,7 +13,12 @@
 #ifndef _LIST_H
 #define _LIST_H
 
+
+#ifndef NULL
 #define NULL   (void *)0
+#endif
+
+
 typedef unsigned int u32;
 
 //the struct of the list

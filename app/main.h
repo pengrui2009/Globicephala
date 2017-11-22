@@ -2,4 +2,33 @@
 #include "stdlib.h"
 
 
+/* Get main driver pointer. */
+#define GET_DRVMAIN_PTR    (DrvMainPtr)
+
+
+
+
+/* Message buffer size for wnet module. */
+#define WNET_MSGBUF_SIZE   (3000)
+
+
+
+/* Stack size of all the tasks in system. */
+#define DEF_THREAD_STACK_SIZE       (1024*8192)
+
+#define RT_SYS_THREAD_STACK_SIZE    DEF_THREAD_STACK_SIZE
+#define RT_GPS_THREAD_STACK_SIZE    DEF_THREAD_STACK_SIZE
+#define RT_MEMS_THREAD_STACK_SIZE   DEF_THREAD_STACK_SIZE
+
+#define RT_VSA_THREAD_STACK_SIZE    DEF_THREAD_STACK_SIZE
+#define RT_HI_THREAD_STACK_SIZE     DEF_THREAD_STACK_SIZE
+#define EHM_MAIN_THREAD_STACK_SIZE  DEF_THREAD_STACK_SIZE
+#define    EHM_TX_THREAD_STACK_SIZE    DEF_THREAD_STACK_SIZE
+
+#define EHM_RX_THREAD_STACK_SIZE    DEF_THREAD_STACK_SIZE
+#define WNET_RX_THREAD_STACK_SIZE   DEF_THREAD_STACK_SIZE
+
+
+#define EHM_RX_THREAD_PRIORITY        70
+#define WNET_RX_THREAD_PRIORITY     80
 

@@ -26,6 +26,11 @@ int drv_main_init(drv_main_st_ptr *drv_ptr_ptr)
     barometer_config_st barometer_cfg = DRV_BAROMETER_CFG;
     #endif
 
+    /* Ehost configuration. */
+    #if(DRV_ENABLE_EHOST != 0)
+    net_config_st ehost_cfg = DRV_EHOST_NETCFG;
+    #endif
+
     /* Ltev configuration. */
     #if(DRV_ENABLE_LTEV != 0)
     ltev_config_st ltev_cfg = DRV_LTEV_CFG;
@@ -64,6 +69,15 @@ int drv_main_init(drv_main_st_ptr *drv_ptr_ptr)
     if((result = drv_barometer_init(&(drv_ptr->barometer_fd), &barometer_cfg)) != ERR_OK)
     {
         osal_printf("[%s %d]: Init barometer driver error. ret = %d. \n", __FUNCTION__, __LINE__, result);
+        goto ERR_EXIT;
+    }
+    #endif
+
+    /* Init ltev driver. */
+    #if(DRV_ENABLE_EHOST != 0)
+    if((result = net_init(&(drv_ptr->ehost_fd), DRV_EHOST_NETIF, &ehost_cfg)) != ERR_OK)
+    {
+        osal_printf("[%s %d]: Init ehost driver error. ret = %d. \n", __FUNCTION__, __LINE__, result);
         goto ERR_EXIT;
     }
     #endif

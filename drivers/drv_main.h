@@ -16,11 +16,13 @@
 #include "drv_audio.h"
 #include "drv_barometer.h"
 #include "drv_ltev.h"
+#include "net.h"
 
 
 /* Driver enable configure. */
 #define DRV_ENABLE_AUDIO     0
 #define DRV_ENABLE_BAROMETER 0
+#define DRV_ENABLE_EHOST     1
 #define DRV_ENABLE_LTEV      1
 
 
@@ -37,6 +39,14 @@
 
 /* barometer_config_st:  */
 #define DRV_BAROMETER_CFG  { 0 }
+
+#endif
+
+/* Ehm configure. */
+#if(DRV_ENABLE_EHOST != 0)
+
+#define DRV_EHOST_NETIF    "eth0"
+#define DRV_EHOST_NETCFG   { 3000, 3001 }  /* net_config_st */
 
 #endif
 
@@ -60,6 +70,11 @@ typedef struct _drv_main_st
 #if(DRV_ENABLE_BAROMETER != 0)
     /* Barometer file descriptor. */
     int   barometer_fd;
+#endif
+
+#if(DRV_ENABLE_EHOST != 0)
+    /* Ehm file descriptor. */
+    int       ehost_fd;
 #endif
 
 #if(DRV_ENABLE_LTEV != 0)
