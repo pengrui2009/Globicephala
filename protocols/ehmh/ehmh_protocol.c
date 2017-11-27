@@ -233,11 +233,12 @@ static int encode_trafficlamp_speed_guide_msg(msg_decode_trafficlamp_speed_guide
     }
 
     status_ptr = (msg_encode_trafficlamp_speed_guide_st_ptr)data_ptr;
+    status_ptr->msg_id       = info_ptr->msg_id;
     status_ptr->leftlamp     = info_ptr->leftlamp;
     status_ptr->straightlamp = info_ptr->straightlamp;
     status_ptr->rightlamp    = info_ptr->rightlamp;
     status_ptr->timers       = cv_ntohs(info_ptr->timers);
-    status_ptr->minvelocity  = encode_absolute_velocity(info_ptr->maxvelocity);
+    status_ptr->maxvelocity  = encode_absolute_velocity(info_ptr->maxvelocity);
     status_ptr->minvelocity  = encode_absolute_velocity(info_ptr->minvelocity);
 
     *len_ptr += MSG_ENCODE_TRAFFICLAMP_SPEED_GUIDE_ST_LEN;

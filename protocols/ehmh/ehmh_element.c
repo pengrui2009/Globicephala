@@ -489,7 +489,7 @@ inline uint16_t encode_absolute_velocity(float velocity)
     uint16_t    result = 0;
     long value = 0;
 
-    value = bsctyp_encode(DE_VehicleLength, velocity);
+    value = bsctyp_encode(DE_Velocity, velocity);
     
     result = (uint16_t)value;
 
@@ -509,7 +509,7 @@ inline float decode_absolute_velocity(uint16_t velocity)
     float result = 0;
     double value = 0;
 
-    value = bsctyp_decode(DE_VehicleLength, cv_ntohs(velocity));
+    value = bsctyp_decode(DE_Velocity, cv_ntohs(velocity));
     
     result = (float)value;
     

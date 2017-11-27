@@ -81,7 +81,7 @@ int phase_parse(DF_PhaseList_st_ptr phaseList_data, msg_decode_trafficlamp_speed
     for(i = 0; i < phaseList_data->pointNum; i++)
     {
         os_printf("phase id[%d] = %d\n", i, phaseList_data->array[i].id);
-        memset(trafficLampSpeedGuide_ptr, 0, (phaseList_data->pointNum)*sizeof(msg_decode_trafficlamp_speed_guide_st));
+        //memset(trafficLampSpeedGuide_ptr, 0, (phaseList_data->pointNum)*sizeof(msg_decode_trafficlamp_speed_guide_st));
         for(j = 0; j < phaseList_data->array[i].phaseStates.pointNum; j++)
         {
             switch(phaseList_data->array[i].phaseStates.array[j].light)
@@ -148,6 +148,7 @@ int phase_parse(DF_PhaseList_st_ptr phaseList_data, msg_decode_trafficlamp_speed
             {
                 trafficLampSpeedGuide_ptr[i].timers = phaseList_data->array[i].phaseStates.array[j].timing.likelyEndTime;
             }
+            
         }
     }
         
@@ -181,7 +182,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     
     os_printf("spat msgcnt:%d\n", msg_ptr->msgCnt);
     
-    if((intersection_ptr = os_calloc(1, sizeof(msg_intersection_st)*(msg_ptr->intersections.pointNum))) == NULL)
+    if((intersection_ptr = os_calloc(1, ((sizeof(msg_intersection_st))*(msg_ptr->intersections.pointNum)))) == NULL)
     {
         osal_printf("[%s %d]: Allocate message buffer for msg_intersection error. \n", __FUNCTION__, __LINE__);
         result = -ERR_NOMEM;
@@ -191,20 +192,22 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     for(i = 0; i < msg_ptr->intersections.pointNum; i++)
     {
         intersection_ptr[i].intersection_id = msg_ptr->intersections.array[i].intersectionId.id;
-        if((intersection_ptr[i].trafficLampSpeedGuide = os_calloc(1, sizeof(msg_decode_trafficlamp_speed_guide_st)*(msg_ptr->intersections.array[i].phases.pointNum))) == NULL)
+        if((intersection_ptr[i].trafficLampSpeedGuide = os_calloc(1, (sizeof(msg_decode_trafficlamp_speed_guide_st)*(msg_ptr->intersections.array[i].phases.pointNum)))) == NULL)
         {
             osal_printf("[%s %d]: Allocate message buffer for trafficLampSpeedGuide error. \n", __FUNCTION__, __LINE__);
             result = -ERR_NOMEM;
             goto ERR_EXIT;
         }
+        
         result = phase_parse(&(msg_ptr->intersections.array[i].phases), intersection_ptr[i].trafficLampSpeedGuide);
         if(result)
             goto ERR_EXIT;
         
     }
 
-    result = direction_from_angle(vehicle_basic_status_info.velocity, vehicle_basic_status_info.angle, &vehicle_direction);
-    if(result == ERR_OK)
+    //result = direction_from_angle(vehicle_basic_status_info.velocity, vehicle_basic_status_info.angle, &vehicle_direction);
+    vehicle_direction = DIRECTION_EAST;
+    //if(result == ERR_OK)
     {
         switch(vehicle_direction)
         {
@@ -221,23 +224,37 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         }
     }
 
+    if(trafficLampSpeedGuide.straightlamp.RedLightStat != 0)
+    {
+        trafficLampSpeedGuide.maxvelocity = 0;
+        trafficLampSpeedGuide.minvelocity = 0;
+    }else if(trafficLampSpeedGuide.straightlamp.GreenLightStat || trafficLampSpeedGuide.straightlamp.YellowLightStat)
+    {
+        trafficLampSpeedGuide.maxvelocity = 70;
+        trafficLampSpeedGuide.minvelocity = 50;
+    }
+
     for(i = 0; i < msg_ptr->intersections.array[0].phases.pointNum; i++)
     {
         osal_printf("intersection_ptr[0].trafficLampSpeedGuide[%d],left=0x%x,straight=0x%x,right=0x%x,timer=%d\n",
                     i,
-                    intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp,
-                    intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp,
-                    intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp,
+                    intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.YellowLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.GreenLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.RedLightStat,
+                    intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.YellowLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.GreenLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.RedLightStat,
+                    intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.YellowLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.GreenLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.RedLightStat,
                     intersection_ptr[0].trafficLampSpeedGuide[i].timers);
     }
-    
+    trafficLampSpeedGuide.msg_id = EHMH_V2X_TRAFFICLAMP_SPEED_GUIDE_MSGTYPE;
     result = ehmh_encode(EHMH_V2X_TRAFFICLAMP_SPEED_GUIDE_MSGTYPE, &trafficLampSpeedGuide, send_buf, &send_len);
     if(result)
+    {
+        osal_printf("ehmh_encode failed,ret=%d\n",result);
         goto ERR_EXIT;
+    }
 
     result = net_send(drv_ptr->ehost_fd, send_buf, send_len);
     if(result < 0)
     {
+        osal_printf("net_send failed,ret=%d\n",result);
         goto ERR_EXIT;
     }
     

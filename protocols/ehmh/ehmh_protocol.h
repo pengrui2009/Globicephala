@@ -20,6 +20,7 @@
 
 typedef enum
 {
+    EHMH_V2X_RESERVE,
     EHMH_V2X_NB_NODE_INFO_MSGTYPE,
     EHMH_V2X_BASIC_VEHICLE_STATUS_MSGTYPE,
     EHMH_V2X_FULL_VEHICLE_STATUS_MSGTYPE,
@@ -770,6 +771,8 @@ typedef struct _msg_encode_system_curtime_st
 /*TrafficLamp Speed Guide*/
 typedef struct _msg_encode_trafficlamp_speed_guide_st
 {
+    /* sub Message id. */
+    uint8_t               msg_id;
     //left traffic lamps state
     trafficlamps_st    leftlamp;
     //straight traffic lamps state
@@ -1093,6 +1096,8 @@ typedef struct _msg_decode_system_curtime_st
 /*TrafficLamp Speed Guide*/
 typedef struct _msg_decode_trafficlamp_speed_guide_st
 {
+    /* sub message id. */
+    uint8_t        msg_id;
     //left traffic lamps state
     trafficlamps_st    leftlamp;
     //straight traffic lamps state
