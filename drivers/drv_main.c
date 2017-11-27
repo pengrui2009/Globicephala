@@ -73,7 +73,7 @@ int drv_main_init(drv_main_st_ptr *drv_ptr_ptr)
     }
     #endif
 
-    /* Init ltev driver. */
+    /* Init vhost net driver. */
     #if(DRV_ENABLE_EHOST != 0)
     if((result = net_init(&(drv_ptr->ehost_fd), DRV_EHOST_NETIF, &ehost_cfg)) != ERR_OK)
     {

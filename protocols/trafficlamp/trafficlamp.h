@@ -4,7 +4,7 @@
  
  @file   : trafficlamp.h
  @brief  : traffic lamp protocols api
- @author : wanghechao
+ @author : pengrui
  @history:
            2017-11-2      pengrui    Created file
            2017-11-10     pengrui    add the api function of both road and traffic side

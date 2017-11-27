@@ -45,8 +45,8 @@
 /* Ehm configure. */
 #if(DRV_ENABLE_EHOST != 0)
 
-#define DRV_EHOST_NETIF    "eth0"
-#define DRV_EHOST_NETCFG   { 3000, 3001 }  /* net_config_st */
+#define DRV_EHOST_NETIF    "br-lan"
+#define DRV_EHOST_NETCFG   { 4321, 1234 }  /* net_config_st */
 
 #endif
 
@@ -54,7 +54,7 @@
 #if(DRV_ENABLE_LTEV != 0)
 
 /* ltev_config_st:        ltev_mode_em,  device_cfg,      socket_cfg. */
-#define DRV_LTEV_CFG  { LTEV_MODE_SOCKET, {"lm30"}, {"eth0", 2000, 2001, 1} }
+#define DRV_LTEV_CFG  { LTEV_MODE_SOCKET, {"lm30"}, {"br-lan",    2018,       2017,       1 } }
 
 #endif
 

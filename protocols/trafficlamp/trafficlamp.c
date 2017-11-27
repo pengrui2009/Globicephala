@@ -4,7 +4,7 @@
  
  @file   : trafficlamp.c
  @brief  : the protocol of control roadlamp
- @author : wanghechao
+ @author : pengrui
  @history:
            2017-11-2      pengrui    Created file
            2017-11-10     pengrui    support both side of road and traffic control encode and decode

@@ -7,6 +7,7 @@
  @author : pengrui
  @history:
            2017-09-08    pengrui    Created file
+           2017-11-23    pengrui    Add the check of all child msg encode
            ...
 ******************************************************************************/
 #ifndef _CV_MSG_FRAME_H_

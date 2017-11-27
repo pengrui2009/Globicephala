@@ -7,7 +7,8 @@
  @author : wangxianwen
  @history:
            2016-09-12    wangxianwen    Created file
-           2017-10-12     pengrui        Modify for CSAE
+           2017-10-12     pengrui       Modify for CSAE
+           2017-11-23    pengrui        Fix the BUG of the check of TimeChangeDetail malloc 
            ...
 ******************************************************************************/
 #ifndef __CV_DATA_FRAME_H__

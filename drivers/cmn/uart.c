@@ -8,6 +8,7 @@
  @history:
            2016-08-30    pengrui      Created file
            2017-10-24    wangxianwen  Optimize the structure.
+           2017-11-23    pengrui      Solve the problem that can not read 'LR'
            ...
 ******************************************************************************/
 
@@ -45,15 +46,18 @@ int comport_config (int fd, uart_config_st_ptr cfg_ptr)
         goto ERR_EXIT;
     }
     
+    memset(&opt, 0x00, sizeof(opt));
+#if 0    
     /* Get the current options for the uart(Init the options). */ 
     if((tcgetattr(fd, &opt)) != 0)
     {
         ret = -ERR_SYS;
         goto ERR_EXIT;
     }
-    
+#endif    
     /* Enable the receiver and set local mode. */
     opt.c_cflag |= (CLOCAL | CREAD);
+    opt.c_cflag &= ~CSIZE;
 
     /* Set uart data bit number. */
     switch(cfg_ptr->ndata)
@@ -251,7 +255,8 @@ int comport_config (int fd, uart_config_st_ptr cfg_ptr)
         ret = -ERR_INVAL;
         goto ERR_EXIT;
     }
-    
+
+    opt.c_iflag &= ~(IXON|IXOFF);
     /* Set the new options for the uart. */ 
     if((tcsetattr(fd, TCSANOW, &opt)) != 0)
     {

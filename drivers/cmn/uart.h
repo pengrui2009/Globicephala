@@ -8,7 +8,7 @@
  @history:
            2016-08-30    pengrui      Created file
            2017-10-24    wangxianwen  Optimize the structure.
-
+           2017-11-23    pengrui      Solve the problem that can not read 'LR'
            ...
 ******************************************************************************/
 

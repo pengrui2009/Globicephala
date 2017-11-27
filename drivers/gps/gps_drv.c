@@ -290,7 +290,7 @@ void ubx_parse_main(uint8_t *buff, uint32_t len)
     if((buff[0] == UBX_SYNC_CHAR1)&&(buff[1] == UBX_SYNC_CHAR2))
     {
         ubx_pkt_checknum_calc(&buff[2], len-4, &ckA, &ckB);
-        //PRINTF("ckA:0x%02x,ckB:0x%02x,buff[len-2]:0x%02x,buff[len-1]:0x%02x",ckA,ckB,buff[len-2],buff[len-1]);
+        //printf("ckA:0x%02x,ckB:0x%02x,buff[len-2]:0x%02x,buff[len-1]:0x%02x",ckA,ckB,buff[len-2],buff[len-1]);
         if((ckA == buff[len-2])&&(ckB == buff[len-1]))
         {
             //PRINTF("[ubx] class:0x%02x,ID:0x%02x\n",buff[2],buff[3]);
@@ -331,7 +331,7 @@ return:NULL
 void * gps_thread_entry(void *parameter)
 {
     int com_fd = *((int*)parameter);
-
+    
     if(com_fd <= 0)
     {
         printf("[%s][%d] com_fd error\n",__FUNCTION__,__LINE__);
@@ -408,9 +408,11 @@ int drv_gps_init(gps_config_t gps_config)
     gps_uarts_cfg.timeout = 150;
     gps_uarts_cfg.rtscts = COMPORT_RTSCTS_DISABLE;
     ret = comport_init(&g_gps_config.port, GPS_DEV, &gps_uarts_cfg);
-    if(ret <= 0)
+    if(ret < 0)
+    {
+        printf("comport %s init error\n", GPS_DEV);
         goto error;
-
+    }
     //ret = ERR_OK;
     /*create gps receive data thread*/
      ret = osal_task_create(&(g_gps_deal_handle.task_gps), "tk_gps",gps_thread_entry, &(g_gps_config.port),GPS_THREAD_STACK_SIZE, GPS_THREAD_PRIORITY);
