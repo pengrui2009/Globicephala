@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "drv_main.h"
 #include "main.h"
 
@@ -12,9 +14,117 @@ osal_task_t  EhmTask = 0;
 
 
 msg_decode_vehicle_basic_status_st vehicle_basic_status_info;
+info_rsu_st rsu_info;
+
 
 
 MSG_MessageFrame_st MsgSt = { 0 };
+
+
+/* Switch two vehicle's position into distance according to earth. Unit: degree to meter. */
+float pos_to_distance(double lat1, double lng1, double lat2, double lng2)
+{
+    float distance = 0;
+    double radLat1 = DEGREE_TO_RAD(lat1);
+    double radLat2 = DEGREE_TO_RAD(lat2);
+    double radLng1 = DEGREE_TO_RAD(lng1);
+    double radLng2 = DEGREE_TO_RAD(lng2);
+
+    double a = radLat1 - radLat2;
+    double b = radLng1 - radLng2;
+
+    /* Position to distance from google. */
+    distance = 2 * asin(sqrt(pow(sin(a/2),2) + cos(radLat1) * cos(radLat2) * pow(sin(b/2),2)));
+    distance = distance * EARTH_RADIUS;
+
+    return distance;
+}
+
+#if 0
+/* Connect two vehicles into line and calculate the line angle between north in clockwise.  
+   Caution: the angle based on core vehicle. Unit: degree to degree. */
+static float posline_to_angle(double core_lat, double core_lng, double circle_lat, double circle_lng)
+{
+    float     dis1_2 = 0;
+    float     dis2_3 = 0;
+    
+    float line_angle = 0;;
+
+    
+    /* Calculate distance for vehicle 1&2 and 2&3. */
+    dis1_2 = pos_to_distance(core_lat, core_lng, circle_lat, circle_lng);
+    dis2_3 = pos_to_distance(circle_lat, circle_lng, core_lat, circle_lng);
+
+    /* Get angle in triangle. */
+    if(dis1_2 != 0)
+    {
+        line_angle = RAD_TO_DEGREE(acos(dis2_3 / dis1_2));
+    }
+    else
+    {
+        line_angle = 0;
+    }
+
+    /* calculate the relative angle against north, clockwise  */
+    if(core_lat <= circle_lat)
+    {
+        if(core_lng <= circle_lng)
+        {
+            /* North && East. */
+        }
+        else
+        {
+            /* North && West. */
+            line_angle = 360 - line_angle;
+        }
+    }
+    else
+    {
+        if(core_lng <= circle_lng)
+        {
+            /* South && East. */
+            line_angle = 180 - line_angle;
+        }
+        else
+        {
+            /* South && West. */
+            line_angle = 180 + line_angle;
+        }
+    }
+
+    return line_angle;
+}
+#endif
+
+/******************************************************************************
+*    函数:    recommend_speed_calc
+*    功能:    Calculate the suggested speed
+*    参数:
+            lat1              - Location 1 latitude  Uint: degree
+            lng1              - Location 1 longitude Uint: degree
+            lat2              - Location 2 latitude  Uint: degree
+            lng2              - Location 2 longitude Uint: degree
+            time                - The current remaining time  Unit: second
+*    返回:
+            Recommended speed value  unit: km/h
+*    说明:    无
+******************************************************************************/
+
+float recommend_speed_calc(double lat1, double lng1, double lat2, double lng2, uint16_t time)
+{
+    float speed = 0.0;
+    float distance = 0.0;
+
+    distance = pos_to_distance(lat1, lng1, lat2, lng2);
+    
+    if(time == 0)
+        return speed;
+
+    speed = (float)abs(distance/time);
+    speed = speed * 3.6;
+
+    return speed;
+}
 
 /******************************************************************************
 *    函数:    direction_from_angle
@@ -173,6 +283,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     msg_decode_trafficlamp_speed_guide_st trafficLampSpeedGuide;
     uint8_t send_buf[512];
     uint16_t send_len = 0;
+    float speed = 0.0;
     
     if(msg_ptr == NULL)
     {
@@ -226,12 +337,23 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
 
     if(trafficLampSpeedGuide.straightlamp.RedLightStat != 0)
     {
-        trafficLampSpeedGuide.maxvelocity = 0;
-        trafficLampSpeedGuide.minvelocity = 0;
-    }else if(trafficLampSpeedGuide.straightlamp.GreenLightStat || trafficLampSpeedGuide.straightlamp.YellowLightStat)
+        trafficLampSpeedGuide.maxvelocity = 0.0;
+        trafficLampSpeedGuide.minvelocity = 0.0;
+    }
+    else if(trafficLampSpeedGuide.straightlamp.GreenLightStat || trafficLampSpeedGuide.straightlamp.YellowLightStat)
     {
-        trafficLampSpeedGuide.maxvelocity = 70;
-        trafficLampSpeedGuide.minvelocity = 50;
+        speed = recommend_speed_calc(rsu_info.latitude, rsu_info.longitude, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, trafficLampSpeedGuide.timers);
+        if((speed == 0) || (speed > RECOMMAND_SPEED_MAX))
+        {
+            trafficLampSpeedGuide.maxvelocity = 0.0;
+            trafficLampSpeedGuide.minvelocity = 0.0;
+        }
+        else
+        {
+            trafficLampSpeedGuide.maxvelocity = RECOMMAND_SPEED_MAX;
+            trafficLampSpeedGuide.minvelocity = speed;
+        }
+            
     }
 
     for(i = 0; i < msg_ptr->intersections.array[0].phases.pointNum; i++)
@@ -271,6 +393,38 @@ ERR_EXIT:
     return result;
 }
 
+
+/*FUNCTION*****************************************************************
+* 
+* Returned : ERR_OK said success, other values indicate failure.  
+* Comments : Process the received message and send it to host.
+*
+*END*********************************************************************/
+int rsm_message_deal(MSG_RoadSideSafetyMessage_st_ptr msg_ptr)
+{
+    int result = ERR_OK;
+    
+    if(msg_ptr == NULL)
+    {
+        result = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
+    
+    os_printf("rsm msgcnt:%d\n", msg_ptr->msgCnt);
+
+    memset(&(rsu_info.rsu_id), 0, sizeof(rsu_info.rsu_id));
+    memcpy(&(rsu_info.rsu_id), msg_ptr->id, sizeof(rsu_info.rsu_id));
+
+    rsu_info.latitude = msg_ptr->refPos.latitude;
+    rsu_info.longitude = msg_ptr->refPos.longitude;
+
+    osal_printf("rsu_info:[latitude=%f,longitude=%f]\n", rsu_info.latitude, rsu_info.longitude);
+
+ERR_EXIT:    
+    return result;
+}
+
+
 /*FUNCTION*****************************************************************
 * 
 * Returned : ERR_OK said success, other values indicate failure.  
@@ -301,7 +455,7 @@ int net_message_deal(MSG_MessageFrame_st_ptr msg_ptr)
         }
         case MSG_MessageFrame_ID_RSM:
         {
-            
+            rsm_message_deal(&(msg_ptr->msg.msg_rsm));
             break;
         }
         case MSG_MessageFrame_ID_SPAT:
@@ -499,6 +653,7 @@ RX_LOOP:
     if(sub_msgtype == EHMH_V2X_BASIC_VEHICLE_STATUS_MSGTYPE)
     {
         memcpy(&vehicle_basic_status_info, (msg_decode_vehicle_basic_status_st_ptr)&decode_buf, sizeof(msg_decode_vehicle_basic_status_st));
+        osal_printf("vehicle_basic_status_info:[angle=%f][velocity=%f][latitude=%f][longitude=%f]\n",vehicle_basic_status_info.angle, vehicle_basic_status_info.velocity, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude);
     }
     
     goto RX_LOOP;

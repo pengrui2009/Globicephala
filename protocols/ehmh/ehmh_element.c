@@ -156,7 +156,7 @@ inline float decode_elevation(int32_t elevation)
     double value = 0;
 
     /* unit 10 cm. */
-    value = bsctyp_decode(DE_Heading, cv_ntohs(elevation));
+    value = bsctyp_decode(DE_Heading, cv_ntohl(elevation));
     
     result = (float)(value);
 
@@ -195,7 +195,7 @@ inline double decode_latitude(int32_t latitude)
     double  result = latitude;
 
     /* unit 0.1 micro degree. */
-    result = bsctyp_decode(DE_Latitude, cv_ntohs(latitude));
+    result = bsctyp_decode(DE_Latitude, cv_ntohl(latitude));
 
     return result;
 }
@@ -213,7 +213,7 @@ inline int32_t encode_longitude(double longitude)
     long value = 0;
 
     /* unit 0.1 micro degree. */
-    result = bsctyp_decode(DE_Longitude, cv_ntohs(longitude));
+    result = bsctyp_decode(DE_Longitude, longitude);
 
     result = (int32_t)value;
 
@@ -233,7 +233,7 @@ inline double decode_longitude(int32_t longitude)
     double  result = longitude;
 
     /* unit 0.1 micro degree. */
-    result = bsctyp_decode(DE_Latitude, cv_ntohs(longitude));
+    result = bsctyp_decode(DE_Latitude, cv_ntohl(longitude));
     
     return result;
 }

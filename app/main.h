@@ -4,6 +4,7 @@
 
 #include "ehmh_element.h"
 #include "ehmh_protocol.h"
+#include "cv_data_element.h"
 
 
 /* Save all the compiler settings. */
@@ -163,6 +164,19 @@ typedef struct _local_vehicle_gps_info_st
 
 #define TRAFFIC_INTERSECTION_NUM    4
 
+#define RECOMMAND_SPEED_MAX        (70.0f)   // Uint: Km/h
+
+/* Earth radius. Unit: m. */
+#define EARTH_RADIUS          (6371004.0f)
+
+
+/* Degree to radian. value = (degree * 3.1415926535898) / 180.0. */
+#define DEGREE_TO_RAD(degree) ((degree) / 57.2957795f)
+
+/* Radian to degrr. value = (radian * 180.0) / 3.1415926535898. */
+#define RAD_TO_DEGREE(radian) ((radian) * 57.2957795f)
+
+
 typedef enum _direction_vehicle_em
 {
     DIRECTION_NORTH = 0,
@@ -181,6 +195,14 @@ typedef struct _msg_intersection_st
     uint16_t                                        intersection_id;
     msg_decode_trafficlamp_speed_guide_st_ptr trafficLampSpeedGuide;
 }msg_intersection_st,*msg_intersection_st_ptr;
+
+typedef struct _info_rsu_st
+{
+    uint8_t rsu_id[DE_TemporaryID_BUFSIZE];
+    double  latitude; /* Geographic latitude. Unit: degree. */
+    double  longitude; /* Geographic longitude. Unit: degree. */
+}info_rsu_st,*info_rsu_st_ptr;
+
 
 /* restore all compiler settings in stacks. */
 #pragma pack(pop)

@@ -268,7 +268,7 @@ static int decode_basic_vehicle_status(msg_decode_vehicle_basic_status_st_ptr in
     int                                 result = 0;
     msg_encode_vehicle_basic_status_st_ptr status_ptr = (msg_encode_vehicle_basic_status_st_ptr)data_ptr;
 
-    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_DECODE_VEHICLE_BASIC_STATUS_ST_LEN > data_len))
+    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_ENCODE_VEHICLE_BASIC_STATUS_ST_LEN > data_len))
     {
         result = -ERR_INVAL;
         goto ERR_EXIT;

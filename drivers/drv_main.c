@@ -18,12 +18,12 @@ int drv_main_init(drv_main_st_ptr *drv_ptr_ptr)
 
     /* Audio configuration. */
     #if(DRV_ENABLE_AUDIO != 0)
-    audio_config_st audio_cfg = DRV_AUDIO_CFG;
+    drv_sound_config_t audio_cfg = DRV_AUDIO_CFG;
     #endif
     
     /* Barometer configuration. */
     #if(DRV_ENABLE_BAROMETER != 0)
-    barometer_config_st barometer_cfg = DRV_BAROMETER_CFG;
+    barometer_config_t barometer_cfg = DRV_BAROMETER_CFG;
     #endif
 
     /* Ehost configuration. */
