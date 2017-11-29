@@ -44,7 +44,7 @@ typedef u32 __bitwise le32;
 typedef u64 __bitwise be64;
 typedef u64 __bitwise le64;
 
-#ifdef ENDIAN_LITTLE
+#if __BYTE_ORDER == __LITTLE_ENDIAN
 #define le_to_host16(n) ((__force u16) (le16) (n))
 #define host_to_le16(n) ((__force le16) (u16) (n))
 #define be_to_host16(n) bswap_16((__force u16) (be16) (n))
@@ -57,7 +57,7 @@ typedef u64 __bitwise le64;
 #define host_to_le64(n) ((__force le64) (u64) (n))
 #define be_to_host64(n) bswap_64((__force u64) (be64) (n))
 #define host_to_be64(n) ((__force be64) bswap_64((n)))
-#else 
+#elif __BYTE_ORDER == __BIG_ENDIAN
 #define le_to_host16(n) bswap_16(n)
 #define host_to_le16(n) bswap_16(n)
 #define be_to_host16(n) (n)
@@ -70,7 +70,10 @@ typedef u64 __bitwise le64;
 #define host_to_le64(n) bswap_64(n)
 #define be_to_host64(n) (n)
 #define host_to_be64(n) (n)
+#else
+#error Endian undefined
 #endif
+
 
 
 

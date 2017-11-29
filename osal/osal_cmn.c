@@ -7,6 +7,7 @@
  @author : wanglei
  @history:
            2015-8-11    wanglei    Created file
+           2017-11-28      pengrui    Replace the macros of ENDIAN to the toolchain macros
            ...
 ******************************************************************************/
 
@@ -124,16 +125,16 @@ void osal_sleep(int32_t milliseconds)
 inline uint16_t cv_ntohs(uint16_t s16)
 {
     uint16_t ret = 0;
-#ifdef ENDIAN_LITTLE
+#if __BYTE_ORDER == __LITTLE_ENDIAN
     uint8_t *s, *d;
-#endif
-#ifndef ENDIAN_LITTLE
-    ret = s16;
-#else
     s = (uint8_t *)(&s16);
     d = (uint8_t *)(&ret) + 1;
     *d-- = *s++;
     *d-- = *s++;
+#elif __BYTE_ORDER == __BIG_ENDIAN
+    ret = s16;
+#else
+#error Endian undefined
 #endif
     return ret;
 }
@@ -147,26 +148,23 @@ inline uint16_t cv_ntohs(uint16_t s16)
 inline uint32_t cv_ntohl(uint32_t l32)
 {
     uint32_t ret = 0;
-#ifdef ENDIAN_LITTLE
+#if __BYTE_ORDER == __LITTLE_ENDIAN
     uint8_t *s, *d;
-#endif
-    //#ifdef BIG_ENDIAN
-#ifndef ENDIAN_LITTLE
+    s = (uint8_t *)(&l32);
+    d = (uint8_t *)(&ret) + 3;
+
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+#elif __BYTE_ORDER == __BIG_ENDIAN
     ret = l32;
-    #else
-     s = (uint8_t *)(&l32);
-     d = (uint8_t *)(&ret) + 3;
-
-     *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
+#else
+#error Endian undefined
 #endif
-
-
-
     return ret;
 }
+
 /******************************************************************************
 *    函数:    cv_ntohll
 *    功能:    调整8个字节之间的网络字节序
@@ -177,28 +175,28 @@ inline uint32_t cv_ntohl(uint32_t l32)
 inline uint64_t cv_ntohll(uint64_t l64)
 {
     uint64_t ret = 0;
-#ifdef ENDIAN_LITTLE
+#if __BYTE_ORDER == __LITTLE_ENDIAN
     uint8_t *s, *d;
-#endif
-    //#ifdef BIG_ENDIAN
-#ifndef ENDIAN_LITTLE
+    s = (uint8_t *)(&l64);
+    d = (uint8_t *)(&ret) + 7;
+
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+    *d-- = *s++;
+#elif __BYTE_ORDER == __BIG_ENDIAN
     ret = l64;
 #else
-     s = (uint8_t *)(&l64);
-     d = (uint8_t *)(&ret) + 7;
-
-     *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
-    *d-- = *s++;
+#error Endian undefined
 #endif
 
     return ret;
 }
+
 /******************************************************************************
 *    函数:    cv_ntohf
 *    功能:    调整4个字节之间的网络字节序
@@ -209,12 +207,8 @@ inline uint64_t cv_ntohll(uint64_t l64)
 inline float cv_ntohf(float f32)
 {
     float ret;
-#ifdef ENDIAN_LITTLE
+#if __BYTE_ORDER == __LITTLE_ENDIAN
     uint8_t *s, *d;
-#endif
-#ifndef ENDIAN_LITTLE
-    ret = f32;
-#else
     s = (uint8_t *)(&f32);
     d = (uint8_t *)(&ret) + 3;
 
@@ -223,11 +217,13 @@ inline float cv_ntohf(float f32)
     *d-- = *s++;
     *d-- = *s++;
     *d-- = *s++;
+#elif __BYTE_ORDER == __BIG_ENDIAN
+    ret = f32;
+#else
+#error Endian undefined
 #endif
     return ret;
 }
-/*lint -restore*/
-
 /******************************************************************************
 *  函数:    CRC16
 *  功能:    计算数据帧的CRC16校验和

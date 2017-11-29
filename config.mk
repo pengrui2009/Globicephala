@@ -7,19 +7,19 @@ ifeq ($(V2X_PLATFORM_TYPE), V2X_IMX6)
 
 	#For IMX6 device.
 	CROSS_COMPILE = arm-linux-gnueabihf-
-	_ENDIAN       = ENDIAN_LITTLE
+	#_ENDIAN       = ENDIAN_LITTLE
 
 else ifeq ($(V2X_PLATFORM_TYPE), V2X_AR9341)
 
 	#For AR9341 device.
 	CROSS_COMPILE = mips-openwrt-linux-
- 	_ENDIAN        = ENDIAN_BIG
+ 	#_ENDIAN        = ENDIAN_BIG
 
 else ifeq ($(V2X_PLATFORM_TYPE), V2X_LTEV)
 
 	#For LTEV device.
 	CROSS_COMPILE = arm-linux-gnueabi-
-	_ENDIAN        = ENDIAN_LITTLE
+	#_ENDIAN        = ENDIAN_LITTLE
 
 endif
 
@@ -43,7 +43,7 @@ VNET_DRIVER_TYPE  = VNET_DRIVER_TYPE_LTE
 #control the simu interface:VNET_SIMU_OPEN or VNET_SIMU_CLOSE
 VNET_SIMU_STATU	= VNET_SIMU_OPEN
 
-OSFLAG = -DLINUX -D_GNU_SOURCE -DCONFIG_LIBNL30 -D$(_ENDIAN) -D_BYTE_ORDER=$(_ENDIAN) -D$(VNET_DRIVER_TYPE) -D$(VNET_SIMU_STATU) -DASN_DISABLE_OER_SUPPORT -D__STDC_VERSION__=199901L -DASN_EMIT_DEBUG=0
+OSFLAG = -DLINUX -D_GNU_SOURCE -DCONFIG_LIBNL30 -D$(VNET_DRIVER_TYPE) -D$(VNET_SIMU_STATU) -DASN_DISABLE_OER_SUPPORT -D__STDC_VERSION__=199901L -DASN_EMIT_DEBUG=0 #-D$(_ENDIAN) -D_BYTE_ORDER=$(_ENDIAN)
 
 ifeq ("$(release)", "y")
 	OSFLAG += -D_NDEBUG
@@ -68,6 +68,7 @@ INCLUDEFLAGS +=	-I$(TOPDIR)/include \
 		-I$(TOPDIR)/drivers/vguest \
 		-I$(TOPDIR)/drivers/vhost \
 		-I$(TOPDIR)/drivers/vnet \
+		-I$(TOPDIR)/protocols/cmn \
 		-I$(TOPDIR)/protocols/ehmh \
 		-I$(TOPDIR)/protocols/nmea0183 \
 		-I$(TOPDIR)/protocols/ntrip \

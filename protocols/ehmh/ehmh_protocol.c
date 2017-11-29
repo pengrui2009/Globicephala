@@ -8,6 +8,8 @@
  @history:
            2017-11-23      pengrui    Created file
            2017-11-23      pengrui    waiting for finish rtcm decode
+           2017-11-28      pengrui    modify the decode basic vehicle msg,full vehicle msg
+                                         , static vehilce msg and vehicle alert msg BUG
            ...
 ******************************************************************************/
 #include "ehmh_element.h"
@@ -323,7 +325,7 @@ static int decode_full_vehicle_status(msg_decode_vehicle_full_status_st_ptr info
     int                                 result = 0;
     msg_encode_vehicle_full_status_st_ptr  status_ptr = NULL;
 
-    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_DECODE_VEHICLE_FULL_STATUS_ST_LEN > data_len))
+    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_ENCODE_VEHICLE_FULL_STATUS_ST_LEN > data_len))
     {
         result = -ERR_INVAL;
         goto ERR_EXIT;
@@ -419,7 +421,7 @@ static int decode_vehicle_static_infor(msg_decode_vehicle_static_info_st_ptr inf
     int                                 result = 0;
     msg_encode_vehicle_static_info_st_ptr  status_ptr = NULL;
 
-    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_DECODE_VEHICLE_STATIC_INFO_ST_LEN > data_len))
+    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_ENCODE_VEHICLE_STATIC_INFO_ST_LEN > data_len))
     {
         result = -ERR_INVAL;
         goto ERR_EXIT;
@@ -465,7 +467,7 @@ static int decode_local_vehicle_alert_set(msg_decode_local_vehicle_alert_st_ptr 
     int                                 result = 0;
     msg_encode_local_vehicle_alert_st_ptr  status_ptr = NULL;
 
-    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_DECODE_LOCAL_VEHICLE_ALERT_ST_LEN > data_len))
+    if((NULL == info_ptr) || (NULL == data_ptr) || (MSG_ENCODE_LOCAL_VEHICLE_ALERT_ST_LEN > data_len))
     {
         result = -ERR_INVAL;
         goto ERR_EXIT;

@@ -789,8 +789,8 @@ static int __timer_create (clockid_t clock_id,struct sigevent *evp,timer_t *time
         }
 
         /* If the thread is not running already, try to start it.  */
-        retval = __timer_thread_start(thread);
-        if (!thread->exists && (retval < 0))
+        //retval = __timer_thread_start(thread);
+        if (!thread->exists && (__timer_thread_start(thread) < 0))
         {
             __set_errno (EAGAIN);
             fprintf(stderr, "__timer_thread_start() error\r\n");

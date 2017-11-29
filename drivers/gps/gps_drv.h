@@ -45,7 +45,7 @@ typedef struct _gps_config
     float base_required_position_accu;//the required position accu of base mode
     gps_callback_fun gps_deal_callback;//gps data deal callback
     gps_callback_fun gps_rtcm_callback;//gps rtcm data deal callback
-    gps_callback_fun gps_ublox_leapsecond_callback;//ublox leapsecond flag callback
+    gps_callback_fun gps_ublox_leapsecond_callback;//ublox leapsecond flag callback,Data length 1Byte, the data content for the leap second flag, 1 indicates that the leap second synchronization is complete, 0 means not completed
 } gps_config_t;
 
 /*gps deal handle and flag*/

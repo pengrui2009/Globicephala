@@ -14,9 +14,10 @@
  * http://burtleburtle.net/bob/c/lookup3.c
  */
 
-#ifdef ENDIAN_LITTLE
+#if __BYTE_ORDER == __LITTLE_ENDIAN
 #   define HAVE_LITTLE_ENDIAN 1
-#elif ENDIAN_BIG
+#elif __BYTE_ORDER == __BIG_ENDIAN
+
 #   define HAVE_BIG_ENDIAN 1
 #else
 #error Unknown endianness.  Failure in endian.h

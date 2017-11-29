@@ -7,6 +7,7 @@
  @author : pengrui
  @history:
            2017-11-23      pengrui    Created file
+           2017-11-28      pengrui    Replace the macros of ENDIAN to the toolchain macros
            ...
 ******************************************************************************/
 #ifndef __EHMH_PROTOCOL_H__
@@ -281,7 +282,8 @@ typedef union _wheel_brake_st
     uint8_t wheel_brake_word;
 
     struct _wheel_brake_bit{
-        #ifndef ENDIAN_LITTLE
+#if __BYTE_ORDER == __BIG_ENDIAN
+
         /*预留*/
             uint8_t    reserved:3;
         /*右后轮     0:disactive        1:active ,如果车辆后轮只有一个轮子,则该位:0*/
@@ -294,7 +296,7 @@ typedef union _wheel_brake_st
             uint8_t leftfront:1;
         /*不可用状态    0:active        1:active ,如果置1,则表示当前所以轮子处于不可用状态*/
             uint8_t unavailable:1;
-        #else
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
         /*不可用状态    0:active        1:active ,如果置1,则表示当前所以轮子处于不可用状态*/
             uint8_t unavailable:1;
         /*左前轮        0:active        1:active ,如果车辆前轮只有一个轮子,则左侧轮子代表有效*/
@@ -307,7 +309,10 @@ typedef union _wheel_brake_st
             uint8_t rightrear:1;
         /*预留*/
             uint8_t    reserved:3;
-        #endif
+#else
+#error Endian undefined
+#endif
+
     } wheel_brake_bit;
 }wheel_brake_st;
 
@@ -338,7 +343,8 @@ typedef union _exterior_lights_st
     uint16_t exterior_lights_word;
     struct _exterior_lights_bit
     {
-    #ifndef ENDIAN_LITTLE
+#if __BYTE_ORDER == __BIG_ENDIAN
+
 
         /* reserved*/
         uint16_t        reserved:7;
@@ -361,7 +367,8 @@ typedef union _exterior_lights_st
         /* 近光灯开启*/
         uint16_t        lowbeamheadlight:1;
 
-    #else
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+
 
         /* 近光灯开启*/
         uint16_t        lowbeamheadlight:1;
@@ -383,7 +390,10 @@ typedef union _exterior_lights_st
         uint16_t        parkinglight:1;
         /* reserved*/
         uint16_t        reserved:7;
-    #endif
+#else
+#error Endian undefined
+#endif
+
     }exterior_lights_bit;
 }exterior_lights_st, * exterior_lights_st_ptr;
 
@@ -409,7 +419,8 @@ typedef union _alert_flag_st
     /* Alert bits. */
     struct _alert_bit
     {
-      #ifndef ENDIAN_LITTLE
+#if __BYTE_ORDER == __BIG_ENDIAN
+
         uint32_t reserved          :25;   /* 保留位 */
         uint32_t rsd_tunnel        :1;    /* 隧道告警 */
         uint32_t vec_danger_goods  :1;    /* 危险货物运输车告警 */
@@ -418,7 +429,7 @@ typedef union _alert_flag_st
         uint32_t vec_breakdown     :1;    /* 车辆故障告警 */
         uint32_t vec_neardis_rear  :1;    /* 后车近距离告警 */
         uint32_t vec_neardis_front :1;    /* 前车近距离告警 */
-      #else
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
         uint32_t vec_neardis_front :1;    /* 前车近距离告警 */
         uint32_t vec_neardis_rear  :1;    /* 后车近距离告警 */
         uint32_t vec_breakdown     :1;    /* 车辆故障告警 */
@@ -427,7 +438,10 @@ typedef union _alert_flag_st
         uint32_t vec_danger_goods  :1;    /* 危险货物运输车告警 */
         uint32_t rsd_tunnel        :1;    /* 隧道告警 */
         uint32_t reserved          :25;   /* 保留位 */
-      #endif
+#else
+#error Endian undefined
+#endif
+
     } alert_bit;
     
 }alert_flag_st, *alert_flag_st_ptr;
@@ -446,7 +460,8 @@ typedef union __vehicle_alert_st{
     uint32_t  vehicle_alert_words;
     /* 本地车辆告警标识位*/
     struct _vehicle_alert_bit{
-    #ifndef ENDIAN_LITTLE
+#if __BYTE_ORDER == __BIG_ENDIAN
+
 
         uint32_t reserved             :28;
 
@@ -456,7 +471,8 @@ typedef union __vehicle_alert_st{
         /* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
         uint32_t    vecbreakdownalert :2;
 
-      #else
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+
 
         /* 车辆故障告警：00b(Invalid),01b(Off),10b(On),11b(Reserved)*/
         uint32_t    vecbreakdownalert :2;
@@ -466,7 +482,10 @@ typedef union __vehicle_alert_st{
 
         uint32_t reserved             :28;
 
-      #endif
+#else
+#error Endian undefined
+#endif
+
     }vehicle_alert_bit;
 
 }vehicle_alert_st;
@@ -551,7 +570,8 @@ typedef struct _trafficlamps_st
 /*帧消息头信息  frame msg header structure*/
 typedef  struct  _frame_msg_header_st
 {
-#ifndef ENDIAN_LITTLE
+#if __BYTE_ORDER ==  __BIG_ENDIAN 
+
 
     /*消息标识符:    0xE*/
     uint8_t    mark:     4;
@@ -568,7 +588,8 @@ typedef  struct  _frame_msg_header_st
     /*消息类型:    0:预留 1:调试消息 2:系统管理消息 3:v2x应用消息 4:dsrc消息 5:gps消息 6:未定义*/
     uint8_t    type     :4;
     
-#else
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+
 
     /*预留字段：    0*/
     uint8_t    reserved1:3;
@@ -585,7 +606,10 @@ typedef  struct  _frame_msg_header_st
     /*预留字段：    0*/
     uint8_t    reserved2:4;
     
+#else
+#error Endian undefined
 #endif
+
 }frame_msg_header_st, *frame_msg_header_st_ptr;
 
 #define FRAME_MSG_HEADER_ST_LEN    (sizeof(frame_msg_header_st))

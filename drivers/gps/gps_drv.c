@@ -447,11 +447,13 @@ int drv_gps_init(gps_config_t gps_config)
     gps_uarts_cfg.baud = 115200;
     /*set the configuration of host uart*/
     ret = comport_config(g_gps_config.port, &gps_uarts_cfg);
-      if(ret < 0)
-      {
-          printf("[%s][%d] comport_setconfig error\n",__FUNCTION__,__LINE__);
+    if(ret < 0)
+    {
+        printf("[%s][%d] comport_setconfig error\n",__FUNCTION__,__LINE__);
         goto error;
-      }
+    }
+    /*Work here at 115200 baud rate,reconfigure once*/
+    gps_chip_config(&g_gps_config);
     
     return ret;    
 error:

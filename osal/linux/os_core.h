@@ -60,8 +60,8 @@
 
 #define MSGBUF_SIZE        256
 
-typedef long long        int64_t;
-typedef unsigned long long uint64_t;
+//typedef long long        int64_t;
+//typedef unsigned long long uint64_t;
 
 typedef pthread_t             osal_task_t;
 typedef pthread_mutex_t       osal_mutex_t;

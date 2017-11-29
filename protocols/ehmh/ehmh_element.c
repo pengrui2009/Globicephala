@@ -7,6 +7,8 @@
  @author : pengrui
  @history:
            2017-11-23       pengrui      Created file
+           2017-11-27       pengrui      Modify the velocity encode and decode function
+           2017-11-28       pengrui      Modify the byte convert bug
            ...
 ******************************************************************************/
 
@@ -14,6 +16,7 @@
 #include <stdint.h>
 #include "osal_cmn.h"
 #include "ehmh_element.h"
+#include "prot_dataelem.h"
 /*************************************************
  ∫Í∂®“Â
 *************************************************/
@@ -156,7 +159,7 @@ inline float decode_elevation(int32_t elevation)
     double value = 0;
 
     /* unit 10 cm. */
-    value = bsctyp_decode(DE_Heading, cv_ntohl(elevation));
+    value = bsctyp_decode(DE_Elevation, cv_ntohl(elevation));
     
     result = (float)(value);
 
@@ -217,7 +220,7 @@ inline int32_t encode_longitude(double longitude)
 
     result = (int32_t)value;
 
-    return cv_ntohs(result);
+    return cv_ntohl(result);
 }
 
 /******************************************************************************
@@ -233,7 +236,7 @@ inline double decode_longitude(int32_t longitude)
     double  result = longitude;
 
     /* unit 0.1 micro degree. */
-    result = bsctyp_decode(DE_Latitude, cv_ntohl(longitude));
+    result = bsctyp_decode(DE_Longitude, cv_ntohl(longitude));
     
     return result;
 }

@@ -28,7 +28,8 @@ SUBDIRS = \
 	  $(TOPDIR)/drivers/vhost \
 	  $(TOPDIR)/drivers/vnet \
 	  $(TOPDIR)/drivers/weather \
-          $(TOPDIR)/protocols/ehmh \
+	  $(TOPDIR)/protocols/cmn \
+	  $(TOPDIR)/protocols/ehmh \
 	  $(TOPDIR)/protocols/nmea0183 \
 	  $(TOPDIR)/protocols/ntrip \
 	  $(TOPDIR)/protocols/wsmp \

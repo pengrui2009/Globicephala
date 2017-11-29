@@ -114,13 +114,16 @@ float recommend_speed_calc(double lat1, double lng1, double lat2, double lng2, u
 {
     float speed = 0.0;
     float distance = 0.0;
+    float t = 0.0;
 
     distance = pos_to_distance(lat1, lng1, lat2, lng2);
+    osal_printf("--distance:%f(m)\n",distance);
     
     if(time == 0)
         return speed;
 
-    speed = (float)abs(distance/time);
+    t = (float)time;
+    speed = (float)fabs(distance/t);
     speed = speed * 3.6;
 
     return speed;
@@ -190,7 +193,7 @@ int phase_parse(DF_PhaseList_st_ptr phaseList_data, msg_decode_trafficlamp_speed
         
     for(i = 0; i < phaseList_data->pointNum; i++)
     {
-        os_printf("phase id[%d] = %d\n", i, phaseList_data->array[i].id);
+        //os_printf("phase id[%d] = %d\n", i, phaseList_data->array[i].id);
         //memset(trafficLampSpeedGuide_ptr, 0, (phaseList_data->pointNum)*sizeof(msg_decode_trafficlamp_speed_guide_st));
         for(j = 0; j < phaseList_data->array[i].phaseStates.pointNum; j++)
         {
@@ -278,7 +281,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     int result = ERR_OK;
     int i = 0;
     drv_main_st_ptr  drv_ptr = GET_DRVMAIN_PTR;
-    direction_vehicle_em vehicle_direction;
+    direction_vehicle_em vehicle_direction = 0;
     msg_intersection_st_ptr intersection_ptr = NULL;
     msg_decode_trafficlamp_speed_guide_st trafficLampSpeedGuide;
     uint8_t send_buf[512];
@@ -291,7 +294,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         goto ERR_EXIT;
     }
     
-    os_printf("spat msgcnt:%d\n", msg_ptr->msgCnt);
+    //os_printf("spat msgcnt:%d\n", msg_ptr->msgCnt);
     
     if((intersection_ptr = os_calloc(1, ((sizeof(msg_intersection_st))*(msg_ptr->intersections.pointNum)))) == NULL)
     {
@@ -316,9 +319,63 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         
     }
 
-    //result = direction_from_angle(vehicle_basic_status_info.velocity, vehicle_basic_status_info.angle, &vehicle_direction);
-    vehicle_direction = DIRECTION_EAST;
-    //if(result == ERR_OK)
+    for(i = 0; i < msg_ptr->intersections.array[0].phases.pointNum; i++)
+    {
+        if(i == 0)
+        {
+            osal_printf("\n----trafficLampSpeedGuide[EAST-WEST]----\n");
+        }
+        else if(i == 1)
+        {
+            osal_printf("\n----trafficLampSpeedGuide[SOUTH-NORTH]----\n");
+        }
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.YellowLightStat)
+        {
+            osal_printf("[leftlamp-YellowLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.YellowLightStat);
+        }
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.GreenLightStat)
+        {
+            osal_printf("[leftlamp-GreenLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.GreenLightStat);
+        }
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.RedLightStat)
+        {
+            osal_printf("[leftlamp-RedLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.RedLightStat);
+        }
+
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.YellowLightStat)
+        {
+            osal_printf("[straightlamp-YellowLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.YellowLightStat);
+        }
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.GreenLightStat)
+        {
+            osal_printf("[straightlamp-GreenLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.GreenLightStat);
+        }
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.RedLightStat)
+        {
+            osal_printf("[straightlamp-RedLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.RedLightStat);
+        }
+
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.YellowLightStat)
+        {
+            osal_printf("[rightlamp-YellowLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.YellowLightStat);
+        }
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.GreenLightStat)
+        {
+            osal_printf("[rightlamp-GreenLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.GreenLightStat);
+        }
+        if(intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.RedLightStat)
+        {
+            osal_printf("[rightlamp-RedLightStat]:%d\n", intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.RedLightStat);
+        }
+    
+        osal_printf("****[timer]:%d(s)****\n", intersection_ptr[0].trafficLampSpeedGuide[i].timers);
+        
+    }
+
+    result = direction_from_angle(vehicle_basic_status_info.velocity, vehicle_basic_status_info.angle, &vehicle_direction);
+    osal_printf("direction_from_angle:%d\n",vehicle_direction);
+    
+    if(result == ERR_OK)
     {
         switch(vehicle_direction)
         {
@@ -334,6 +391,11 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
                 break;
         }
     }
+    else
+    {
+        osal_printf("direction_from_angle failed,because speed is zero! Use default direction-EAST_WEST\n");
+        memcpy(&trafficLampSpeedGuide, &(intersection_ptr[0].trafficLampSpeedGuide[0]), sizeof(trafficLampSpeedGuide));
+    }
 
     if(trafficLampSpeedGuide.straightlamp.RedLightStat != 0)
     {
@@ -343,7 +405,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     else if(trafficLampSpeedGuide.straightlamp.GreenLightStat || trafficLampSpeedGuide.straightlamp.YellowLightStat)
     {
         speed = recommend_speed_calc(rsu_info.latitude, rsu_info.longitude, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, trafficLampSpeedGuide.timers);
-        if((speed == 0) || (speed > RECOMMAND_SPEED_MAX))
+        if((speed < 0.1) || (speed > RECOMMAND_SPEED_MAX))
         {
             trafficLampSpeedGuide.maxvelocity = 0.0;
             trafficLampSpeedGuide.minvelocity = 0.0;
@@ -352,19 +414,11 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         {
             trafficLampSpeedGuide.maxvelocity = RECOMMAND_SPEED_MAX;
             trafficLampSpeedGuide.minvelocity = speed;
-        }
-            
+        }    
     }
-
-    for(i = 0; i < msg_ptr->intersections.array[0].phases.pointNum; i++)
-    {
-        osal_printf("intersection_ptr[0].trafficLampSpeedGuide[%d],left=0x%x,straight=0x%x,right=0x%x,timer=%d\n",
-                    i,
-                    intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.YellowLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.GreenLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].leftlamp.RedLightStat,
-                    intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.YellowLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.GreenLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].straightlamp.RedLightStat,
-                    intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.YellowLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.GreenLightStat,intersection_ptr[0].trafficLampSpeedGuide[i].rightlamp.RedLightStat,
-                    intersection_ptr[0].trafficLampSpeedGuide[i].timers);
-    }
+    
+    osal_printf("~~trafficLampSpeedGuide.maxvelocity=%f(km/h),minvelocity=%f(km/h)\n\n",trafficLampSpeedGuide.maxvelocity,trafficLampSpeedGuide.minvelocity);
+    
     trafficLampSpeedGuide.msg_id = EHMH_V2X_TRAFFICLAMP_SPEED_GUIDE_MSGTYPE;
     result = ehmh_encode(EHMH_V2X_TRAFFICLAMP_SPEED_GUIDE_MSGTYPE, &trafficLampSpeedGuide, send_buf, &send_len);
     if(result)
@@ -410,7 +464,7 @@ int rsm_message_deal(MSG_RoadSideSafetyMessage_st_ptr msg_ptr)
         goto ERR_EXIT;
     }
     
-    os_printf("rsm msgcnt:%d\n", msg_ptr->msgCnt);
+    //os_printf("rsm msgcnt:%d\n", msg_ptr->msgCnt);
 
     memset(&(rsu_info.rsu_id), 0, sizeof(rsu_info.rsu_id));
     memcpy(&(rsu_info.rsu_id), msg_ptr->id, sizeof(rsu_info.rsu_id));
@@ -418,7 +472,7 @@ int rsm_message_deal(MSG_RoadSideSafetyMessage_st_ptr msg_ptr)
     rsu_info.latitude = msg_ptr->refPos.latitude;
     rsu_info.longitude = msg_ptr->refPos.longitude;
 
-    osal_printf("rsu_info:[latitude=%f,longitude=%f]\n", rsu_info.latitude, rsu_info.longitude);
+    //osal_printf("rsu_info:[latitude=%f,longitude=%f]\n", rsu_info.latitude, rsu_info.longitude);
 
 ERR_EXIT:    
     return result;
@@ -653,7 +707,7 @@ RX_LOOP:
     if(sub_msgtype == EHMH_V2X_BASIC_VEHICLE_STATUS_MSGTYPE)
     {
         memcpy(&vehicle_basic_status_info, (msg_decode_vehicle_basic_status_st_ptr)&decode_buf, sizeof(msg_decode_vehicle_basic_status_st));
-        osal_printf("vehicle_basic_status_info:[angle=%f][velocity=%f][latitude=%f][longitude=%f]\n",vehicle_basic_status_info.angle, vehicle_basic_status_info.velocity, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude);
+        //osal_printf("vehicle_basic_status_info:[angle=%f][velocity=%f][latitude=%f][longitude=%f]\n",vehicle_basic_status_info.angle, vehicle_basic_status_info.velocity, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude);
     }
     
     goto RX_LOOP;
