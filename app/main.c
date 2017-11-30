@@ -295,6 +295,7 @@ int phase_parse(DF_PhaseList_st_ptr phaseList_data, msg_decode_trafficlamp_speed
             if((phaseList_data->array[i].phaseStates.array[j].opt.PhaseState_opt_timing == MSG_OPTIONAL_YES)&&(light_flag))
             {
                 trafficLampSpeedGuide_ptr[i].timers = phaseList_data->array[i].phaseStates.array[j].timing.likelyEndTime;
+                osal_printf("****phaseList_data->array[%d].phaseStates.array[%d].timing.likelyEndTime=%d\n", i, j, phaseList_data->array[i].phaseStates.array[j].timing.likelyEndTime);
             }
             
         }
@@ -316,7 +317,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     int result = ERR_OK;
     int i = 0;
     drv_main_st_ptr  drv_ptr = GET_DRVMAIN_PTR;
-    direction_vehicle_em vehicle_direction = 0;
+    static direction_vehicle_em vehicle_direction = DIRECTION_SOUTH_EAST;
     msg_intersection_st_ptr intersection_ptr = NULL;
     msg_decode_trafficlamp_speed_guide_st trafficLampSpeedGuide;
     uint8_t send_buf[512];
@@ -409,7 +410,10 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
 
     if((vehicle_basic_status_info.velocity < 0.1) && (vehicle_basic_status_info.velocity > -0.1))
     {
-        result = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &vehicle_direction);
+        if(0)
+            result = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &vehicle_direction);
+
+        result = ERR_OK;    
     }
     else
     {
@@ -430,6 +434,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
                 memcpy(&trafficLampSpeedGuide, &(intersection_ptr[0].trafficLampSpeedGuide[0]), sizeof(trafficLampSpeedGuide));
                 break;
             default:
+                memcpy(&trafficLampSpeedGuide, &(intersection_ptr[0].trafficLampSpeedGuide[0]), sizeof(trafficLampSpeedGuide));
                 break;
         }
     }
@@ -462,6 +467,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     osal_printf("~~trafficLampSpeedGuide.maxvelocity=%f(km/h),minvelocity=%f(km/h)\n\n",trafficLampSpeedGuide.maxvelocity,trafficLampSpeedGuide.minvelocity);
     
     trafficLampSpeedGuide.msg_id = EHMH_V2X_TRAFFICLAMP_SPEED_GUIDE_MSGTYPE;
+    memset(&send_buf, 0, sizeof(send_buf));
     result = ehmh_encode(EHMH_V2X_TRAFFICLAMP_SPEED_GUIDE_MSGTYPE, &trafficLampSpeedGuide, send_buf, &send_len);
     if(result)
     {

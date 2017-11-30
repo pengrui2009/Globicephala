@@ -101,9 +101,9 @@ int net_send(int fd, uint8_t *buff_ptr, uint16_t data_len)
     /* Set boardcast destination ip to host ip's network segment ip. Do not use "dest_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST)", 
     or the frame will output from eth0 not the network bridge. */
     memcpy(ip_broadcast, &(net_ptr->local_ip.word), sizeof(ip_broadcast));
-    ip_broadcast[0] = 0xFF;
-    ip_broadcast[1] = 0xFF;
-    ip_broadcast[2] = 0xFF;
+    ip_broadcast[0] = 192;
+    ip_broadcast[1] = 168;
+    ip_broadcast[2] = 1;
     ip_broadcast[3] = 0xFF;
     memcpy(&(dest_addr.sin_addr.s_addr), ip_broadcast, sizeof(ip_broadcast));
     dest_addr.sin_port = htons(net_ptr->config.remote_port);
