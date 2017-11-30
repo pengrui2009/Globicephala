@@ -9,6 +9,9 @@
            2017-10-16     pengrui        Modify for CSAE
            ...
 ******************************************************************************/
+#ifndef __DRV_AUDIO_H__
+#define __DRV_AUDIO_H__
+
 #include "list.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -247,3 +250,4 @@ extern int drv_audio_play(const uint8_t *pcm_data, uint32_t pcm_len, pcm_play_ty
 *    Comments: 
 ******************************************************************************/
 extern int drv_audio_close(void);
+#endif

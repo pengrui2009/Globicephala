@@ -9,4 +9,7 @@
            2017-9-28    pengrui      Created file
            ...
 ******************************************************************************/
+#ifndef __DRV_GUEST_H__
+#define __DRV_GUEST_H__
 
+#endif

@@ -11,9 +11,6 @@
            2017-11-27    pengrui      Add the macros to control compile.
            ...
 ******************************************************************************/
-#include "config.h"
-
-#if (CFG_LTEV_MODULE == 1)
 
 #include <fcntl.h>
 #include <string.h>
@@ -794,5 +791,3 @@ int drv_ltev_deinit(int fd)
 
     return ret;
 }
-
-#endif
