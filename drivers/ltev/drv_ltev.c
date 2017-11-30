@@ -8,8 +8,12 @@
  @history:
            2017-05-30    pengrui      Created file
            2017-06-09    wangxianwen  Optimization file structure.
+           2017-11-27    pengrui      Add the macros to control compile.
            ...
 ******************************************************************************/
+#include "config.h"
+
+#if (CFG_LTEV_MODULE == 1)
 
 #include <fcntl.h>
 #include <string.h>
@@ -50,7 +54,7 @@ static int drv_ltev_device_send_data(drv_ltev_st_ptr ltev_ptr, ltev_infor_st_ptr
     {
         printf("[%s %d]: Calloc data buffer error. \n", __FUNCTION__, __LINE__);
         
-        ret = ERR_NOMEM;
+        ret = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -161,7 +165,7 @@ static int drv_ltev_device_receive_data(drv_ltev_st_ptr ltev_ptr, ltev_infor_st_
         /* No frame edge code for current mode,so do nothting. */
         printf("[%s %d]: Data payload length over then user buffer. Payload = %d, Userbuff = %d. \n", \
                                                     __FUNCTION__, __LINE__, payload_len, data_len);
-        ret = ERR_NODISK;
+        ret = -ERR_NODISK;
         goto ERR_EXIT;
     }
 
@@ -213,7 +217,7 @@ static int drv_ltev_socket_send_data(drv_ltev_st_ptr ltev_ptr, ltev_infor_st_ptr
     {
         printf("[%s %d]: Calloc data buffer error. \n", __FUNCTION__, __LINE__);
         
-        ret = ERR_NOMEM;
+        ret = -ERR_NOMEM;
         goto ERR_EXIT;
     }
 
@@ -577,7 +581,7 @@ static int drv_ltev_socket_fd_init(drv_ltev_st_ptr ltev_ptr)
     if((ltev_ptr->fd_app = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
         printf("[%s %d]: Create app socket error. \n", __FUNCTION__, __LINE__);
-        ret = ERR_NODEV;
+        ret = -ERR_NODEV;
         goto ERR_EXIT;
     }
 
@@ -791,4 +795,4 @@ int drv_ltev_deinit(int fd)
     return ret;
 }
 
-
+#endif
