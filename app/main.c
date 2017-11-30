@@ -5,6 +5,8 @@
 
 #include "cv_msg_wsmp.h"
 #include "cv_msg_frame.h"
+#include "prot_dataelem.h"
+
 #include "net.h"
 
 /* Main driver pointer. */
@@ -40,7 +42,6 @@ float pos_to_distance(double lat1, double lng1, double lat2, double lng2)
     return distance;
 }
 
-#if 0
 /* Connect two vehicles into line and calculate the line angle between north in clockwise.  
    Caution: the angle based on core vehicle. Unit: degree to degree. */
 static float posline_to_angle(double core_lat, double core_lng, double circle_lat, double circle_lng)
@@ -94,7 +95,6 @@ static float posline_to_angle(double core_lat, double core_lng, double circle_la
 
     return line_angle;
 }
-#endif
 
 /******************************************************************************
 *    函数:    recommend_speed_calc
@@ -129,24 +129,22 @@ float recommend_speed_calc(double lat1, double lng1, double lat2, double lng2, u
     return speed;
 }
 
+#if 0
 /******************************************************************************
 *    函数:    direction_from_angle
 *    功能:    Determine the direction of the vehicle based on the angle
 *    参数:
-            speed                -    Current speed
-            angle             -    Current angle
+            speed                -    Current speed  Uint: Km/h
+            angle                -    Current angle  Unit: degree
             direction            -    Judge the direction
 *    返回:
             =0                    -    成功
             -ERR_INVAL            -    接口错误
 *    说明:    无
 ******************************************************************************/
-int direction_from_angle(float speed,float angle, direction_vehicle_em_ptr direction)
+int direction_from_angle(float angle, direction_vehicle_em_ptr direction)
 {
     int result = ERR_OK;
-
-    if(speed < 5.0)
-        return -ERR_INVAL;
     
     if (angle <= 10.0){
         *direction = DIRECTION_NORTH;
@@ -178,6 +176,43 @@ int direction_from_angle(float speed,float angle, direction_vehicle_em_ptr direc
     
     return result;
 }
+#else
+/******************************************************************************
+*    函数:    direction_from_angle
+*    功能:    Determine the direction of the vehicle based on the angle
+*    参数:
+            speed                -    Current speed  Uint: Km/h
+            angle                -    Current angle  Unit: degree
+            direction            -    Judge the direction
+*    返回:
+            =0                    -    成功
+            -ERR_INVAL            -    接口错误
+*    说明:    无
+******************************************************************************/
+int direction_from_angle(float angle, direction_vehicle_em_ptr direction)
+{
+    int result = ERR_OK;
+    
+    if (angle <= 45.0){
+        *direction = DIRECTION_NORTH;
+    }
+    else if(angle <= 135.0){
+        *direction = DIRECTION_EAST;
+    }
+    else if(angle <= 225.0){
+        *direction = DIRECTION_SOUTH;
+    }
+    else if(angle <= 315.0){
+        *direction = DIRECTION_WEST;
+    }
+    else{
+        *direction = DIRECTION_NORTH;
+    }
+    
+    return result;
+}
+
+#endif
 
 int phase_parse(DF_PhaseList_st_ptr phaseList_data, msg_decode_trafficlamp_speed_guide_st_ptr trafficLampSpeedGuide_ptr)
 {
@@ -372,7 +407,14 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         
     }
 
-    result = direction_from_angle(vehicle_basic_status_info.velocity, vehicle_basic_status_info.angle, &vehicle_direction);
+    if((vehicle_basic_status_info.velocity < 0.1) && (vehicle_basic_status_info.velocity > -0.1))
+    {
+        result = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &vehicle_direction);
+    }
+    else
+    {
+        result = direction_from_angle(vehicle_basic_status_info.angle, &vehicle_direction);
+    }
     osal_printf("direction_from_angle:%d\n",vehicle_direction);
     
     if(result == ERR_OK)
