@@ -8,6 +8,8 @@
  @history:
            2016-10-25    pengrui      Created file
            2017-10-26    wangxianwen  Optimization file structure.
+           2017-11-30    pengrui      Add the checksum flag
+           2017-11-30    pengrui      Modify the param of net_send function
            ...
 ******************************************************************************/
 #include <stdio.h>
@@ -69,24 +71,26 @@ ERR_EXIT:
 *    Function: net_send
 *    Descriptions: Send data to the specific net driver.
 *    Paramters:
-            fd                -    the file descriptor.
-            buff_ptr        -   buffer head address for data storage.
-            data_len        -   the data length that user want to send.
+            fd                - the file descriptor.
+            flag              - send flag:BLOCK or NOBLOCK
+            send_ipaddr         the ipaddr we need send to
+            buff_ptr          - buffer head address for data storage.
+            data_len          - the data length that user want to send.
 *    Return:
-            >= 0            -    the data count that have sended.
-            < 0                -    failed
+            >= 0              - the data count that have sended.
+            < 0               - failed
 *    Comments: 
 ******************************************************************************/
-int net_send(int fd, uint8_t *buff_ptr, uint16_t data_len)
+int net_send(int fd, uint16_t flag, uint8_t *ipaddr, uint8_t *buff_ptr, uint16_t data_len)
 {
     int                     ret = 0x00;
     struct sockaddr_in        dest_addr;
-    uint8_t     ip_broadcast[4] = { 0 };
+    //uint8_t     ip_broadcast[4] = { 0 };
     net_st_ptr      net_ptr = (net_st_ptr)fd;
 
 
     /* Error detection. */
-    if((net_ptr == NULL) || (net_ptr->fd < 0) || (buff_ptr == NULL))
+    if((net_ptr == NULL) || (NULL == ipaddr) || (net_ptr->fd < 0) || (buff_ptr == NULL))
     {
         printf("[%s %d]: Invalid parameter. \n", __FUNCTION__, __LINE__);
         
@@ -100,16 +104,19 @@ int net_send(int fd, uint8_t *buff_ptr, uint16_t data_len)
 
     /* Set boardcast destination ip to host ip's network segment ip. Do not use "dest_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST)", 
     or the frame will output from eth0 not the network bridge. */
-    memcpy(ip_broadcast, &(net_ptr->local_ip.word), sizeof(ip_broadcast));
-    ip_broadcast[0] = 192;
-    ip_broadcast[1] = 168;
-    ip_broadcast[2] = 1;
-    ip_broadcast[3] = 0xFF;
-    memcpy(&(dest_addr.sin_addr.s_addr), ip_broadcast, sizeof(ip_broadcast));
+    //memcpy(ip_broadcast, send_ipaddr, sizeof(ip_broadcast));
+    memcpy(&(dest_addr.sin_addr.s_addr), ipaddr, 4);
     dest_addr.sin_port = htons(net_ptr->config.remote_port);
 
     /* Send data to destination. */
-    if((ret = (sendto(net_ptr->fd, buff_ptr, data_len, 0, (struct sockaddr*)&dest_addr, sizeof(struct sockaddr)))) < 0)
+    
+    if(NET_NOBLOCK == flag)
+    {
+        ret = sendto(net_ptr->fd, buff_ptr, data_len, MSG_DONTWAIT, (struct sockaddr*)&dest_addr, sizeof(struct sockaddr));
+    }else{
+        ret = sendto(net_ptr->fd, buff_ptr, data_len, 0, (struct sockaddr*)&dest_addr, sizeof(struct sockaddr));
+    }
+    if(ret < 0)
     {
         printf("[%s %d]: Send data to net socket error. ret = %d. \n", __FUNCTION__, __LINE__, ret);
         if((errno == EPIPE) || (errno == EDESTADDRREQ) || (errno == EBADF))
@@ -133,15 +140,16 @@ ERR_EXIT:
 *    Function: net_receive
 *    Descriptions: Receive data from the specific net driver.
 *    Paramters:
-            fd                -    the file descriptor.
-            buff_ptr        -   buffer head address for data storage.
-            data_len        -   the data count that user want to receive.
+            fd                   - the file descriptor.
+            flag                 - the flag of recv:BLOCK or NOBLOCK
+            buff_ptr             - buffer head address for data storage.
+            data_len             - the data count that user want to receive.
 *    Return:
-            >= 0            -    the data count that have received.
-            < 0                -    failed
+            >= 0                 - the data count that have received.
+            < 0                  - failed
 *    Comments: 
 ******************************************************************************/
-int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len)
+int net_receive(int fd, uint16_t flag, uint8_t *ipaddr, uint8_t *buff_ptr, uint16_t data_len)
 {
     int               ret = 0x00;
     struct  sockaddr_in src_addr;
@@ -151,7 +159,7 @@ int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len)
 
 
     /* Error detection. */
-    if((net_ptr == NULL) || (net_ptr->fd < 0) || (buff_ptr == NULL))
+    if((net_ptr == NULL) || (NULL == ipaddr) || (net_ptr->fd < 0) || (buff_ptr == NULL))
     {
         printf("[%s %d]: Invalid parameter. \n", __FUNCTION__, __LINE__);
 
@@ -162,7 +170,13 @@ int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len)
     /* Read the frame data from socket. */
     bzero(&src_addr, sizeof(struct sockaddr_in));
     len = sizeof(struct sockaddr);
-    actual_len = recvfrom(net_ptr->fd, buff_ptr, data_len, 0, (struct sockaddr *)&src_addr, &len);
+    if(NET_NOBLOCK == flag)
+    {
+        actual_len = recvfrom(net_ptr->fd, buff_ptr, data_len, MSG_DONTWAIT, (struct sockaddr *)&src_addr, &len);
+    }else{
+        actual_len = recvfrom(net_ptr->fd, buff_ptr, data_len, 0, (struct sockaddr *)&src_addr, &len);
+    }
+    
     if(actual_len < 0)
     {
         printf("[%s %d]: Read data in net socket error. \n", __FUNCTION__, __LINE__);
@@ -171,6 +185,7 @@ int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len)
         goto ERR_EXIT;
     }
 
+    memcpy(ipaddr, &(src_addr.sin_addr.s_addr), 4);
     /* Return the actual data length. */
     ret = actual_len;
 
@@ -252,6 +267,7 @@ static int net_socket_fd_init(net_st_ptr net_ptr)
 {
     int                  ret = 0x00;
     int               optval = 1;
+    int               nochecksum = 0;
     struct sockaddr_in sockaddr_udp;
 
 
@@ -289,6 +305,20 @@ static int net_socket_fd_init(net_st_ptr net_ptr)
         goto ERR_EXIT;
 
     }
+
+    /* Set socket no checksum mode. */
+    nochecksum = !(net_ptr->config.checksum);
+    if(setsockopt(net_ptr->fd, SOL_SOCKET, SO_NO_CHECK, (char *)&nochecksum, sizeof(nochecksum)) != 0)
+    {
+        printf("[%s %d]: Set app socket no checksum mode error. \n", __FUNCTION__, __LINE__);
+
+        /* Close socket. */
+        close(net_ptr->fd);
+        net_ptr->fd = -1;
+
+        ret = -ERR_INVAL;
+        goto ERR_EXIT;
+    }
     
     /* Init udp socket address. */
     bzero(&sockaddr_udp, sizeof(struct sockaddr_in));
@@ -296,7 +326,6 @@ static int net_socket_fd_init(net_st_ptr net_ptr)
     sockaddr_udp.sin_addr.s_addr = htonl(INADDR_ANY);
     //memcpy(&sockaddr_udp.sin_addr.s_addr, net_ptr->local_ip.byte, sizeof(net_ptr->local_ip.byte));
     sockaddr_udp.sin_port = htons(net_ptr->config.host_port);
-
     /* Bind net socket. */
     if(bind(net_ptr->fd, (struct sockaddr *)&sockaddr_udp, sizeof(struct sockaddr)) < 0)
     {

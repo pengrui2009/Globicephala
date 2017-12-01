@@ -166,6 +166,9 @@ typedef struct _local_vehicle_gps_info_st
 
 #define RECOMMAND_SPEED_MAX        (70.0f)   // Uint: Km/h
 
+#define IPADDR_LENGTH  4
+
+
 /* Earth radius. Unit: m. */
 #define EARTH_RADIUS          (6371004.0f)
 

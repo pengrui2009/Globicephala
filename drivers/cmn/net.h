@@ -22,10 +22,14 @@
 #include <sys/ioctl.h>
 #include "error.h"
 
+#define NET_BLOCK           0x0
+#define NET_NOBLOCK         0xFFFF
 
 /* Net configure structure. */
 typedef struct _net_config_st
 {   
+    //0:disable 1:enable
+    int checksum;
     /* Host port and remote port. */
     uint16_t   host_port;
     uint16_t remote_port;
@@ -72,29 +76,33 @@ extern int net_config(int fd, net_config_st_ptr cfg_ptr);
 *    Function: net_send
 *    Descriptions: Send data to the specific net driver.
 *    Paramters:
-            fd                -    the file descriptor.
-            buff_ptr        -   buffer head address for data storage.
-            data_len        -   the data length that user want to send.
+            fd                - the file descriptor.
+            ipaddr            - the ipaddr of we send to
+            flag              - send flag:BLOCK or NOBLOCK
+            buff_ptr          - buffer head address for data storage.
+            data_len          - the data length that user want to send.
 *    Return:
-            >= 0            -    the data count that have received.
-            < 0                -    failed
+            >= 0              - the data count that have sended.
+            < 0               - failed
 *    Comments: 
 ******************************************************************************/
-extern int net_send(int fd, uint8_t *buff_ptr, uint16_t data_len);
+extern int net_send(int fd, uint16_t flag, uint8_t *ipaddr, uint8_t *buff_ptr, uint16_t data_len);
 
 /******************************************************************************
 *    Function: net_receive
 *    Descriptions: Receive data from the specific net driver.
 *    Paramters:
-            fd                -    the file descriptor.
-            buff_ptr        -   buffer head address for data storage.
-            data_len        -   the data count that user want to receive.
+            fd                   - the file descriptor.
+            ipaddr               - the ipaddr of remote
+            flag                 - the flag of recv:BLOCK or NOBLOCK
+            buff_ptr             - buffer head address for data storage.
+            data_len             - the data count that user want to receive.
 *    Return:
-            >= 0            -    the data count that have received.
-            < 0                -    failed
+            >= 0                 - the data count that have received.
+            < 0                  - failed
 *    Comments: 
 ******************************************************************************/
-extern int net_receive(int fd, uint8_t *buff_ptr, uint16_t data_len);
+extern int net_receive(int fd, uint16_t flag, uint8_t *ipaddr, uint8_t *buff_ptr, uint16_t data_len);
 
 /******************************************************************************
 *    Function: net_init

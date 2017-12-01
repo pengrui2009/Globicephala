@@ -46,7 +46,7 @@
 #if(DRV_ENABLE_EHOST != 0)
 
 #define DRV_EHOST_NETIF    "br-lan"
-#define DRV_EHOST_NETCFG   { 4321, 1234 }  /* net_config_st */
+#define DRV_EHOST_NETCFG   {1, 4321, 1234 }  /* net_config_st */
 
 #endif
 

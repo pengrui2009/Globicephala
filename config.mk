@@ -64,6 +64,7 @@ INCLUDEFLAGS +=	-I$(TOPDIR)/include \
 		-I$(TOPDIR)/drivers/led \
 		-I$(TOPDIR)/drivers/ltev \
 		-I$(TOPDIR)/drivers/pps \
+		-I$(TOPDIR)/drivers/rtc \
 		-I$(TOPDIR)/drivers/tbox \
 		-I$(TOPDIR)/drivers/vguest \
 		-I$(TOPDIR)/drivers/vhost \

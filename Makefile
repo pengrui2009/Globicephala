@@ -24,6 +24,7 @@ SUBDIRS = \
 	  $(TOPDIR)/drivers/led \
 	  $(TOPDIR)/drivers/ltev \
 	  $(TOPDIR)/drivers/pps \
+	  $(TOPDIR)/drivers/rtc \
 	  $(TOPDIR)/drivers/vguest \
 	  $(TOPDIR)/drivers/vhost \
 	  $(TOPDIR)/drivers/vnet \

@@ -321,8 +321,10 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     msg_intersection_st_ptr intersection_ptr = NULL;
     msg_decode_trafficlamp_speed_guide_st trafficLampSpeedGuide;
     uint8_t send_buf[512];
+    uint8_t send_ip[IPADDR_LENGTH];
     uint16_t send_len = 0;
     float speed = 0.0;
+    net_st_ptr  net_ptr = (net_st_ptr)(drv_ptr->ehost_fd);
     
     if(msg_ptr == NULL)
     {
@@ -444,14 +446,19 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         memcpy(&trafficLampSpeedGuide, &(intersection_ptr[0].trafficLampSpeedGuide[0]), sizeof(trafficLampSpeedGuide));
     }
 
+    speed = recommend_speed_calc(rsu_info.latitude, rsu_info.longitude, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, trafficLampSpeedGuide.timers);
+
     if(trafficLampSpeedGuide.straightlamp.RedLightStat != 0)
     {
-        trafficLampSpeedGuide.maxvelocity = 0.0;
+        if(speed > RECOMMAND_SPEED_MAX)
+            trafficLampSpeedGuide.maxvelocity = RECOMMAND_SPEED_MAX;
+        else
+            trafficLampSpeedGuide.maxvelocity = speed;
+        
         trafficLampSpeedGuide.minvelocity = 0.0;
     }
     else if(trafficLampSpeedGuide.straightlamp.GreenLightStat || trafficLampSpeedGuide.straightlamp.YellowLightStat)
-    {
-        speed = recommend_speed_calc(rsu_info.latitude, rsu_info.longitude, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, trafficLampSpeedGuide.timers);
+    {      
         if((speed < 0.1) || (speed > RECOMMAND_SPEED_MAX))
         {
             trafficLampSpeedGuide.maxvelocity = 0.0;
@@ -478,7 +485,9 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         goto ERR_EXIT;
     }
 
-    result = net_send(drv_ptr->ehost_fd, send_buf, send_len);
+    memcpy(send_ip, net_ptr->local_ip.byte, IPADDR_LENGTH);
+    send_ip[IPADDR_LENGTH - 1] = 0xff;
+    result = net_send(drv_ptr->ehost_fd, NET_NOBLOCK, send_ip, send_buf, send_len);
     if(result < 0)
     {
         osal_printf("net_send failed,ret=%d\n",result);
@@ -724,6 +733,7 @@ void * ehm_rx_thread_entry(void *param_ptr)
     uint16_t vhost_datalen = 0;
     ehmh_msgtype_en sub_msgtype;
     uint8_t decode_buf[1024];
+    uint8_t src_addr[IPADDR_LENGTH];
 
      /* Allocate message buffer for wnet module. */
     if((ehmbuf_ptr = os_calloc(1, EHM_BUFF_ST_LEN)) == NULL)
@@ -737,7 +747,7 @@ void * ehm_rx_thread_entry(void *param_ptr)
     ehmbuf_ptr->data_len = sizeof(ehmbuf_ptr->buffer);
     ehmbuf_ptr->infor.active_dev = VHOST_DEVICE_NET;
 RX_LOOP:
-    result = net_receive(drv_ptr->ehost_fd, ehmbuf_ptr->buffer, ehmbuf_ptr->data_len);
+    result = net_receive(drv_ptr->ehost_fd, NET_BLOCK, src_addr, ehmbuf_ptr->buffer, ehmbuf_ptr->data_len);
     if(result < ERR_OK)
     {
         osal_printf("[%s %d]: Receive data from ehm net device error. ret = %d. \n", __FUNCTION__, __LINE__, result);
