@@ -460,7 +460,10 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         else
         {
             trafficLampSpeedGuide.maxvelocity = RECOMMAND_SPEED_MAX;
-            trafficLampSpeedGuide.minvelocity = speed;
+            if(speed < 1.0)
+                trafficLampSpeedGuide.minvelocity = 1.0;
+            else
+                trafficLampSpeedGuide.minvelocity = speed;
         }    
     }
     
