@@ -16,12 +16,53 @@
 #define __PROT_DATAELEM_H__
 
 #include "stdint.h"
-
+#include "endian.h"
 
 /*DE_Acceleration Type*/
 typedef float                    DE_Acceleration_t;
 
 #define DE_Acceleration_t_len    (sizeof(DE_Acceleration_t))
+
+
+/* DE_AlertFlag union. */
+typedef union _DE_AlertFlag_un
+{
+    uint32_t alert_word;
+
+    struct _alertflag_bit
+    {
+#if(__BYTE_ORDER == __LITTLE_ENDIAN)
+
+        uint32_t vec_neardis_front :1;  /* Near distance in front location. */
+        uint32_t vec_neardis_rear  :1;  /* Near distance in rear location. */
+        uint32_t vec_breakdown     :1;  /* Vehicle breakdown in front location. */
+        uint32_t vec_brake_hard    :1;  /* Vehicle brake hard in front location. */
+        uint32_t vec_ambulance     :1;  /* Ambulance vehicle in front location. */
+        uint32_t vec_danger_goods  :1;  /* Dange good vehicle in front/rear location. */
+        uint32_t rsd_tunnel        :1;  /* Tunnel in front location. */
+        uint32_t reserved          :25;
+
+#elif(__BYTE_ORDER == __BIG_ENDIAN)
+
+        uint32_t reserved          :25;
+        uint32_t rsd_tunnel        :1;
+        uint32_t vec_danger_goods  :1;
+        uint32_t vec_ambulance     :1;
+        uint32_t vec_brake_hard    :1;
+        uint32_t vec_breakdown     :1;
+        uint32_t vec_neardis_rear  :1;
+        uint32_t vec_neardis_front :1;
+
+#else
+
+    #error Endian undefined!!!
+
+#endif
+    }alertflag_bit;
+    
+}DE_AlertFlag_un, *DE_AlertFlag_un_ptr;
+
+#define DE_AlertFlag_un_len    (sizeof(DE_AlertFlag_un))
 
 
 /*DE_AlertType Type*/
@@ -174,6 +215,8 @@ typedef enum _DE_BasicVehicleClass_en
 /* DE_BrakeAppliedStatus structure. */
 typedef struct _DE_BrakeAppliedStatus_st
 {
+#if(__BYTE_ORDER == __LITTLE_ENDIAN)
+ 
     uint8_t brake_status_unavailable :1;
     uint8_t brake_status_leftFront   :1;
     uint8_t brake_status_leftRear    :1;
@@ -181,6 +224,22 @@ typedef struct _DE_BrakeAppliedStatus_st
     uint8_t brake_status_rightRear   :1;
 
     uint8_t reserved                 :3;
+    
+#elif(__BYTE_ORDER == __BIG_ENDIAN)
+
+    uint8_t reserved                 :3;
+
+    uint8_t brake_status_rightRear   :1;
+    uint8_t brake_status_rightFront  :1;
+    uint8_t brake_status_leftRear    :1;
+    uint8_t brake_status_leftFront   :1;
+    uint8_t brake_status_unavailable :1;
+
+#else
+
+    #error Endian undefined!!!
+
+#endif
 
 }DE_BrakeAppliedStatus_st, * DE_BrakeAppliedStatus_st_ptr;
 
@@ -338,24 +397,49 @@ typedef enum _DE_Extent_en
 
 
 /* DE_ExteriorLights union. */
-typedef union _DE_ExteriorLights_st
+typedef union _DE_ExteriorLights_un
 {
-    uint16_t     ExteriorLights_word;
+    uint16_t     word;
+
+#if(__BYTE_ORDER == __LITTLE_ENDIAN)
+
+    struct
+    {
+        uint16_t lowBeamHeadlightsOn     :1;
+        uint16_t highBeamHeadlightsOn    :1;
+        uint16_t leftTurnSignalOn        :1;
+        uint16_t rightTurnSignalOn       :1;
+        uint16_t hazardSignalOn          :1;
+        uint16_t automaticLightControlOn :1;
+        uint16_t daytimeRunningLightsOn  :1;
+        uint16_t fogLightOn              :1;
     
-    struct{
-        uint16_t ExteriorLights_lowBeamHeadlightsOn     :1;
-        uint16_t ExteriorLights_highBeamHeadlightsOn    :1;
-        uint16_t ExteriorLights_leftTurnSignalOn        :1;
-        uint16_t ExteriorLights_rightTurnSignalOn       :1;
-        uint16_t ExteriorLights_hazardSignalOn          :1;
-        uint16_t ExteriorLights_automaticLightControlOn :1;
-        uint16_t ExteriorLights_daytimeRunningLightsOn  :1;
-        uint16_t ExteriorLights_fogLightOn              :1;
-    
-        uint16_t ExteriorLights_parkingLightsOn         :1;
-        uint16_t ExteriorLights_reserved                :7;
+        uint16_t parkingLightsOn         :1;
+        uint16_t reserved                :7;
     }bit;
-    
+
+#elif(__BYTE_ORDER == __BIG_ENDIAN)
+
+    struct
+    {
+        uint16_t reserved                :7;
+        uint16_t parkingLightsOn         :1;
+
+        uint16_t fogLightOn              :1;
+        uint16_t daytimeRunningLightsOn  :1;
+        uint16_t automaticLightControlOn :1;
+        uint16_t hazardSignalOn          :1;
+        uint16_t rightTurnSignalOn       :1;
+        uint16_t leftTurnSignalOn        :1;
+        uint16_t highBeamHeadlightsOn    :1; 
+        uint16_t lowBeamHeadlightsOn     :1;
+    }bit;
+
+#else
+
+    #error Endian undefined!!!
+
+#endif
 }DE_ExteriorLights_un, * DE_ExteriorLights_un_ptr;
 
 #define DE_ExteriorLights_un_len    (sizeof(DE_ExteriorLights_un))
@@ -661,10 +745,24 @@ typedef double                  DE_Latitude_t; /* LSB = 1/10 micro degree Provid
 
 #define DE_Latitude_t_len       (sizeof(DE_Latitude_t))
 
+
+/*DE_LatitudinalDis Type*/
+typedef float                   DE_LatitudinalDis_t;
+
+#define DE_LatitudinalDis_t_len (sizeof(DE_LatitudinalDis_t))
+
+
 /*DE_Longitude Type*/
 typedef double                  DE_Longitude_t; /*  LSB = 1/10 micro degree Providing a range of plus-minus 180 degrees */
 
 #define DE_Longitude_t_len      (sizeof(DE_Longitude_t))
+
+
+/*DE_LongitudinalDis Type*/
+typedef float                   DE_LongitudinalDis_t;
+
+#define DE_LongitudinalDis_t_len (sizeof(DE_LongitudinalDis_t))
+
 
 
 /* DE_LightState enum */
@@ -759,6 +857,19 @@ typedef uint8_t                    DE_PhaseID_t;
 #define DE_PhaseID_t_len           (sizeof(DE_PhaseID_t))
 
 
+/*DE_PlateNo. */
+#define DE_PlateNo_MIN_BUFSIZE        4
+#define DE_PlateNo_MAX_BUFSIZE        16
+
+typedef struct _DE_PlateNo_st
+{
+    uint8_t        bufsize;
+    uint8_t     buf[DE_PlateNo_MAX_BUFSIZE];
+}DE_PlateNo_st, *DE_PlateNo_st_ptr;
+
+#define DE_PlateNo_st_len    (sizeof(DE_PlateNo_st))
+
+
 /*DE_PositionConfidence. */
 typedef enum _DE_PositionConfidence_en
 {
@@ -813,6 +924,12 @@ typedef DE_Priority_st *      DE_Priority_st_ptr;
 typedef uint16_t                     DE_PTCID_t;
 
 #define DE_PTCID_t_len               (sizeof(DE_PTCID_t))
+
+
+/*DE_Radius Type. Unit: m. */
+typedef float                        DE_Radius_t;
+
+#define DE_Radius_t_len              (sizeof(DE_Radius_t))
 
 
 /*DE_RadiusOfCurvature Type*/
@@ -926,31 +1043,17 @@ typedef enum _DE_SteeringWheelAngleConfidence_en
 #define DE_DE_SteeringWheelAngleConfidence_en_len    (sizeof(DE_SteeringWheelAngleConfidence_en))
 
 
+/*DE_SystemTimeMS. */
+typedef uint64_t   DE_SystemTimeMS_t, * DE_SystemTimeMS_t_ptr;
+#define DE_SystemTimeMS_t_len     (sizeof(DE_SystemTimeMS_t))
+
+
 /*DE_TemporaryID. */
 #define DE_TemporaryID_BUFSIZE    8
 
 typedef uint8_t                   DE_TemporaryID_st[DE_TemporaryID_BUFSIZE];
 typedef DE_TemporaryID_st *       DE_TemporaryID_st_ptr;
 #define DE_TemporaryID_st_len     (sizeof(DE_TemporaryID_st))
-
-
-/*DE_PlateNo. */
-#define DE_PlateNo_MIN_BUFSIZE        4
-#define DE_PlateNo_MAX_BUFSIZE        16
-
-typedef struct _DE_PlateNo_st
-{
-    uint8_t        bufsize;
-    uint8_t     buf[DE_PlateNo_MAX_BUFSIZE];
-}DE_PlateNo_st, *DE_PlateNo_st_ptr;
-
-#define DE_PlateNo_st_len    (sizeof(DE_PlateNo_st))
-
-
-/*DE_Radius Type. Unit: m. */
-typedef float                  DE_Radius_t;
-
-#define DE_Radius_t_len        (sizeof(DE_Radius_t))
 
 
 /*DE_SpeedLimitType enum */
@@ -1037,6 +1140,12 @@ typedef enum _DE_TimeConfidence_en
 #define DE_TimeConfidence_en_len    (sizeof(DE_TimeConfidence_en))
 
 
+/*DE_TimeMark Type*/
+typedef float                     DE_TimeMark_t;
+
+#define DE_TimeMark_t_len         (sizeof(DE_TimeMark_t))
+
+
 /*DE_TimeOffset. Unit: second. */
 typedef float DE_TimeOffset_t, * DE_TimeOffset_t_ptr;
 
@@ -1054,10 +1163,42 @@ typedef enum _DE_TractionControlStatus_en
 #define DE_TractionControlStatus_en_len    (sizeof(DE_TractionControlStatus_en))
 
 
-/*DE_TimeMark Type*/
-typedef float                     DE_TimeMark_t;
+/* DE_TrafficLamps union. */
+typedef union _DE_TrafficLamps_un
+{
+    uint8_t word;
 
-#define DE_TimeMark_t_len         (sizeof(DE_TimeMark_t))
+    struct _lamps_bit
+    {
+#if(__BYTE_ORDER == __LITTLE_ENDIAN)
+
+    uint8_t YellowLightStat     :2;
+    uint8_t GreenLightStat      :2;
+    uint8_t RedLightStat        :2;
+    uint8_t ReservedLightStat   :2;
+
+#elif(__BYTE_ORDER == __BIG_ENDIAN)
+
+    uint8_t ReservedLightStat   :2;
+    uint8_t RedLightStat        :2; 
+    uint8_t GreenLightStat      :2;
+    uint8_t YellowLightStat     :2; 
+#else
+
+    #error Endian undefined!!!
+
+#endif
+    }lamps_bit;
+    
+}DE_TrafficLamps_un, *DE_TrafficLamps_un_ptr;
+
+#define DE_TrafficLamps_un_len    (sizeof(DE_TrafficLamps_un))
+
+/* Traffic lamps state. */
+#define DE_TrafficLamp_off       0x00
+#define DE_TrafficLamp_on        0x01
+#define DE_TrafficLamp_flash     0x02
+#define DE_TrafficLamp_unknown   0x03
 
 
 /*DE_TransmissionState. */
@@ -1251,7 +1392,9 @@ typedef enum _bsctyp_def_en
     DE_LaneID,
     DE_LaneWidth,
     DE_Latitude,
+    DE_LatitudinalDis,
     DE_Longitude,
+    DE_LongitudinalDis,
 
     DE_Heading,
     

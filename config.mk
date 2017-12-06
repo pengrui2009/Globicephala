@@ -71,6 +71,7 @@ INCLUDEFLAGS +=	-I$(TOPDIR)/include \
 		-I$(TOPDIR)/drivers/vnet \
 		-I$(TOPDIR)/protocols/cmn \
 		-I$(TOPDIR)/protocols/ehmh \
+		-I$(TOPDIR)/protocols/ehmp \
 		-I$(TOPDIR)/protocols/nmea0183 \
 		-I$(TOPDIR)/protocols/ntrip \
 		-I$(TOPDIR)/protocols/wsmp \

@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include "osal_cmn.h"
 #include "ehmh_element.h"
-#include "prot_dataelem.h"
+#include "prot_element.h"
 /*************************************************
  ∫Í∂®“Â
 *************************************************/

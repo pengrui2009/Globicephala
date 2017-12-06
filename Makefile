@@ -31,6 +31,7 @@ SUBDIRS = \
 	  $(TOPDIR)/drivers/weather \
 	  $(TOPDIR)/protocols/cmn \
 	  $(TOPDIR)/protocols/ehmh \
+	  $(TOPDIR)/protocols/ehmp \
 	  $(TOPDIR)/protocols/nmea0183 \
 	  $(TOPDIR)/protocols/ntrip \
 	  $(TOPDIR)/protocols/wsmp \

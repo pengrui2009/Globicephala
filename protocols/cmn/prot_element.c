@@ -11,7 +11,7 @@
            ...
 ******************************************************************************/
 
-#include "prot_dataelem.h"
+#include "prot_element.h"
 
 
 /* Basic type transform data group. */
@@ -37,8 +37,10 @@ const static bsctyp_transf_st BasicTypeGroup[100] =
     {        255,           1,           0,          1.0,          1.0  }, /* DE_LaneID. Unit: id & id. */
     {     327.67,           0,      327.68,        100.0,         0.01  }, /* DE_LaneWidth. Unit: meter & 0.01 meter. */
     {       90.0,       -90.0,  90.0000001,   10000000.0,    0.0000001  }, /* DE_Latitude. Unit: degree & 0.1 micro degree. */
+    {     327.67,     -327.67,     -327.68,        100.0,         0.01  }, /* DE_LatitudinalDis. Unit: meter & 1 cm. */
     {      180.0,-179.9999999, 180.0000001,   10000000.0,    0.0000001  }, /* DE_Longitude. Unit: degree & 0.1 micro degree. */
-
+    {     327.67,     -327.67,     -327.68,        100.0,         0.01  }, /* DE_LongitudinalDis. Unit: meter & 1cm. */
+    
     {   359.9875,           0,       360.0,         80.0,       0.0125  }, /* DE_Heading. Unit: degree & 0.0125 degree. */
    
     {     527040,           0,      527040,          1.0,          1.0  }, /* DE_MinuteOfTheYear. Uint: 1 minute & 1 minute */
@@ -58,7 +60,7 @@ const static bsctyp_transf_st BasicTypeGroup[100] =
   
     {     3276.7,     -3276.7,     -3276.8,         10.0,          0.1  }, /* DE_RadiusOfCurvature. Unit: meter & 10 cm. */
     {      102.4,           0,           0,         10.0,          0.1  }, /* DE_Radius. Unit: meter & 10 cm. */
-    {      65535,           0,           0,          1.0,       1.0  }, /* DE_RoadRegulatorID. Uint: */
+    {      65535,           0,           0,          1.0,          1.0  }, /* DE_RoadRegulatorID. Uint: */
   
     {      12.70,           0,       12.75,         20.0,         0.05  }, /* DE_SemiMajorAxisAccuracy. Unit: meter & 0.05m. */
     {359.9945078786,        0,360.0000011265,182.0416660971,0.0054932479}, /* DE_SemiMajorAxisOrientation. Unit: degree & 0.0054932479 degree. */

@@ -12,7 +12,7 @@
 ******************************************************************************/
 
 #include "cv_data_element.h"
-#include "prot_dataelem.h"
+#include "prot_element.h"
 #include "error.h"
 
 
@@ -371,15 +371,15 @@ int DE_ExteriorLights_allocate(ExteriorLights_t *lights_ptr, DE_ExteriorLights_u
     }
 
     /* Encode event data. */
-    event_mask = (Lights_ptr->bit.ExteriorLights_lowBeamHeadlightsOn     << (15 - ExteriorLights_lowBeamHeadlightsOn))
-               | (Lights_ptr->bit.ExteriorLights_highBeamHeadlightsOn    << (15 - ExteriorLights_highBeamHeadlightsOn))
-               | (Lights_ptr->bit.ExteriorLights_leftTurnSignalOn        << (15 - ExteriorLights_leftTurnSignalOn))
-               | (Lights_ptr->bit.ExteriorLights_rightTurnSignalOn       << (15 - ExteriorLights_rightTurnSignalOn))
-               | (Lights_ptr->bit.ExteriorLights_hazardSignalOn          << (15 - ExteriorLights_hazardSignalOn))
-               | (Lights_ptr->bit.ExteriorLights_automaticLightControlOn << (15 - ExteriorLights_automaticLightControlOn))
-               | (Lights_ptr->bit.ExteriorLights_daytimeRunningLightsOn  << (15 - ExteriorLights_daytimeRunningLightsOn))
-               | (Lights_ptr->bit.ExteriorLights_fogLightOn              << (15 - ExteriorLights_fogLightOn))
-               | (Lights_ptr->bit.ExteriorLights_parkingLightsOn         << (15 - ExteriorLights_parkingLightsOn));
+    event_mask = (Lights_ptr->bit.lowBeamHeadlightsOn     << (15 - ExteriorLights_lowBeamHeadlightsOn))
+               | (Lights_ptr->bit.highBeamHeadlightsOn    << (15 - ExteriorLights_highBeamHeadlightsOn))
+               | (Lights_ptr->bit.leftTurnSignalOn        << (15 - ExteriorLights_leftTurnSignalOn))
+               | (Lights_ptr->bit.rightTurnSignalOn       << (15 - ExteriorLights_rightTurnSignalOn))
+               | (Lights_ptr->bit.hazardSignalOn          << (15 - ExteriorLights_hazardSignalOn))
+               | (Lights_ptr->bit.automaticLightControlOn << (15 - ExteriorLights_automaticLightControlOn))
+               | (Lights_ptr->bit.daytimeRunningLightsOn  << (15 - ExteriorLights_daytimeRunningLightsOn))
+               | (Lights_ptr->bit.fogLightOn              << (15 - ExteriorLights_fogLightOn))
+               | (Lights_ptr->bit.parkingLightsOn         << (15 - ExteriorLights_parkingLightsOn));
         
     lights_ptr->buf[0] = (event_mask >> 8) & 0x00FF;
     lights_ptr->buf[1] = event_mask & 0x00FF;
@@ -422,16 +422,16 @@ int DE_ExteriorLights_parse(ExteriorLights_t *lights_ptr, DE_ExteriorLights_un_p
     event_mask = (event_mask << 8) | lights_ptr->buf[1]; 
 
     /* Decode event data to alert mask. */
-    Lights_ptr->bit.ExteriorLights_lowBeamHeadlightsOn     = (event_mask >> (15 - ExteriorLights_lowBeamHeadlightsOn)) & 0x01;        
-    Lights_ptr->bit.ExteriorLights_highBeamHeadlightsOn    = (event_mask >> (15 - ExteriorLights_highBeamHeadlightsOn)) & 0x01;       
-    Lights_ptr->bit.ExteriorLights_leftTurnSignalOn        = (event_mask >> (15 - ExteriorLights_leftTurnSignalOn)) & 0x01;        
-    Lights_ptr->bit.ExteriorLights_rightTurnSignalOn       = (event_mask >> (15 - ExteriorLights_rightTurnSignalOn)) & 0x01;        
-    Lights_ptr->bit.ExteriorLights_hazardSignalOn          = (event_mask >> (15 - ExteriorLights_hazardSignalOn)) & 0x01;        
-    Lights_ptr->bit.ExteriorLights_automaticLightControlOn = (event_mask >> (15 - ExteriorLights_automaticLightControlOn)) & 0x01;        
-    Lights_ptr->bit.ExteriorLights_daytimeRunningLightsOn  = (event_mask >> (15 - ExteriorLights_daytimeRunningLightsOn)) & 0x01;         
-    Lights_ptr->bit.ExteriorLights_fogLightOn              = (event_mask >> (15 - ExteriorLights_fogLightOn)) & 0x01;
+    Lights_ptr->bit.lowBeamHeadlightsOn     = (event_mask >> (15 - ExteriorLights_lowBeamHeadlightsOn)) & 0x01;        
+    Lights_ptr->bit.highBeamHeadlightsOn    = (event_mask >> (15 - ExteriorLights_highBeamHeadlightsOn)) & 0x01;       
+    Lights_ptr->bit.leftTurnSignalOn        = (event_mask >> (15 - ExteriorLights_leftTurnSignalOn)) & 0x01;        
+    Lights_ptr->bit.rightTurnSignalOn       = (event_mask >> (15 - ExteriorLights_rightTurnSignalOn)) & 0x01;        
+    Lights_ptr->bit.hazardSignalOn          = (event_mask >> (15 - ExteriorLights_hazardSignalOn)) & 0x01;        
+    Lights_ptr->bit.automaticLightControlOn = (event_mask >> (15 - ExteriorLights_automaticLightControlOn)) & 0x01;        
+    Lights_ptr->bit.daytimeRunningLightsOn  = (event_mask >> (15 - ExteriorLights_daytimeRunningLightsOn)) & 0x01;         
+    Lights_ptr->bit.fogLightOn              = (event_mask >> (15 - ExteriorLights_fogLightOn)) & 0x01;
     
-    Lights_ptr->bit.ExteriorLights_parkingLightsOn         = (event_mask >> (15 - ExteriorLights_parkingLightsOn)) & 0x01;         
+    Lights_ptr->bit.parkingLightsOn         = (event_mask >> (15 - ExteriorLights_parkingLightsOn)) & 0x01;         
 
     return result;
 

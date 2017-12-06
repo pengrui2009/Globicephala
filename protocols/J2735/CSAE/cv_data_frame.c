@@ -14,7 +14,6 @@
 
 #include "cv_data_frame.h"
 #include "cv_data_element.h"
-#include "prot_dataelem.h"
 
 
 #if 0

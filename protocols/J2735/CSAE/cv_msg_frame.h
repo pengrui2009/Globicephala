@@ -45,7 +45,7 @@ typedef struct _MSG_BasicSafetyMessage_opt_st
     uint8_t    msg_BasicSafetyMessage_opt_angle            :1;
     uint8_t    msg_BasicSafetyMessage_opt_motioncfd        :1;
     uint8_t    msg_BasicSafetyMessage_opt_safetyExt        :1;
-    uint8_t msg_BasicSafetyMessage_opt_reserved         :4;  
+    uint8_t    msg_BasicSafetyMessage_opt_reserved         :4;  
     
 }MSG_BasicSafetyMessage_opt_st, *MSG_BasicSafetyMessage_opt_st_ptr;
 
@@ -61,19 +61,19 @@ typedef struct _MSG_BasicSafetyMessage_st
     /* Data */
     DE_MsgCount_t                         msgCnt; /* Msg count. */
     DE_TemporaryID_st                         id; /* Product id. */
-    DE_PlateNo_st                        plateno;    /* plate no optional */
+    DE_PlateNo_st                        plateno; /* plate no optional */
     DE_DSecond_t                         secMark; /* DSRC second. Unit: millisecond. */
-    DF_Position3D_st                         pos;    /* position */
+    DF_Position3D_st                         pos; /* position */
     DF_PositionConfidenceSet_st         accuracy; /* Vehicle position accuracy. */
     DE_TransmissionState_en                trans; /* Transmission status. */
     DE_Speed_t                             speed; /* Driving speed. Unit km/h. */
     DE_Heading_t                         heading; /* Driving direction. Unit degree. */
-    DE_SteeringWheelAngle_t                angle;  /* Steering wheel angle. Unit degree. optional*/
-    DF_MotionConfidenceSet_st          motioncfd;    /* motion confidenceset optional*/    
-    DF_AccelerationSet4Way_st            acceSet;  /* Driving acceleration set. */
-    DF_BrakeSystemStatus_st               brakes;  /* Brake system status. */
-    DF_VehicleSize_st                       size;  /* Vehicle size. */
-     DF_VehicleClassification_st     vehicleclass;/*vehicle class*/
+    DE_SteeringWheelAngle_t                angle; /* Steering wheel angle. Unit degree. optional*/
+    DF_MotionConfidenceSet_st          motioncfd; /* motion confidenceset optional*/    
+    DF_AccelerationSet4Way_st            acceSet; /* Driving acceleration set. */
+    DF_BrakeSystemStatus_st               brakes; /* Brake system status. */
+    DF_VehicleSize_st                       size; /* Vehicle size. */
+    DF_VehicleClassification_st     vehicleclass; /* vehicle class*/
     DF_VehicleSafetyExtensions_st      safetyExt; /* vehicle safety extensions optional */
     
 }MSG_BasicSafetyMessage_st, * MSG_BasicSafetyMessage_st_ptr;
@@ -84,7 +84,7 @@ typedef struct _MSG_BasicSafetyMessage_st
 /* MSG_BasicSafetyMessage optional configuration. */
 typedef struct _MSG_MapData_opt_st
 {
-    uint8_t    msg_MapData_opt_timestamp           :1;
+    uint8_t    msg_MapData_opt_timestamp        :1;
     uint8_t msg_MapData_opt_reserved            :7;
     
 }MSG_MapData_opt_st, *MSG_MapData_opt_st_ptr;
@@ -114,7 +114,7 @@ typedef struct _MSG_RoadSideInformation_opt_st
     uint8_t    msg_RoadSideInformation_opt_timestamp           :1;
     uint8_t    msg_RoadSideInformation_opt_description         :1;
     uint8_t    msg_RoadSideInformation_opt_priority            :1;
-    uint8_t msg_RoadSideInformation_opt_reserved            :5;
+    uint8_t    msg_RoadSideInformation_opt_reserved            :5;
     
 }MSG_RoadSideInformation_opt_st, *MSG_RoadSideInformation_opt_st_ptr;
 
@@ -160,7 +160,7 @@ typedef struct _MSG_SPAT_opt_st
 {
     uint8_t    timestamp          :1;
     uint8_t    name               :1;
-        uint8_t reserved           :6;
+    uint8_t    reserved           :6;
     
 }MSG_SPAT_opt_st, *MSG_SPAT_opt_st_ptr;
 
@@ -188,7 +188,7 @@ typedef struct _MSG_SPAT_st
 typedef enum _MSG_MessageFrame_ID_en
 {
     MSG_MessageFrame_ID_MAPDATA = 18,
-    MSG_MessageFrame_ID_BSM        = 20,
+    MSG_MessageFrame_ID_BSM     = 20,
     MSG_MessageFrame_ID_RSI     = 40,
     MSG_MessageFrame_ID_SPAT    = 49,
     MSG_MessageFrame_ID_RSM     = 50

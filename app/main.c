@@ -5,7 +5,7 @@
 
 #include "cv_msg_wsmp.h"
 #include "cv_msg_frame.h"
-#include "prot_dataelem.h"
+#include "prot_element.h"
 
 #include "net.h"
 
@@ -318,12 +318,14 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     int i = 0;
     drv_main_st_ptr  drv_ptr = GET_DRVMAIN_PTR;
     static direction_vehicle_em vehicle_direction = DIRECTION_SOUTH_EAST;
+    direction_vehicle_em posline_direction = DIRECTION_SOUTH_EAST;
     msg_intersection_st_ptr intersection_ptr = NULL;
     msg_decode_trafficlamp_speed_guide_st trafficLampSpeedGuide;
     uint8_t send_buf[512];
     uint8_t send_ip[IPADDR_LENGTH];
     uint16_t send_len = 0;
     float speed = 0.0;
+    float distance = 0.0;
     net_st_ptr  net_ptr = (net_st_ptr)(drv_ptr->ehost_fd);
     
     if(msg_ptr == NULL)
@@ -410,17 +412,52 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         
     }
 
+    distance = pos_to_distance(rsu_info.latitude, rsu_info.longitude, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude);
+
+    if((distance < 0.05) && (distance > -0.05))
+    {
+        osal_printf("#########The distance between the car and rsu:%f#######\n",distance);
+        result = ERR_OK;
+        goto ERR_EXIT;
+    }
+
+#if 0
     if((vehicle_basic_status_info.velocity < 0.1) && (vehicle_basic_status_info.velocity > -0.1))
     {
-        if(0)
-            result = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &vehicle_direction);
-
-        result = ERR_OK;    
+        result = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &posline_direction);    
+        if(result != ERR_OK)
+            goto ERR_EXIT;
     }
     else
     {
         result = direction_from_angle(vehicle_basic_status_info.angle, &vehicle_direction);
+
+        result1 = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &posline_direction);
+
+        if((result != ERR_OK) || (result1 != ERR_OK))
+        {
+            goto ERR_EXIT;
+        }
     }
+#endif
+    if((vehicle_basic_status_info.velocity > 0.1) || (vehicle_basic_status_info.velocity < -0.1))
+    {
+        result = direction_from_angle(vehicle_basic_status_info.angle, &vehicle_direction);
+        if(result != ERR_OK)
+            goto ERR_EXIT;
+    }
+
+    result = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &posline_direction);    
+    if(result != ERR_OK)
+        goto ERR_EXIT;
+
+    if(vehicle_direction != posline_direction)
+    {
+        osal_printf("#########vehicle_direction:%d,posline_direction%d################\n",vehicle_direction,posline_direction);
+        result = ERR_OK;
+        goto ERR_EXIT;
+    }
+    
     osal_printf("direction_from_angle:%d\n",vehicle_direction);
     
     if(result == ERR_OK)

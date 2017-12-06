@@ -36,9 +36,6 @@
 #define MSG_OPTIONAL_NO     0x00
 
 
-/*Product id size. */
-#define PID_SIZE            (4)
-
 /*Acceleration set 4 way structure. */
 typedef struct _DF_AccelerationSet4Way_st
 {   
@@ -92,6 +89,7 @@ typedef struct _DF_BrakeSystemStatus_st
 {
     /* Optional */
     DF_BrakeSystemStatus_opt_st        opt;
+    
     /* Data */
     DE_BrakePedalStatus_en      brakepedal;
     DE_BrakeAppliedStatus_st   wheelBrakes;
@@ -128,7 +126,7 @@ typedef struct _DF_ConnectingLane_st
 /*DF_NodeReferenceID_opt structure */
 typedef struct _DF_NodeReferenceID_opt_st
 {
-    uint8_t        region        :1;
+    uint8_t        region      :1;
     uint8_t        reserved    :7;
 }DF_NodeReferenceID_opt_st, *DF_NodeReferenceID_opt_st_ptr;
 
@@ -665,9 +663,10 @@ typedef struct _DF_Position3D_st
 /*DF_Node_opt_st */
 typedef struct _DF_Node_opt_st 
 {
-    uint8_t Node_opt_name            :1;
+    uint8_t    Node_opt_name            :1;
     uint8_t    Node_opt_inLinks         :1;
     uint8_t    Node_opt_reserved        :6;
+    
 }DF_Node_opt_st, *DF_Node_opt_st_ptr;
 
 /*DF_Node structure */
@@ -716,6 +715,7 @@ typedef struct _DF_VehicleSize_st
     DE_VehicleWidth_t            width;
     DE_VehicleLength_t          length;
     DE_VehicleHeight_t          height;
+    
 }DF_VehicleSize_st, * DF_VehicleSize_st_ptr;
 
 #define DF_VehicleSize_st_len    (sizeof(DF_VehicleSize_st))
