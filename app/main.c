@@ -323,6 +323,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     msg_decode_trafficlamp_speed_guide_st trafficLampSpeedGuide;
     uint8_t send_buf[512];
     uint8_t send_ip[IPADDR_LENGTH];
+    uint8_t trafficLamp_display_flag = 0; // 0:display 1:not display
     uint16_t send_len = 0;
     float speed = 0.0;
     float distance = 0.0;
@@ -417,8 +418,7 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     if((distance < 0.05) && (distance > -0.05))
     {
         osal_printf("#########The distance between the car and rsu:%f#######\n",distance);
-        result = ERR_OK;
-        goto ERR_EXIT;
+        trafficLamp_display_flag = 1;
     }
 
 #if 0
@@ -453,9 +453,8 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
 
     if(vehicle_direction != posline_direction)
     {
-        osal_printf("#########vehicle_direction:%d,posline_direction%d################\n",vehicle_direction,posline_direction);
-        result = ERR_OK;
-        goto ERR_EXIT;
+        osal_printf("#########vehicle_direction:%d,posline_direction:%d################\n",vehicle_direction,posline_direction);
+        trafficLamp_display_flag = 1;
     }
     
     osal_printf("direction_from_angle:%d\n",vehicle_direction);
@@ -483,32 +482,52 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
         memcpy(&trafficLampSpeedGuide, &(intersection_ptr[0].trafficLampSpeedGuide[0]), sizeof(trafficLampSpeedGuide));
     }
 
+    if(trafficLamp_display_flag)
+    {
+        trafficLampSpeedGuide.leftlamp.YellowLightStat =  TRAFFIC_LIGHT_OFF;
+        trafficLampSpeedGuide.leftlamp.GreenLightStat =  TRAFFIC_LIGHT_OFF;
+        trafficLampSpeedGuide.leftlamp.RedLightStat =  TRAFFIC_LIGHT_OFF;
+
+        trafficLampSpeedGuide.straightlamp.YellowLightStat =  TRAFFIC_LIGHT_OFF;
+        trafficLampSpeedGuide.straightlamp.GreenLightStat =  TRAFFIC_LIGHT_OFF;
+        trafficLampSpeedGuide.straightlamp.RedLightStat =  TRAFFIC_LIGHT_OFF;
+
+        trafficLampSpeedGuide.rightlamp.YellowLightStat =  TRAFFIC_LIGHT_OFF;
+        trafficLampSpeedGuide.rightlamp.GreenLightStat =  TRAFFIC_LIGHT_OFF;
+        trafficLampSpeedGuide.rightlamp.RedLightStat =  TRAFFIC_LIGHT_OFF;    
+    }
+
     speed = recommend_speed_calc(rsu_info.latitude, rsu_info.longitude, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, trafficLampSpeedGuide.timers);
 
-    if(trafficLampSpeedGuide.straightlamp.RedLightStat != 0)
+    if(speed < 0.1)
     {
-        if(speed > RECOMMAND_SPEED_MAX)
-            trafficLampSpeedGuide.maxvelocity = RECOMMAND_SPEED_MAX;
-        else
-            trafficLampSpeedGuide.maxvelocity = speed;
-        
+        trafficLampSpeedGuide.maxvelocity = 0.0;
         trafficLampSpeedGuide.minvelocity = 0.0;
     }
-    else if(trafficLampSpeedGuide.straightlamp.GreenLightStat || trafficLampSpeedGuide.straightlamp.YellowLightStat)
-    {      
-        if((speed < 0.1) || (speed > RECOMMAND_SPEED_MAX))
+    else if(speed > RECOMMAND_SPEED_MAX)
+    {    
+        trafficLampSpeedGuide.maxvelocity = RECOMMAND_SPEED_MAX;
+        trafficLampSpeedGuide.minvelocity = RECOMMAND_SPEED_MAX;
+    }
+    else
+    {
+        if(trafficLampSpeedGuide.straightlamp.RedLightStat)
         {
-            trafficLampSpeedGuide.maxvelocity = 0.0;
-            trafficLampSpeedGuide.minvelocity = 0.0;
+            if(speed < 1.0)
+                trafficLampSpeedGuide.maxvelocity = 1.0;
+            else
+                trafficLampSpeedGuide.maxvelocity = speed;
+
+            trafficLampSpeedGuide.minvelocity = 1.0;            
         }
-        else
+        else if(trafficLampSpeedGuide.straightlamp.GreenLightStat || trafficLampSpeedGuide.straightlamp.YellowLightStat)
         {
             trafficLampSpeedGuide.maxvelocity = RECOMMAND_SPEED_MAX;
             if(speed < 1.0)
                 trafficLampSpeedGuide.minvelocity = 1.0;
             else
                 trafficLampSpeedGuide.minvelocity = speed;
-        }    
+        }
     }
     
     osal_printf("~~trafficLampSpeedGuide.maxvelocity=%f(km/h),minvelocity=%f(km/h)\n\n",trafficLampSpeedGuide.maxvelocity,trafficLampSpeedGuide.minvelocity);
