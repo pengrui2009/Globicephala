@@ -336,6 +336,25 @@ int spat_message_deal(MSG_SPAT_st_ptr msg_ptr)
     }
     
     //os_printf("spat msgcnt:%d\n", msg_ptr->msgCnt);
+    distance = pos_to_distance(rsu_info.latitude, rsu_info.longitude, vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude);
+    
+    if(((vehicle_basic_status_info.velocity > 0.1) || (vehicle_basic_status_info.velocity < -0.1)) && ((distance > 5.0) || (distance < -5.0)))
+    {
+        result = direction_from_angle(vehicle_basic_status_info.angle, &vehicle_direction);
+        if(result != ERR_OK)
+            goto ERR_EXIT;
+
+        result = direction_from_angle(posline_to_angle(vehicle_basic_status_info.latitude, vehicle_basic_status_info.longitude, rsu_info.latitude, rsu_info.longitude), &posline_direction);    
+        if(result != ERR_OK)
+            goto ERR_EXIT;
+
+        if(vehicle_direction != posline_direction)
+        {
+            osal_printf("#########Unneeded RSU data,vehicle_direction:%d,posline_direction:%d################\n",vehicle_direction,posline_direction);
+            result = ERR_OK;
+            goto ERR_EXIT;
+        }
+    }
     
     if((intersection_ptr = os_calloc(1, ((sizeof(msg_intersection_st))*(msg_ptr->intersections.pointNum)))) == NULL)
     {
